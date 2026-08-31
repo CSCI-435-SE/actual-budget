@@ -5,7 +5,7 @@ can explore and experiment with it. Everything runs locally in your browser.
 
 > Already comfortable with Node projects? The whole thing is:
 > `git clone … && cd actual && yarn install && yarn start`, then open
-> <http://localhost:3001> and click **View demo**.
+> [http://localhost:3001](http://localhost:3001) and click **View demo**.
 
 ---
 
@@ -13,11 +13,11 @@ can explore and experiment with it. Everything runs locally in your browser.
 
 Install these once before you start:
 
-| Tool | Version | Notes |
-| --- | --- | --- |
-| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v` |
-| [Yarn](https://yarnpkg.com/) | **4.9.1+** | Comes with Node via Corepack — see below |
-| [Git](https://git-scm.com/) | any recent | On **Windows**, install "Git for Windows" — it also provides the `sh` and `bash` shells some scripts use |
+| Tool                          | Version               | Notes                                                                                                              |
+| ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| [Node.js](https://nodejs.org/) | **22 or newer** | Check with`node -v`                                                                                              |
+| [Yarn](https://yarnpkg.com/)   | **4.9.1+**      | Comes with Node via Corepack — see below                                                                          |
+| [Git](https://git-scm.com/)    | any recent            | On**Windows**, install "Git for Windows" — it also provides the `sh` and `bash` shells some scripts use |
 
 > 💡 **New to Yarn workspaces?** Actual Budget uses [Yarn workspaces](https://yarnpkg.com/features/workspaces) to manage multiple packages in a single repo. You mostly run commands from the root — but understanding workspaces helps when something goes wrong in a sub-package.
 
@@ -29,7 +29,7 @@ Enable the correct Yarn version (only needed once):
 corepack enable
 ```
 
-Yarn will then automatically use the version this project expects.
+Yarn will then automatically use the version this project expects...
 
 ---
 
@@ -46,7 +46,6 @@ cd actual
 yarn install
 ```
 
-
 > ⚠️ Always run `yarn` commands from the **project root** (the folder with this
 > file in it), never from inside a `packages/…` subfolder.
 
@@ -60,7 +59,7 @@ yarn start
 
 This starts the development server. When it's ready, open:
 
-**<http://localhost:3001>**
+**[http://localhost:3001](http://localhost:3001)**
 
 (The browser may open automatically.)
 
@@ -96,13 +95,13 @@ For simply learning and experimenting, `yarn start` is enough.
 
 Run all of these from the project root:
 
-| Command | What it does |
-| --- | --- |
-| `yarn start` | Start the app in your browser (main command) |
-| `yarn test` | Run the test suite across all packages |
-| `yarn typecheck` | Check for TypeScript errors |
-| `yarn lint` | Check code style and formatting |
-| `yarn lint:fix` | Auto-fix style and formatting issues |
+| Command            | What it does                                 |
+| ------------------ | -------------------------------------------- |
+| `yarn start`     | Start the app in your browser (main command) |
+| `yarn test`      | Run the test suite across all packages       |
+| `yarn typecheck` | Check for TypeScript errors                  |
+| `yarn lint`      | Check code style and formatting              |
+| `yarn lint:fix`  | Auto-fix style and formatting issues         |
 
 If you change code, `yarn typecheck`, `yarn lint`, and `yarn test` are the three
 commands that tell you everything is still healthy.
@@ -112,7 +111,7 @@ commands that tell you everything is still healthy.
 ## 6. Troubleshooting
 
 **`node -v` shows a version below 22**
-Install Node 22+ from <https://nodejs.org/>. If you use `nvm`, run `nvm use` in
+Install Node 22+ from [https://nodejs.org/](https://nodejs.org/). If you use `nvm`, run `nvm use` in
 the project folder (it reads the `.nvmrc` file).
 
 **`yarn` isn't found or uses the wrong version**
@@ -141,9 +140,9 @@ run it from the **Git Bash** terminal that ships with Git for Windows.
 
 ## 7. Learn more
 
-- Actual Budget documentation: <https://actualbudget.org/docs>
-- Envelope budgeting basics: <https://actualbudget.org/docs/getting-started/envelope-budgeting>
-- Community Discord: <https://discord.gg/pRYNYr4W5A>
+- Actual Budget documentation: [https://actualbudget.org/docs](https://actualbudget.org/docs)
+- Envelope budgeting basics: [https://actualbudget.org/docs/getting-started/envelope-budgeting](https://actualbudget.org/docs/getting-started/envelope-budgeting)
+- Community Discord: [https://discord.gg/pRYNYr4W5A](https://discord.gg/pRYNYr4W5A)
 
 ---
 
@@ -186,11 +185,11 @@ After pushing, GitHub shows a **"Compare & pull request"** banner on the reposit
 
 **Branch naming:**
 
-| Prefix | Use for |
-|---|---|
-| `feat/issue-<N>-short-description` | new features |
-| `fix/issue-<N>-short-description` | bug fixes |
-| `chore/short-description` | docs, config, dependency updates |
+| Prefix                               | Use for                          |
+| ------------------------------------ | -------------------------------- |
+| `feat/issue-<N>-short-description` | new features                     |
+| `fix/issue-<N>-short-description`  | bug fixes                        |
+| `chore/short-description`          | docs, config, dependency updates |
 
 > ⚠️ **`main` is protected — direct pushes are blocked.** All changes go through a reviewed PR. If you accidentally commit to `main` locally, move your changes to a branch before pushing:
 >
@@ -210,18 +209,18 @@ git branch -d feat/issue-17-dark-mode
 
 ## 8. Project documentation & policies (required reading)
 
-📚 **Official documentation:** <https://actualbudget.org/docs> — start with
+📚 **Official documentation:** [https://actualbudget.org/docs](https://actualbudget.org/docs) — start with
 [Getting Started](https://actualbudget.org/docs/getting-started/envelope-budgeting).
 
 Actual has its own established contribution processes. They are **not restated here** — you are
 responsible for finding, reading, and following them from the sources below:
 
-| You must take care of | Where to find it |
-| --- | --- |
-| How to use the tool | <https://actualbudget.org/docs> |
-| Code review process | [CODE_REVIEW_GUIDELINES.md](CODE_REVIEW_GUIDELINES.md) + [Contributing docs](https://actualbudget.org/docs/contributing/) |
-| Bug / issue resolution process | [Contributing docs](https://actualbudget.org/docs/contributing/) |
-| Pull request conventions & PR policies | [CONTRIBUTING.md](CONTRIBUTING.md) + [PR and Commit Rules](.github/agents/pr-and-commit-rules.md) |
-| AI policies | [AI Usage Policy](https://actualbudget.org/docs/contributing/ai-usage-policy) + [AGENTS.md](AGENTS.md) |
+| You must take care of                  | Where to find it                                                                                                        |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| How to use the tool                    | [https://actualbudget.org/docs](https://actualbudget.org/docs)                                                           |
+| Code review process                    | [CODE_REVIEW_GUIDELINES.md](CODE_REVIEW_GUIDELINES.md) + [Contributing docs](https://actualbudget.org/docs/contributing/) |
+| Bug / issue resolution process         | [Contributing docs](https://actualbudget.org/docs/contributing/)                                                         |
+| Pull request conventions & PR policies | [CONTRIBUTING.md](CONTRIBUTING.md) + [PR and Commit Rules](.github/agents/pr-and-commit-rules.md)                         |
+| AI policies                            | [AI Usage Policy](https://actualbudget.org/docs/contributing/ai-usage-policy) + [AGENTS.md](AGENTS.md)                    |
 
 Happy budgeting! 🎉
