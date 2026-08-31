@@ -29,7 +29,7 @@ Enable the correct Yarn version (only needed once):
 corepack enable
 ```
 
-Yarn will then automatically use the version this project expects...
+Yarn will then automatically use the version this project expects.....
 
 ---
 
