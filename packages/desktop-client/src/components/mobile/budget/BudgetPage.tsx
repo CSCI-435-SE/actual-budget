@@ -33,6 +33,7 @@ import type { TransObjectLiteral } from '@actual-app/core/types/util';
 
 import { sync } from '#app/appSlice';
 import {
+  CATEGORY_NAME_MAX_LENGTH,
   useBudgetActions,
   useCreateCategoryGroupMutation,
   useCreateCategoryMutation,
@@ -187,7 +188,18 @@ export function BudgetPage() {
           modal: {
             name: 'new-category',
             options: {
-              onValidate: name => (!name ? 'Name is required.' : null),
+              onValidate: name => {
+                if (!name) {
+                  return t('Name is required.');
+                }
+                if (name.length > CATEGORY_NAME_MAX_LENGTH) {
+                  return t(
+                    'Category names must be {{maxLength}} characters or less.',
+                    { maxLength: CATEGORY_NAME_MAX_LENGTH },
+                  );
+                }
+                return null;
+              },
               onSubmit: async name => {
                 createCategory.mutate(
                   {
@@ -212,7 +224,7 @@ export function BudgetPage() {
         }),
       );
     },
-    [dispatch, createCategory],
+    [dispatch, createCategory, t],
   );
 
   const onSaveGroup = useCallback(

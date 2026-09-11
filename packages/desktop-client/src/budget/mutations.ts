@@ -59,6 +59,24 @@ function dispatchCategoryNameAlreadyExistsNotification(
   );
 }
 
+export const CATEGORY_NAME_MAX_LENGTH = 50;
+
+function dispatchCategoryNameTooLongNotification(
+  dispatch: AppDispatch,
+  t: TFunction,
+) {
+  dispatch(
+    addNotification({
+      notification: {
+        type: 'error',
+        message: t('Category names must be {{maxLength}} characters or less.', {
+          maxLength: CATEGORY_NAME_MAX_LENGTH,
+        }),
+      },
+    }),
+  );
+}
+
 type CreateCategoryPayload = {
   name: CategoryEntity['name'];
   groupId: CategoryGroupEntity['id'];
@@ -78,6 +96,11 @@ export function useCreateCategoryMutation() {
       isIncome,
       isHidden,
     }: CreateCategoryPayload) => {
+      if (name.length > CATEGORY_NAME_MAX_LENGTH) {
+        dispatchCategoryNameTooLongNotification(dispatch, t);
+        return;
+      }
+
       const id = await send('category-create', {
         name,
         groupId,
@@ -136,6 +159,11 @@ export function useSaveCategoryMutation() {
 
   return useMutation({
     mutationFn: async ({ category }: SaveCategoryPayload) => {
+      if (category.name.length > CATEGORY_NAME_MAX_LENGTH) {
+        dispatchCategoryNameTooLongNotification(dispatch, t);
+        return;
+      }
+
       const { grouped: categoryGroups = [] } =
         await queryClient.ensureQueryData(categoryQueries.list());
 
