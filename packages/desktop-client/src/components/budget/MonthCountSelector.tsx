@@ -5,6 +5,8 @@ import { SvgCalendar } from '@actual-app/components/icons/v2';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
+import { Link } from '#components/common/Link';
+
 import { useBudgetMonthCount } from './BudgetMonthCountContext';
 
 type CalendarProps = {
@@ -14,10 +16,14 @@ type CalendarProps = {
 
 function Calendar({ color, onClick }: CalendarProps) {
   return (
-    <SvgCalendar
-      style={{ width: 13, height: 13, color, marginRight: 5 }}
-      onClick={onClick}
-    />
+    <Link
+      variant="button"
+      buttonVariant="bare"
+      onPress={onClick}
+      style={{ padding: 2, marginRight: 3 }}
+    >
+      <SvgCalendar style={{ width: 13, height: 13, color }} />
+    </Link>
   );
 }
 
