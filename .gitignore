@@ -111,3 +111,6 @@ storybook-static
 .actualrc.yaml
 .actualrc.yml
 actual.config.js
+.specstory/.project.json
+.specstory/cli/config.toml
+.specstory
