@@ -10,6 +10,8 @@ import { css } from '@emotion/css';
 import rehypeExternalLinks from 'rehype-external-links';
 import remarkGfm from 'remark-gfm';
 
+import { addNotification } from '#notifications/notificationsSlice';
+import { useDispatch } from '#redux';
 import {
   markdownBaseStyles,
   remarkBreaks,
@@ -17,6 +19,22 @@ import {
 } from '#util/markdown';
 
 const remarkPlugins = [sequentialNewlinesPlugin, remarkGfm, remarkBreaks];
+
+export const MAX_NOTES_LENGTH = 1800;
+const NOTES_LENGTH_WARNING_THRESHOLD = 1700;
+
+const NOTES_LENGTH_LEVELS = ['none', 'near', 'limit'] as const;
+type NotesLengthLevel = (typeof NOTES_LENGTH_LEVELS)[number];
+
+function getNotesLengthLevel(length: number): NotesLengthLevel {
+  if (length >= MAX_NOTES_LENGTH) {
+    return 'limit';
+  }
+  if (length >= NOTES_LENGTH_WARNING_THRESHOLD) {
+    return 'near';
+  }
+  return 'none';
+}
 
 const markdownStyles = css(markdownBaseStyles, {
   display: 'block',
@@ -43,14 +61,48 @@ export function Notes({
 }: NotesProps) {
   const { isNarrowWidth } = useResponsive();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const notifiedLevelRef = useRef<NotesLengthLevel>('none');
 
   useEffect(() => {
     if (focused && editable) {
       textAreaRef.current?.focus();
     }
   }, [focused, editable]);
+
+  function handleChange(value: string) {
+    const level = getNotesLengthLevel(value.length);
+    const previousLevel = notifiedLevelRef.current;
+    notifiedLevelRef.current = level;
+
+    // Only notify when crossing upwards, so deleting text never re-warns.
+    if (
+      NOTES_LENGTH_LEVELS.indexOf(level) >
+      NOTES_LENGTH_LEVELS.indexOf(previousLevel)
+    ) {
+      dispatch(
+        addNotification({
+          notification: {
+            id: `notes-length-${level}`,
+            type: 'warning',
+            message:
+              level === 'limit'
+                ? t(
+                    'You have reached the {{max}} character limit for notes. No more text can be added.',
+                    { max: MAX_NOTES_LENGTH },
+                  )
+                : t('You are nearing the {{max}} character limit for notes.', {
+                    max: MAX_NOTES_LENGTH,
+                  }),
+          },
+        }),
+      );
+    }
+
+    onChange?.(value);
+  }
 
   return editable ? (
     <textarea
@@ -65,7 +117,8 @@ export function Notes({
         ...getStyle?.(editable),
       })}
       value={notes || ''}
-      onChange={e => onChange?.(e.target.value)}
+      maxLength={MAX_NOTES_LENGTH}
+      onChange={e => handleChange(e.target.value)}
       onBlur={e => onBlur?.(e.target.value)}
       placeholder={t('Notes (markdown supported)')}
     />
