@@ -6,10 +6,16 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import type { WheelEvent } from 'react';
 import { animated, useSpring } from 'react-spring';
 
 import { View, viewStyles } from '@actual-app/components/view';
-import { addMonths, subMonths } from '@actual-app/core/shared/months';
+import {
+  addMonths,
+  nextMonth,
+  prevMonth,
+  subMonths,
+} from '@actual-app/core/shared/months';
 import { css } from '@emotion/css';
 
 import { useResizeObserver } from '#hooks/useResizeObserver';
@@ -18,9 +24,50 @@ import { MonthsContext } from './MonthsContext';
 
 import { useBudgetComponents } from '.';
 
-export function BudgetSummaries() {
+// How much accumulated horizontal wheel delta it takes to step one month.
+const WHEEL_STEP_THRESHOLD = 200;
+// After a step fires, ignore wheel events for this long before resetting —
+// a fixed window (not re-armed by further events) so a swipe's momentum
+// tail can't chain into extra steps, without indefinitely delaying the
+// next deliberate swipe the way waiting for total silence would.
+const WHEEL_STEP_LOCKOUT_MS = 450;
+
+type BudgetSummariesProps = {
+  startMonth: string;
+  onMonthSelect: (month: string) => void;
+};
+
+export function BudgetSummaries({
+  startMonth,
+  onMonthSelect,
+}: BudgetSummariesProps) {
   const { months } = useContext(MonthsContext);
   const [firstMonth] = months;
+  const wheelState = useRef({ accumulated: 0, lockedUntil: 0 });
+
+  const onWheel = (e: WheelEvent) => {
+    // Only step months on a horizontal gesture (trackpad swipe or shift+wheel)
+    // so plain vertical scrolling over this row is left alone.
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+
+    e.preventDefault();
+
+    const state = wheelState.current;
+    const now = Date.now();
+    if (now < state.lockedUntil) return;
+
+    state.accumulated += e.deltaX;
+
+    if (state.accumulated >= WHEEL_STEP_THRESHOLD) {
+      onMonthSelect(nextMonth(startMonth));
+      state.accumulated = 0;
+      state.lockedUntil = now + WHEEL_STEP_LOCKOUT_MS;
+    } else if (state.accumulated <= -WHEEL_STEP_THRESHOLD) {
+      onMonthSelect(prevMonth(startMonth));
+      state.accumulated = 0;
+      state.lockedUntil = now + WHEEL_STEP_LOCKOUT_MS;
+    }
+  };
 
   const [widthState, setWidthState] = useState(0);
   const [styles, spring] = useSpring(
@@ -82,6 +129,7 @@ export function BudgetSummaries() {
         },
       ])}
       ref={containerRef}
+      onWheel={onWheel}
     >
       <animated.div
         className={viewStyles}
