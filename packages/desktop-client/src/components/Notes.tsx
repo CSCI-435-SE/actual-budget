@@ -85,7 +85,9 @@ export function Notes({
       dispatch(
         addNotification({
           notification: {
-            id: `notes-length-${level}`,
+            // No fixed `id`: each Notes instance tracks its own notified level
+            // via `notifiedLevelRef`, so a shared id would only cause one note
+            // field's warning to swallow another's while the first is showing.
             type: 'warning',
             message:
               level === 'limit'
