@@ -32,6 +32,8 @@ import { AutoTextSize } from 'auto-text-size';
 import { FeatureErrorFallback } from '#components/FeatureErrorFallback';
 import { useModalState } from '#hooks/useModalState';
 
+import { CharacterCounter } from './CharacterCounter';
+
 export const MODAL_Z_INDEX = 3000;
 
 type ModalProps = ComponentPropsWithRef<typeof ReactAriaModal> & {
@@ -388,6 +390,7 @@ type ModalTitleProps = {
   onEdit?: (isEditing: boolean) => void;
   onTitleUpdate?: (newName: string) => void;
   shrinkOnOverflow?: boolean;
+  maxLength?: number;
 };
 
 export function ModalTitle({
@@ -396,11 +399,14 @@ export function ModalTitle({
   getStyle,
   onTitleUpdate,
   shrinkOnOverflow = false,
+  maxLength,
 }: ModalTitleProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [liveTitle, setLiveTitle] = useState(title);
 
   const onTitleClick = () => {
     if (isEditable) {
+      setLiveTitle(title);
       setIsEditing(true);
     }
   };
@@ -424,21 +430,28 @@ export function ModalTitle({
   const style = getStyle?.(isEditing);
 
   return isEditing ? (
-    <Input
-      ref={inputRef}
-      style={{
-        fontSize: 25,
-        fontWeight: 700,
-        textAlign: 'center',
-        ...style,
-      }}
-      defaultValue={title}
-      onUpdate={_onTitleUpdate}
-      onEnter={(value, e) => {
-        e.preventDefault();
-        _onTitleUpdate?.(value);
-      }}
-    />
+    <View style={{ alignItems: 'center' }}>
+      <Input
+        ref={inputRef}
+        style={{
+          fontSize: 25,
+          fontWeight: 700,
+          textAlign: 'center',
+          ...style,
+        }}
+        defaultValue={title}
+        maxLength={maxLength}
+        onChangeValue={setLiveTitle}
+        onUpdate={_onTitleUpdate}
+        onEnter={(value, e) => {
+          e.preventDefault();
+          _onTitleUpdate?.(value);
+        }}
+      />
+      {maxLength != null && (
+        <CharacterCounter length={liveTitle.length} maxLength={maxLength} />
+      )}
+    </View>
   ) : (
     <View
       style={{
