@@ -10,27 +10,40 @@ import { MAX_NOTES_LENGTH, Notes } from './Notes';
 
 const WARNING_THRESHOLD = 1700;
 
+// Notification ids are scoped to each Notes instance, so tests match on the
+// message instead. These prefixes avoid depending on how {{max}} interpolates.
+const NEAR_WARNING = 'You are nearing the';
+const LIMIT_WARNING = 'You have reached the';
+
+type ControlledNotesProps = {
+  initialNotes?: string;
+  onChange?: (value: string) => void;
+};
+
+function ControlledNotes({
+  initialNotes = '',
+  onChange,
+}: ControlledNotesProps) {
+  const [notes, setNotes] = useState(initialNotes);
+  return (
+    <Notes
+      notes={notes}
+      editable
+      onChange={value => {
+        onChange?.(value);
+        setNotes(value);
+      }}
+    />
+  );
+}
+
 function setup({ initialNotes = '' } = {}) {
   const store = createTestAppStore();
   const onChange = vi.fn();
 
-  function ControlledNotes() {
-    const [notes, setNotes] = useState(initialNotes);
-    return (
-      <Notes
-        notes={notes}
-        editable
-        onChange={value => {
-          onChange(value);
-          setNotes(value);
-        }}
-      />
-    );
-  }
-
   render(
     <TestProviders store={store}>
-      <ControlledNotes />
+      <ControlledNotes initialNotes={initialNotes} onChange={onChange} />
     </TestProviders>,
   );
 
@@ -43,6 +56,28 @@ function setup({ initialNotes = '' } = {}) {
     notifications: () => store.getState().notifications.notifications,
     setNotes: (value: string) =>
       fireEvent.change(textarea, { target: { value } }),
+  };
+}
+
+function setupTwoFields() {
+  const store = createTestAppStore();
+
+  render(
+    <TestProviders store={store}>
+      <ControlledNotes />
+      <ControlledNotes />
+    </TestProviders>,
+  );
+
+  const [firstField, secondField] = screen.getAllByRole('textbox');
+
+  return {
+    store,
+    firstField,
+    secondField,
+    notifications: () => store.getState().notifications.notifications,
+    setNotes: (field: HTMLElement, value: string) =>
+      fireEvent.change(field, { target: { value } }),
   };
 }
 
@@ -88,11 +123,8 @@ describe('Notes length notifications', () => {
     setNotes('a'.repeat(WARNING_THRESHOLD));
 
     expect(notifications()).toHaveLength(1);
-    expect(notifications()[0]).toMatchObject({
-      id: 'notes-length-near',
-      type: 'warning',
-    });
-    expect(notifications()[0].message).toContain('character limit for notes');
+    expect(notifications()[0]).toMatchObject({ type: 'warning' });
+    expect(notifications()[0].message).toContain(NEAR_WARNING);
   });
 
   test('does not repeat the warning while staying below the limit', () => {
@@ -111,11 +143,9 @@ describe('Notes length notifications', () => {
     setNotes('a'.repeat(WARNING_THRESHOLD));
     setNotes('a'.repeat(MAX_NOTES_LENGTH));
 
-    expect(notifications().map(notification => notification.id)).toEqual([
-      'notes-length-near',
-      'notes-length-limit',
-    ]);
-    expect(notifications()[1].message).toContain('character limit for notes');
+    expect(notifications()).toHaveLength(2);
+    expect(notifications()[0].message).toContain(NEAR_WARNING);
+    expect(notifications()[1].message).toContain(LIMIT_WARNING);
   });
 
   test('notifies at the limit when pasting straight past the threshold', () => {
@@ -124,7 +154,7 @@ describe('Notes length notifications', () => {
     setNotes('a'.repeat(MAX_NOTES_LENGTH));
 
     expect(notifications()).toHaveLength(1);
-    expect(notifications()[0].id).toBe('notes-length-limit');
+    expect(notifications()[0].message).toContain(LIMIT_WARNING);
   });
 
   test('does not warn again while deleting text back down', () => {
@@ -135,7 +165,7 @@ describe('Notes length notifications', () => {
     setNotes('a'.repeat(WARNING_THRESHOLD));
 
     expect(notifications()).toHaveLength(1);
-    expect(notifications()[0].id).toBe('notes-length-limit');
+    expect(notifications()[0].message).toContain(LIMIT_WARNING);
   });
 
   test('does not stack a duplicate warning that is still showing', () => {
@@ -152,13 +182,26 @@ describe('Notes length notifications', () => {
     const { setNotes, notifications, store } = setup();
 
     setNotes('a'.repeat(WARNING_THRESHOLD));
-    store.dispatch(removeNotification({ id: 'notes-length-near' }));
+    store.dispatch(removeNotification({ id: notifications()[0].id }));
     expect(notifications()).toHaveLength(0);
 
     setNotes('short');
     setNotes('a'.repeat(WARNING_THRESHOLD));
 
     expect(notifications()).toHaveLength(1);
-    expect(notifications()[0].id).toBe('notes-length-near');
+    expect(notifications()[0].message).toContain(NEAR_WARNING);
+  });
+
+  test('warns for a second note field while the first warning is showing', () => {
+    const { setNotes, notifications, firstField, secondField } =
+      setupTwoFields();
+
+    setNotes(firstField, 'a'.repeat(WARNING_THRESHOLD));
+    setNotes(secondField, 'a'.repeat(WARNING_THRESHOLD));
+
+    const [firstWarning, secondWarning] = notifications();
+    expect(notifications()).toHaveLength(2);
+    expect(firstWarning.id).not.toBe(secondWarning.id);
+    expect(secondWarning.message).toContain(NEAR_WARNING);
   });
 });

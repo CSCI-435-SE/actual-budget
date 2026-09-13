@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 
@@ -65,6 +65,9 @@ export function Notes({
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const notifiedLevelRef = useRef<NotesLengthLevel>('none');
+  // Scopes the notification id to this instance, so a warning raised by one
+  // note field never dedupes away the warning from a different one.
+  const instanceId = useId();
 
   useEffect(() => {
     if (focused && editable) {
@@ -85,9 +88,7 @@ export function Notes({
       dispatch(
         addNotification({
           notification: {
-            // No fixed `id`: each Notes instance tracks its own notified level
-            // via `notifiedLevelRef`, so a shared id would only cause one note
-            // field's warning to swallow another's while the first is showing.
+            id: `notes-length-${instanceId}-${level}`,
             type: 'warning',
             message:
               level === 'limit'
