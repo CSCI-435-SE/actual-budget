@@ -111,3 +111,10 @@ storybook-static
 .actualrc.yaml
 .actualrc.yml
 actual.config.js
+.specstory/.project.json
+.specstory/statistics.json
+.specstory/cli/config.toml
+.specstory/history/2026-09-03_23-26-49Z-why-do-i-get.md
+.specstory/history/2026-09-11_00-37-31Z-help-me-locate-how.md
+.specstory/history/2026-09-12_16-07-32Z-can-you-locate-in.md
+.specstory/history/2026-09-13_15-36-30Z-fix-this-issue-in.md
