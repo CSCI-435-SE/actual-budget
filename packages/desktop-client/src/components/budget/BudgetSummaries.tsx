@@ -50,8 +50,6 @@ export function BudgetSummaries({
     // so plain vertical scrolling over this row is left alone.
     if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
 
-    e.preventDefault();
-
     const state = wheelState.current;
     const now = Date.now();
     if (now < state.lockedUntil) return;
