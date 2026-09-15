@@ -247,6 +247,17 @@ export function KeyboardShortcutModal() {
         ],
       },
       {
+        id: 'management-pages',
+        name: t('Payees, rules, schedules and tags pages'),
+        items: [
+          {
+            id: 'focus-filter',
+            shortcut: '/',
+            description: t('Focus the filter box'),
+          },
+        ],
+      },
+      {
         id: 'account-page-general',
         name: t('Account page general'),
         items: [

@@ -13,6 +13,7 @@ import { Search } from '#components/common/Search';
 import { FeatureErrorFallback } from '#components/FeatureErrorFallback';
 import { Page } from '#components/Page';
 import { useSchedules } from '#hooks/useSchedules';
+import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { pushModal } from '#modals/modalsSlice';
 import { useDispatch } from '#redux';
 
@@ -24,6 +25,7 @@ export function Schedules() {
 
   const dispatch = useDispatch();
   const [filter, setFilter] = useState('');
+  const searchInput = useSearchHotkey();
 
   const onEdit = useCallback(
     (id: ScheduleEntity['id']) => {
@@ -104,6 +106,7 @@ export function Schedules() {
             }}
           >
             <Search
+              ref={searchInput}
               placeholder={t('Filter schedules…')}
               value={filter}
               onChange={setFilter}

@@ -12,6 +12,7 @@ import { listen } from '@actual-app/core/platform/client/connection';
 import { getNormalisedString } from '@actual-app/core/shared/normalisation';
 
 import { Search } from '#components/common/Search';
+import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { SelectedProvider, useSelected } from '#hooks/useSelected';
 import { useTags } from '#hooks/useTags';
 
@@ -24,6 +25,7 @@ import { TagsMenuButton } from './TagsMenuButton';
 export function ManageTags() {
   const { t } = useTranslation();
   const [filter, setFilter] = useState('');
+  const searchInput = useSearchHotkey();
   const [hoveredTag, setHoveredTag] = useState<string>();
   const [create, setCreate] = useState(false);
   const { data: tags = [], refetch } = useTags();
@@ -69,6 +71,7 @@ export function ManageTags() {
           </Button>
           <View style={{ flex: 1 }} />
           <Search
+            ref={searchInput}
             placeholder={t('Filter tags...')}
             value={filter}
             onChange={setFilter}

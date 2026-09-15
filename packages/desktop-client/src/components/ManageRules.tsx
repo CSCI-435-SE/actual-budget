@@ -23,6 +23,7 @@ import { useAccounts } from '#hooks/useAccounts';
 import { useCategories } from '#hooks/useCategories';
 import { usePayees } from '#hooks/usePayees';
 import { useSchedules } from '#hooks/useSchedules';
+import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { SelectedProvider, useSelected } from '#hooks/useSelected';
 import { pushModal } from '#modals/modalsSlice';
 import { useDispatch } from '#redux';
@@ -124,6 +125,7 @@ export function ManageRules({
   const [allRules, setAllRules] = useState<RuleEntity[]>([]);
   const [page, setPage] = useState(0);
   const [filter, setFilter] = useState('');
+  const searchInput = useSearchHotkey();
   const dispatch = useDispatch();
 
   const { schedules = [] } = useSchedules({
@@ -325,6 +327,7 @@ export function ManageRules({
           </View>
           <View style={{ flex: 1 }} />
           <Search
+            ref={searchInput}
             placeholder={t('Filter rules...')}
             value={filter}
             onChange={onSearchChange}

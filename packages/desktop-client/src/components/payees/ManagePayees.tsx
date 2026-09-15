@@ -16,6 +16,7 @@ import type { PayeeEntity } from '@actual-app/core/types/models';
 
 import { Search } from '#components/common/Search';
 import { Cell, SelectCell, TableHeader } from '#components/table';
+import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import {
   SelectedProvider,
   useSelected,
@@ -76,6 +77,7 @@ export const ManagePayees = ({
   ...props
 }: ManagePayeesProps) => {
   const [filter, setFilter] = useState('');
+  const searchInput = useSearchHotkey();
   const table = useRef(null);
   const triggerRef = useRef(null);
   const [orphanedOnly, setOrphanedOnly] = useState(false);
@@ -281,6 +283,7 @@ export const ManagePayees = ({
         </View>
         <View style={{ flex: 1 }} />
         <Search
+          ref={searchInput}
           placeholder={t('Filter payees...')}
           value={filter}
           onChange={applyFilter}
