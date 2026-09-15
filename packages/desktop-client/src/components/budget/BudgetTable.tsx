@@ -56,6 +56,7 @@ type BudgetTableProps = {
   }) => void;
   onShowActivity: (id: CategoryEntity['id'], month?: string) => void;
   onBudgetAction: (month: string, type: string, args: unknown) => void;
+  onMonthSelect: (month: string) => void;
 };
 
 export function BudgetTable(props: BudgetTableProps) {
@@ -75,6 +76,7 @@ export function BudgetTable(props: BudgetTableProps) {
     onReorderGroup,
     onShowActivity,
     onBudgetAction,
+    onMonthSelect,
   } = props;
 
   const { data: { grouped: categoryGroups } = { grouped: [] } } =
@@ -279,7 +281,10 @@ export function BudgetTable(props: BudgetTableProps) {
           monthBounds={monthBounds}
           type={type}
         >
-          <BudgetSummaries />
+          <BudgetSummaries
+            startMonth={startMonth}
+            onMonthSelect={onMonthSelect}
+          />
         </MonthsProvider>
       </View>
 

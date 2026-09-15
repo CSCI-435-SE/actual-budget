@@ -162,6 +162,7 @@ const DynamicBudgetTable = ({
             numMonths={numMonths}
             monthBounds={monthBounds}
             onBudgetAction={onBudgetAction}
+            onMonthSelect={_onMonthSelect}
             {...props}
           />
         </ErrorBoundary>
@@ -174,7 +175,7 @@ DynamicBudgetTable.displayName = 'DynamicBudgetTable';
 
 type AutoSizingBudgetTableProps = Omit<
   ComponentProps<typeof BudgetTable>,
-  'numMonths'
+  'numMonths' | 'onMonthSelect'
 > & {
   maxMonths: number;
   onMonthSelect: (month: string, numMonths: number) => void;
