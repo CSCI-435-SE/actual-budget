@@ -72,6 +72,7 @@ export function makeBalanceAmountStyle(
   value: number,
   goalValue?: number | null,
   budgetedValue?: number | null,
+  spentValue?: number | null,
 ) {
   // Converts an integer currency value to a normalized decimal amount.
   // First converts the integer to currency format, then to a decimal amount.
@@ -91,6 +92,17 @@ export function makeBalanceAmountStyle(
     if (greyed) {
       return greyed;
     }
+
+    // Spending is negative for expense categories, so its magnitude is what
+    // needs to be compared against this month's budgeted amount. A balance
+    // that's still >= 0 despite this means a prior rollover surplus is
+    // covering the overspend — surface that before it turns red next month.
+    const budgetedAmount = normalizeIntegerValue(budgetedValue);
+    const spentAmount = normalizeIntegerValue(spentValue);
+    if (Math.abs(spentAmount) > budgetedAmount) {
+      return { color: theme.budgetNumberOverspent };
+    }
+
     return { color: theme.budgetNumberPositive };
   } else {
     const budgetedAmount = normalizeIntegerValue(budgetedValue);
