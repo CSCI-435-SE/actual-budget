@@ -37,12 +37,14 @@ import { format as formatDate } from 'date-fns';
 
 import { isAccountFailedSync } from '#accounts/syncStatus';
 import { AnimatedRefresh } from '#components/AnimatedRefresh';
+import { CharacterCounter } from '#components/common/CharacterCounter';
 import { Search } from '#components/common/Search';
 import { FilterButton } from '#components/filters/FiltersMenu';
 import { FiltersStack } from '#components/filters/FiltersStack';
 import type { SavedFilter } from '#components/filters/SavedFilterMenuButton';
 import { NotesButton } from '#components/NotesButton';
 import { SelectedTransactionsButton } from '#components/transactions/SelectedTransactionsButton';
+import { ACCOUNT_NAME_MAX_LENGTH } from '#components/util/accountValidation';
 import { useDateFormat } from '#hooks/useDateFormat';
 import { useLocale } from '#hooks/useLocale';
 import { useLocalPref } from '#hooks/useLocalPref';
@@ -631,6 +633,7 @@ function AccountNameField({
 }: AccountNameFieldProps) {
   const { t } = useTranslation();
   const [editingName, setEditingName] = useState(false);
+  const [liveName, setLiveName] = useState(accountName);
 
   const handleSave = (newName: string) => {
     onSaveName(newName);
@@ -644,6 +647,8 @@ function AccountNameField({
           <InitialFocus>
             <Input
               defaultValue={accountName}
+              maxLength={ACCOUNT_NAME_MAX_LENGTH}
+              onChangeValue={setLiveName}
               onEnter={handleSave}
               onUpdate={handleSave}
               onEscape={() => setEditingName(false)}
@@ -659,6 +664,10 @@ function AccountNameField({
               }}
             />
           </InitialFocus>
+          <CharacterCounter
+            length={liveName.length}
+            maxLength={ACCOUNT_NAME_MAX_LENGTH}
+          />
           {saveNameError && (
             <View style={{ color: theme.warningText }}>{saveNameError}</View>
           )}
@@ -705,7 +714,10 @@ function AccountNameField({
                 variant="bare"
                 aria-label={t('Edit account name')}
                 className="hover-visible"
-                onPress={() => setEditingName(true)}
+                onPress={() => {
+                  setLiveName(accountName);
+                  setEditingName(true);
+                }}
               >
                 <SvgPencil1
                   style={{

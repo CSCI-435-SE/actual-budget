@@ -22,11 +22,13 @@ import { css, cx } from '@emotion/css';
 
 import { useReopenAccountMutation, useUpdateAccountMutation } from '#accounts';
 import { BalanceHistoryGraph } from '#components/accounts/BalanceHistoryGraph';
+import { CharacterCounter } from '#components/common/CharacterCounter';
 import { Link } from '#components/common/Link';
 import { Notes } from '#components/Notes';
 import { DropHighlight, useDraggable, useDroppable } from '#components/sort';
 import type { OnDragChangeCallback, OnDropCallback } from '#components/sort';
 import { CellValue } from '#components/spreadsheet/CellValue';
+import { ACCOUNT_NAME_MAX_LENGTH } from '#components/util/accountValidation';
 import { useContextMenu } from '#hooks/useContextMenu';
 import { useDragRef } from '#hooks/useDragRef';
 import { useIsTestEnv } from '#hooks/useIsTestEnv';
@@ -117,6 +119,7 @@ export function Account<FieldName extends SheetFields<'account'>>({
   const dispatch = useDispatch();
 
   const [isEditing, setIsEditing] = useState(false);
+  const [liveName, setLiveName] = useState(name);
 
   const accountNote = useNotes(`account-${account?.id}`);
   const isTouchDevice =
@@ -141,7 +144,10 @@ export function Account<FieldName extends SheetFields<'account'>>({
       {
         name: 'account-rename',
         text: t('Rename'),
-        onClick: () => setIsEditing(true),
+        onClick: () => {
+          setLiveName(name);
+          setIsEditing(true);
+        },
       },
       account?.closed
         ? {
@@ -239,6 +245,8 @@ export function Account<FieldName extends SheetFields<'account'>>({
                         padding: 0,
                         width: '100%',
                       }}
+                      maxLength={ACCOUNT_NAME_MAX_LENGTH}
+                      onChangeValue={setLiveName}
                       onBlur={() => setIsEditing(false)}
                       onEnter={newAccountName => {
                         if (newAccountName.trim() !== '') {
@@ -260,7 +268,12 @@ export function Account<FieldName extends SheetFields<'account'>>({
                 )
               }
               right={
-                balanceTestId ? (
+                isEditing ? (
+                  <CharacterCounter
+                    length={liveName.length}
+                    maxLength={ACCOUNT_NAME_MAX_LENGTH}
+                  />
+                ) : balanceTestId ? (
                   <View data-testid={balanceTestId}>{balanceCell}</View>
                 ) : (
                   balanceCell

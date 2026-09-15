@@ -23,7 +23,10 @@ import {
   ModalTitle,
 } from '#components/common/Modal';
 import { Notes } from '#components/Notes';
-import { validateAccountName } from '#components/util/accountValidation';
+import {
+  ACCOUNT_NAME_MAX_LENGTH,
+  validateAccountName,
+} from '#components/util/accountValidation';
 import { useAccount } from '#hooks/useAccount';
 import { useAccounts } from '#hooks/useAccounts';
 import { useNotes } from '#hooks/useNotes';
@@ -131,6 +134,7 @@ export function AccountMenuModal({
                   isEditable
                   title={currentAccountName}
                   onTitleUpdate={onRename}
+                  maxLength={ACCOUNT_NAME_MAX_LENGTH}
                 />
                 {accountNameError && (
                   <View style={{ color: theme.warningText }}>
