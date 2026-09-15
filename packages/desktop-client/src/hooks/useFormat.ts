@@ -12,7 +12,7 @@ import {
   parseNumberFormat,
   setNumberFormat,
 } from '@actual-app/core/shared/util';
-import type { IntegerAmount } from '@actual-app/core/shared/util';
+import type { Amount, IntegerAmount } from '@actual-app/core/shared/util';
 
 import { useSyncedPref } from './useSyncedPref';
 
@@ -31,6 +31,10 @@ export type UseFormatResult = {
     value: string,
     defaultValue?: number | null,
   ) => IntegerAmount | null;
+  /** Scales an `IntegerAmount` down to a decimal `Amount` for the active currency. */
+  toAmount: (value: IntegerAmount) => Amount;
+  /** Scales a decimal `Amount` up to an `IntegerAmount` for the active currency. */
+  fromAmount: (value: Amount) => IntegerAmount;
   currency: Currency;
 };
 
@@ -282,6 +286,8 @@ export function useFormat(): UseFormatResult {
   return Object.assign(formatDisplay, {
     forEdit,
     fromEdit,
+    toAmount,
+    fromAmount,
     currency: activeCurrency,
   });
 }

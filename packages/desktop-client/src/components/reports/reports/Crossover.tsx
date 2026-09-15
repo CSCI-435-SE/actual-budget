@@ -55,6 +55,10 @@ export const defaultTimeFrame = {
   mode: 'full',
 } satisfies TimeFrame;
 
+// Spinner increment for the monthly contribution input, as an IntegerAmount so
+// it scales with the currency: $100 at two decimal places, ¥10,000 at zero.
+const CONTRIBUTION_STEP = 10000;
+
 export function Crossover() {
   const params = useParams();
   const { data: widget, isPending } = useDashboardWidget<CrossoverWidget>({
@@ -994,17 +998,17 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
                       <Input
                         type="number"
                         min={0}
-                        step={100}
+                        step={format.toAmount(CONTRIBUTION_STEP)}
                         value={
                           expectedContribution === null
                             ? ''
-                            : expectedContribution / 100
+                            : format.toAmount(expectedContribution)
                         }
                         onChange={e =>
                           setExpectedContribution(
                             isNaN(e.target.valueAsNumber)
                               ? null
-                              : e.target.valueAsNumber * 100,
+                              : format.fromAmount(e.target.valueAsNumber),
                           )
                         }
                         onBlur={() => {

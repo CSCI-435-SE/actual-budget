@@ -19,7 +19,6 @@ import {
 import { PrivacyFilter } from '#components/PrivacyFilter';
 import { useRechartsAnimation } from '#components/reports/chart-theme';
 import { Container } from '#components/reports/Container';
-import { numberFormatterTooltip } from '#components/reports/numberFormatter';
 import { useFormat } from '#hooks/useFormat';
 
 type PayloadItem = {
@@ -116,7 +115,6 @@ export function BarLineGraph({
               {showTooltip && (
                 <Tooltip
                   content={<CustomTooltip />}
-                  formatter={numberFormatterTooltip}
                   isAnimationActive={false}
                 />
               )}
