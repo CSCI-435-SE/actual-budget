@@ -197,12 +197,6 @@ export function ExperimentalFeatures() {
               <Trans>Excel formula mode (Formula cards & Rule formulas)</Trans>
             </FeatureToggle>
             <FeatureToggle
-              flag="currency"
-              feedbackLink="https://github.com/actualbudget/actual/issues/5191"
-            >
-              <Trans>Currency support</Trans>
-            </FeatureToggle>
-            <FeatureToggle
               flag="mobileCalculator"
               feedbackLink="https://github.com/actualbudget/actual/issues/8255"
             >

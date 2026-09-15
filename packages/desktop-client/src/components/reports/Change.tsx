@@ -31,8 +31,7 @@ export function Change({
         ...style,
       }}
     >
-      {amount >= 0 ? '+' : ''}
-      {format(amount, 'financial')}
+      {format(amount, 'financial-with-sign')}
     </FinancialText>
   );
 }

@@ -13,16 +13,14 @@ import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import {
-  amountToCurrency,
-  appendDecimals,
-  currencyToAmount,
+  getNumberFormat,
   reapplyThousandSeparators,
 } from '@actual-app/core/shared/util';
 import { css } from '@emotion/css';
 
 import { makeAmountFullStyle } from '#components/budget/util';
+import { useFormat } from '#hooks/useFormat';
 import { useMergedRefs } from '#hooks/useMergedRefs';
-import { useSyncedPref } from '#hooks/useSyncedPref';
 
 type AmountInputProps = {
   value: number;
@@ -48,7 +46,7 @@ const AmountInput = memo(function AmountInput({
   const [text, setText] = useState('');
   const [value, setValue] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [hideFraction] = useSyncedPref('hideFraction');
+  const format = useFormat();
 
   const mergedInputRef = useMergedRefs<HTMLInputElement>(
     props.inputRef,
@@ -85,7 +83,10 @@ const AmountInput = memo(function AmountInput({
   // can see stale `text=''` and save 0 instead of the typed amount.
   const applyText = (rawInput?: string) => {
     const domText = rawInput ?? inputRef.current?.value ?? text;
-    const parsed = currencyToAmount(domText) || 0;
+    // `value` and `props.value` are decimal `Amount`s, so parse to an
+    // `IntegerAmount` and scale back down — this also quantizes the input to
+    // the active currency's precision.
+    const parsed = format.toAmount(format.fromEdit(domText) ?? 0);
     const hasPendingInput = domText !== '' || editing;
     const newValue = hasPendingInput ? parsed : value;
 
@@ -116,9 +117,36 @@ const AmountInput = memo(function AmountInput({
     }
   };
 
+  // Keypad semantics: digits shift in from the right, so at two decimal places
+  // "1" becomes 0.01 and "123" becomes 1.23. `appendDecimals` hardcodes two
+  // decimals, so the shift is done here against the active currency instead.
+  const appendCurrencyDecimals = (amountText: string) => {
+    const { decimalSeparator } = getNumberFormat();
+    const decimalPlaces = format.hideFraction
+      ? 0
+      : format.currency.decimalPlaces;
+
+    let result = amountText;
+    if (result.slice(-1) === decimalSeparator) {
+      result = result.slice(0, -1);
+    }
+
+    if (decimalPlaces > 0) {
+      result = result.replaceAll(/[,.]/g, '');
+      result = result.replace(/^0+(?!$)/, '');
+      result = result.padStart(decimalPlaces + 1, '0');
+      result =
+        result.slice(0, -decimalPlaces) +
+        decimalSeparator +
+        result.slice(-decimalPlaces);
+    }
+
+    return format.forEdit(format.fromEdit(result) ?? 0);
+  };
+
   const onChangeText = (text: string) => {
     text = reapplyThousandSeparators(text);
-    text = appendDecimals(text, String(hideFraction) === 'true');
+    text = appendCurrencyDecimals(text);
     setEditing(true);
     setText(text);
     props.onChangeValue?.(text);
@@ -161,7 +189,9 @@ const AmountInput = memo(function AmountInput({
         }}
         data-testid="amount-input-text"
       >
-        {editing ? text || amountToCurrency(0) : amountToCurrency(value)}
+        {editing
+          ? text || format(0, 'financial')
+          : format(format.fromAmount(value), 'financial')}
       </Text>
     </View>
   );
@@ -194,6 +224,7 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
   onChangeValue,
   ...props
 }: FocusableAmountInputProps) {
+  const format = useFormat();
   const [isNegative, setIsNegative] = useState(true);
   const [liveValue, setLiveValue] = useState(Math.abs(value));
 
@@ -207,7 +238,7 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
   };
 
   const handleChangeValue = (text: string) => {
-    setLiveValue(currencyToAmount(text) || 0);
+    setLiveValue(format.toAmount(format.fromEdit(text) ?? 0));
     onChangeValue?.(text);
   };
 
@@ -308,7 +339,7 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
                 ...textStyle,
               }}
             >
-              {amountToCurrency(Math.abs(value))}
+              {format(format.fromAmount(Math.abs(value)), 'financial')}
             </Text>
           </View>
         </Button>

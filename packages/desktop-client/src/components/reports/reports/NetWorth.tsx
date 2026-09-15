@@ -135,7 +135,6 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
         locale,
         interval,
         firstDayOfWeekIdx,
-        format,
       ),
     [
       start,
@@ -146,7 +145,6 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
       locale,
       interval,
       firstDayOfWeekIdx,
-      format,
     ],
   );
   const data = useReport('net_worth', reportParams);

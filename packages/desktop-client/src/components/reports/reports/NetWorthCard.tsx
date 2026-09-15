@@ -82,7 +82,6 @@ export function NetWorthCard({
         locale,
         meta?.interval || 'Monthly',
         firstDayOfWeekIdx,
-        format,
       ),
     [
       start,
@@ -93,7 +92,6 @@ export function NetWorthCard({
       locale,
       meta?.interval,
       firstDayOfWeekIdx,
-      format,
     ],
   );
   const data = useReport('net_worth', params);

@@ -2,10 +2,10 @@ import type { FocusEvent, ReactNode } from 'react';
 import { memo, useEffect, useState } from 'react';
 
 import { styles } from '@actual-app/components/styles';
-import { amountToInteger, integerToAmount } from '@actual-app/core/shared/util';
 
 import { AmountInput as LegacyAmountInput } from '#components/util/AmountInput';
 import { useFeatureFlag } from '#hooks/useFeatureFlag';
+import { useFormat } from '#hooks/useFormat';
 import { useSyncedPref } from '#hooks/useSyncedPref';
 
 import { CalculatorAmountInput } from './CalculatorAmountInput';
@@ -35,6 +35,7 @@ export const SplitAmountInput = memo(function SplitAmountInput({
 }: SplitAmountInputProps) {
   const mobileCalculatorEnabled = useFeatureFlag('mobileCalculator');
   const [hideFraction] = useSyncedPref('hideFraction');
+  const format = useFormat();
   const [focused, setFocused] = useState(autoFocus);
 
   useEffect(() => {
@@ -85,13 +86,13 @@ export const SplitAmountInput = memo(function SplitAmountInput({
         onFocus?.(event);
       }}
       onUpdate={amount => {
-        const nextAmount = integerToAmount(amount);
+        const nextAmount = format.toAmount(amount);
         if (nextAmount !== value) {
           onChange?.(nextAmount);
         }
       }}
       style={{ marginRight: 8 }}
-      value={amountToInteger(value)}
+      value={format.fromAmount(value)}
       zeroSign={negate ? '-' : '+'}
     />
   );

@@ -19,6 +19,7 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { saveSyncedPrefs } from '#prefs/prefsSlice';
 import { useDispatch } from '#redux';
 
+import { CurrencyFormatSettings } from './Currency';
 import { Column, Setting } from './UI';
 
 const dateFormats: { value: SyncedPrefs['dateFormat']; label: string }[] = [
@@ -55,74 +56,80 @@ export function FormatSettings() {
   return (
     <Setting
       primaryAction={
-        <View
-          style={{
-            flexDirection: 'column',
-            gap: '1em',
-            width: '100%',
-            [`@media (min-width: ${
-              sidebar.floating
-                ? tokens.breakpoint_small
-                : tokens.breakpoint_medium
-            })`]: {
-              flexDirection: 'row',
-            },
-          }}
-        >
-          <Column title={t('Numbers')}>
-            <Select
-              key={String(hideFraction)} // needed because label does not update
-              value={numberFormat}
-              onChange={format => {
-                void dispatch(
-                  saveSyncedPrefs({ prefs: { numberFormat: format } }),
-                );
-              }}
-              options={numberFormats.map(f => [
-                f.value,
-                String(hideFraction) === 'true' ? f.labelNoFraction : f.label,
-              ])}
-              className={selectButtonClassName}
-            />
+        <View style={{ flexDirection: 'column', gap: '1.5em', width: '100%' }}>
+          <CurrencyFormatSettings />
 
-            <Text style={{ display: 'flex' }}>
-              <Checkbox
-                id="settings-textDecimal"
-                checked={String(hideFraction) === 'true'}
-                onChange={e =>
-                  setHideFractionPref(String(e.currentTarget.checked))
-                }
+          <View
+            style={{
+              flexDirection: 'column',
+              gap: '1em',
+              width: '100%',
+              [`@media (min-width: ${
+                sidebar.floating
+                  ? tokens.breakpoint_small
+                  : tokens.breakpoint_medium
+              })`]: {
+                flexDirection: 'row',
+              },
+            }}
+          >
+            <Column title={t('Numbers')}>
+              <Select
+                key={String(hideFraction)} // needed because label does not update
+                value={numberFormat}
+                onChange={format => {
+                  void dispatch(
+                    saveSyncedPrefs({ prefs: { numberFormat: format } }),
+                  );
+                }}
+                options={numberFormats.map(f => [
+                  f.value,
+                  String(hideFraction) === 'true' ? f.labelNoFraction : f.label,
+                ])}
+                className={selectButtonClassName}
               />
-              <label htmlFor="settings-textDecimal">
-                <Trans>Hide decimal places</Trans>
-              </label>
-            </Text>
-          </Column>
 
-          <Column title={t('Dates')}>
-            <Select
-              value={dateFormat}
-              onChange={format => setDateFormatPref(format)}
-              options={dateFormats.map(f => [f.value, f.label])}
-              className={selectButtonClassName}
-            />
-          </Column>
+              <Text style={{ display: 'flex' }}>
+                <Checkbox
+                  id="settings-textDecimal"
+                  checked={String(hideFraction) === 'true'}
+                  onChange={e =>
+                    setHideFractionPref(String(e.currentTarget.checked))
+                  }
+                />
+                <label htmlFor="settings-textDecimal">
+                  <Trans>Hide decimal places</Trans>
+                </label>
+              </Text>
+            </Column>
 
-          <Column title={t('First day of the week')}>
-            <Select
-              value={firstDayOfWeekIdx}
-              onChange={idx => setFirstDayOfWeekIdxPref(idx)}
-              options={Object.entries(daysOfWeek)}
-              className={selectButtonClassName}
-            />
-          </Column>
+            <Column title={t('Dates')}>
+              <Select
+                value={dateFormat}
+                onChange={format => setDateFormatPref(format)}
+                options={dateFormats.map(f => [f.value, f.label])}
+                className={selectButtonClassName}
+              />
+            </Column>
+
+            <Column title={t('First day of the week')}>
+              <Select
+                value={firstDayOfWeekIdx}
+                onChange={idx => setFirstDayOfWeekIdxPref(idx)}
+                options={Object.entries(daysOfWeek)}
+                className={selectButtonClassName}
+              />
+            </Column>
+          </View>
         </View>
       }
     >
       <Text>
         <Trans>
           <strong>Formatting</strong> does not affect how budget data is stored,
-          and can be changed at any time.
+          and can be changed at any time. Picking a currency also sets the
+          number format and whether fractions are shown, which you can then
+          adjust below.
         </Trans>
       </Text>
     </Setting>

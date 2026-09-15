@@ -1,18 +1,10 @@
-import React from 'react';
-import type { JSX } from 'react';
-
-import { AlignedText } from '@actual-app/components/aligned-text';
 import { send } from '@actual-app/core/platform/client/connection';
 import * as monthUtils from '@actual-app/core/shared/months';
 import { q } from '@actual-app/core/shared/query';
 import type { RuleConditionEntity } from '@actual-app/core/types/models';
-import type { Locale } from 'date-fns';
 import * as d from 'date-fns';
-import { t } from 'i18next';
 
-import { FinancialText } from '#components/FinancialText';
 import { indexCashFlow, runAll } from '#components/reports/util';
-import type { FormatType } from '#hooks/useFormat';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 
 export function simpleCashFlow(
@@ -77,8 +69,6 @@ export function cashFlowByDate(
   isConcise: boolean,
   conditions: RuleConditionEntity[] = [],
   conditionsOp: 'and' | 'or',
-  locale: Locale,
-  format: (value: unknown, type?: FormatType) => string,
 ) {
   const start = monthUtils.firstDayOfMonth(startMonth);
   const end = monthUtils.lastDayOfMonth(endMonth);
@@ -139,7 +129,7 @@ export function cashFlowByDate(
         makeQuery().filter({ amount: { $lt: 0 } }),
       ],
       data => {
-        setData(recalculate(data, start, fixedEnd, isConcise, locale, format));
+        setData(recalculate(data, start, fixedEnd, isConcise));
       },
     );
   };
@@ -154,8 +144,6 @@ function recalculate(
   start: string,
   end: string,
   isConcise: boolean,
-  locale: Locale,
-  format: (value: unknown, type?: FormatType) => string,
 ) {
   const [startingBalance, income, expense] = data;
   const convIncome = income.map(trans => {
@@ -185,7 +173,6 @@ function recalculate(
     balances: Array<{
       x: Date;
       y: number;
-      premadeLabel: JSX.Element;
       amount: number;
     }>;
   }>(
@@ -210,56 +197,6 @@ function recalculate(
       totalTransfers += creditTransfers + debitTransfers;
       const x = d.parseISO(date);
 
-      const label = (
-        <div>
-          <div style={{ marginBottom: 10 }}>
-            <strong>
-              {d.format(x, isConcise ? 'MMMM yyyy' : 'MMMM d, yyyy', {
-                locale,
-              })}
-            </strong>
-          </div>
-          <div style={{ lineHeight: 1.5 }}>
-            <AlignedText
-              left={t('Income:')}
-              right={
-                <FinancialText>{format(income, 'financial')}</FinancialText>
-              }
-            />
-            <AlignedText
-              left={t('Expenses:')}
-              right={
-                <FinancialText>{format(expense, 'financial')}</FinancialText>
-              }
-            />
-            <AlignedText
-              left={t('Change:')}
-              right={
-                <FinancialText as="strong">
-                  {format(income + expense, 'financial')}
-                </FinancialText>
-              }
-            />
-            {creditTransfers + debitTransfers !== 0 && (
-              <AlignedText
-                left={t('Transfers:')}
-                right={
-                  <FinancialText>
-                    {format(creditTransfers + debitTransfers, 'financial')}
-                  </FinancialText>
-                }
-              />
-            )}
-            <AlignedText
-              left={t('Balance:')}
-              right={
-                <FinancialText>{format(balance, 'financial')}</FinancialText>
-              }
-            />
-          </div>
-        </div>
-      );
-
       res.income.push({ x, y: income });
       res.expenses.push({ x, y: expense });
       res.transfers.push({
@@ -269,7 +206,6 @@ function recalculate(
       res.balances.push({
         x,
         y: balance,
-        premadeLabel: label,
         amount: balance,
       });
       return res;

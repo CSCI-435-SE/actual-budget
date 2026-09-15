@@ -10,7 +10,6 @@ import type { Locale } from 'date-fns';
 import { keyBy } from 'es-toolkit';
 
 import { ReportOptions } from '#components/reports/ReportOptions';
-import type { FormatType } from '#hooks/useFormat';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 import { aqlQuery } from '#queries/aqlQuery';
 
@@ -28,7 +27,6 @@ export function createSpreadsheet(
   locale: Locale,
   interval: string = 'Monthly',
   firstDayOfWeekIdx: string = '0',
-  format: (value: unknown, type?: FormatType) => string,
 ) {
   return async (
     spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -177,7 +175,6 @@ export function createSpreadsheet(
         locale,
         interval,
         firstDayOfWeekIdx,
-        format,
       ),
     );
   };
@@ -195,7 +192,6 @@ function recalculate(
   locale: Locale,
   interval: string = 'Monthly',
   firstDayOfWeekIdx: string = '0',
-  format: (value: unknown, type?: FormatType) => string,
 ) {
   // Get intervals using the same pattern as other working spreadsheets
   const intervals =
@@ -235,10 +231,10 @@ function recalculate(
     Array<{
       x: string;
       y: number;
-      assets: string;
-      debt: string;
-      change: string;
-      networth: string;
+      assets: number;
+      debt: number;
+      change: number;
+      networth: number;
       date: string;
     }>
   >((arr, intervalItem, idx) => {
@@ -297,10 +293,10 @@ function recalculate(
     const graphPoint = {
       x: d.format(x, displayFormat, { locale }),
       y: total,
-      assets: format(assets, 'financial'),
-      debt: `-${format(debt, 'financial')}`,
-      change: format(change, 'financial'),
-      networth: format(total, 'financial'),
+      assets,
+      debt: -debt,
+      change,
+      networth: total,
       date: d.format(x, tooltipFormat, { locale }),
       ...balances,
     };

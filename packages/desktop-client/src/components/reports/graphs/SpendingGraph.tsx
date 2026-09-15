@@ -19,7 +19,6 @@ import {
 import { FinancialText } from '#components/FinancialText';
 import { useRechartsAnimation } from '#components/reports/chart-theme';
 import { Container } from '#components/reports/Container';
-import { numberFormatterTooltip } from '#components/reports/numberFormatter';
 import { useFormat } from '#hooks/useFormat';
 import type { FormatType } from '#hooks/useFormat';
 import { usePrivacyMode } from '#hooks/usePrivacyMode';
@@ -278,7 +277,6 @@ export function SpendingGraph({
                     format={format}
                   />
                 }
-                formatter={numberFormatterTooltip}
                 isAnimationActive={false}
               />
               <defs>

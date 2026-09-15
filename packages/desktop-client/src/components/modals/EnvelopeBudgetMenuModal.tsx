@@ -12,7 +12,6 @@ import { styles } from '@actual-app/components/styles';
 import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
-import { amountToInteger, integerToAmount } from '@actual-app/core/shared/util';
 import { t } from 'i18next';
 
 import { BudgetMenu } from '#components/budget/envelope/BudgetMenu';
@@ -27,6 +26,7 @@ import { AmountInput } from '#components/mobile/transactions/AmountInput';
 import { Notes } from '#components/Notes';
 import { useCategory } from '#hooks/useCategory';
 import { useFeatureFlag } from '#hooks/useFeatureFlag';
+import { useFormat } from '#hooks/useFormat';
 import { useNotes } from '#hooks/useNotes';
 import type { Modal as ModalType } from '#modals/modalsSlice';
 import { envelopeBudget } from '#spreadsheet/bindings';
@@ -45,6 +45,8 @@ export function EnvelopeBudgetMenuModal({
   onEditNotes,
   month,
 }: EnvelopeBudgetMenuModalProps) {
+  const format = useFormat();
+
   const buttonStyle: CSSProperties = {
     ...styles.mediumText,
     height: styles.mobileMinHeight,
@@ -69,7 +71,7 @@ export function EnvelopeBudgetMenuModal({
   const notesId = category ? `${category.id}-${month}` : '';
   const originalNotes = useNotes(notesId) ?? '';
   const _onUpdateBudget = (amount: number) => {
-    onUpdateBudget?.(amountToInteger(amount));
+    onUpdateBudget?.(format.fromAmount(amount));
   };
 
   const [showMore, setShowMore] = useState(false);
@@ -116,7 +118,7 @@ export function EnvelopeBudgetMenuModal({
               <Trans>Budgeted</Trans>
             </Text>
             <AmountInput
-              value={integerToAmount(budgeted || 0)}
+              value={format.toAmount(budgeted || 0)}
               onEnter={() => state.close()}
               onChange={_onUpdateBudget}
               data-testid="budget-amount"

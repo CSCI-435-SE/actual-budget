@@ -12,10 +12,10 @@ import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 import { isIOS } from '@actual-app/core/shared/platform';
-import { amountToCurrency } from '@actual-app/core/shared/util';
 import { css, cx } from '@emotion/css';
 
 import { makeAmountFullStyle } from '#components/budget/util';
+import { useFormat } from '#hooks/useFormat';
 
 import { CalculatorKeyboard } from './CalculatorKeyboard';
 
@@ -80,10 +80,19 @@ export const CalculatorAmountInput = memo(function CalculatorAmountInput({
   keyboardHeader,
   ...props
 }: CalculatorAmountInputProps) {
+  const format = useFormat();
   const internalInputRef = useRef<HTMLInputElement>(null);
   const inputRef = props.inputRef ?? internalInputRef;
   const [iosInitialInteraction, setIosInitialInteraction] = useState(
     isIOS ? !(autoFocusIndirect && value === 0) : true,
+  );
+
+  // `value` is a decimal `Amount`; the input holds an arithmetic expression, so
+  // it is formatted without a currency symbol.
+  const formatAmount = useCallback(
+    (amount: number) =>
+      amount === 0 ? '' : format.forEdit(format.fromAmount(amount)),
+    [format],
   );
 
   const [liveValue, setLiveValue] = useState(() => value);
@@ -130,7 +139,15 @@ export const CalculatorAmountInput = memo(function CalculatorAmountInput({
     }, 0);
 
     setFocused(true);
-  }, [inputRef, setExpression, negate, isNegative, value, setFocused]);
+  }, [
+    inputRef,
+    setExpression,
+    negate,
+    isNegative,
+    value,
+    setFocused,
+    formatAmount,
+  ]);
 
   const onInputBlur = useCallback(() => {
     if (isKeepingFocusRef.current) {
@@ -145,14 +162,14 @@ export const CalculatorAmountInput = memo(function CalculatorAmountInput({
     }
     onChange?.(liveValue);
     return true;
-  }, [setExpression, value, liveValue, onChange, inputRef]);
+  }, [setExpression, value, liveValue, onChange, inputRef, formatAmount]);
 
   const onChangeAmount = useCallback(
     (amount: number) => {
       setLiveValue(amount);
       setExpression(formatAmount(negate ? Math.abs(amount) : amount));
     },
-    [setExpression, setLiveValue, negate],
+    [setExpression, setLiveValue, negate, formatAmount],
   );
 
   const onChangeExpression = useCallback(
@@ -272,10 +289,6 @@ export const CalculatorAmountInput = memo(function CalculatorAmountInput({
     </>
   );
 });
-
-function formatAmount(value: number) {
-  return value === 0 ? '' : amountToCurrency(value);
-}
 
 function isNegativeAmount(value: number) {
   return value < 0 || Object.is(value, -0);
