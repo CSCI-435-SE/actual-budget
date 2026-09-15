@@ -5,6 +5,8 @@ import { debounce } from 'es-toolkit/compat';
 
 import * as queries from '#queries';
 
+import { useFormat } from './useFormat';
+
 type UseTransactionsSearchProps = {
   updateQuery: (updateFn: (searchQuery: Query) => Query) => void;
   resetQuery: () => void;
@@ -23,6 +25,7 @@ export function useTransactionsSearch({
   delayMs = 150,
 }: UseTransactionsSearchProps): UseTransactionsSearchResult {
   const [isSearching, setIsSearching] = useState(false);
+  const { currency } = useFormat();
 
   const updateQueryRef = useRef(updateQuery);
   updateQueryRef.current = updateQuery;
@@ -39,12 +42,17 @@ export function useTransactionsSearch({
         } else if (searchText) {
           resetQueryRef.current?.();
           updateQueryRef.current(previousQuery =>
-            queries.transactionsSearch(previousQuery, searchText, dateFormat),
+            queries.transactionsSearch(
+              previousQuery,
+              searchText,
+              dateFormat,
+              currency.decimalPlaces,
+            ),
           );
           setIsSearching(true);
         }
       }, delayMs),
-    [dateFormat, delayMs],
+    [dateFormat, delayMs, currency.decimalPlaces],
   );
 
   useEffect(() => {

@@ -16,6 +16,7 @@ import {
   YAxis,
 } from 'recharts';
 
+import { FinancialText } from '#components/FinancialText';
 import { PrivacyFilter } from '#components/PrivacyFilter';
 import { useRechartsAnimation } from '#components/reports/chart-theme';
 import { Container } from '#components/reports/Container';
@@ -24,10 +25,10 @@ import { useFormat } from '#hooks/useFormat';
 type PayloadItem = {
   payload: {
     date: string;
-    assets: number | string;
-    debt: number | string;
-    networth: number | string;
-    change: number | string;
+    assets: number;
+    debt: number;
+    networth: number;
+    change: number;
   };
 };
 
@@ -38,6 +39,7 @@ type CustomTooltipProps = {
 
 const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   const { t } = useTranslation();
+  const format = useFormat();
 
   if (active && payload && payload.length) {
     return (
@@ -60,12 +62,27 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
             <PrivacyFilter>
               <AlignedText
                 left={t('Assets:')}
-                right={payload[0].payload.assets}
+                right={
+                  <FinancialText>
+                    {format(payload[0].payload.assets, 'financial')}
+                  </FinancialText>
+                }
               />
-              <AlignedText left={t('Debt:')} right={payload[0].payload.debt} />
+              <AlignedText
+                left={t('Debt:')}
+                right={
+                  <FinancialText>
+                    {format(payload[0].payload.debt, 'financial')}
+                  </FinancialText>
+                }
+              />
               <AlignedText
                 left={t('Change:')}
-                right={<strong>{payload[0].payload.change}</strong>}
+                right={
+                  <FinancialText as="strong">
+                    {format(payload[0].payload.change, 'financial')}
+                  </FinancialText>
+                }
               />
             </PrivacyFilter>
           </div>

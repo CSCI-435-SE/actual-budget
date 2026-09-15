@@ -59,11 +59,7 @@ import {
   ungroupTransactions,
   updateTransaction,
 } from '@actual-app/core/shared/transactions';
-import {
-  amountToCurrency,
-  currencyToAmount,
-  titleFirst,
-} from '@actual-app/core/shared/util';
+import { titleFirst } from '@actual-app/core/shared/util';
 import type { IntegerAmount } from '@actual-app/core/shared/util';
 import type {
   AccountEntity,
@@ -979,7 +975,7 @@ const Transaction = memo(function Transaction({
   const [prevShowZero, setPrevShowZero] = useState(showZeroInDeposit);
   const [prevTransaction, setPrevTransaction] = useState(originalTransaction);
   const [transaction, setTransaction] = useState(() =>
-    serializeTransaction(originalTransaction, showZeroInDeposit),
+    serializeTransaction(originalTransaction, format, showZeroInDeposit),
   );
   const isPreview = isPreviewId(transaction.id);
 
@@ -988,7 +984,7 @@ const Transaction = memo(function Transaction({
     showZeroInDeposit !== prevShowZero
   ) {
     setTransaction(
-      serializeTransaction(originalTransaction, showZeroInDeposit),
+      serializeTransaction(originalTransaction, format, showZeroInDeposit),
     );
     setPrevTransaction(originalTransaction);
     setPrevShowZero(showZeroInDeposit);
@@ -1135,10 +1131,13 @@ const Transaction = memo(function Transaction({
       const deserialized = deserializeTransaction(
         newTransaction,
         originalTransaction,
+        format,
       );
       // Run the transaction through the formatting so that we know
       // it's always showing the formatted result
-      setTransaction(serializeTransaction(deserialized, showZeroInDeposit));
+      setTransaction(
+        serializeTransaction(deserialized, format, showZeroInDeposit),
+      );
 
       const deserializedName = ['credit', 'debit'].includes(name)
         ? 'amount'
@@ -1781,10 +1780,10 @@ const Transaction = memo(function Transaction({
           name="debit"
           exposed={focusedField === 'debit'}
           focused={focusedField === 'debit'}
-          value={debit === '' && credit === '' ? amountToCurrency(0) : debit}
+          value={debit === '' && credit === '' ? format.forEdit(0) : debit}
           formatter={value =>
             // reformat value so since we might have kept decimals
-            value ? amountToCurrency(currencyToAmount(value) || 0) : ''
+            value ? format.forEdit(format.fromEdit(value) ?? 0) : ''
           }
           valueStyle={valueStyle}
           textAlign="right"
@@ -1796,7 +1795,7 @@ const Transaction = memo(function Transaction({
             ...amountStyle,
           }}
           inputProps={{
-            value: debit === '' && credit === '' ? amountToCurrency(0) : debit,
+            value: debit === '' && credit === '' ? format.forEdit(0) : debit,
             onUpdate: onUpdate.bind(null, 'debit'),
             'data-1p-ignore': true,
           }}
@@ -1815,7 +1814,7 @@ const Transaction = memo(function Transaction({
           value={credit}
           formatter={value =>
             // reformat value so since we might have kept decimals
-            value ? amountToCurrency(currencyToAmount(value) || 0) : ''
+            value ? format.forEdit(format.fromEdit(value) ?? 0) : ''
           }
           valueStyle={valueStyle}
           textAlign="right"

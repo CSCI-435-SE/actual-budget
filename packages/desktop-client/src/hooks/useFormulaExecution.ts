@@ -24,6 +24,7 @@ import {
 import { calculateTimeRange } from '#components/reports/reportRanges';
 import { bootstrapHyperFormula } from '#util/bootstrapHyperFormula';
 
+import { useFormat } from './useFormat';
 import { useGlobalPref } from './useGlobalPref';
 import { useLocale } from './useLocale';
 
@@ -135,6 +136,8 @@ export function useFormulaExecution(
   namedExpressions?: Record<string, number | string>,
 ) {
   const locale = useLocale();
+  const { currency } = useFormat();
+  const decimalPlaces = currency.decimalPlaces;
   const [language] = useGlobalPref('language');
   const [result, setResult] = useState<number | string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -179,7 +182,11 @@ export function useFormulaExecution(
           throwOnCellError: false,
         });
 
-        await prefetchFormulaQueries(formulaQueryContext, queries);
+        await prefetchFormulaQueries(
+          formulaQueryContext,
+          queries,
+          decimalPlaces,
+        );
 
         formulaQueryContext.budgetQueryRequests.clear();
         evaluateFormulaWithContext({
@@ -190,7 +197,7 @@ export function useFormulaExecution(
           throwOnCellError: false,
         });
 
-        await prefetchBudgetQueries(formulaQueryContext);
+        await prefetchBudgetQueries(formulaQueryContext, decimalPlaces);
 
         const cellValue = evaluateFormulaWithContext({
           formula,
@@ -220,7 +227,15 @@ export function useFormulaExecution(
     return () => {
       cancelled = true;
     };
-  }, [formula, queriesVersion, locale, language, queries, namedExpressions]);
+  }, [
+    formula,
+    queriesVersion,
+    locale,
+    language,
+    queries,
+    namedExpressions,
+    decimalPlaces,
+  ]);
 
   return { result, isLoading, error };
 }
@@ -228,6 +243,7 @@ export function useFormulaExecution(
 async function prefetchFormulaQueries(
   formulaQueryContext: Required<FormulaQueryContext>,
   queries: QueriesMap,
+  decimalPlaces: number,
 ) {
   for (const queryName of formulaQueryContext.queryNames) {
     const queryConfig = queries[queryName];
@@ -241,7 +257,7 @@ async function prefetchFormulaQueries(
     const data = await fetchQuerySum(queryConfig);
     formulaQueryContext.querySumPrefetch.set(
       queryName,
-      integerToAmount(data, 2),
+      integerToAmount(data, decimalPlaces),
     );
   }
 
@@ -284,6 +300,7 @@ async function prefetchFormulaQueries(
 
 async function prefetchBudgetQueries(
   formulaQueryContext: Required<FormulaQueryContext>,
+  decimalPlaces: number,
 ) {
   for (const request of formulaQueryContext.budgetQueryRequests.values()) {
     const key = createBudgetQueryPrefetchKey(request);
@@ -296,6 +313,7 @@ async function prefetchBudgetQueries(
           request.categoryIds,
           request.startMonth,
           request.endMonth,
+          decimalPlaces,
         ),
       );
       formulaQueryContext.budgetQueryErrors.delete(key);
@@ -551,6 +569,7 @@ async function fetchBudgetDimensionValueDirect(
   categoryIds: string[],
   startMonth: string,
   endMonth: string,
+  decimalPlaces: number,
 ): Promise<number> {
   const allowed = new Set([
     'budgeted',
@@ -579,15 +598,18 @@ async function fetchBudgetDimensionValueDirect(
   };
 
   if (dim === 'budgeted') {
-    return integerToAmount(await sumDimension('budget-{catId}'), 2);
+    return integerToAmount(await sumDimension('budget-{catId}'), decimalPlaces);
   }
 
   if (dim === 'spent') {
-    return integerToAmount(await sumDimension('sum-amount-{catId}'), 2);
+    return integerToAmount(
+      await sumDimension('sum-amount-{catId}'),
+      decimalPlaces,
+    );
   }
 
   if (dim === 'goal') {
-    return integerToAmount(await sumDimension('goal-{catId}'), 2);
+    return integerToAmount(await sumDimension('goal-{catId}'), decimalPlaces);
   }
 
   // Handle balance dimensions: chain month-by-month with carryover logic
@@ -646,11 +668,11 @@ async function fetchBudgetDimensionValueDirect(
     }
 
     if (dim === 'balance_start') {
-      return integerToAmount(balances[intervals[0]]?.start || 0, 2);
+      return integerToAmount(balances[intervals[0]]?.start || 0, decimalPlaces);
     }
     return integerToAmount(
       balances[intervals[intervals.length - 1]]?.end || 0,
-      2,
+      decimalPlaces,
     );
   }
 

@@ -24,9 +24,18 @@ export type FormatType =
   | 'financial-with-sign'
   | 'financial-no-decimals';
 
+export type ForEditOptions = {
+  /**
+   * Format with the currency's full precision even when the `hideFraction`
+   * pref is on. Used where the formatted string is parsed back into an
+   * `IntegerAmount` later, so dropping the fraction would lose data.
+   */
+  keepFraction?: boolean;
+};
+
 export type UseFormatResult = {
   (value: unknown, type?: FormatType): string;
-  forEdit: (value: IntegerAmount) => string;
+  forEdit: (value: IntegerAmount, options?: ForEditOptions) => string;
   fromEdit: (
     value: string,
     defaultValue?: number | null,
@@ -36,6 +45,8 @@ export type UseFormatResult = {
   /** Scales a decimal `Amount` up to an `IntegerAmount` for the active currency. */
   fromAmount: (value: Amount) => IntegerAmount;
   currency: Currency;
+  /** Whether the `hideFraction` pref is on, so callers don't re-read it. */
+  hideFraction: boolean;
 };
 
 export type FormatResult = {
@@ -232,10 +243,12 @@ export function useFormat(): UseFormatResult {
   );
 
   const forEdit = useCallback(
-    (value: IntegerAmount) => {
+    (value: IntegerAmount, options?: ForEditOptions) => {
       const amount = toAmount(value);
       const decimalPlaces =
-        hideFractionPref === 'true' ? 0 : activeCurrency.decimalPlaces;
+        hideFractionPref === 'true' && !options?.keepFraction
+          ? 0
+          : activeCurrency.decimalPlaces;
       const editFormatter = getNumberFormat({
         format: numberFormatConfig.format,
         decimalPlaces,
@@ -289,5 +302,6 @@ export function useFormat(): UseFormatResult {
     toAmount,
     fromAmount,
     currency: activeCurrency,
+    hideFraction: hideFractionPref === 'true',
   });
 }

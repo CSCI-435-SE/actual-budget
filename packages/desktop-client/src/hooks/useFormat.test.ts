@@ -142,6 +142,46 @@ describe('useFormat amount scaling', () => {
   });
 });
 
+describe('useFormat forEdit keepFraction', () => {
+  it('keeps the currency decimals when fractions are hidden', () => {
+    const format = renderFormat({
+      defaultCurrencyCode: 'USD',
+      hideFraction: 'true',
+    });
+    expect(format.forEdit(1234)).toBe('12');
+    expect(format.forEdit(1234, { keepFraction: true })).toBe('12.34');
+  });
+
+  it('is a no-op when fractions are already shown', () => {
+    const format = renderFormat({ defaultCurrencyCode: 'USD' });
+    expect(format.forEdit(1234)).toBe('12.34');
+    expect(format.forEdit(1234, { keepFraction: true })).toBe('12.34');
+  });
+
+  it('adds no fraction to a zero-decimal currency', () => {
+    const format = renderFormat({ defaultCurrencyCode: 'JPY' });
+    expect(format.forEdit(1234, { keepFraction: true })).toBe('1,234');
+  });
+
+  it('survives a round-trip that would otherwise truncate', () => {
+    const format = renderFormat({
+      defaultCurrencyCode: 'USD',
+      hideFraction: 'true',
+    });
+    expect(format.fromEdit(format.forEdit(1234))).toBe(1200);
+    expect(format.fromEdit(format.forEdit(1234, { keepFraction: true }))).toBe(
+      1234,
+    );
+  });
+});
+
+describe('useFormat hideFraction', () => {
+  it('reports the pref', () => {
+    expect(renderFormat({}).hideFraction).toBe(false);
+    expect(renderFormat({ hideFraction: 'true' }).hideFraction).toBe(true);
+  });
+});
+
 describe('useFormat with a zero-decimal currency (JPY)', () => {
   it('displays no fraction', () => {
     const format = renderFormat({ defaultCurrencyCode: 'JPY' });
