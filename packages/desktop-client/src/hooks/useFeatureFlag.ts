@@ -7,7 +7,6 @@ const DEFAULT_FEATURE_FLAG_STATE: Record<FeatureFlag, boolean> = {
   goalTemplatesUIEnabled: false,
   actionTemplating: false,
   formulaMode: false,
-  currency: false,
   ageOfMoneyReport: false,
   balanceForecastReport: false,
   customThemes: false,

@@ -140,9 +140,7 @@ export function SpendingCard({
               >
                 <PrivacyFilter activationFilters={[!isCardHovered]}>
                   <FinancialText>
-                    {data &&
-                      (difference && difference > 0 ? '+' : '') +
-                        format(difference || 0, 'financial')}
+                    {format(difference || 0, 'financial-with-sign')}
                   </FinancialText>
                 </PrivacyFilter>
               </Block>

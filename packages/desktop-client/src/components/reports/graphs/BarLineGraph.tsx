@@ -108,7 +108,7 @@ export function BarLineGraph({
   const format = useFormat();
   const animationProps = useRechartsAnimation();
   const tickFormatter = tick => {
-    return `${format(Math.round(tick), 'financial')}`; // Formats the tick values as strings with commas
+    return `${format(Math.round(tick), 'financial-no-decimals')}`; // Formats the tick values as strings with commas
   };
 
   return (
