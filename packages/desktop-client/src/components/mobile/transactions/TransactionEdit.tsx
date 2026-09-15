@@ -55,7 +55,6 @@ import {
   getChangedValues,
   groupById,
   integerToAmount,
-  integerToCurrency,
   titleFirst,
 } from '@actual-app/core/shared/util';
 import type {
@@ -88,6 +87,7 @@ import { useCategories } from '#hooks/useCategories';
 import { useCurrentWordRange } from '#hooks/useCurrentWordRange';
 import { useCursorPosition } from '#hooks/useCursorPosition';
 import { useDateFormat } from '#hooks/useDateFormat';
+import { useFormat } from '#hooks/useFormat';
 import { useInputRefValue } from '#hooks/useInputRefValue';
 import { useLocalPref } from '#hooks/useLocalPref';
 import { useLocationPermission } from '#hooks/useLocationPermission';
@@ -253,6 +253,7 @@ function Footer({
   editingField,
   onEditField,
 }: FooterProps) {
+  const format = useFormat();
   const [transaction, ...childTransactions] = transactions;
   const emptySplitTransaction = childTransactions.find(t => t.amount === 0);
   const onClickRemainingSplit = () => {
@@ -298,10 +299,11 @@ function Footer({
               <Trans>
                 Add new split -{' '}
                 {{
-                  amount: integerToCurrency(
+                  amount: format(
                     transaction.amount > 0
                       ? transaction.error.difference
                       : -transaction.error.difference,
+                    'financial',
                   ),
                 }}{' '}
                 left
@@ -310,10 +312,11 @@ function Footer({
               <Trans>
                 Amount left:{' '}
                 {{
-                  amount: integerToCurrency(
+                  amount: format(
                     transaction.amount > 0
                       ? transaction.error.difference
                       : -transaction.error.difference,
+                    'financial',
                   ),
                 }}
               </Trans>
@@ -2184,6 +2187,8 @@ function FillRemainingButton({
   readonly remaining: number;
   readonly onPress: () => void;
 }) {
+  const format = useFormat();
+
   return (
     <Button
       variant="primary"
@@ -2201,7 +2206,7 @@ function FillRemainingButton({
         <Trans>
           Use remaining:{' '}
           {{
-            amount: integerToCurrency(Math.abs(remaining)),
+            amount: format(Math.abs(remaining), 'financial'),
           }}
         </Trans>
       </Text>

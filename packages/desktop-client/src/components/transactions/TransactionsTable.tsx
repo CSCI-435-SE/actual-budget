@@ -62,7 +62,6 @@ import {
 import {
   amountToCurrency,
   currencyToAmount,
-  integerToCurrency,
   titleFirst,
 } from '@actual-app/core/shared/util';
 import type { IntegerAmount } from '@actual-app/core/shared/util';
@@ -119,6 +118,7 @@ import type {
   OnDragChangeCallback,
   OnDropCallback,
 } from '#hooks/useDragDrop';
+import { useFormat } from '#hooks/useFormat';
 import { useLocalPref } from '#hooks/useLocalPref';
 import { useMergedRefs } from '#hooks/useMergedRefs';
 import { usePrevious } from '#hooks/usePrevious';
@@ -970,6 +970,7 @@ const Transaction = memo(function Transaction({
   index,
 }: TransactionProps) {
   const { t } = useTranslation();
+  const format = useFormat();
 
   const dispatch = useDispatch();
   const dispatchSelected = useSelectedDispatch();
@@ -1842,7 +1843,7 @@ const Transaction = memo(function Transaction({
             value={
               runningBalance == null || isChild || isTemporaryId(id)
                 ? ''
-                : integerToCurrency(runningBalance)
+                : format(runningBalance, 'financial')
             }
             valueStyle={{
               color:
@@ -1940,7 +1941,7 @@ const Transaction = memo(function Transaction({
                 textAlign: 'right',
               }}
             >
-              {integerToCurrency(amount)}
+              {format(amount, 'financial')}
             </Text>
           </View>
         )}
@@ -2030,6 +2031,8 @@ function TransactionError({
   onDistributeRemainder,
   style,
 }: TransactionErrorProps) {
+  const format = useFormat();
+
   switch (error.type) {
     case 'SplitTransactionError':
       if (error.version === 1) {
@@ -2047,8 +2050,9 @@ function TransactionError({
             <Text style={{ whiteSpace: 'nowrap' }}>
               <Trans>Amount left:</Trans>{' '}
               <Text style={{ fontWeight: 500 }}>
-                {integerToCurrency(
+                {format(
                   isDeposit ? error.difference : -error.difference,
+                  'financial',
                 )}
               </Text>
             </Text>
