@@ -1714,13 +1714,31 @@ const Transaction = memo(function Transaction({
             width="flex"
             textAlign="flex"
             value={categoryId}
-            formatter={value =>
-              value
+            formatter={value => {
+              const label = value
                 ? (getCategoriesById(categoryGroups)[value]?.name ?? '')
                 : transaction.id
                   ? t('Categorize')
-                  : ''
-            }
+                  : '';
+              return (
+                <View
+                  style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <Text style={{ flex: 1 }}>{label}</Text>
+                <SvgCheveronDown
+                  style={{
+                    width: 14,
+                    height: 14,
+                    marginLeft: 0,
+                    color: theme.pageTextSubdued,
+                  }}
+                />
+              </View>);
+            }}
             exposed={focusedField === 'category'}
             onExpose={name => !isPreview && onEdit(id, name)}
             valueStyle={
