@@ -190,7 +190,7 @@ export function Menu<const NameType = string>({
             variant="bare"
             slot={slot}
             style={{
-              cursor: 'default',
+              cursor: 'pointer',
               padding: 10,
               flexDirection: 'row',
               justifyContent: 'center',
