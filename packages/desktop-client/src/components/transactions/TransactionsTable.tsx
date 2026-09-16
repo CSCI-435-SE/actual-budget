@@ -1782,8 +1782,10 @@ const Transaction = memo(function Transaction({
           focused={focusedField === 'debit'}
           value={debit === '' && credit === '' ? format.forEdit(0) : debit}
           formatter={value =>
-            // reformat value so since we might have kept decimals
-            value ? format.forEdit(format.fromEdit(value) ?? 0) : ''
+            // reformat value so since we might have kept decimals. The cell
+            // holds the bare edit string; the read-only display gets the full
+            // currency formatting.
+            value ? format(format.fromEdit(value) ?? 0, 'financial') : ''
           }
           valueStyle={valueStyle}
           textAlign="right"
@@ -1813,8 +1815,10 @@ const Transaction = memo(function Transaction({
           focused={focusedField === 'credit'}
           value={credit}
           formatter={value =>
-            // reformat value so since we might have kept decimals
-            value ? format.forEdit(format.fromEdit(value) ?? 0) : ''
+            // reformat value so since we might have kept decimals. The cell
+            // holds the bare edit string; the read-only display gets the full
+            // currency formatting.
+            value ? format(format.fromEdit(value) ?? 0, 'financial') : ''
           }
           valueStyle={valueStyle}
           textAlign="right"

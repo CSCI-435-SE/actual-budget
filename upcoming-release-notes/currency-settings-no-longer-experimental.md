@@ -1,6 +1,6 @@
 ---
 category: Features
-authors: [REPLACE_WITH_GITHUB_USERNAME]
+authors: [jamesleonard3rd]
 ---
 
 Move currency settings into Settings → Formatting and make them available to everyone
