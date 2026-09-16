@@ -46,6 +46,7 @@
   --color-budgetNumberZero: var(--color-tableTextSubdued);
   --color-budgetNumberNeutral: var(--color-tableText);
   --color-budgetNumberPositive: var(--color-budgetNumberNeutral);
+  --color-budgetNumberOverspent: var(--color-warningText);
   --color-templateNumberFunded: var(--color-numberPositive);
   --color-templateNumberUnderFunded: var(--palette-orange300);
   --color-toBudgetPositive: var(--color-numberPositive);

@@ -90,6 +90,14 @@ type BalanceWithCarryoverProps = Omit<
   >;
   goal: Binding<'envelope-budget' | 'tracking-budget', 'goal'>;
   budgeted: Binding<'envelope-budget' | 'tracking-budget', 'budget'>;
+  /**
+   * This month's spent amount, used to detect when spending has exceeded
+   * this month's budgeted amount even though the balance (which includes
+   * any rolled-over surplus) is still non-negative. Omit for balances that
+   * don't represent an expense category's rollover balance (e.g. income) —
+   * it defaults to `budgeted`, which keeps the check a no-op.
+   */
+  spent?: Binding<'envelope-budget' | 'tracking-budget', 'sum-amount'>;
   longGoal: Binding<'envelope-budget' | 'tracking-budget', 'long-goal'>;
   isDisabled?: boolean;
   shouldInlineGoalStatus?: boolean;
@@ -102,6 +110,7 @@ export function BalanceWithCarryover({
   balance,
   goal,
   budgeted,
+  spent,
   longGoal,
   isDisabled,
   shouldInlineGoalStatus,
@@ -115,6 +124,11 @@ export function BalanceWithCarryover({
   const carryoverValue = useSheetValue(carryover);
   const goalValue = useSheetValue(goal);
   const budgetedValue = useSheetValue(budgeted);
+  const spentOrBudgeted: Binding<
+    'envelope-budget' | 'tracking-budget',
+    'sum-amount' | 'budget'
+  > = spent ?? budgeted;
+  const spentValue = useSheetValue(spentOrBudgeted);
   const longGoalValue = useSheetValue(longGoal);
   const isGoalTemplatesEnabled = useFeatureFlag('goalTemplatesEnabled');
   const format = useFormat();
@@ -124,6 +138,7 @@ export function BalanceWithCarryover({
         balanceValue,
         isGoalTemplatesEnabled ? goalValue : null,
         longGoalValue === 1 ? balanceValue : budgetedValue,
+        spentValue,
         {
           decimalPlaces: format.currency.decimalPlaces,
           hideFraction: format.hideFraction,
@@ -134,6 +149,7 @@ export function BalanceWithCarryover({
       goalValue,
       isGoalTemplatesEnabled,
       longGoalValue,
+      spentValue,
       format.currency.decimalPlaces,
       format.hideFraction,
     ],

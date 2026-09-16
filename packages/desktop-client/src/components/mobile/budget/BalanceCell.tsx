@@ -25,6 +25,12 @@ type BalanceCellProps = {
     'envelope-budget' | 'tracking-budget',
     'leftover' | 'sum-amount'
   >;
+  /**
+   * This month's spent amount. Pass this for expense categories so an
+   * overspend that's still covered by a rolled-over surplus can be
+   * highlighted; omit it for income categories.
+   */
+  spent?: Binding<'envelope-budget' | 'tracking-budget', 'sum-amount'>;
   category: CategoryEntity;
   show3Columns?: boolean;
   onPress?: () => void;
@@ -33,6 +39,7 @@ type BalanceCellProps = {
 
 export function BalanceCell({
   binding,
+  spent,
   category,
   show3Columns,
   onPress,
@@ -76,6 +83,7 @@ export function BalanceCell({
       balance={binding}
       goal={goal}
       budgeted={budgeted}
+      spent={spent}
       longGoal={longGoal}
       CarryoverIndicator={MobileCarryoverIndicator}
     >

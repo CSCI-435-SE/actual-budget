@@ -14,6 +14,7 @@ import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
 import { useCreateAccountMutation } from '#accounts';
+import { CharacterCounter } from '#components/common/CharacterCounter';
 import { Link } from '#components/common/Link';
 import {
   Modal,
@@ -23,7 +24,10 @@ import {
   ModalTitle,
 } from '#components/common/Modal';
 import { Checkbox } from '#components/forms';
-import { validateAccountName } from '#components/util/accountValidation';
+import {
+  ACCOUNT_NAME_MAX_LENGTH,
+  validateAccountName,
+} from '#components/util/accountValidation';
 import { useAccounts } from '#hooks/useAccounts';
 import { useFormat } from '#hooks/useFormat';
 import { useNavigate } from '#hooks/useNavigate';
@@ -101,6 +105,7 @@ export function CreateLocalAccountModal() {
                   <Input
                     name="name"
                     value={name}
+                    maxLength={ACCOUNT_NAME_MAX_LENGTH}
                     onChangeValue={setName}
                     onUpdate={value => {
                       const name = value.trim();
@@ -110,6 +115,18 @@ export function CreateLocalAccountModal() {
                   />
                 </InitialFocus>
               </InlineField>
+              <View
+                style={{
+                  marginLeft: 75,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <CharacterCounter
+                  length={name.length}
+                  maxLength={ACCOUNT_NAME_MAX_LENGTH}
+                />
+              </View>
               {nameError && (
                 <FormError style={{ marginLeft: 75, color: theme.warningText }}>
                   {nameError}

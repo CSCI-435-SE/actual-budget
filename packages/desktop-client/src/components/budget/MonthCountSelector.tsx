@@ -22,7 +22,7 @@ function Calendar({ color, onClick }: CalendarProps) {
       onPress={onClick}
       style={{ padding: 2, marginRight: 3 }}
     >
-      <SvgCalendar style={{ width: 13, height: 13, color }} />
+      <SvgCalendar style={{ width: 18, height: 18, color }} />
     </Link>
   );
 }
