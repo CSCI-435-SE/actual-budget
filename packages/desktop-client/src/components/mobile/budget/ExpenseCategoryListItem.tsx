@@ -190,6 +190,7 @@ function ExpenseCategoryCells({
       >
         <BalanceCell
           binding={balance}
+          spent={spent}
           category={category}
           show3Columns={show3Columns}
           onPress={onOpenBalanceMenu}
