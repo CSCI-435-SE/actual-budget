@@ -16,7 +16,7 @@ describe('makeBalanceAmountStyle', () => {
     });
   });
 
-  it('colors a non-negative balance green when spending is within budget', () => {
+  it('colors a non-negative balance neutrally when spending is within budget', () => {
     // Budgeted $100, spent $50 this month, balance still $50.
     expect(makeBalanceAmountStyle(5000, null, 10000, -5000)).toEqual({
       color: theme.budgetNumberPositive,
