@@ -2,18 +2,24 @@ import React, { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Select } from '@actual-app/components/select';
-import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
+import { tokens } from '@actual-app/components/tokens';
 import { View } from '@actual-app/components/view';
 import { currencies, getCurrency } from '@actual-app/core/shared/currencies';
 import { css } from '@emotion/css';
 
 import { Checkbox } from '#components/forms';
+import { useSidebar } from '#components/sidebar/SidebarProvider';
 import { useSyncedPref } from '#hooks/useSyncedPref';
 
-import { Column, Setting } from './UI';
+import { Column } from './UI';
 
-export function CurrencySettings() {
+/**
+ * The currency half of the formatting settings. Rendered as a section of
+ * `FormatSettings` rather than on its own, because picking a currency also
+ * changes the number format and whether fractions are shown.
+ */
+export function CurrencyFormatSettings() {
   const { t } = useTranslation();
 
   const currencyTranslations = useMemo(
@@ -84,6 +90,8 @@ export function CurrencySettings() {
   const [, setNumberFormatPref] = useSyncedPref('numberFormat');
   const [, setHideFractionPref] = useSyncedPref('hideFraction');
 
+  const sidebar = useSidebar();
+
   const selectButtonClassName = css({
     '&[data-hovered]': {
       backgroundColor: theme.buttonNormalBackgroundHover,
@@ -131,79 +139,65 @@ export function CurrencySettings() {
   }, [selectedCurrencyCode, spaceEnabled, t]);
 
   return (
-    <Setting
-      primaryAction={
-        <View
+    <View style={{ flexDirection: 'column', gap: '1em', width: '100%' }}>
+      <View
+        style={{
+          flexDirection: 'column',
+          gap: '1em',
+          width: '100%',
+          [`@media (min-width: ${
+            sidebar.floating
+              ? tokens.breakpoint_small
+              : tokens.breakpoint_medium
+          })`]: {
+            flexDirection: 'row',
+          },
+        }}
+      >
+        <Column title={t('Currency')}>
+          <Select
+            value={selectedCurrencyCode}
+            onChange={handleCurrencyChange}
+            options={currencyOptions}
+            className={selectButtonClassName}
+            style={{ width: '100%' }}
+          />
+        </Column>
+
+        <Column
+          title={t('Symbol position')}
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.5em',
-            width: '100%',
+            visibility: selectedCurrencyCode === '' ? 'hidden' : 'visible',
           }}
         >
-          <View style={{ display: 'flex', flexDirection: 'row', gap: '1.5em' }}>
-            <Column title={t('Default Currency')}>
-              <Select
-                value={selectedCurrencyCode}
-                onChange={handleCurrencyChange}
-                options={currencyOptions}
-                className={selectButtonClassName}
-                style={{ width: '100%' }}
-              />
-            </Column>
+          <Select
+            value={symbolPosition || 'before'}
+            onChange={value => setSymbolPositionPref(value)}
+            options={symbolPositionOptions.map(f => [f.value, f.label])}
+            className={selectButtonClassName}
+            style={{ width: '100%' }}
+            disabled={selectedCurrencyCode === ''}
+          />
+        </Column>
+      </View>
 
-            <Column
-              title={t('Symbol Position')}
-              style={{
-                visibility: selectedCurrencyCode === '' ? 'hidden' : 'visible',
-              }}
-            >
-              <Select
-                value={symbolPosition || 'before'}
-                onChange={value => setSymbolPositionPref(value)}
-                options={symbolPositionOptions.map(f => [f.value, f.label])}
-                className={selectButtonClassName}
-                style={{ width: '100%' }}
-                disabled={selectedCurrencyCode === ''}
-              />
-            </Column>
-          </View>
-
-          {selectedCurrencyCode !== '' && (
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-              }}
-            >
-              <Checkbox
-                id="settings-spaceEnabled"
-                checked={spaceEnabled === 'true'}
-                onChange={e =>
-                  setSpaceEnabledPref(e.target.checked ? 'true' : 'false')
-                }
-              />
-              <label
-                htmlFor="settings-spaceEnabled"
-                style={{ marginLeft: '0.5em' }}
-              >
-                <Trans>Add space between amount and symbol</Trans>
-              </label>
-            </View>
-          )}
+      {selectedCurrencyCode !== '' && (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Checkbox
+            id="settings-spaceEnabled"
+            checked={spaceEnabled === 'true'}
+            onChange={e =>
+              setSpaceEnabledPref(e.target.checked ? 'true' : 'false')
+            }
+          />
+          <label
+            htmlFor="settings-spaceEnabled"
+            style={{ marginLeft: '0.5em' }}
+          >
+            <Trans>Add space between amount and symbol</Trans>
+          </label>
         </View>
-      }
-    >
-      <Text>
-        <Trans>
-          <strong>Currency settings</strong> affect how amounts are displayed
-          throughout the application. Changing the currency will affect the
-          number format, symbol position, and whether fractions are shown. These
-          can be adjusted after the currency is set.
-        </Trans>
-      </Text>
-    </Setting>
+      )}
+    </View>
   );
 }

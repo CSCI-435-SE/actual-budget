@@ -203,17 +203,19 @@ export function AreaGraph({
   const absDataMax = Math.max(Math.abs(dataMax), Math.abs(dataMin));
   //Calculate how much to add to max and min values for graph range
   const extendRangeAmount = Math.floor(dataDiff / 20);
+  //One whole unit of the active currency, as an integer amount
+  const currencyUnit = Math.pow(10, format.currency.decimalPlaces);
   const labelsMin =
     //If min is zero or graph range passes zero then set it to zero
     dataMin === 0 || Math.abs(dataMin) <= extendRangeAmount
       ? 0
-      : //Else add the range and round to nearest 100s
-        Math.floor((dataMin - extendRangeAmount) / 100) * 100;
+      : //Else add the range and round down to a whole currency unit
+        Math.floor((dataMin - extendRangeAmount) / currencyUnit) * currencyUnit;
   //Same as above but for max
   const labelsMax =
     dataMax === 0 || Math.abs(dataMax) <= extendRangeAmount
       ? 0
-      : Math.ceil((dataMax + extendRangeAmount) / 100) * 100;
+      : Math.ceil((dataMax + extendRangeAmount) / currencyUnit) * currencyUnit;
   const lastLabel = data.intervalData.length - 1;
 
   const tickFormatter = (tick: number) => {

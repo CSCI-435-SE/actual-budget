@@ -12,7 +12,6 @@ import { Input } from '@actual-app/components/input';
 import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
-import { toRelaxedNumber } from '@actual-app/core/shared/util';
 
 import { useCreateAccountMutation } from '#accounts';
 import { CharacterCounter } from '#components/common/CharacterCounter';
@@ -30,6 +29,7 @@ import {
   validateAccountName,
 } from '#components/util/accountValidation';
 import { useAccounts } from '#hooks/useAccounts';
+import { useFormat } from '#hooks/useFormat';
 import { useNavigate } from '#hooks/useNavigate';
 import { closeModal } from '#modals/modalsSlice';
 import { useDispatch } from '#redux';
@@ -39,6 +39,7 @@ export function CreateLocalAccountModal() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: accounts = [] } = useAccounts();
+  const format = useFormat();
   const [name, setName] = useState('');
   const [offbudget, setOffbudget] = useState(false);
   const [balance, setBalance] = useState('0');
@@ -72,7 +73,10 @@ export function CreateLocalAccountModal() {
       createAccount.mutate(
         {
           name,
-          balance: toRelaxedNumber(balance),
+          // NOTE: the server re-scales this at a hardcoded 2 decimal places
+          // (`server/accounts/app.ts`), so a zero-decimal currency is still
+          // wrong end to end until that half is migrated.
+          balance: format.toAmount(format.fromEdit(balance) ?? 0),
           offBudget: offbudget,
         },
         {

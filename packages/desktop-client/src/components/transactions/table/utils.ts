@@ -1,16 +1,16 @@
-import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 import { currentDay } from '@actual-app/core/shared/months';
-import {
-  amountToInteger,
-  integerToCurrencyWithDecimal,
+import type {
+  CurrencyAmount,
+  IntegerAmount,
 } from '@actual-app/core/shared/util';
-import type { CurrencyAmount } from '@actual-app/core/shared/util';
 import type {
   AccountEntity,
   CategoryEntity,
   TransactionEntity,
 } from '@actual-app/core/types/models';
 import { isValid as isDateValid, parseISO } from 'date-fns';
+
+import type { UseFormatResult } from '#hooks/useFormat';
 
 export type SerializedTransaction = Omit<TransactionEntity, 'date'> & {
   date: string;
@@ -28,8 +28,22 @@ export type TransactionUpdateFunction = <T extends keyof SerializedTransaction>(
   value: SerializedTransaction[T],
 ) => void;
 
+// Keep the currency's decimals when the value actually has a fractional part,
+// so that hiding fractions in the read-only display doesn't truncate the
+// amount when the cell round-trips back through `deserializeTransaction`.
+function serializeAmount(
+  integerAmount: IntegerAmount,
+  format: UseFormatResult,
+): CurrencyAmount {
+  const scale = Math.pow(10, format.currency.decimalPlaces);
+  return format.forEdit(integerAmount, {
+    keepFraction: integerAmount % scale !== 0,
+  });
+}
+
 export function serializeTransaction(
   transaction: TransactionEntity,
+  format: UseFormatResult,
   showZeroInDeposit?: boolean,
 ): SerializedTransaction {
   const { amount, date: originalDate } = transaction;
@@ -61,27 +75,27 @@ export function serializeTransaction(
   return {
     ...transaction,
     date,
-    debit: debit != null ? integerToCurrencyWithDecimal(debit) : '',
-    credit: credit != null ? integerToCurrencyWithDecimal(credit) : '',
+    debit: debit != null ? serializeAmount(debit, format) : '',
+    credit: credit != null ? serializeAmount(credit, format) : '',
   };
 }
 
 export function deserializeTransaction(
   transaction: SerializedTransaction,
   originalTransaction: TransactionEntity,
+  format: UseFormatResult,
 ) {
   const { debit, credit, date: originalDate, ...realTransaction } = transaction;
 
-  let amount: number | null;
+  let amount: IntegerAmount | null;
   if (debit !== '') {
-    const parsed = evalArithmetic(debit, null);
+    const parsed = format.fromEdit(debit);
     amount = parsed != null ? -parsed : null;
   } else {
-    amount = evalArithmetic(credit, null);
+    amount = format.fromEdit(credit);
   }
 
-  amount =
-    amount != null ? amountToInteger(amount) : originalTransaction.amount;
+  amount = amount != null ? amount : originalTransaction.amount;
   let date = originalDate;
   if (date == null) {
     date = originalTransaction.date || currentDay();

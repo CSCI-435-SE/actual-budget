@@ -331,7 +331,7 @@ export const ReportTableRow = memo(
           <Cell
             value={format(average, 'financial')}
             title={
-              Math.abs(average / 100) > 100000
+              Math.abs(average) > 100000
                 ? format(average, 'financial')
                 : undefined
             }

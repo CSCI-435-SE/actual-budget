@@ -12,7 +12,6 @@ import { styles } from '@actual-app/components/styles';
 import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
-import { amountToInteger, integerToAmount } from '@actual-app/core/shared/util';
 import { t } from 'i18next';
 
 import { BudgetMenu } from '#components/budget/tracking/BudgetMenu';
@@ -27,6 +26,7 @@ import { AmountInput } from '#components/mobile/transactions/AmountInput';
 import { Notes } from '#components/Notes';
 import { useCategory } from '#hooks/useCategory';
 import { useFeatureFlag } from '#hooks/useFeatureFlag';
+import { useFormat } from '#hooks/useFormat';
 import { useNotes } from '#hooks/useNotes';
 import type { Modal as ModalType } from '#modals/modalsSlice';
 import { trackingBudget } from '#spreadsheet/bindings';
@@ -53,6 +53,8 @@ export function TrackingBudgetMenuModal({
     borderTop: `1px solid ${theme.pillBorder}`,
   };
 
+  const format = useFormat();
+
   const buttonStyle: CSSProperties = {
     ...styles.mediumText,
     height: styles.mobileMinHeight,
@@ -69,7 +71,7 @@ export function TrackingBudgetMenuModal({
   const originalNotes = useNotes(notesId) ?? '';
 
   const _onUpdateBudget = (amount: number) => {
-    onUpdateBudget?.(amountToInteger(amount));
+    onUpdateBudget?.(format.fromAmount(amount));
   };
 
   const _onEditNotes = () => {
@@ -116,7 +118,7 @@ export function TrackingBudgetMenuModal({
               <Trans>Budgeted</Trans>
             </Text>
             <AmountInput
-              value={integerToAmount(budgeted || 0)}
+              value={format.toAmount(budgeted || 0)}
               onEnter={() => state.close()}
               onChange={_onUpdateBudget}
               data-testid="budget-amount"

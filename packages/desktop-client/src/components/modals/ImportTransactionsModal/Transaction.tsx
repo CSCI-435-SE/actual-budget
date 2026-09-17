@@ -8,11 +8,11 @@ import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { Tooltip } from '@actual-app/components/tooltip';
 import { View } from '@actual-app/components/view';
-import { amountToCurrency } from '@actual-app/core/shared/util';
 import type { CategoryEntity } from '@actual-app/core/types/models';
 
 import { Checkbox } from '#components/forms';
 import { Field, Row } from '#components/table';
+import { useFormat } from '#hooks/useFormat';
 
 import { ParsedDate } from './ParsedDate';
 import { applyFieldMappings, formatDate, parseAmountFields } from './utils';
@@ -52,6 +52,7 @@ export function Transaction({
   index,
 }: TransactionProps) {
   const { t } = useTranslation();
+  const format = useFormat();
 
   const categoryList = categories.map(category => category.name);
   const transaction = useMemo(
@@ -62,18 +63,25 @@ export function Transaction({
     [rawTransaction, fieldMappings],
   );
 
+  // Both branches below produce decimal `Amount`s — `parseAmountFields` via
+  // `looselyParseAmount`, and matched transactions via the import preview,
+  // which scales the existing row down in `server/accounts/sync.ts`. Normalize
+  // to `IntegerAmount` here so the display sites are plain `format` calls.
   const { amount, outflow, inflow } = useMemo(() => {
+    const toInteger = (value: number | null) =>
+      value === null ? null : format.fromAmount(value);
+
     if (rawTransaction.isMatchedTransaction) {
       const amount = rawTransaction.amount;
 
       return {
-        amount,
-        outflow: splitMode ? (amount < 0 ? -amount : 0) : null,
-        inflow: splitMode ? (amount > 0 ? amount : 0) : null,
+        amount: toInteger(amount),
+        outflow: splitMode ? toInteger(amount < 0 ? -amount : 0) : null,
+        inflow: splitMode ? toInteger(amount > 0 ? amount : 0) : null,
       };
     }
 
-    return parseAmountFields(
+    const parsed = parseAmountFields(
       transaction,
       splitMode,
       inOutMode,
@@ -81,6 +89,12 @@ export function Transaction({
       flipAmount,
       multiplierAmount,
     );
+
+    return {
+      amount: toInteger(parsed.amount),
+      outflow: toInteger(parsed.outflow),
+      inflow: toInteger(parsed.inflow),
+    };
   }, [
     rawTransaction,
     transaction,
@@ -89,6 +103,7 @@ export function Transaction({
     outValue,
     flipAmount,
     multiplierAmount,
+    format,
   ]);
 
   return (
@@ -255,10 +270,10 @@ export function Transaction({
             title={
               outflow === null
                 ? t('Invalid: unable to parse the value')
-                : amountToCurrency(outflow)
+                : format(outflow, 'financial')
             }
           >
-            {amountToCurrency(outflow || 0)}
+            {format(outflow || 0, 'financial')}
           </Field>
           <Field
             width={90}
@@ -272,10 +287,10 @@ export function Transaction({
             title={
               inflow === null
                 ? t('Invalid: unable to parse the value')
-                : amountToCurrency(inflow)
+                : format(inflow, 'financial')
             }
           >
-            {amountToCurrency(inflow || 0)}
+            {format(inflow || 0, 'financial')}
           </Field>
         </>
       ) : (
@@ -291,10 +306,10 @@ export function Transaction({
               ? t('Invalid: unable to parse the value ({{amount}})', {
                   amount: transaction.amount,
                 })
-              : amountToCurrency(amount)
+              : format(amount, 'financial')
           }
         >
-          {amountToCurrency(amount || 0)}
+          {format(amount || 0, 'financial')}
         </Field>
       )}
     </Row>

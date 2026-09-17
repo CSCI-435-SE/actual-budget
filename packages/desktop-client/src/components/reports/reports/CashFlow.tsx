@@ -107,17 +107,8 @@ function CashFlowInner({ widget }: CashFlowInnerProps) {
   }, [start, end]);
 
   const params = useMemo(
-    () =>
-      cashFlowByDate(
-        start,
-        end,
-        isConcise,
-        conditions,
-        conditionsOp,
-        locale,
-        format,
-      ),
-    [start, end, isConcise, conditions, conditionsOp, locale, format],
+    () => cashFlowByDate(start, end, isConcise, conditions, conditionsOp),
+    [start, end, isConcise, conditions, conditionsOp],
   );
   const data = useReport('cash_flow', params);
 

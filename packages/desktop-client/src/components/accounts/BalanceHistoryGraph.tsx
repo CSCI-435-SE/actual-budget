@@ -8,13 +8,13 @@ import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import * as monthUtils from '@actual-app/core/shared/months';
-import { integerToCurrency } from '@actual-app/core/shared/util';
-import { eachMonthOfInterval, format, subMonths } from 'date-fns';
+import { eachMonthOfInterval, format as formatDate, subMonths } from 'date-fns';
 import { Area, AreaChart, Tooltip as RechartsTooltip, YAxis } from 'recharts';
 
 import { PrivacyFilter } from '#components/PrivacyFilter';
 import { useRechartsAnimation } from '#components/reports/chart-theme';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
+import { useFormat } from '#hooks/useFormat';
 import { useLocale } from '#hooks/useLocale';
 import * as query from '#queries';
 import { liveQuery } from '#queries/liveQuery';
@@ -33,6 +33,7 @@ export function BalanceHistoryGraph({
   ref,
 }: BalanceHistoryGraphProps) {
   const locale = useLocale();
+  const format = useFormat();
   const animationProps = useRechartsAnimation({ isAnimationActive: false });
   const [balanceData, setBalanceData] = useState<
     Array<{ date: string; balance: number }>
@@ -130,7 +131,7 @@ export function BalanceHistoryGraph({
       const months = eachMonthOfInterval({
         start: startDate,
         end: endDate,
-      }).map(m => format(m, 'yyyy-MM'));
+      }).map(m => formatDate(m, 'yyyy-MM'));
 
       function processData(
         startingBalanceValue: number,
@@ -315,7 +316,7 @@ export function BalanceHistoryGraph({
                         {hoveredValue.date}
                       </Text>
                       <PrivacyFilter activationFilters={[() => !isHovered]}>
-                        <Text>{integerToCurrency(hoveredValue.balance)}</Text>
+                        <Text>{format(hoveredValue.balance, 'financial')}</Text>
                       </PrivacyFilter>
                     </View>
                   )}

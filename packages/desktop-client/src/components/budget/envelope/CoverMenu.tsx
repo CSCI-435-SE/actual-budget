@@ -3,14 +3,7 @@ import { Form } from 'react-aria-components';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '@actual-app/components/button';
-import { Input } from '@actual-app/components/input';
-import { styles } from '@actual-app/components/styles';
 import { View } from '@actual-app/components/view';
-import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
-import {
-  amountToInteger,
-  integerToCurrency,
-} from '@actual-app/core/shared/util';
 import type { IntegerAmount } from '@actual-app/core/shared/util';
 import type { CategoryEntity } from '@actual-app/core/types/models';
 
@@ -19,6 +12,7 @@ import {
   addToBeBudgetedGroup,
   removeCategoriesFromGroups,
 } from '#components/budget/util';
+import { FinancialInput } from '#components/util/FinancialInput';
 import { useCategories } from '#hooks/useCategories';
 
 type CoverMenuProps = {
@@ -53,13 +47,13 @@ export function CoverMenu({
       : categoryGroups;
   }, [categoryId, showToBeBudgeted, originalCategoryGroups]);
 
-  const _initialAmount = integerToCurrency(Math.abs(initialAmount ?? 0));
-  const [amount, setAmount] = useState<string>(_initialAmount);
+  const [amount, setAmount] = useState<IntegerAmount>(
+    Math.abs(initialAmount ?? 0),
+  );
 
   function _onSubmit() {
-    const parsedAmount = evalArithmetic(amount || '');
-    if (parsedAmount && fromCategoryId) {
-      onSubmit(amountToInteger(parsedAmount), fromCategoryId);
+    if (amount && fromCategoryId) {
+      onSubmit(amount, fromCategoryId);
     }
     onClose();
   }
@@ -76,11 +70,10 @@ export function CoverMenu({
           <Trans>Cover this amount:</Trans>
         </View>
         <View>
-          <Input
-            defaultValue={_initialAmount}
+          <FinancialInput
+            value={amount}
             onUpdate={setAmount}
             onChangeValue={setAmount}
-            style={styles.tnum}
           />
         </View>
         <View style={{ margin: '10px 0 5px 0' }}>

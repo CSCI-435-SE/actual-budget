@@ -24,7 +24,6 @@ import {
   useRechartsAnimation,
 } from '#components/reports/chart-theme';
 import { Container } from '#components/reports/Container';
-import { numberFormatterTooltip } from '#components/reports/numberFormatter';
 import { useFormat } from '#hooks/useFormat';
 import type { UseFormatResult } from '#hooks/useFormat';
 import { usePrivacyMode } from '#hooks/usePrivacyMode';
@@ -34,10 +33,10 @@ import { computePadding } from './util/computePadding';
 type NetWorthDataPoint = {
   x: string;
   y: number;
-  assets: string;
-  debt: string;
-  change: string;
-  networth: string;
+  assets: number;
+  debt: number;
+  change: number;
+  networth: number;
   date: string;
 } & Record<string, string | number>;
 
@@ -47,6 +46,7 @@ type TrendTooltipProps = TooltipContentProps & {
 
 function TrendTooltip({ active, payload, style }: TrendTooltipProps) {
   const { t } = useTranslation();
+  const format = useFormat();
 
   if (active && payload && payload.length) {
     return (
@@ -71,23 +71,35 @@ function TrendTooltip({ active, payload, style }: TrendTooltipProps) {
           <div style={{ lineHeight: 1.5 }}>
             <AlignedText
               left={t('Assets:')}
-              right={<FinancialText>{payload[0].payload.assets}</FinancialText>}
+              right={
+                <FinancialText>
+                  {format(payload[0].payload.assets, 'financial')}
+                </FinancialText>
+              }
             />
             <AlignedText
               left={t('Debt:')}
-              right={<FinancialText>{payload[0].payload.debt}</FinancialText>}
+              right={
+                <FinancialText>
+                  {format(payload[0].payload.debt, 'financial')}
+                </FinancialText>
+              }
             />
             <AlignedText
               left={t('Net worth:')}
               right={
                 <FinancialText as="strong">
-                  {payload[0].payload.networth}
+                  {format(payload[0].payload.networth, 'financial')}
                 </FinancialText>
               }
             />
             <AlignedText
               left={t('Change:')}
-              right={<FinancialText>{payload[0].payload.change}</FinancialText>}
+              right={
+                <FinancialText>
+                  {format(payload[0].payload.change, 'financial')}
+                </FinancialText>
+              }
             />
           </div>
         </div>
@@ -396,7 +408,6 @@ export function NetWorthGraph({
               {effectiveShowTooltip && mode === 'trend' && (
                 <Tooltip
                   content={props => <TrendTooltip {...props} style={style} />}
-                  formatter={numberFormatterTooltip}
                   isAnimationActive={false}
                 />
               )}

@@ -26,7 +26,6 @@ import { FinancialText } from '#components/FinancialText';
 import { useRechartsAnimation } from '#components/reports/chart-theme';
 import { Container } from '#components/reports/Container';
 import { getCustomTick } from '#components/reports/getCustomTick';
-import { numberFormatterTooltip } from '#components/reports/numberFormatter';
 import { useAccounts } from '#hooks/useAccounts';
 import { useCategories } from '#hooks/useCategories';
 import { useFormat } from '#hooks/useFormat';
@@ -237,7 +236,6 @@ export function LineGraph({
                       format={format}
                     />
                   }
-                  formatter={numberFormatterTooltip}
                   isAnimationActive={false}
                 />
               )}

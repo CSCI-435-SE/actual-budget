@@ -4,10 +4,6 @@ import type { CSSProperties } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { send } from '@actual-app/core/platform/client/connection';
 import * as monthUtils from '@actual-app/core/shared/months';
-import {
-  currencyToAmount,
-  integerToCurrency,
-} from '@actual-app/core/shared/util';
 import type { Handlers } from '@actual-app/core/types/handlers';
 import type {
   CategoryEntity,
@@ -68,18 +64,30 @@ export function makeAmountGrey(value: number | string | null): CSSProperties {
     : null;
 }
 
+type BalanceAmountStyleOptions = {
+  /** Decimal places of the active currency. */
+  decimalPlaces?: number;
+  /** Whether the `hideFraction` pref is on. */
+  hideFraction?: boolean;
+};
+
 export function makeBalanceAmountStyle(
   value: number,
   goalValue?: number | null,
   budgetedValue?: number | null,
   spentValue?: number | null,
+  { decimalPlaces = 2, hideFraction = false }: BalanceAmountStyleOptions = {},
 ) {
-  // Converts an integer currency value to a normalized decimal amount.
-  // First converts the integer to currency format, then to a decimal amount.
-  // Uses integerToCurrency to display the value correctly according to user prefs.
+  // Balances are integer amounts. Round them to the precision they are
+  // actually displayed at, so that a balance rendering as zero is greyed out
+  // rather than coloured, and two amounts rendering identically compare equal
+  // against a goal.
+  const scale = hideFraction ? Math.pow(10, decimalPlaces) : 1;
 
   const normalizeIntegerValue = (val: number | null | undefined) =>
-    typeof val === 'number' ? currencyToAmount(integerToCurrency(val)) : 0;
+    typeof val === 'number'
+      ? Math.sign(val) * Math.round(Math.abs(val) / scale) * scale
+      : 0;
 
   const currencyValue = normalizeIntegerValue(value);
 
