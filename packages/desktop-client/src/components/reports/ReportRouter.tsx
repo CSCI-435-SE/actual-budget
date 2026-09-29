@@ -18,9 +18,12 @@ import { Sankey } from './reports/Sankey';
 import { Spending } from './reports/Spending';
 import { Summary } from './reports/Summary';
 import { ReportsDashboardRouter } from './ReportsDashboardRouter';
+import { useEscapeToReportsOverview } from './useEscapeToReportsOverview';
 
 function ReportBoundary({ children }: { children: ReactNode }) {
   const location = useLocation();
+  useEscapeToReportsOverview();
+
   return (
     <ErrorBoundary
       FallbackComponent={FeatureErrorFallback}
