@@ -1636,20 +1636,837 @@ _**Agent (claude-sonnet-5 2026-09-28 18:01:37Z)**_
 
 Now let's regenerate the transcript, move it into place, and check the linked doc for any additional conventions before drafting comments.
 
-_**Agent (claude-sonnet-5 2026-09-28 18:01:38Z)**_
+_**Agent (claude-sonnet-5 2026-09-28 18:02:15Z)**_
 
 <tool-use data-tool-type="shell" data-tool-name="Bash"><details>
 <summary>Tool use: **Bash**</summary>
 Refresh the session transcript to include the full conversation so far
 
 `specstory sync claude -s ed09a593-70f0-44a2-85cc-f5c62515e79b --console --no-cloud-sync 2>&1 | tail -10`
+
+```text
+time=2026-09-28T14:02:14.916-04:00 level=INFO msg="ParseProjectSessions: Found JSONL files" count=1
+time=2026-09-28T14:02:14.916-04:00 level=INFO msg="Parsing session file" file=/Users/liammclemore/.claude/projects/-Users-liammclemore-Desktop-csci-csci-435-budget-actual-budget/ed09a593-70f0-44a2-85cc-f5c62515e79b.jsonl
+time=2026-09-28T14:02:14.925-04:00 level=INFO msg="ParseProjectSessions: File scanning completed" duration="9.5 milliseconds" records=253
+time=2026-09-28T14:02:14.926-04:00 level=INFO msg="ParseProjectSessions: Completed parsing" sessions=1 duration="15.0 milliseconds"
+time=2026-09-28T14:02:14.926-04:00 level=INFO msg="GenerateAgentSession: Starting" sessionID=ed09a593-70f0-44a2-85cc-f5c62515e79b recordCount=188
+time=2026-09-28T14:02:14.926-04:00 level=INFO msg="GenerateAgentSession: Built exchanges" count=7
+Processing session ed09a593-70f0-44a2-85cc-f5c62515e79b...time=2026-09-28T14:02:14.981-04:00 level=INFO msg="Successfully wrote file" sessionId=ed09a593-70f0-44a2-85cc-f5c62515e79b path=/Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/history/2026-09-28_17-40-44Z-begin-by-logging-this.md
+ updated
+
+time=2026-09-28T14:02:14.987-04:00 level=INFO msg="=== SpecStory Exiting ===" code=0 status="normal termination"
+```
 </details></tool-use>
 
-_**Agent (claude-sonnet-5 2026-09-28 18:01:39Z)**_
+_**Agent (claude-sonnet-5 2026-09-28 18:02:15Z)**_
 
 <tool-use data-tool-type="shell" data-tool-name="Bash"><details>
 <summary>Tool use: **Bash**</summary>
 Check sprint docs for AI log submission conventions referenced by README
 
 `grep -n -A15 "AI Tooling Setup\|AI Logs\|## D4" /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/docs/sprints.md 2>&1 | head -60`
+
+```text
+ugrep: warning: /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/docs/sprints.md: No such file or directory
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:02:19Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Locate sprints.md doc referenced by ai-logs README
+
+`find . -iname "sprints.md" -not -path "*/node_modules/*" 2>&1`
+
+```text
+(Bash completed with no output)
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:02:45Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Copy transcript into ai-logs with proper naming convention
+
+```bash
+mkdir -p /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/ai-logs/sprint1/tigerk9
+cp /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/history/2026-09-28_17-40-44Z-begin-by-logging-this.md /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md
+wc -l /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md
+```
+
+```text
+    1655 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:03:24Z)**_
+
+Log file is in place at `ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md` (1655 lines, full transcript through this point). Two things to confirm before I touch GitHub or git history:
+
+**1. Where should this commit land?** We're currently on `docs/sprint0-report`, which is about a different, unrelated deliverable (last commits are all Sprint 0 report work). Committing a Sprint 1 ai-log there would mix concerns. I'd suggest a fresh branch off `master` (e.g. `docs/sprint1-ai-log-rescope-issues`) for this one file, then push it — but let me know if you'd rather it go directly on `master`, or bundled into an existing branch.
+
+**2. Draft comments** — here's what I'd post to each issue (🤖-prefixed per the repo's PR/comment rules):
+
+For **#12**:
+```
+🤖
+### AI Assistance — @TigerK9
+
+**Role in this issue:** Other (issue rescoping)
+
+| # | Tool | Log | What AI helped with |
+|---|---|---|---|
+| 1 | claude-code | [link](ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md) | Rescoping the issue description into Bennett's INVEST format (user story, acceptance criteria, out of scope, open questions, rough scope), grounded in the actual reports routing/navigation code |
+```
+
+For **#14**:
+```
+🤖
+### AI Assistance — @TigerK9
+
+**Role in this issue:** Other (issue rescoping)
+
+| # | Tool | Log | What AI helped with |
+|---|---|---|---|
+| 1 | claude-code | [link](ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md) | Rescoping the issue description into Bennett's INVEST format (user story, acceptance criteria, out of scope, open questions, rough scope), grounded in the dashboard widget architecture and existing widget patterns in the codebase |
+```
+
+Note: since both issue-rescoping edits and this log came from the same session, both comments link the same log file — that matches how the example format handles one log covering related work.
+
+Also — we still haven't pushed the actual rescoped **descriptions** to issues #12/#14 themselves (from earlier, still pending your go-ahead). Want me to do the description updates and these comments together in one pass once you confirm the branch?
+
+---
+
+_**User (2026-09-28 18:04:59Z)**_
+
+<ide_opened_file>The user opened the file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md in the IDE. This may or may not be related to the current task.</ide_opened_file>
+
+Let's make a new branch. I copy and pasted the new descriptions for each of the issues. I just need to make a new PR with the logs, then copy and paste the comments into each issue, and I'll figure out the links from there
+
+---
+
+_**Agent (claude-sonnet-5 2026-09-28 18:05:06Z)**_
+
+<tool-use data-tool-type="generic" data-tool-name="Skill"><details>
+<summary>Tool use: **Skill**</summary>
+
+**Input:**
+
+- args: `Create a new branch off master, commit the new ai-log file ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md, push it, and open a PR (leave the PR template blank/unmodified per repo rules). This log documents a session that rescoped issue #12 and #14 descriptions into Bennett's INVEST format (the user already manually applied those description edits directly on the issues themselves via copy-paste, so no issue-description edits are part of this PR — just the log file).`
+- skill: `committing-actual-changes`
+
+</details></tool-use>
+
+---
+
+_**User (2026-09-28 18:05:06Z)**_
+
+Base directory for this skill: /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.claude/skills/committing-actual-changes
+
+# Committing Changes in actualbudget/actual
+
+Before creating any git commit or pull request in this repo, read:
+
+**`.github/agents/pr-and-commit-rules.md`**
+
+It is the authoritative source for the rules you must apply yourself: the `[AI]` PR-title prefix and leaving the PR template blank (and the Chinese exception). The mechanical commit/git rules are enforced by tooling and aren't restated there. Read it on every commit/PR session so any updates are picked up automatically.
+
+## The one rule worth restating
+
+Every commit message and every pull request title MUST begin with `[AI]`. Commit messages are checked by the git-guard hook (a missing prefix is blocked before the commit lands), so the one that needs _your_ attention is the PR title — nothing checks it for you, and the cost of forgetting it is high since the PR has to be renamed by hand. Examples:
+
+- `[AI] Fix type error in account validation` — correct
+- `Fix type error in account validation` — wrong, missing prefix
+
+The PR-template rule and the rest live in the rules file. Read it before each commit/PR rather than relying on this skill's summary, because the rules file evolves and this skill deliberately does not restate it.
+
+## Why this matters
+
+Maintainers triage AI-authored contributions separately, and the `[AI]` prefix is what makes that triage fast — it also drives the automatic `"AI generated"` PR label, so getting the prefix right is the one action that gates the whole triage path. Without it the PR looks like a normal human contribution and the wrong review process gets applied. The "do not fill in the PR template" rule exists because the human is the one who actually tested the change and can write the Description / Testing / Checklist sections honestly — an AI-filled template misrepresents who did what.
+
+The rules file is short. Read it.
+
+
+ARGUMENTS: Create a new branch off master, commit the new ai-log file ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md, push it, and open a PR (leave the PR template blank/unmodified per repo rules). This log documents a session that rescoped issue #12 and #14 descriptions into Bennett's INVEST format (the user already manually applied those description edits directly on the issues themselves via copy-paste, so no issue-description edits are part of this PR — just the log file).
+
+---
+
+_**Agent (claude-sonnet-5 2026-09-28 18:05:17Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Check working tree status and branch state before creating a new branch
+
+`git status --porcelain=v1 -uall 2>&1 | head -20; echo "---branch---"; git branch --show-current; echo "---remote master up to date?---"; git fetch origin master --quiet 2>&1; git rev-list --left-right --count origin/master...master 2>&1`
+
+```text
+?? ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md
+---branch---
+docs/sprint0-report
+---remote master up to date?---
+4	0
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:05:22Z)**_
+
+<tool-use data-tool-type="read" data-tool-name="Read"><details>
+<summary>Tool use: **Read**</summary>
+ `./.github/PULL_REQUEST_TEMPLATE.md`
+
+```text
+1	<!-- Thank you for submitting a pull request! Make sure to follow the instructions to write release notes for your PR — it should only take a minute or two: https://actualbudget.org/docs/contributing/#writing-good-release-notes. Try running yarn generate:release-notes *before* pushing your PR for an interactive experience. -->
+2	
+3	## Description
+4	
+5	<!-- What does this PR do? Why is it needed? Please give context on the "why?": why do we need this change? What problem is it solving for you?-->
+6	
+7	<!-- If AI tools wrote a significant part of this change, please disclose it here and name the tool you used. See https://actualbudget.org/docs/contributing/ai-usage-policy -->
+8	
+9	## Related issue(s)
+10	
+11	<!-- e.g. Fixes #123, Relates to #456 -->
+12	
+13	## Testing
+14	
+15	<!-- What did you test? How can we reproduce the issue you are fixing or how can we test the feature you built? -->
+16	
+17	## Checklist
+18	
+19	- [ ] Release notes added (see link above)
+20	- [ ] No obvious regressions in affected areas
+21	- [ ] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
+22	
+23	<!--- actual-bot-sections --->
+24
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:05:24Z)**_
+
+Template confirmed — I'll create the PR with this left exactly as-is per the rules. Now creating the branch, committing, and pushing.
+
+_**Agent (claude-sonnet-5 2026-09-28 18:05:34Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Create a new branch off origin/master for the ai-log commit
+
+`git checkout -b docs/sprint1-ai-log-rescope-issues-12-14 origin/master 2>&1`
+
+```text
+Switched to a new branch 'docs/sprint1-ai-log-rescope-issues-12-14'
+branch 'docs/sprint1-ai-log-rescope-issues-12-14' set up to track 'origin/master'.
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:05:42Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Confirm the untracked log file survived the branch switch
+
+`git status --porcelain -uall 2>&1`
+
+```text
+?? ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:05:55Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Stage and commit the ai-log file with the required [AI] prefix
+
+```bash
+git add ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md
+git status --porcelain 2>&1
+git commit -m "$(cat <<'EOF'
+[AI] Add ai-log for Sprint 1 issue #12/#14 rescoping session
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+EOF
+)" 2>&1
+```
+
+```text
+A  ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md
+[docs/sprint1-ai-log-rescope-issues-12-14 319a4f4a9] [AI] Add ai-log for Sprint 1 issue #12/#14 rescoping session
+ 1 file changed, 1655 insertions(+)
+ create mode 100644 ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:06:00Z)**_
+
+Commit created. Now pushing and opening the PR.
+
+_**Agent (claude-sonnet-5 2026-09-28 18:06:08Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Push the new branch to origin
+
+`git push -u origin docs/sprint1-ai-log-rescope-issues-12-14 2>&1`
+
+```text
+remote: 
+remote: Create a pull request for 'docs/sprint1-ai-log-rescope-issues-12-14' on GitHub by visiting:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/pull/new/docs/sprint1-ai-log-rescope-issues-12-14        
+remote: 
+remote: GitHub found 79 vulnerabilities on CSCI-435-SE/actual-budget's default branch (42 high, 31 moderate, 6 low). To find out more, visit:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
+remote: 
+To https://github.com/CSCI-435-SE/actual-budget.git
+ * [new branch]          docs/sprint1-ai-log-rescope-issues-12-14 -> docs/sprint1-ai-log-rescope-issues-12-14
+branch 'docs/sprint1-ai-log-rescope-issues-12-14' set up to track 'origin/docs/sprint1-ai-log-rescope-issues-12-14'.
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:06:35Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Open the PR with an [AI]-prefixed title and unmodified PR template body
+
+```bash
+gh pr create --repo CSCI-435-SE/actual-budget \
+  --title "[AI] Add ai-log for Sprint 1 issue #12/#14 rescoping session" \
+  --body-file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.github/PULL_REQUEST_TEMPLATE.md \
+  --base master \
+  --head docs/sprint1-ai-log-rescope-issues-12-14 2>&1
+```
+
+```text
+The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  what is this for? I thought we already did a PR?
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:06:40Z)**_
+
+No PR has been created yet in this session — we only pushed the branch just now. This `gh pr create` call is the actual PR-opening step you asked for ("I just need to make a new PR with the logs"). The earlier "sprint0-report PR" mentioned in git history was from a previous session, unrelated to this one.
+
+Want me to go ahead and open it?
+
+---
+
+_**User (2026-09-28 18:07:14Z)**_
+
+Ok, let's do the PR
+
+---
+
+_**Agent (claude-sonnet-5 2026-09-28 18:07:32Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Open the PR with an [AI]-prefixed title and unmodified PR template body
+
+```bash
+gh pr create --repo CSCI-435-SE/actual-budget \
+  --title "[AI] Add ai-log for Sprint 1 issue #12/#14 rescoping session" \
+  --body-file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.github/PULL_REQUEST_TEMPLATE.md \
+  --base master \
+  --head docs/sprint1-ai-log-rescope-issues-12-14 2>&1
+```
+
+```text
+https://github.com/CSCI-435-SE/actual-budget/pull/50
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-28 18:07:36Z)**_
+
+PR opened: https://github.com/CSCI-435-SE/actual-budget/pull/50
+
+The ai-log file is now on that branch, so once it merges, the link `ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-12-and-14.md` will resolve on `master`. You mentioned you'll handle pasting the AI Assistance comments into issues #12 and #14 yourself — the draft text from earlier is ready whenever you want it.
+
+---
+
+_**User (2026-09-29 19:18:15Z)**_
+
+We actually need to do the same thing for issue 11, we can add on to this AI log/PR and edit the name of the ai-log. We'll use specstory sync when we're done for the logs.
+
+---
+
+_**Agent (claude-sonnet-5 2026-09-29 19:18:27Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Fetch issue #11 for rescoping
+
+`gh issue view 11 --repo CSCI-435-SE/actual-budget --json title,body,url,author,labels 2>&1`
+
+```text
+{"author":{"id":"MDQ6VXNlcjQzNzI5MzYy","is_bot":false,"login":"TigerK9","name":"Liam McLemore"},"body":"Summary\nUsers viewing their net worth on the reports page see their historical asset and liability trends, but lack a quick, quantifiable metric showing growth over the current calendar year. Adding a Year-to-Date (YTD) percentage change indicator to the net worth summary card would give users insight into their financial trajectory.\n\nUser Story\nAs a user tracking my long-term financial health, I want to see a YTD percentage change next to my net worth on the reports page so that I can instantly gauge my financial growth over the current year at a glance.\n\nRough Scope\nLarge — Requires writing query logic in the core financial engine to isolate the baseline net worth balance from January 1st, handling edge cases for accounts created mid-year (so they don't skew the baseline), and updating the React frontend component to render the directional percentage badge cleanly alongside existing metrics.\n\nSource\nCommunity feature request / GitHub issue discussion.","labels":[{"id":"LA_kwDOTldplM8AAAACzxRwuw","name":"scope: large","description":"","color":"93474c"}],"title":"Add percentage of YTD change in net worth under \"reports\"","url":"https://github.com/CSCI-435-SE/actual-budget/issues/11"}
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:18:33Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Locate net worth calculation logic and existing percentage-change UI patterns
+
+`echo "=== net worth spreadsheet calc ===" && find packages/loot-core/src -iname "*networth*" -o -iname "*net-worth*" | head -10; echo "=== percent/change badge components ===" && grep -rl "percent\|Percent" packages/desktop-client/src/components/reports --include="*.tsx" | grep -v test | head -10`
+
+```text
+=== net worth spreadsheet calc ===
+=== percent/change badge components ===
+packages/desktop-client/src/components/reports/SummaryNumber.tsx
+packages/desktop-client/src/components/reports/graphs/SankeyGraph.tsx
+packages/desktop-client/src/components/reports/graphs/DonutGraph.tsx
+packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx
+packages/desktop-client/src/components/reports/reports/SummaryCard.tsx
+packages/desktop-client/src/components/reports/reports/Sankey.tsx
+packages/desktop-client/src/components/reports/reports/SankeyCard.tsx
+packages/desktop-client/src/components/reports/reports/Summary.tsx
+packages/desktop-client/src/components/reports/reports/Crossover.tsx
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:18:34Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Inspect NetWorth report component structure
+
+`sed -n '1,80p' packages/desktop-client/src/components/reports/reports/NetWorth.tsx 2>&1`
+
+```text
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useParams } from 'react-router';
+
+import { Button } from '@actual-app/components/button';
+import { useResponsive } from '@actual-app/components/hooks/useResponsive';
+import { SvgCalendar, SvgChart } from '@actual-app/components/icons/v1';
+import { Menu } from '@actual-app/components/menu';
+import { Paragraph } from '@actual-app/components/paragraph';
+import { Popover } from '@actual-app/components/popover';
+import { styles } from '@actual-app/components/styles';
+import { theme } from '@actual-app/components/theme';
+import { View } from '@actual-app/components/view';
+import { send } from '@actual-app/core/platform/client/connection';
+import * as monthUtils from '@actual-app/core/shared/months';
+import type { NetWorthWidget, TimeFrame } from '@actual-app/core/types/models';
+import * as d from 'date-fns';
+
+import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
+import { FinancialText } from '#components/FinancialText';
+import { MobileBackButton } from '#components/mobile/MobileBackButton';
+import { MobilePageHeader, Page, PageHeader } from '#components/Page';
+import { PrivacyFilter } from '#components/PrivacyFilter';
+import { Change } from '#components/reports/Change';
+import { NetWorthGraph } from '#components/reports/graphs/NetWorthGraph';
+import { Header } from '#components/reports/Header';
+import { LoadingIndicator } from '#components/reports/LoadingIndicator';
+import { ReportOptions } from '#components/reports/ReportOptions';
+import { calculateTimeRange } from '#components/reports/reportRanges';
+import { createSpreadsheet as netWorthSpreadsheet } from '#components/reports/spreadsheets/net-worth-spreadsheet';
+import { useReport } from '#components/reports/useReport';
+import { fromDateRepr } from '#components/reports/util';
+import { useAccounts } from '#hooks/useAccounts';
+import { useDashboardWidget } from '#hooks/useDashboardWidget';
+import { useFormat } from '#hooks/useFormat';
+import { useLocale } from '#hooks/useLocale';
+import { useNavigate } from '#hooks/useNavigate';
+import { useRuleConditionFilters } from '#hooks/useRuleConditionFilters';
+import { useSyncedPref } from '#hooks/useSyncedPref';
+import { addNotification } from '#notifications/notificationsSlice';
+import { useDispatch } from '#redux';
+import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+export function NetWorth() {
+  const params = useParams();
+  const { data: widget, isLoading } = useDashboardWidget<NetWorthWidget>({
+    id: params.id,
+    type: 'net-worth-card',
+  });
+
+  if (isLoading) {
+    return <LoadingIndicator />;
+  }
+
+  return <NetWorthInner widget={widget} />;
+}
+
+type NetWorthInnerProps = {
+  widget?: NetWorthWidget;
+};
+
+function NetWorthInner({ widget }: NetWorthInnerProps) {
+  const locale = useLocale();
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
+  const format = useFormat();
+
+  const getDefaultIntervalForMode = useCallback(
+    (mode: TimeFrame['mode']): 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' => {
+      if (mode === 'lastMonth') {
+        return 'Weekly'; // For a single month, weekly interval provides better granularity than a single monthly data point
+      }
+      return 'Monthly';
+    },
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:18:38Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Inspect the existing Change component and how NetWorth.tsx uses it
+
+`cat packages/desktop-client/src/components/reports/Change.tsx 2>&1 | head -60; echo "=== usage in NetWorth.tsx ==="; grep -n "Change\b" packages/desktop-client/src/components/reports/reports/NetWorth.tsx`
+
+```text
+import React from 'react';
+import type { CSSProperties } from 'react';
+
+import { Block } from '@actual-app/components/block';
+import { styles } from '@actual-app/components/styles';
+import { theme } from '@actual-app/components/theme';
+
+import { FinancialText } from '#components/FinancialText';
+import { useFormat } from '#hooks/useFormat';
+
+export function Change({
+  amount,
+  style,
+}: {
+  amount: number;
+  style?: CSSProperties;
+}) {
+  const format = useFormat();
+
+  return (
+    <FinancialText
+      as={Block}
+      style={{
+        ...styles.smallText,
+        color:
+          amount === 0
+            ? theme.reportsNumberNeutral
+            : amount < 0
+              ? theme.reportsNumberNegative
+              : theme.reportsNumberPositive,
+        ...style,
+      }}
+    >
+      {format(amount, 'financial-with-sign')}
+    </FinancialText>
+  );
+}
+=== usage in NetWorth.tsx ===
+30:import { Change } from '#components/reports/Change';
+91:    onConditionsOpChange,
+330:        onConditionsOpChange={onConditionsOpChange}
+333:            <IntervalSelector interval={interval} onChange={setInterval} />
+334:            <ModeSelector mode={graphMode} onChange={setGraphMode} />
+370:            <Change amount={data.totalChange} />
+406:  onChange,
+409:  onChange: (val: 'Daily' | 'Weekly' | 'Monthly' | 'Yearly') => void;
+426:        aria-label={t('Change interval')}
+436:        onOpenChange={() => setIsOpen(false)}
+440:            onChange(item as 'Daily' | 'Weekly' | 'Monthly' | 'Yearly');
+455:  onChange,
+458:  onChange: (val: 'trend' | 'stacked') => void;
+479:        aria-label={t('Change mode')}
+489:        onOpenChange={() => setIsOpen(false)}
+493:            onChange(item as 'trend' | 'stacked');
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:18:39Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Inspect net-worth-spreadsheet calculation logic
+
+`find packages/desktop-client/src/components/reports/spreadsheets -iname "*net-worth*"; sed -n '1,80p' packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts 2>&1`
+
+```text
+packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
+import { send } from '@actual-app/core/platform/client/connection';
+import * as monthUtils from '@actual-app/core/shared/months';
+import { q } from '@actual-app/core/shared/query';
+import type {
+  AccountEntity,
+  RuleConditionEntity,
+} from '@actual-app/core/types/models';
+import * as d from 'date-fns';
+import type { Locale } from 'date-fns';
+import { keyBy } from 'es-toolkit';
+
+import { ReportOptions } from '#components/reports/ReportOptions';
+import type { useSpreadsheet } from '#hooks/useSpreadsheet';
+import { aqlQuery } from '#queries/aqlQuery';
+
+type Balance = {
+  date: string;
+  amount: number;
+};
+
+export function createSpreadsheet(
+  start: string,
+  end: string,
+  accounts: AccountEntity[],
+  conditions: RuleConditionEntity[] = [],
+  conditionsOp: 'and' | 'or' = 'and',
+  locale: Locale,
+  interval: string = 'Monthly',
+  firstDayOfWeekIdx: string = '0',
+) {
+  return async (
+    spreadsheet: ReturnType<typeof useSpreadsheet>,
+    setData: (data: ReturnType<typeof recalculate>) => void,
+  ) => {
+    const { filters } = await send('make-filters-from-conditions', {
+      conditions: conditions.filter(cond => !cond.customName),
+    });
+    const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
+
+    // Go back exactly one interval before the selected range start
+    // to get the correct starting balance for the first period
+    const rangeStart = d.parseISO(monthUtils.firstDayOfMonth(start));
+    let startDate: string;
+    if (interval === 'Daily') {
+      startDate = monthUtils.dayFromDate(d.subDays(rangeStart, 1));
+    } else if (interval === 'Weekly') {
+      startDate = monthUtils.weekFromDate(
+        d.subDays(rangeStart, 1),
+        firstDayOfWeekIdx,
+      );
+    } else {
+      // Monthly or yearly
+      startDate = monthUtils.firstDayOfMonth(monthUtils.prevMonth(start));
+    }
+
+    // If the earliest transaction is on or after the first day of the start
+    // month, the prior period lookback would be empty (all zeros). Skip it to
+    // avoid rendering an empty data point.
+    const earliestTransaction = await send('get-earliest-transaction');
+    if (
+      earliestTransaction &&
+      earliestTransaction.date >= monthUtils.firstDayOfMonth(start)
+    ) {
+      if (interval === 'Daily') {
+        startDate = earliestTransaction.date;
+      } else if (interval === 'Weekly') {
+        startDate = monthUtils.weekFromDate(
+          earliestTransaction.date,
+          firstDayOfWeekIdx,
+        );
+      } else {
+        // Monthly or Yearly
+        startDate = monthUtils.firstDayOfMonth(start);
+      }
+    }
+
+    // Start with the provided end-of-month date, then adjust for current context
+    let endDate = monthUtils.lastDayOfMonth(end);
+
+    if (interval === 'Daily') {
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:18:50Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Check the shape of computed net worth data (starting/ending balance fields)
+
+`grep -n "totalChange\|startingBalance\|endingBalance\|function recalculate\|return {" packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts | head -30`
+
+```text
+161:        return {
+183:function recalculate(
+321:  return {
+329:    totalChange: endNetWorth - startNetWorth,
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:19:02Z)**_
+
+<tool-use data-tool-type="read" data-tool-name="Read"><details>
+<summary>Tool use: **Read**</summary>
+ `./packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts`
+
+```text
+300	      date: d.format(x, tooltipFormat, { locale }),
+301	      ...balances,
+302	    };
+303	
+304	    arr.push(graphPoint);
+305	
+306	    // Track min/max for the current point only
+307	    if (lowestNetWorth === null || graphPoint.y < lowestNetWorth) {
+308	      lowestNetWorth = graphPoint.y;
+309	    }
+310	    if (highestNetWorth === null || graphPoint.y > highestNetWorth) {
+311	      highestNetWorth = graphPoint.y;
+312	    }
+313	
+314	    return arr;
+315	  }, []);
+316	
+317	  const hasBalance = accountBalances.map(balances =>
+318	    balances.some(b => b !== 0),
+319	  );
+320	
+321	  return {
+322	    graphData: {
+323	      data: graphData,
+324	      hasNegative,
+325	      start: startDate,
+326	      end: endDate,
+327	    },
+328	    netWorth: endNetWorth,
+329	    totalChange: endNetWorth - startNetWorth,
+330	    lowestNetWorth,
+331	    highestNetWorth,
+332	    accounts: data
+333	      .filter((_, i) => hasBalance[i])
+334	      .map(d => ({ id: d.id, name: d.name })),
+335	  };
+336	}
+337
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:19:36Z)**_
+
+Same grounding approach as before — this one turned up something important. Here's what I found in the codebase:
+
+- `TimeFrame['mode']` (in `packages/loot-core/src/types/models/dashboard.ts`) **already includes `'yearToDate'`** as a built-in option.
+- `net-worth-spreadsheet.ts` already computes `totalChange: endNetWorth - startNetWorth` for whatever range is selected, and already has logic to adjust the lookback start date when an account's earliest transaction is mid-range (exactly the "accounts created mid-year" edge case the original description flagged as a concern).
+- `startNetWorth` is computed internally but just isn't currently returned from `recalculate()` — trivial to expose.
+- There's already a `Change` component rendering a directional colored dollar delta — no percentage variant yet, but the pattern to follow already exists.
+
+So the original "Large" estimate — "writing query logic in the core financial engine," "handling edge cases for accounts created mid-year" — describes work that's already done. This is mostly a UI addition, not new engine logic. Draft:
+
+_**Agent (claude-sonnet-5 2026-09-29 19:19:48Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Write"><details>
+<summary>Tool use: **Write**</summary>
+
+```markdown
+## Summary
+
+Users viewing the Net Worth report already have a "Yearly" interval and a built-in year-to-date time-frame mode (`TimeFrame['mode']` in `packages/loot-core/src/types/models/dashboard.ts` already includes `'yearToDate'`), and the net-worth spreadsheet (`net-worth-spreadsheet.ts`) already computes a `totalChange` (end balance minus start balance) for whatever range is selected — it also already handles the case where an account's earliest transaction falls after the range start, adjusting the lookback so a new account doesn't produce a misleading empty gap. What's missing is a percentage-based version of that change: today `totalChange` is only ever shown as a raw dollar amount via the existing `Change` component, with no percentage/directional badge next to it.
+
+## User Story
+
+As a user tracking my long-term financial health, I want to see a YTD percentage change next to my net worth on the reports page so that I can instantly gauge my financial growth over the current year at a glance.
+
+## Acceptance Criteria
+
+1. The Net Worth report page (and/or its dashboard card — see Open Question #1) shows a percentage-change value alongside the existing dollar `Change` amount.
+2. The percentage is computed as `(endNetWorth - startNetWorth) / abs(startNetWorth) * 100`, using the same start/end balances the existing `totalChange` calculation already derives internally in `net-worth-spreadsheet.ts` — no new query/engine logic is required; `startNetWorth` just needs to be added to what `recalculate()` returns.
+3. The percentage badge uses the same directional color convention as the existing `Change` component (positive / negative / neutral).
+4. If the starting balance is exactly $0 (e.g. a brand-new budget with no prior net worth), the percentage is not rendered as `Infinity` or `NaN` — show a fallback (e.g. "N/A", or hide the percentage) instead.
+5. Formatting matches the currency/decimal and percentage conventions used elsewhere in Actual.
+
+## Out of Scope
+
+- A percentage-change indicator for time ranges other than YTD (e.g. last month, last year, custom range) — this issue is scoped to the YTD case only.
+- Any change to how the underlying net worth balance itself is calculated — this only adds a percentage *view* of numbers already computed.
+- A historical chart of percentage change over time — this is a single point-in-time indicator, not a new graph.
+
+## Open Questions
+
+1. Should this live on the full Net Worth report page, the condensed Net Worth dashboard card, or both? The dollar `Change` component is currently only used on the full report page (`NetWorth.tsx`) — confirm whether the card view needs it too.
+2. For an account created mid-year, the existing spreadsheet logic already shifts the lookback start date to that account's earliest transaction rather than Jan 1, so its "starting balance" isn't really a Jan-1 balance. Is a percentage computed against that adjusted starting balance still meaningful, or should such accounts be excluded from the percentage calculation while still counting toward the dollar total?
+3. Should the percentage always reflect calendar YTD (Jan 1 to today) regardless of whatever interval/time-frame the user has selected in the report's own controls, or should it track whatever range is currently selected and only be labeled "YTD" when that range happens to be the year-to-date one?
+
+## Rough Scope
+
+Medium — The original "Large" estimate assumed new engine-level query logic was needed, but the YTD time-frame mode and the mid-year-account lookback handling already exist in `net-worth-spreadsheet.ts`, and the starting balance needed for a percentage is already computed internally (just not currently returned). The remaining work is exposing that value, adding a percentage-formatting UI element following the existing `Change` component's pattern, and resolving Open Questions #1–#3 about exactly where and how it should apply — mostly UI wiring and edge-case handling rather than new financial-engine work.
+
+## Source
+
+Community feature request / GitHub issue discussion.
+
+```
+
+```text
+File created successfully at: /private/tmp/claude-501/-Users-liammclemore-Desktop-csci-csci-435-budget-actual-budget/ed09a593-70f0-44a2-85cc-f5c62515e79b/scratchpad/issue-11-rescoped.md (file state is current in your context — no need to Read it back)
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:19:52Z)**_
+
+Draft for issue #11 is ready at the scratchpad path above — take a look and let me know if the scope call or any of the acceptance criteria/open questions need adjusting.
+
+Once you're happy with it and have pasted it into the issue, let me know and I'll:
+1. Rename the ai-log file to cover all three issues (11, 12, 14)
+2. Re-run `specstory sync` for the final full transcript
+3. Push the rename + refreshed log as another commit onto the existing PR #50 branch
+
+---
+
+_**User (2026-09-29 19:21:11Z)**_
+
+That looks good. Also give me the comment to copy and paste on the issue to reference AI use
+
+---
+
+_**Agent (claude-sonnet-5 2026-09-29 19:21:22Z)**_
+
+Here's the comment for issue #11, using the log path it'll have once we rename/finalize it (`ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-11-12-and-14.md`):
+
+```
+🤖
+### AI Assistance — @TigerK9
+
+**Role in this issue:** Other (issue rescoping)
+
+| # | Tool | Log | What AI helped with |
+|---|---|---|---|
+| 1 | claude-code | [link](ai-logs/sprint1/tigerk9/2026-09-28_claude-code_rescope-issues-11-12-and-14.md) | Rescoping the issue description into Bennett's INVEST format (user story, acceptance criteria, out of scope, open questions, rough scope), grounded in the existing net-worth spreadsheet calculation and YTD time-frame logic already in the codebase |
+```
+
+Heads up: this link won't resolve until I do the rename/re-sync/push step we discussed. Want me to go ahead and do that now — rename the log file to include issue #11, re-run `specstory sync`, and push the update to PR #50?
+
+---
+
+_**User (2026-09-29 19:22:24Z)**_
+
+The comment looks good. Let's update the PR with the new logs now
+
+---
+
+_**Agent (claude-sonnet-5 2026-09-29 19:22:31Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Confirm current branch and working tree state
+
+`git branch --show-current; git status --porcelain -uall 2>&1`
+
+```text
+docs/sprint1-ai-log-rescope-issues-12-14
+```
+</details></tool-use>
+
+_**Agent (claude-sonnet-5 2026-09-29 19:22:33Z)**_
+
+Good, already on the right branch and clean. Let's refresh the transcript via specstory sync, then rename and commit.
+
+_**Agent (claude-sonnet-5 2026-09-29 19:22:34Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Refresh the session transcript to include the issue #11 rescoping work
+
+`specstory sync claude -s ed09a593-70f0-44a2-85cc-f5c62515e79b --console --no-cloud-sync 2>&1 | tail -10`
 </details></tool-use>
