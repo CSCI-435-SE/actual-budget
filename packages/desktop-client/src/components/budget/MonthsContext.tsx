@@ -20,6 +20,16 @@ export function getValidMonthBounds(
   };
 }
 
+export function getVisibleMonths(
+  startMonth: undefined | string,
+  numMonths: number,
+  monthBounds: MonthBounds,
+) {
+  const endMonth = monthUtils.addMonths(startMonth, numMonths - 1);
+  const bounds = getValidMonthBounds(monthBounds, startMonth, endMonth);
+  return monthUtils.rangeInclusive(bounds.start, bounds.end);
+}
+
 type MonthsContextProps = {
   months: string[];
   type: string;
@@ -42,9 +52,7 @@ export function MonthsProvider({
   type,
   children,
 }: MonthsProviderProps) {
-  const endMonth = monthUtils.addMonths(startMonth, numMonths - 1);
-  const bounds = getValidMonthBounds(monthBounds, startMonth, endMonth);
-  const months = monthUtils.rangeInclusive(bounds.start, bounds.end);
+  const months = getVisibleMonths(startMonth, numMonths, monthBounds);
 
   return (
     <MonthsContext.Provider value={{ months, type }}>
