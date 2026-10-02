@@ -82,6 +82,7 @@ type CreateCategoryPayload = {
   groupId: CategoryGroupEntity['id'];
   isIncome: boolean;
   isHidden: boolean;
+  parentId?: CategoryEntity['id'] | null;
 };
 
 export function useCreateCategoryMutation() {
@@ -95,6 +96,7 @@ export function useCreateCategoryMutation() {
       groupId,
       isIncome,
       isHidden,
+      parentId,
     }: CreateCategoryPayload) => {
       if (name.length > CATEGORY_NAME_MAX_LENGTH) {
         dispatchCategoryNameTooLongNotification(dispatch, t);
@@ -106,6 +108,7 @@ export function useCreateCategoryMutation() {
         groupId,
         isIncome,
         hidden: isHidden,
+        parentId,
       });
       return id;
     },
@@ -190,6 +193,7 @@ export function useSaveCategoryMutation() {
           groupId: category.group,
           isIncome: !!category.is_income,
           isHidden: !!category.hidden,
+          parentId: category.parent_id,
         });
       } else {
         await updateCategory.mutateAsync({ category });

@@ -25,7 +25,8 @@ export const SidebarCategoryButtons = ({
   return (
     <>
       <View style={{ flex: 1 }} />
-      {!goalsShown && isGoalTemplatesUIEnabled && (
+      {/* Subcategories don't run templates, so there's nothing to set up */}
+      {!goalsShown && isGoalTemplatesUIEnabled && !category.parent_id && (
         <View style={{ flexShrink: 0 }}>
           <CategoryAutomationButton
             category={category}

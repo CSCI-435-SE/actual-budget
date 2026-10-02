@@ -24,6 +24,7 @@ import type { MonthBounds } from './MonthsContext';
 import {
   findSortDown,
   findSortUp,
+  getCategoryDropTarget,
   getScrollbarWidth,
   separateGroups,
 } from './util';
@@ -118,8 +119,17 @@ export function BudgetTable(props: BudgetTableProps) {
     targetId: string,
   ) => {
     const isGroup = !!categoryGroups.find(g => g.id === targetId);
+    const dragged = categoryGroups
+      .flatMap(g => g.categories ?? [])
+      .find(cat => cat.id === id);
 
     if (isGroup) {
+      // A subcategory stays with its parent, so it can't be dropped onto a
+      // group header
+      if (dragged?.parent_id) {
+        return;
+      }
+
       const { targetId: groupId } = findSortUp(
         categoryGroups,
         dropPos,
@@ -143,12 +153,11 @@ export function BudgetTable(props: BudgetTableProps) {
         categories.some(cat => cat.id === targetId),
       );
 
-      if (group) {
-        onReorderCategory({
-          id,
-          groupId: group.id,
-          ...findSortDown(group.categories || [], dropPos, targetId),
-        });
+      if (group && dragged) {
+        const target = getCategoryDropTarget(group, dragged, dropPos, targetId);
+        if (target) {
+          onReorderCategory({ id, groupId: group.id, ...target });
+        }
       }
     }
   };

@@ -166,6 +166,9 @@ async function getTemplates(
   const categoryTemplates: Record<CategoryEntity['id'], Template[]> = {};
   for (const categoryWithGoalDef of categoriesWithGoalDef.filter(filter)) {
     if (!categoryWithGoalDef.goal_def) continue;
+    // Templates would fund a subcategory straight from To Budget, but a
+    // subcategory can only get money through its parent.
+    if (categoryWithGoalDef.parent_id) continue;
     categoryTemplates[categoryWithGoalDef.id] = JSON.parse(
       categoryWithGoalDef.goal_def,
     );
@@ -379,7 +382,8 @@ export async function dryRunCategoryTemplate({
   const { data: categoryData }: { data: CategoryEntity[] } = await aqlQuery(
     q('categories').filter({ id: categoryId }).select('*'),
   );
-  if (categoryData.length === 0) {
+  // Subcategories don't run templates (see getTemplates)
+  if (categoryData.length === 0 || categoryData[0].parent_id) {
     return { budgeted: 0, perTemplate: templates.map(() => 0) };
   }
   const { contexts } = await computeTemplates(

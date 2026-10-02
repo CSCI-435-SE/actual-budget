@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 
+import { useCategory } from '#hooks/useCategory';
 import { useFormat } from '#hooks/useFormat';
 import { envelopeBudget } from '#spreadsheet/bindings';
 
@@ -22,6 +23,7 @@ export function BalanceMovementMenu({
   onClose,
 }: BalanceMovementMenuProps) {
   const format = useFormat();
+  const { data: category } = useCategory(categoryId);
 
   const catBalance =
     useEnvelopeSheetValue(envelopeBudget.catBalance(categoryId)) ?? 0;
@@ -75,6 +77,9 @@ export function BalanceMovementMenu({
       {menu === 'cover' && (
         <CoverMenu
           categoryId={categoryId}
+          // A subcategory is covered by its parent or another category,
+          // never straight from "To Budget"
+          showToBeBudgeted={!category?.parent_id}
           initialAmount={catBalance}
           onClose={onClose}
           onSubmit={(amount, fromCategoryId) => {

@@ -152,6 +152,69 @@ export function setBudget({
   });
 }
 
+function getParentCategoryId(
+  category: CategoryEntity['id'],
+): CategoryEntity['id'] | null {
+  const row = db.firstSync<Pick<db.DbCategory, 'parent_id'>>(
+    `SELECT c.parent_id FROM categories c
+     JOIN categories p ON p.id = c.parent_id AND p.tombstone = 0
+     WHERE c.id = ?`,
+    [category],
+  );
+  return row?.parent_id ?? null;
+}
+
+// "To Budget" can't fund a subcategory directly; its parent has to.
+function assertNotSubcategory(category: CategoryEntity['id']) {
+  if (getParentCategoryId(category)) {
+    throw new Error(
+      'A subcategory can only be funded from its parent category, not To Budget',
+    );
+  }
+}
+
+// Sets a category's budget with the money coming from "To Budget". A
+// subcategory can only be funded through its parent, so for one of those
+// the difference is moved out of (or back into) the parent instead, and
+// it can't take more than the parent has budgeted that month. Use
+// setBudget directly when the caller already decides where the money
+// comes from, such as a transfer between two categories.
+//
+// Both amounts are read before either is written, because writes inside
+// a batch aren't visible until it ends. Don't call this twice for the
+// same parent and month inside one batch.
+export async function setCategoryBudget({
+  category,
+  month,
+  amount,
+}: {
+  category: CategoryEntity['id'];
+  month: string;
+  amount: unknown;
+}): Promise<void> {
+  const requested = safeNumber(typeof amount === 'number' ? amount : 0);
+  const parentId = getParentCategoryId(category);
+  if (!parentId) {
+    return setBudget({ category, month, amount: requested });
+  }
+
+  const current = getBudget({ category, month });
+  const parentAmount = getBudget({ category: parentId, month });
+  const delta = Math.min(requested - current, Math.max(parentAmount, 0));
+  const newAmount = current + delta;
+
+  await batchMessages(async () => {
+    await setBudget({ category, month, amount: newAmount });
+    if (delta !== 0) {
+      await setBudget({
+        category: parentId,
+        month,
+        amount: parentAmount - delta,
+      });
+    }
+  });
+}
+
 export function setGoal({ month, category, goal, long_goal }): Promise<void> {
   const table = getBudgetTable();
   const existing = db.firstSync<
@@ -254,7 +317,7 @@ export async function copySinglePreviousMonth({
     'budget-' + category,
   );
   await batchMessages(async () => {
-    void setBudget({ category, month, amount: newAmount });
+    await setCategoryBudget({ category, month, amount: newAmount });
   });
 }
 
@@ -327,7 +390,7 @@ export async function set12MonthAvg({
       if (cat.is_income === 1 && !isTrackingBudget()) {
         continue;
       }
-      void setNMonthAvg({ month, N: 12, category: cat.id });
+      void budgetNMonthAvg({ month, N: 12, category: cat.id });
     }
   });
 }
@@ -351,19 +414,32 @@ export async function set6MonthAvg({
       if (cat.is_income === 1 && !isTrackingBudget()) {
         continue;
       }
-      void setNMonthAvg({ month, N: 6, category: cat.id });
+      void budgetNMonthAvg({ month, N: 6, category: cat.id });
     }
   });
 }
 
-export async function setNMonthAvg({
+// Budgets a single category, so a subcategory's average comes out of its
+// parent. The bulk averages write every category (parents included) and
+// go through budgetNMonthAvg directly.
+export async function setNMonthAvg(args: {
+  month: string;
+  N: number;
+  category: string;
+}): Promise<void> {
+  await budgetNMonthAvg({ ...args, fromParent: true });
+}
+
+async function budgetNMonthAvg({
   month,
   N,
   category,
+  fromParent = false,
 }: {
   month: string;
   N: number;
   category: string;
+  fromParent?: boolean;
 }): Promise<void> {
   const categoryFromDb = await db.first<Pick<db.DbViewCategory, 'is_income'>>(
     'SELECT is_income FROM v_categories WHERE id = ?',
@@ -381,7 +457,11 @@ export async function setNMonthAvg({
       avg *= -1;
     }
 
-    void setBudget({ category, month, amount: avg });
+    if (fromParent) {
+      await setCategoryBudget({ category, month, amount: avg });
+    } else {
+      void setBudget({ category, month, amount: avg });
+    }
   });
 }
 
@@ -528,6 +608,10 @@ export async function coverOverspending({
   amount?: IntegerAmount;
   currencyCode: string;
 }): Promise<void> {
+  if (from === 'to-budget' && to !== 'to-budget') {
+    assertNotSubcategory(to);
+  }
+
   const sheetName = monthUtils.sheetForMonth(month);
   const toBudgeted = await getSheetValue(sheetName, 'budget-' + to);
   const leftoverFrom = await getSheetValue(
@@ -584,6 +668,8 @@ export async function transferAvailable({
   amount: number;
   category: string;
 }): Promise<void> {
+  assertNotSubcategory(category);
+
   const sheetName = monthUtils.sheetForMonth(month);
   const leftover = await getSheetValue(sheetName, 'to-budget');
   amount = Math.max(Math.min(amount, leftover), 0);
@@ -653,6 +739,10 @@ export async function transferCategory({
   from: CategoryEntity['id'] | 'to-budget';
   currencyCode: string;
 }): Promise<void> {
+  if (from === 'to-budget' && to !== 'to-budget') {
+    assertNotSubcategory(to);
+  }
+
   const sheetName = monthUtils.sheetForMonth(month);
   const fromBudgeted = await getSheetValue(sheetName, 'budget-' + from);
 
@@ -696,7 +786,7 @@ export async function copyUntilYearEnd({
 
   await batchMessages(async () => {
     for (const futureMonth of futureMonths) {
-      void setBudget({ category, month: futureMonth, amount });
+      await setCategoryBudget({ category, month: futureMonth, amount });
     }
   });
 }

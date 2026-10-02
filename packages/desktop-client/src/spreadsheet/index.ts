@@ -47,6 +47,7 @@ export type Spreadsheets = {
     'group-budget': number;
     'group-leftover': number;
     budget: number;
+    'parent-total-budget': number;
     'sum-amount': number;
     leftover: number;
     carryover: number;
@@ -70,6 +71,7 @@ export type Spreadsheets = {
     'group-budget': number;
     'group-leftover': number;
     budget: number;
+    'parent-total-budget': number;
     'sum-amount': number;
     leftover: number;
     carryover: number;

@@ -95,6 +95,28 @@ describe('useCreateCategoryMutation (mobile category creation)', () => {
     });
     expect(getNotifications(store)).toEqual([]);
   });
+
+  it('sends the parent when creating a subcategory', async () => {
+    const createCategoryHandler = vi.fn(async () => 'new-id');
+    initServer({ 'category-create': createCategoryHandler });
+
+    const store = createTestAppStore();
+    const { result } = renderHook(() => useCreateCategoryMutation(), {
+      wrapper: wrapperFor(store),
+    });
+
+    await result.current.mutateAsync({
+      name: 'Restaurants',
+      groupId: 'group1',
+      isIncome: false,
+      isHidden: false,
+      parentId: 'food',
+    });
+
+    expect(createCategoryHandler).toHaveBeenCalledWith(
+      expect.objectContaining({ parentId: 'food' }),
+    );
+  });
 });
 
 // Desktop's "new category" row saves through useSaveCategoryMutation with id: 'new'.
@@ -151,5 +173,28 @@ describe('useSaveCategoryMutation (desktop category creation)', () => {
 
     await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled());
     expect(getNotifications(store)).toEqual([]);
+  });
+
+  it('creates a new subcategory under its parent', async () => {
+    const createCategoryHandler = vi.fn(async () => 'new-id');
+    initServer({
+      'get-categories': async () => ({ grouped: [], list: [] }),
+      'category-create': createCategoryHandler,
+    });
+
+    const store = createTestAppStore();
+    const { result } = renderHook(() => useSaveCategoryMutation(), {
+      wrapper: wrapperFor(store),
+    });
+
+    await result.current.mutateAsync({
+      category: { ...newCategory('Restaurants'), parent_id: 'food' },
+    });
+
+    await waitFor(() =>
+      expect(createCategoryHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ groupId: 'group1', parentId: 'food' }),
+      ),
+    );
   });
 });

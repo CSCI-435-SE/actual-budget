@@ -13,11 +13,14 @@ type BudgetMenuProps = Omit<
   onCopyLastMonthAverage: () => void;
   onSetMonthsAverage: (numberOfMonths: number) => void;
   onApplyBudgetTemplate: () => void;
+  /** False for subcategories, which don't run templates. */
+  canApplyTemplate?: boolean;
 };
 export function BudgetMenu({
   onCopyLastMonthAverage,
   onSetMonthsAverage,
   onApplyBudgetTemplate,
+  canApplyTemplate = true,
   ...props
 }: BudgetMenuProps) {
   const { t } = useTranslation();
@@ -66,7 +69,7 @@ export function BudgetMenu({
           name: 'set-single-12-avg',
           text: t('Set to yearly average'),
         },
-        ...(isGoalTemplatesEnabled
+        ...(isGoalTemplatesEnabled && canApplyTemplate
           ? [
               {
                 name: 'apply-single-category-template',
