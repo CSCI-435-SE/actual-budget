@@ -36,6 +36,7 @@ import * as bindings from '#spreadsheet/bindings';
 
 import { AccountSyncCheck } from './accounts/AccountSyncCheck';
 import { AnimatedRefresh } from './AnimatedRefresh';
+import { BudgetExportMenu } from './budget/BudgetExportMenu';
 import { MonthCountSelector } from './budget/MonthCountSelector';
 import { Link } from './common/Link';
 import { HelpMenu } from './HelpMenu';
@@ -253,6 +254,7 @@ function ServerSyncButton({ style, isMobile = false }: ServerSyncButtonProps) {
 
 function BudgetTitlebar() {
   const [maxMonths, setMaxMonthsPref] = useGlobalPref('maxMonths');
+  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -260,6 +262,7 @@ function BudgetTitlebar() {
         maxMonths={maxMonths || 1}
         onChange={value => setMaxMonthsPref(value)}
       />
+      {budgetType === 'envelope' && <BudgetExportMenu />}
     </View>
   );
 }
