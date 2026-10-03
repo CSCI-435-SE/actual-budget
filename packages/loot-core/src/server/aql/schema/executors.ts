@@ -11,6 +11,7 @@ import type { AqlQueryExecutor } from '#server/aql/exec';
 import { convertOutputType } from '#server/aql/schema-helpers';
 import * as db from '#server/db';
 import { whereIn } from '#server/db/util';
+import { nestCategories } from '#shared/categories';
 import { q } from '#shared/query';
 import type { QueryState } from '#shared/query';
 import type { CategoryEntity } from '#types/models';
@@ -181,7 +182,7 @@ async function execTransactionsGrouped(
     `IFNULL(${sqlPieces.from}.parent_id, ${sqlPieces.from}.id)`,
   );
   const finalSql = `
-    SELECT ${sqlPieces.select}, parent_id AS _parent_id FROM ${sqlPieces.from}
+    SELECT ${sqlPieces.select}, ${sqlPieces.from}.parent_id AS _parent_id FROM ${sqlPieces.from}
     ${sqlPieces.joins}
     WHERE ${where} ${whereDead}
     ${sqlPieces.orderBy}
@@ -322,9 +323,18 @@ async function execCategoryGroupsWithCategories(
     const cats = categories.filter(cat => cat.group === group.id);
     return {
       ...group,
-      categories: cats,
+      categories: orderSubcategories(cats),
     };
   });
+}
+
+// Lists each subcategory right after its parent so the flat list still
+// reads top-down like the tree the budget page shows.
+function orderSubcategories(categories: CategoryEntity[]) {
+  return nestCategories(categories).flatMap(({ subcategories, ...cat }) => [
+    cat,
+    ...subcategories,
+  ]);
 }
 
 async function execCategoryGroupsBasic(

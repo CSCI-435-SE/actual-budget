@@ -54,6 +54,160 @@ describe('Database', () => {
     expect((await db.getCategories()).length).toBe(1);
   });
 
+  describe('subcategories', () => {
+    beforeEach(async () => {
+      await db.insertCategoryGroup({ id: 'group1', name: 'group1' });
+      await db.insertCategoryGroup({ id: 'group2', name: 'group2' });
+      await db.insertCategoryGroup({
+        id: 'income',
+        name: 'income',
+        is_income: 1,
+      });
+      await db.insertCategory({
+        id: 'food',
+        name: 'food',
+        cat_group: 'group1',
+      });
+    });
+
+    test('a category can be created under a parent', async () => {
+      await db.insertCategory({
+        id: 'restaurants',
+        name: 'restaurants',
+        cat_group: 'group1',
+        parent_id: 'food',
+      });
+      await db.insertCategory({
+        id: 'groceries',
+        name: 'groceries',
+        cat_group: 'group1',
+        parent_id: 'food',
+      });
+
+      const categories = await db.getCategories();
+      expect(
+        categories.filter(cat => cat.parent_id === 'food').map(cat => cat.id),
+      ).toEqual(expect.arrayContaining(['restaurants', 'groceries']));
+    });
+
+    test('the parent must exist', async () => {
+      await expect(
+        db.insertCategory({
+          name: 'restaurants',
+          cat_group: 'group1',
+          parent_id: 'missing',
+        }),
+      ).rejects.toThrow('does not exist');
+    });
+
+    test('the parent cannot be deleted', async () => {
+      await db.deleteCategory({ id: 'food' });
+      await expect(
+        db.insertCategory({
+          name: 'restaurants',
+          cat_group: 'group1',
+          parent_id: 'food',
+        }),
+      ).rejects.toThrow('does not exist');
+    });
+
+    test('the parent must be in the same group', async () => {
+      await expect(
+        db.insertCategory({
+          name: 'restaurants',
+          cat_group: 'group2',
+          parent_id: 'food',
+        }),
+      ).rejects.toThrow('same group');
+    });
+
+    test('income categories cannot be nested', async () => {
+      await db.insertCategory({
+        id: 'salary',
+        name: 'salary',
+        cat_group: 'income',
+        is_income: 1,
+      });
+      await expect(
+        db.insertCategory({
+          name: 'bonus',
+          cat_group: 'income',
+          is_income: 1,
+          parent_id: 'salary',
+        }),
+      ).rejects.toThrow('Income');
+    });
+
+    test('subcategories are only one level deep', async () => {
+      await db.insertCategory({
+        id: 'restaurants',
+        name: 'restaurants',
+        cat_group: 'group1',
+        parent_id: 'food',
+      });
+      await expect(
+        db.insertCategory({
+          name: 'pizza',
+          cat_group: 'group1',
+          parent_id: 'restaurants',
+        }),
+      ).rejects.toThrow('cannot have subcategories');
+    });
+
+    test('a category with children cannot become a child', async () => {
+      await db.insertCategory({
+        id: 'restaurants',
+        name: 'restaurants',
+        cat_group: 'group1',
+        parent_id: 'food',
+      });
+      await db.insertCategory({ id: 'fun', name: 'fun', cat_group: 'group1' });
+      await expect(
+        db.updateCategory({
+          id: 'food',
+          name: 'food',
+          is_income: 0,
+          cat_group: 'group1',
+          parent_id: 'fun',
+        }),
+      ).rejects.toThrow('with subcategories');
+    });
+
+    test('a category cannot be its own parent', async () => {
+      await expect(
+        db.updateCategory({
+          id: 'food',
+          name: 'food',
+          is_income: 0,
+          cat_group: 'group1',
+          parent_id: 'food',
+        }),
+      ).rejects.toThrow('its own parent');
+    });
+
+    test('an existing category can be nested and un-nested', async () => {
+      await db.insertCategory({
+        id: 'restaurants',
+        name: 'restaurants',
+        cat_group: 'group1',
+      });
+      const base = {
+        id: 'restaurants',
+        name: 'restaurants',
+        is_income: 0 as const,
+        cat_group: 'group1',
+      };
+
+      await db.updateCategory({ ...base, parent_id: 'food' });
+      let cat = (await db.getCategories()).find(c => c.id === 'restaurants');
+      expect(cat.parent_id).toBe('food');
+
+      await db.updateCategory({ ...base, parent_id: null });
+      cat = (await db.getCategories()).find(c => c.id === 'restaurants');
+      expect(cat.parent_id).toBeNull();
+    });
+  });
+
   test('transactions are sorted by date', async () => {
     await insertTransactions([
       { date: '2018-01-05', account: 'foo', amount: -23 },

@@ -14,12 +14,15 @@ type BudgetMenuProps = Omit<
   onSetMonthsAverage: (numberOfMonths: number) => void;
   onApplyBudgetTemplate: () => void;
   onCopyUntilYearEnd: () => void;
+  /** False for subcategories, which don't run templates. */
+  canApplyTemplate?: boolean;
 };
 export function BudgetMenu({
   onCopyLastMonthAverage,
   onSetMonthsAverage,
   onApplyBudgetTemplate,
   onCopyUntilYearEnd,
+  canApplyTemplate = true,
   ...props
 }: BudgetMenuProps) {
   const { t } = useTranslation();
@@ -74,7 +77,7 @@ export function BudgetMenu({
           name: 'copy-until-year-end',
           text: t('Copy until year end'),
         },
-        ...(isGoalTemplatesEnabled
+        ...(isGoalTemplatesEnabled && canApplyTemplate
           ? [
               {
                 name: 'apply-single-category-template',

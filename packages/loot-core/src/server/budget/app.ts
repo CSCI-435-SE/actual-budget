@@ -22,7 +22,7 @@ import { sortCategories } from './sort-categories';
 import * as goalNoteActions from './template-notes';
 
 export type BudgetHandlers = {
-  'budget/budget-amount': typeof actions.setBudget;
+  'budget/budget-amount': typeof actions.setCategoryBudget;
   'budget/copy-previous-month': typeof actions.copyPreviousMonth;
   'budget/copy-single-month': typeof actions.copySinglePreviousMonth;
   'budget/set-zero': typeof actions.setZero;
@@ -71,7 +71,10 @@ export type BudgetHandlers = {
 
 export const app = createApp<BudgetHandlers>();
 
-app.method('budget/budget-amount', mutator(undoable(actions.setBudget)));
+app.method(
+  'budget/budget-amount',
+  mutator(undoable(actions.setCategoryBudget)),
+);
 app.method(
   'budget/copy-previous-month',
   mutator(undoable(actions.copyPreviousMonth)),
@@ -311,11 +314,13 @@ async function createCategory({
   groupId,
   isIncome,
   hidden,
+  parentId,
 }: {
   name: string;
   groupId: CategoryGroupEntity['id'];
   isIncome?: boolean;
   hidden?: boolean;
+  parentId?: CategoryEntity['id'] | null;
 }): Promise<CategoryEntity['id']> {
   if (!groupId) {
     throw APIError('Creating a category: groupId is required');
@@ -326,17 +331,23 @@ async function createCategory({
     cat_group: groupId,
     is_income: isIncome ? 1 : 0,
     hidden: hidden ? 1 : 0,
+    parent_id: parentId ?? null,
   });
 }
 
 async function updateCategory(category: CategoryEntity): Promise<void> {
+  const dbCategory = categoryModel.toDb({
+    ...category,
+    name: category.name.trim(),
+  });
+  // toDb drops null fields, but a null parent is how a subcategory is
+  // turned back into a regular category, so it has to be sent.
+  if (category.parent_id === null) {
+    dbCategory.parent_id = null;
+  }
+
   try {
-    await db.updateCategory(
-      categoryModel.toDb({
-        ...category,
-        name: category.name.trim(),
-      }),
-    );
+    await db.updateCategory(dbCategory);
   } catch (e) {
     if (
       e instanceof Error &&
@@ -373,25 +384,29 @@ async function deleteCategory({
   transferId?: CategoryEntity['id'] | null;
 }): Promise<void> {
   await batchMessages(async () => {
-    const row = await db.first<Pick<db.DbCategory, 'is_income'>>(
-      'SELECT is_income FROM categories WHERE id = ?',
+    const row = await db.first<Pick<db.DbCategory, 'is_income' | 'parent_id'>>(
+      'SELECT is_income, parent_id FROM categories WHERE id = ?',
       [id],
     );
     if (!row) {
       throw new Error(`Category with id ${id} not found.`);
     }
 
+    // A subcategory's money came from its parent, so give it back unless
+    // the caller picked somewhere else for it to go.
+    const targetId = transferId || row.parent_id || null;
+
     const transfer =
-      transferId &&
+      targetId &&
       (await db.first<Pick<db.DbCategory, 'is_income'>>(
         'SELECT is_income FROM categories WHERE id = ?',
-        [transferId],
+        [targetId],
       ));
 
-    if (transferId && !transfer) {
-      throw new Error(`Transfer category with id ${transferId} not found.`);
+    if (targetId && !transfer) {
+      throw new Error(`Transfer category with id ${targetId} not found.`);
     } else if (
-      transferId &&
+      targetId &&
       row &&
       transfer &&
       row.is_income !== transfer.is_income
@@ -402,12 +417,12 @@ async function deleteCategory({
     // Update spreadsheet values if it's an expense category
     // TODO: We should do this for income too if it's a tracking budget
     if (row.is_income === 0) {
-      if (transferId) {
-        await budget.doTransfer([id], transferId);
+      if (targetId) {
+        await budget.doTransfer([id], targetId);
       }
     }
 
-    await db.deleteCategory({ id }, transferId);
+    await db.deleteCategory({ id }, targetId);
   });
 }
 

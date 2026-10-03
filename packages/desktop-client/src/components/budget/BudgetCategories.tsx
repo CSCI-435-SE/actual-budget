@@ -20,16 +20,21 @@ import { IncomeGroup } from './IncomeGroup';
 import { IncomeHeader } from './IncomeHeader';
 import { SidebarCategory } from './SidebarCategory';
 import { SidebarGroup } from './SidebarGroup';
-import { separateGroups } from './util';
+import { getCategoryRows, separateGroups } from './util';
 
 type BudgetItem =
   | { type: 'new-group' }
-  | { type: 'new-category' }
+  | {
+      type: 'new-category';
+      groupId: CategoryGroupEntity['id'];
+      parentId?: CategoryEntity['id'];
+    }
   | { type: 'expense-group'; value: CategoryGroupEntity }
   | {
       type: 'expense-category';
       value: CategoryEntity;
       group: CategoryGroupEntity;
+      isSubcategory: boolean;
     }
   | { type: 'income-separator' }
   | { type: 'income-group'; value: CategoryGroupEntity }
@@ -88,6 +93,8 @@ export const BudgetCategories = memo<BudgetCategoriesProps>(
     const [newCategoryForGroup, setNewCategoryForGroup] = useState<
       string | null
     >(null);
+    const [newSubcategoryForParent, setNewSubcategoryForParent] =
+      useState<CategoryEntity | null>(null);
     const items: BudgetItem[] = useMemo(() => {
       const [expenseGroups, incomeGroup] = separateGroups(categoryGroups);
 
@@ -98,31 +105,39 @@ export const BudgetCategories = memo<BudgetCategoriesProps>(
             return [];
           }
 
-          const groupCategories = group.categories?.filter(
-            cat => showHiddenCategories || !cat.hidden,
-          );
-
           const items: BudgetItem[] = [
             { type: 'expense-group', value: { ...group } },
           ];
 
           if (newCategoryForGroup === group.id) {
-            items.push({ type: 'new-category' });
+            items.push({ type: 'new-category', groupId: group.id });
           }
 
-          return [
-            ...items,
-            ...(collapsedGroupIds.includes(group.id)
-              ? []
-              : groupCategories || []
-            ).map(
-              (cat): BudgetItem => ({
-                type: 'expense-category',
-                value: cat,
-                group,
-              }),
-            ),
-          ];
+          if (collapsedGroupIds.includes(group.id)) {
+            return items;
+          }
+
+          for (const { category, isSubcategory } of getCategoryRows(
+            group.categories ?? [],
+            !!showHiddenCategories,
+          )) {
+            items.push({
+              type: 'expense-category',
+              value: category,
+              group,
+              isSubcategory,
+            });
+            // The new subcategory row goes right under its parent
+            if (newSubcategoryForParent?.id === category.id) {
+              items.push({
+                type: 'new-category',
+                groupId: group.id,
+                parentId: category.id,
+              });
+            }
+          }
+
+          return items;
         }),
       );
 
@@ -137,7 +152,10 @@ export const BudgetCategories = memo<BudgetCategoriesProps>(
         ];
 
         if (newCategoryForGroup === incomeGroup.id) {
-          incomeCategoryItems.push({ type: 'new-category' });
+          incomeCategoryItems.push({
+            type: 'new-category',
+            groupId: incomeGroup.id,
+          });
         }
 
         incomeCategoryItems.push(
@@ -162,6 +180,7 @@ export const BudgetCategories = memo<BudgetCategoriesProps>(
       categoryGroups,
       collapsedGroupIds,
       newCategoryForGroup,
+      newSubcategoryForParent,
       isAddingGroup,
       showHiddenCategories,
     ]);
@@ -224,11 +243,18 @@ export const BudgetCategories = memo<BudgetCategoriesProps>(
 
     function onShowNewCategory(groupId: CategoryGroupEntity['id']) {
       onCollapse(collapsedGroupIds.filter(c => c !== groupId));
+      setNewSubcategoryForParent(null);
       setNewCategoryForGroup(groupId);
+    }
+
+    function onShowNewSubcategory(parent: CategoryEntity) {
+      setNewCategoryForGroup(null);
+      setNewSubcategoryForParent(parent);
     }
 
     function onHideNewCategory() {
       setNewCategoryForGroup(null);
+      setNewSubcategoryForParent(null);
     }
 
     function _onSaveCategory(category: CategoryEntity) {
@@ -275,12 +301,14 @@ export const BudgetCategories = memo<BudgetCategoriesProps>(
                     innerRef={null}
                     category={{
                       name: '',
-                      group: newCategoryForGroup!,
+                      group: item.groupId,
                       is_income:
-                        newCategoryForGroup ===
+                        item.groupId ===
                         categoryGroups.find(g => g.is_income)?.id,
                       id: 'new',
+                      parent_id: item.parentId ?? null,
                     }}
+                    isSubcategory={!!item.parentId}
                     editing
                     onSave={_onSaveCategory}
                     onHideNewCategory={onHideNewCategory}
@@ -325,6 +353,8 @@ export const BudgetCategories = memo<BudgetCategoriesProps>(
                   onReorder={onReorderCategory}
                   onBudgetAction={onBudgetAction}
                   onShowActivity={onShowActivity}
+                  isSubcategory={item.isSubcategory}
+                  onShowNewSubcategory={onShowNewSubcategory}
                 />
               );
               break;

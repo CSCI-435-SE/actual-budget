@@ -49,6 +49,7 @@ export type DbCategory = {
   name: string;
   is_income: 1 | 0;
   cat_group: DbCategoryGroup['id'];
+  parent_id?: DbCategory['id'] | null;
   sort_order: number;
   hidden: 1 | 0;
   goal_def?: JsonString | null;
@@ -309,6 +310,7 @@ export type DbViewCategory = {
   is_income: DbCategory['is_income'];
   hidden: DbCategory['hidden'];
   group: DbCategoryGroup['id'];
+  parent_id?: DbCategory['parent_id'];
   sort_order: DbCategory['sort_order'];
   tombstone: DbCategory['tombstone'];
   cleanup_def?: DbCategory['cleanup_def'];

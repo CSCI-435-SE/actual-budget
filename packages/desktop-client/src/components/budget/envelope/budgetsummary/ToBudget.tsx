@@ -120,6 +120,7 @@ export function ToBudget({
           {menuStep === 'transfer' && (
             <TransferMenu
               initialAmount={availableValue}
+              excludeSubcategories
               onClose={() => setMenuOpen(false)}
               onSubmit={(amount, categoryId) => {
                 onBudgetAction(month, 'transfer-available', {

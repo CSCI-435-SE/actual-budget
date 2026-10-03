@@ -3,6 +3,7 @@ import { styles } from '@actual-app/components/styles';
 import type { CSSProperties } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { send } from '@actual-app/core/platform/client/connection';
+import { nestCategories } from '@actual-app/core/shared/categories';
 import * as monthUtils from '@actual-app/core/shared/months';
 import type { Handlers } from '@actual-app/core/types/handlers';
 import type {
@@ -49,6 +50,57 @@ export function removeCategoriesFromGroups(
         group.categories?.filter(cat => !categoryIdsSet.has(cat.id)) ?? [],
     }))
     .filter(group => group.categories?.length);
+}
+
+// For pickers whose money comes from "To Budget", which can't fund a
+// subcategory directly.
+export function removeSubcategoriesFromGroups(
+  categoryGroups: CategoryGroupEntity[],
+) {
+  return categoryGroups
+    .map(group => ({
+      ...group,
+      categories: group.categories?.filter(cat => !cat.parent_id) ?? [],
+    }))
+    .filter(group => group.categories.length);
+}
+
+export type CategoryRow = {
+  category: CategoryEntity;
+  isSubcategory: boolean;
+};
+
+// The rows a group shows on the budget page: each top-level category
+// followed by its subcategories. Nesting happens before hidden categories
+// are filtered out, so a hidden parent hides its subcategories too.
+export function getCategoryRows(
+  categories: CategoryEntity[],
+  showHidden: boolean,
+): CategoryRow[] {
+  const isShown = (cat: CategoryEntity) => showHidden || !cat.hidden;
+
+  return nestCategories(categories)
+    .filter(isShown)
+    .flatMap(({ subcategories, ...category }) => [
+      { category, isSubcategory: false },
+      ...subcategories
+        .filter(isShown)
+        .map(sub => ({ category: sub, isSubcategory: true })),
+    ]);
+}
+
+// Categories in the same group that `category` could be moved under:
+// top-level expense categories other than itself. A category that already
+// has subcategories can't become one, so it gets no options.
+export function getValidParentCategories(
+  group: CategoryGroupEntity,
+  category: CategoryEntity,
+): CategoryEntity[] {
+  const categories = group.categories ?? [];
+  if (group.is_income || categories.some(c => c.parent_id === category.id)) {
+    return [];
+  }
+  return categories.filter(c => c.id !== category.id && !c.parent_id);
 }
 
 export function separateGroups(categoryGroups: CategoryGroupEntity[]) {
@@ -168,6 +220,51 @@ export function findSortDown<T extends { id: string }>(
       return { targetId: null };
     }
   }
+}
+
+// Where `dragged` lands when dropped on the row of `targetId` in `group`,
+// or null when that drop isn't allowed. Uses the same nesting the rows
+// show:
+// - a subcategory only moves among its siblings, and never to another
+//   group (the server would reject leaving its parent's group);
+// - a top-level category is ordered among the top-level ones, so dropping
+//   it on a subcategory row places it after that subcategory's parent.
+export function getCategoryDropTarget(
+  group: CategoryGroupEntity,
+  dragged: CategoryEntity,
+  dropPos: DropPosition | null,
+  targetId: CategoryEntity['id'],
+): { targetId: CategoryEntity['id'] | null } | null {
+  if (dragged.parent_id && dragged.group !== group.id) {
+    return null;
+  }
+
+  const nested = nestCategories(group.categories ?? []);
+  const parentOf = new Map<CategoryEntity['id'], CategoryEntity['id']>();
+  for (const parent of nested) {
+    for (const sub of parent.subcategories) {
+      parentOf.set(sub.id, parent.id);
+    }
+  }
+
+  const draggedParent = parentOf.get(dragged.id);
+  const targetParent = parentOf.get(targetId);
+
+  if (draggedParent) {
+    if (targetParent !== draggedParent) {
+      return null;
+    }
+    const siblings = nested.find(p => p.id === draggedParent).subcategories;
+    return findSortDown(siblings, dropPos, targetId);
+  }
+
+  if (targetParent) {
+    return findSortDown(nested, 'bottom', targetParent);
+  }
+  if (!nested.some(cat => cat.id === targetId)) {
+    return null;
+  }
+  return findSortDown(nested, dropPos, targetId);
 }
 
 export function findSortUp<T extends { id: string }>(

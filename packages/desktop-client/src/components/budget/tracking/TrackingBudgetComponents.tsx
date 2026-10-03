@@ -23,6 +23,7 @@ import type {
   CategoryMonthProps,
 } from '#components/budget';
 import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
+import { ParentTotalHint } from '#components/budget/ParentTotalHint';
 import { makeAmountGrey } from '#components/budget/util';
 import { NotesButton } from '#components/NotesButton';
 import { CellValue, CellValueText } from '#components/spreadsheet/CellValue';
@@ -227,6 +228,12 @@ export const CategoryMonth = memo(function CategoryMonth({
 
   const showScheduleIndicator = schedule && scheduleStatus;
 
+  const budgeted =
+    useTrackingSheetValue(trackingBudget.catBudgeted(category.id)) ?? 0;
+  const parentTotal =
+    useTrackingSheetValue(trackingBudget.catParentTotal(category.id)) ??
+    budgeted;
+
   return (
     <View
       style={{
@@ -312,6 +319,7 @@ export const CategoryMonth = memo(function CategoryMonth({
                 placement="bottom start"
               >
                 <BudgetMenu
+                  canApplyTemplate={!category.parent_id}
                   onCopyLastMonthAverage={() => {
                     onMenuAction(month, 'copy-single-last', {
                       category: category.id,
@@ -358,6 +366,7 @@ export const CategoryMonth = memo(function CategoryMonth({
                 />
               </Popover>
             </View>
+            <ParentTotalHint budgeted={budgeted} total={parentTotal} />
           </>
         )}
         <TrackingSheetCell

@@ -85,6 +85,7 @@ export const schema = {
     is_income: f('boolean'),
     hidden: f('boolean'),
     group: f('id', { ref: 'category_groups' }),
+    parent_id: f('id', { ref: 'categories' }),
     goal_def: f('string'),
     cleanup_def: f('string'),
     template_settings: f('json', { default: { source: 'notes' } }),

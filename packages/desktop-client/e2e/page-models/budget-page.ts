@@ -247,6 +247,65 @@ export class BudgetPage {
       .click({ button: 'right' });
   }
 
+  #parseAmount(text: string | null, description: string) {
+    if (text == null) {
+      throw new Error(`Failed to get ${description}.`);
+    }
+    return Math.round(parseFloat(text.replace(/,/g, '')) * 100);
+  }
+
+  /** The row of the category named exactly `name`. */
+  getCategoryRow(name: string) {
+    return this.budgetTable.getByTestId('row').filter({
+      has: this.page
+        .getByTestId('category-name')
+        .getByText(name, { exact: true }),
+    });
+  }
+
+  /** Category names in the order the budget table shows them. */
+  async getCategoryNames() {
+    return this.budgetTable.getByTestId('category-name').allTextContents();
+  }
+
+  /** A category's budgeted amount in cents. */
+  async getBudgetedForCategory(name: string, monthIndex = 0) {
+    const text = await this.getCategoryRow(name)
+      .getByTestId('budget')
+      .nth(monthIndex)
+      .textContent();
+    return this.#parseAmount(text, `budgeted amount for ${name}`);
+  }
+
+  /** The total budgeted in cents (unlike getTotalBudgeted, keeps cents). */
+  async getTotalBudgetedAmount() {
+    const text = await this.budgetTableTotals
+      .getByTestId(/total-budgeted$/)
+      .textContent();
+    return this.#parseAmount(text, 'total budgeted');
+  }
+
+  async #openCategoryMenu(name: string) {
+    await this.getCategoryRow(name)
+      .getByTestId('category-name')
+      .click({ button: 'right' });
+  }
+
+  async addSubcategory(parentName: string, name: string) {
+    await this.#openCategoryMenu(parentName);
+    await this.page.getByRole('button', { name: 'Add subcategory' }).click();
+
+    const input = this.page.getByPlaceholder('New subcategory name');
+    await input.fill(name);
+    await input.press('Enter');
+    await this.getCategoryRow(name).waitFor();
+  }
+
+  async removeFromParent(name: string) {
+    await this.#openCategoryMenu(name);
+    await this.page.getByRole('button', { name: 'Remove from parent' }).click();
+  }
+
   async rightClickCategoryGroup(name: string) {
     // Assuming category groups have a specific text or role, or we can just find by text
     await this.budgetTable
