@@ -21,17 +21,59 @@ import { useBudgetMonthCount } from './BudgetMonthCountContext';
 import {
   buildBudgetMonthCsv,
   fetchBudgetMonthCells,
-  getBudgetMonthCsvFilename,
+  getBudgetMonthExportFilename,
 } from './export/budgetMonthCsv';
+import { buildBudgetMonthPdfBytes } from './export/budgetMonthPdf';
+import { buildBudgetMonthPdfRows } from './export/budgetMonthPdfRows';
 import { getVisibleMonths } from './MonthsContext';
 import type { MonthBounds } from './MonthsContext';
 
-type ExportFormat = 'csv';
+type ExportFormat = 'csv' | 'pdf';
 
 type ExportAction = {
   format: ExportFormat;
   month: string;
 };
+
+type ExportMenuItem =
+  | { type: typeof Menu.label; name: string; text: '' }
+  | { name: string; text: string };
+
+type ExportMenuLabels = {
+  exportAsCsv: string;
+  exportAsPdf: string;
+  csvSection: string;
+  pdfSection: string;
+};
+
+// Pulled out of the component so the single-month/multi-month item layout
+// (AC1: a CSV section and a PDF section, each listing the visible months)
+// can be unit tested without rendering the component or mocking i18next.
+export function buildExportMenuItems(
+  months: string[],
+  labels: ExportMenuLabels,
+  formatMonth: (month: string) => string,
+): ExportMenuItem[] {
+  if (months.length === 1) {
+    return [
+      { name: `csv:${months[0]}`, text: labels.exportAsCsv },
+      { name: `pdf:${months[0]}`, text: labels.exportAsPdf },
+    ];
+  }
+
+  return [
+    { type: Menu.label, name: labels.csvSection, text: '' },
+    ...months.map(month => ({
+      name: `csv:${month}`,
+      text: formatMonth(month),
+    })),
+    { type: Menu.label, name: labels.pdfSection, text: '' },
+    ...months.map(month => ({
+      name: `pdf:${month}`,
+      text: formatMonth(month),
+    })),
+  ];
+}
 
 export function BudgetExportMenu() {
   const { t } = useTranslation();
@@ -60,7 +102,12 @@ export function BudgetExportMenu() {
     : [];
 
   const actions = new Map<string, ExportAction>(
-    months.map(month => [`csv:${month}`, { format: 'csv', month }]),
+    (['csv', 'pdf'] as const).flatMap(exportFormat =>
+      months.map((month): [string, ExportAction] => [
+        `${exportFormat}:${month}`,
+        { format: exportFormat, month },
+      ]),
+    ),
   );
 
   const exporters: Record<ExportFormat, (month: string) => Promise<void>> = {
@@ -75,7 +122,27 @@ export function BudgetExportMenu() {
       });
       await window.Actual.saveFile(
         csv,
-        getBudgetMonthCsvFilename(budgetName, month),
+        getBudgetMonthExportFilename(budgetName, month, 'csv'),
+        t('Export budget month'),
+      );
+    },
+    pdf: async month => {
+      const cells = await fetchBudgetMonthCells(month);
+      const rows = buildBudgetMonthPdfRows({
+        month,
+        categoryGroups,
+        cells,
+        showHiddenCategories,
+        formatAmount: value => format(value, 'financial'),
+      });
+      const title = t('{{budgetName}} — {{month}}', {
+        budgetName: budgetName || t('Budget'),
+        month: monthUtils.format(month, 'MMMM yyyy', locale),
+      });
+      const bytes = await buildBudgetMonthPdfBytes({ title, rows });
+      await window.Actual.saveFile(
+        bytes as unknown as Buffer,
+        getBudgetMonthExportFilename(budgetName, month, 'pdf'),
         t('Export budget month'),
       );
     },
@@ -108,16 +175,16 @@ export function BudgetExportMenu() {
     }
   }
 
-  const csvItems =
-    months.length === 1
-      ? [{ name: `csv:${months[0]}`, text: t('Export as CSV') }]
-      : [
-          { type: Menu.label, name: t('CSV'), text: '' } as const,
-          ...months.map(month => ({
-            name: `csv:${month}`,
-            text: monthUtils.format(month, 'MMMM yyyy', locale),
-          })),
-        ];
+  const menuItems = buildExportMenuItems(
+    months,
+    {
+      exportAsCsv: t('Export as CSV'),
+      exportAsPdf: t('Export as PDF'),
+      csvSection: t('CSV'),
+      pdfSection: t('PDF'),
+    },
+    month => monthUtils.format(month, 'MMMM yyyy', locale),
+  );
 
   return (
     <>
@@ -138,7 +205,10 @@ export function BudgetExportMenu() {
         isOpen={isOpen}
         onOpenChange={() => setIsOpen(false)}
       >
-        <Menu onMenuSelect={name => void onMenuSelect(name)} items={csvItems} />
+        <Menu
+          onMenuSelect={name => void onMenuSelect(name)}
+          items={menuItems}
+        />
       </Popover>
     </>
   );

@@ -171,6 +171,8 @@
     "i18next-parser": "^9.4.0",
     "i18next-resources-to-backend": "^1.2.1",
     "jsdom": "^29.1.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "lru-cache": "^11.5.1",
     "mdast-util-newline-to-break": "^2.0.0",
     "pikaday": "1.8.2",

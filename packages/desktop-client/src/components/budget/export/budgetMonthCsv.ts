@@ -57,12 +57,13 @@ export function buildBudgetMonthCsv({
   ]);
 }
 
-export function getBudgetMonthCsvFilename(
+export function getBudgetMonthExportFilename(
   budgetName: string | undefined,
   month: string,
+  extension: 'csv' | 'pdf',
 ): string {
   const safeName = (budgetName ?? '').replace(/[\\/:*?"<>|]/g, '').trim();
-  return `${safeName || 'budget'}-${month}.csv`;
+  return `${safeName || 'budget'}-${month}.${extension}`;
 }
 
 export async function fetchBudgetMonthCells(
