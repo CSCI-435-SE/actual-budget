@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildBudgetMonthCsv,
-  getBudgetMonthCsvFilename,
+  getBudgetMonthExportFilename,
 } from './budgetMonthCsv';
 
 const month = '2026-01';
@@ -187,23 +187,31 @@ describe('buildBudgetMonthCsv', () => {
   });
 });
 
-describe('getBudgetMonthCsvFilename', () => {
+describe('getBudgetMonthExportFilename', () => {
   it('combines the budget name and month', () => {
-    expect(getBudgetMonthCsvFilename('My Budget', month)).toBe(
+    expect(getBudgetMonthExportFilename('My Budget', month, 'csv')).toBe(
       'My Budget-2026-01.csv',
     );
   });
 
   it('strips characters that are not allowed in filenames', () => {
-    expect(getBudgetMonthCsvFilename('Home/Work: "2026"?', month)).toBe(
-      'HomeWork 2026-2026-01.csv',
-    );
+    expect(
+      getBudgetMonthExportFilename('Home/Work: "2026"?', month, 'csv'),
+    ).toBe('HomeWork 2026-2026-01.csv');
   });
 
   it('falls back to a default name', () => {
-    expect(getBudgetMonthCsvFilename(undefined, month)).toBe(
+    expect(getBudgetMonthExportFilename(undefined, month, 'csv')).toBe(
       'budget-2026-01.csv',
     );
-    expect(getBudgetMonthCsvFilename('???', month)).toBe('budget-2026-01.csv');
+    expect(getBudgetMonthExportFilename('???', month, 'csv')).toBe(
+      'budget-2026-01.csv',
+    );
+  });
+
+  it('shares the same name and sanitization for the pdf extension', () => {
+    expect(getBudgetMonthExportFilename('My Budget', month, 'pdf')).toBe(
+      'My Budget-2026-01.pdf',
+    );
   });
 });
