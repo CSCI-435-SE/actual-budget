@@ -3,18 +3,12 @@ import { fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
-import { useGlobalPref } from '#hooks/useGlobalPref';
-
 import { useSidebar } from './SidebarProvider';
 
 import { FloatableSidebar } from './index';
 
 vi.mock('@actual-app/components/hooks/useResponsive', () => ({
   useResponsive: vi.fn(),
-}));
-
-vi.mock('#hooks/useGlobalPref', () => ({
-  useGlobalPref: vi.fn(),
 }));
 
 vi.mock('./SidebarProvider', () => ({
@@ -40,10 +34,6 @@ describe('FloatableSidebar', () => {
     floatingSidebar = true,
     alwaysFloats = false,
   }: { floatingSidebar?: boolean; alwaysFloats?: boolean } = {}) {
-    (useGlobalPref as unknown as Mock).mockReturnValue([
-      floatingSidebar,
-      vi.fn(),
-    ]);
     (useSidebar as unknown as Mock).mockReturnValue({
       hidden: false,
       setHidden: vi.fn(),
