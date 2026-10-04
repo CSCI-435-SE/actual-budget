@@ -46,6 +46,7 @@ export function GoalCard({
       widgetId={widgetId}
       isEditing={isEditing}
       disableClick={nameMenuOpen}
+      to={`/reports/goal/${widgetId}`}
       onRename={() => setNameMenuOpen(true)}
     >
       <View

@@ -13,6 +13,7 @@ import { CashFlow } from './reports/CashFlow';
 import { Crossover } from './reports/Crossover';
 import { CustomReport } from './reports/CustomReport';
 import { Formula } from './reports/Formula';
+import { GoalReport } from './reports/GoalReport';
 import { NetWorth } from './reports/NetWorth';
 import { Sankey } from './reports/Sankey';
 import { Spending } from './reports/Spending';
@@ -174,6 +175,22 @@ export function ReportRouter() {
         element={
           <ReportBoundary>
             <Summary />
+          </ReportBoundary>
+        }
+      />
+      <Route
+        path="/goal"
+        element={
+          <ReportBoundary>
+            <GoalReport />
+          </ReportBoundary>
+        }
+      />
+      <Route
+        path="/goal/:id"
+        element={
+          <ReportBoundary>
+            <GoalReport />
           </ReportBoundary>
         }
       />
