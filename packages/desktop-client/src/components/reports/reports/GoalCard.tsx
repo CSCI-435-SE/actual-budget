@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Block } from '@actual-app/components/block';
@@ -10,9 +10,12 @@ import type { TransObjectLiteral } from '@actual-app/core/types/util';
 
 import { FinancialText } from '#components/FinancialText';
 import { PrivacyFilter } from '#components/PrivacyFilter';
+import { GoalSettingsEditor } from '#components/reports/GoalSettingsEditor';
 import { ReportCard } from '#components/reports/ReportCard';
 import { ReportCardName } from '#components/reports/ReportCardName';
+import { useContextMenu } from '#hooks/useContextMenu';
 import { useFormat } from '#hooks/useFormat';
+import { useTagCSS } from '#hooks/useTagCSS';
 
 type GoalCardProps = {
   widgetId: string;
@@ -29,12 +32,28 @@ export function GoalCard({
 }: GoalCardProps) {
   const { t } = useTranslation();
   const format = useFormat();
+  const getTagCSS = useTagCSS();
 
   const [nameMenuOpen, setNameMenuOpen] = useState(false);
   const [isCardHovered, setIsCardHovered] = useState(false);
+  const [isSettingGoal, setIsSettingGoal] = useState(false);
+
+  const contextMenuTriggerRef = useRef(null);
+  useContextMenu({
+    triggerRef: contextMenuTriggerRef,
+    enabled: !isSettingGoal,
+    items: [
+      {
+        name: 'set-goal',
+        text: t('Set goal'),
+        onClick: () => setIsSettingGoal(true),
+      },
+    ],
+  });
 
   const currentAmount = meta?.currentAmount ?? 0;
   const targetAmount = meta?.targetAmount ?? 0;
+  const linkedTag = meta?.linkedTag;
   const progress =
     targetAmount > 0
       ? Math.min(Math.max(currentAmount / targetAmount, 0), 1)
@@ -45,9 +64,10 @@ export function GoalCard({
     <ReportCard
       widgetId={widgetId}
       isEditing={isEditing}
-      disableClick={nameMenuOpen}
+      disableClick={nameMenuOpen || isSettingGoal}
       to={`/reports/goal/${widgetId}`}
       onRename={() => setNameMenuOpen(true)}
+      contextMenuTriggerRef={contextMenuTriggerRef}
     >
       <View
         style={{ flex: 1 }}
@@ -68,6 +88,11 @@ export function GoalCard({
               }}
               onClose={() => setNameMenuOpen(false)}
             />
+            {linkedTag && (
+              <View style={{ flexDirection: 'row' }}>
+                <span className={getTagCSS(linkedTag)}>#{linkedTag}</span>
+              </View>
+            )}
           </View>
           <View style={{ textAlign: 'right' }}>
             <Block
@@ -109,33 +134,54 @@ export function GoalCard({
             paddingBottom: 20,
           }}
         >
-          <View
-            aria-hidden
-            style={{
-              height: 12,
-              borderRadius: 6,
-              backgroundColor: theme.pillBackground,
-              overflow: 'hidden',
-            }}
-          >
-            <View
-              style={{
-                width: `${progressPercent}%`,
-                height: '100%',
-                backgroundColor: theme.reportsGreen,
+          {isSettingGoal ? (
+            <GoalSettingsEditor
+              idPrefix={`goal-${widgetId}`}
+              initialSettings={{ targetAmount, linkedTag }}
+              onSave={settings => {
+                const { linkedTag: _previousTag, ...rest } = meta ?? {};
+                onMetaChange({
+                  ...rest,
+                  targetAmount: settings.targetAmount,
+                  ...(settings.linkedTag
+                    ? { linkedTag: settings.linkedTag }
+                    : {}),
+                });
+                setIsSettingGoal(false);
               }}
+              onCancel={() => setIsSettingGoal(false)}
             />
-          </View>
-          <Block
-            style={{
-              ...styles.tnum,
-              marginTop: 5,
-              textAlign: 'right',
-              color: theme.pageTextSubdued,
-            }}
-          >
-            {progressPercent}%
-          </Block>
+          ) : (
+            <>
+              <View
+                aria-hidden
+                style={{
+                  height: 12,
+                  borderRadius: 6,
+                  backgroundColor: theme.pillBackground,
+                  overflow: 'hidden',
+                }}
+              >
+                <View
+                  style={{
+                    width: `${progressPercent}%`,
+                    height: '100%',
+                    backgroundColor: theme.reportsGreen,
+                  }}
+                />
+              </View>
+              <Block
+                style={{
+                  ...styles.tnum,
+                  marginTop: 5,
+                  textAlign: 'right',
+                  color: theme.pageTextSubdued,
+                }}
+              >
+                {progressPercent}%
+              </Block>
+            </>
+          )}
         </View>
       </View>
     </ReportCard>
