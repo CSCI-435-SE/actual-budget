@@ -292,7 +292,12 @@ export function Titlebar({ style }: TitlebarProps) {
         '& *': {
           pointerEvents: 'auto',
         },
-        ...(!Platform.isBrowser && Platform.OS === 'mac' && floatingSidebar
+        // Leave room for the macOS window buttons, unless the open sidebar
+        // has pushed the titlebar away from the window's left edge.
+        ...(!Platform.isBrowser &&
+        Platform.OS === 'mac' &&
+        floatingSidebar &&
+        (sidebar.hidden || !sidebar.reflows)
           ? { paddingLeft: 80 }
           : {}),
         ...style,
@@ -305,7 +310,12 @@ export function Titlebar({ style }: TitlebarProps) {
           style={{ marginRight: 8 }}
           onHoverStart={e => {
             if (e.pointerType === 'mouse') {
-              sidebar.setHidden(false);
+              sidebar.onMenuButtonHoverStart();
+            }
+          }}
+          onHoverEnd={e => {
+            if (e.pointerType === 'mouse') {
+              sidebar.onMenuButtonHoverEnd();
             }
           }}
           onPress={e => {
