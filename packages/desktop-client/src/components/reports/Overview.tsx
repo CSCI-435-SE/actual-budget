@@ -868,7 +868,7 @@ export function Overview({ dashboard }: OverviewProps) {
                               onMetaChange(item, newMeta)
                             }
                           />
-                        ) :widget.type === 'budget-analysis-card' &&
+                        ) : widget.type === 'budget-analysis-card' &&
                           budgetAnalysisReportEnabled ? (
                           <BudgetAnalysisCard
                             widgetId={item.i}
