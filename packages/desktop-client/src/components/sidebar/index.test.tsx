@@ -60,6 +60,17 @@ describe('FloatableSidebar', () => {
     expect(setHoveringSidebar).toHaveBeenCalledWith(false);
   });
 
+  it('attaches hover handlers when the sidebar always floats, even if the floating pref is off', () => {
+    const { getByTestId } = setup({
+      floatingSidebar: false,
+      alwaysFloats: true,
+    });
+
+    fireEvent.mouseOver(getByTestId('sidebar-stub').parentElement as Element);
+
+    expect(setHoveringSidebar).toHaveBeenCalledWith(true);
+  });
+
   it('does not attach hover handlers when the sidebar is docked (not floating)', () => {
     const { getByTestId } = setup({
       floatingSidebar: false,
