@@ -3,18 +3,14 @@ import React from 'react';
 import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 import { View } from '@actual-app/components/view';
 
-import { useGlobalPref } from '#hooks/useGlobalPref';
-
 import { Sidebar } from './Sidebar';
 import { useSidebar } from './SidebarProvider';
 
 export function FloatableSidebar() {
-  const [floatingSidebar] = useGlobalPref('floatingSidebar');
-
   const sidebar = useSidebar();
   const { isNarrowWidth } = useResponsive();
 
-  const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
+  const sidebarShouldFloat = sidebar.floating;
 
   return isNarrowWidth ? null : (
     <View

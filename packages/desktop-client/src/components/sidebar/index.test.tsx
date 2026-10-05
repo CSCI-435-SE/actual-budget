@@ -3,18 +3,12 @@ import { fireEvent, render } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Mock } from 'vitest';
 
-import { useGlobalPref } from '#hooks/useGlobalPref';
-
 import { useSidebar } from './SidebarProvider';
 
 import { FloatableSidebar } from './index';
 
 vi.mock('@actual-app/components/hooks/useResponsive', () => ({
   useResponsive: vi.fn(),
-}));
-
-vi.mock('#hooks/useGlobalPref', () => ({
-  useGlobalPref: vi.fn(),
 }));
 
 vi.mock('./SidebarProvider', () => ({
@@ -40,10 +34,6 @@ describe('FloatableSidebar', () => {
     floatingSidebar = true,
     alwaysFloats = false,
   }: { floatingSidebar?: boolean; alwaysFloats?: boolean } = {}) {
-    (useGlobalPref as unknown as Mock).mockReturnValue([
-      floatingSidebar,
-      vi.fn(),
-    ]);
     (useSidebar as unknown as Mock).mockReturnValue({
       hidden: false,
       setHidden: vi.fn(),
@@ -68,6 +58,17 @@ describe('FloatableSidebar', () => {
     fireEvent.mouseLeave(getByTestId('sidebar-stub').parentElement as Element);
 
     expect(setHoveringSidebar).toHaveBeenCalledWith(false);
+  });
+
+  it('attaches hover handlers when the sidebar always floats, even if the floating pref is off', () => {
+    const { getByTestId } = setup({
+      floatingSidebar: false,
+      alwaysFloats: true,
+    });
+
+    fireEvent.mouseOver(getByTestId('sidebar-stub').parentElement as Element);
+
+    expect(setHoveringSidebar).toHaveBeenCalledWith(true);
   });
 
   it('does not attach hover handlers when the sidebar is docked (not floating)', () => {
