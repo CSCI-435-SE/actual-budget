@@ -21,6 +21,7 @@ import type {
   CategoryMonthProps,
 } from '#components/budget';
 import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
+import { ParentTotalHint } from '#components/budget/ParentTotalHint';
 import { makeAmountGrey } from '#components/budget/util';
 import { NotesButton } from '#components/NotesButton';
 import { CellValue, CellValueText } from '#components/spreadsheet/CellValue';
@@ -261,6 +262,12 @@ export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
 
   const showScheduleIndicator = schedule && scheduleStatus;
 
+  const budgeted =
+    useEnvelopeSheetValue(envelopeBudget.catBudgeted(category.id)) ?? 0;
+  const parentTotal =
+    useEnvelopeSheetValue(envelopeBudget.catParentTotal(category.id)) ??
+    budgeted;
+
   return (
     <View
       style={{
@@ -355,6 +362,7 @@ export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
                 {...budgetPosition}
               >
                 <BudgetMenu
+                  canApplyTemplate={!category.parent_id}
                   onCopyLastMonthAverage={() => {
                     onMenuAction(month, 'copy-single-last', {
                       category: category.id,
@@ -393,6 +401,7 @@ export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
                 />
               </Popover>
             </View>
+            <ParentTotalHint budgeted={budgeted} total={parentTotal} />
           </>
         )}
         <EnvelopeSheetCell

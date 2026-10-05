@@ -20,6 +20,7 @@ import { useDragRef } from '#hooks/useDragRef';
 
 import { RenderMonths } from './RenderMonths';
 import { SidebarCategory } from './SidebarCategory';
+import { getValidParentCategories } from './util';
 
 import { useBudgetComponents } from '.';
 
@@ -36,6 +37,10 @@ type ExpenseCategoryProps = {
   onBudgetAction: (month: string, action: string, arg: unknown) => void;
   onShowActivity: (id: CategoryEntity['id'], month: string) => void;
   onReorder: OnDropCallback;
+  isSubcategory?: boolean;
+  onShowNewSubcategory?: ComponentProps<
+    typeof SidebarCategory
+  >['onShowNewSubcategory'];
 };
 
 export function ExpenseCategory({
@@ -51,6 +56,8 @@ export function ExpenseCategory({
   onShowActivity,
   onDragChange,
   onReorder,
+  isSubcategory = false,
+  onShowNewSubcategory,
 }: ExpenseCategoryProps) {
   let dragging = dragState && dragState.item === cat;
 
@@ -100,6 +107,11 @@ export function ExpenseCategory({
           onEditName={onEditName}
           onSave={onSave}
           onDelete={onDelete}
+          isSubcategory={isSubcategory}
+          validParents={
+            categoryGroup ? getValidParentCategories(categoryGroup, cat) : []
+          }
+          onShowNewSubcategory={onShowNewSubcategory}
         />
 
         <RenderMonths>

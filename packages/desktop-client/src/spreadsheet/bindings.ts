@@ -170,6 +170,7 @@ export const envelopeBudget = {
   groupBalance: envelopeParametrizedField('group-leftover'),
 
   catBudgeted: envelopeParametrizedField('budget'),
+  catParentTotal: envelopeParametrizedField('parent-total-budget'),
   catSumAmount: envelopeParametrizedField('sum-amount'),
   catBalance: envelopeParametrizedField('leftover'),
   catCarryover: envelopeParametrizedField('carryover'),
@@ -194,6 +195,7 @@ export const trackingBudget = {
   groupBalance: trackingParametrizedField('group-leftover'),
 
   catBudgeted: trackingParametrizedField('budget'),
+  catParentTotal: trackingParametrizedField('parent-total-budget'),
   catSumAmount: trackingParametrizedField('sum-amount'),
   catBalance: trackingParametrizedField('leftover'),
   catCarryover: trackingParametrizedField('carryover'),

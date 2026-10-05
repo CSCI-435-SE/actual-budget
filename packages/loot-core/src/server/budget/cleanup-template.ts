@@ -159,8 +159,10 @@ async function processCleanup(month: string): Promise<Notification> {
   const sinkCategory: SinkCategoryRow[] = [];
   const db_month = parseInt(month.replace('-', ''));
 
+  // Subcategories are left out: cleanup moves money to and from To Budget,
+  // and a subcategory can only get money through its parent.
   const categories = await db.all<db.DbViewCategory>(
-    'SELECT * FROM v_categories WHERE tombstone = 0',
+    'SELECT * FROM v_categories WHERE tombstone = 0 AND parent_id IS NULL',
   );
   const sheetName = monthUtils.sheetForMonth(month);
   const groupSource: GroupSourceRow[] = [];

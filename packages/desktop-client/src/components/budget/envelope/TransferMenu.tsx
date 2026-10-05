@@ -12,6 +12,7 @@ import { CategoryAutocomplete } from '#components/autocomplete/CategoryAutocompl
 import {
   addToBeBudgetedGroup,
   removeCategoriesFromGroups,
+  removeSubcategoriesFromGroups,
 } from '#components/budget/util';
 import { FinancialInput } from '#components/util/FinancialInput';
 import { useCategories } from '#hooks/useCategories';
@@ -20,6 +21,8 @@ type TransferMenuProps = {
   categoryId?: CategoryEntity['id'];
   initialAmount?: IntegerAmount | null;
   showToBeBudgeted?: boolean;
+  /** For transfers out of "To Budget", which can't fund a subcategory. */
+  excludeSubcategories?: boolean;
   onSubmit: (amount: IntegerAmount, categoryId: CategoryEntity['id']) => void;
   onClose: () => void;
 };
@@ -28,6 +31,7 @@ export function TransferMenu({
   categoryId,
   initialAmount = 0,
   showToBeBudgeted,
+  excludeSubcategories = false,
   onSubmit,
   onClose,
 }: TransferMenuProps) {
@@ -36,16 +40,26 @@ export function TransferMenu({
   const { data: { grouped: originalCategoryGroups } = { grouped: [] } } =
     useCategories();
   const filteredCategoryGroups = useMemo(() => {
-    const expenseCategoryGroups = originalCategoryGroups.filter(
+    let expenseCategoryGroups = originalCategoryGroups.filter(
       g => !g.is_income,
     );
+    if (excludeSubcategories) {
+      expenseCategoryGroups = removeSubcategoriesFromGroups(
+        expenseCategoryGroups,
+      );
+    }
     const categoryGroups = showToBeBudgeted
       ? addToBeBudgetedGroup(expenseCategoryGroups)
       : expenseCategoryGroups;
     return categoryId
       ? removeCategoriesFromGroups(categoryGroups, categoryId)
       : categoryGroups;
-  }, [originalCategoryGroups, categoryId, showToBeBudgeted]);
+  }, [
+    originalCategoryGroups,
+    categoryId,
+    showToBeBudgeted,
+    excludeSubcategories,
+  ]);
 
   const [amount, setAmount] = useState<IntegerAmount>(
     Math.max(initialAmount ?? 0, 0),

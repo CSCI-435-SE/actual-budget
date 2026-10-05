@@ -1,10 +1,13 @@
 // @ts-strict-ignore
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import type { CSSProperties, Ref } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '@actual-app/components/button';
 import { SvgCheveronDown } from '@actual-app/components/icons/v1';
+import { Menu } from '@actual-app/components/menu';
+import { Popover } from '@actual-app/components/popover';
+import { Text } from '@actual-app/components/text';
 import { TextOneLine } from '@actual-app/components/text-one-line';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
@@ -19,6 +22,8 @@ import { useGlobalPref } from '#hooks/useGlobalPref';
 
 import { SidebarCategoryButtons } from './SidebarCategoryButtons';
 
+const SUBCATEGORY_INDENT = 16;
+
 type SidebarCategoryProps = {
   innerRef: Ref<HTMLDivElement>;
   category: CategoryEntity;
@@ -29,9 +34,14 @@ type SidebarCategoryProps = {
   style?: CSSProperties;
   borderColor?: string;
   isLast?: boolean;
+  /** Indents the row under its parent. */
+  isSubcategory?: boolean;
+  /** Categories this one can be moved under (see getValidParentCategories). */
+  validParents?: CategoryEntity[];
   onEditName: (id: CategoryEntity['id']) => void;
   onSave: (category: CategoryEntity) => void;
   onHideNewCategory?: () => void;
+  onShowNewSubcategory?: (parent: CategoryEntity) => void;
 } & (
   | {
       editing: true;
@@ -53,16 +63,21 @@ export function SidebarCategory({
   goalsShown = false,
   style,
   isLast,
+  isSubcategory = false,
+  validParents = [],
   onEditName,
   onSave,
   onDelete,
   onHideNewCategory,
+  onShowNewSubcategory,
 }: SidebarCategoryProps) {
   const { t } = useTranslation();
   const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
   const categoryExpandedState = categoryExpandedStatePref ?? 0;
+  const [parentPickerOpen, setParentPickerOpen] = useState(false);
 
   const temporary = category.id === 'new';
+  const canHaveSubcategories = !category.is_income && !category.parent_id;
   const triggerRef = useRef(null);
   const { handleContextMenu } = useContextMenu({
     triggerRef,
@@ -81,6 +96,25 @@ export function SidebarCategory({
         name: 'delete',
         text: t('Delete'),
         onClick: () => onDelete(category.id),
+      },
+      (canHaveSubcategories || category.parent_id) && Menu.line,
+      canHaveSubcategories &&
+        onShowNewSubcategory && {
+          name: 'add-subcategory',
+          text: t('Add subcategory'),
+          onClick: () => onShowNewSubcategory(category),
+        },
+      canHaveSubcategories &&
+        validParents.length > 0 && {
+          name: 'make-subcategory',
+          text: t('Make subcategory of…'),
+          onClick: () => setParentPickerOpen(true),
+        },
+      category.parent_id && {
+        name: 'remove-from-parent',
+        text: t('Remove from parent'),
+        // The money stays where it is, so the old parent's total shrinks
+        onClick: () => onSave({ ...category, parent_id: null }),
       },
     ],
   });
@@ -118,6 +152,29 @@ export function SidebarCategory({
         dragging={dragging}
         goalsShown={goalsShown}
       />
+      <Popover
+        triggerRef={triggerRef}
+        placement="bottom start"
+        isOpen={parentPickerOpen}
+        onOpenChange={() => setParentPickerOpen(false)}
+        style={{ width: 200 }}
+      >
+        <Menu
+          header={
+            <Text style={{ padding: '5px 10px', color: theme.pageTextLight }}>
+              <Trans>Move under</Trans>
+            </Text>
+          }
+          items={validParents.map(parent => ({
+            name: parent.id,
+            text: parent.name,
+          }))}
+          onMenuSelect={parentId => {
+            setParentPickerOpen(false);
+            onSave({ ...category, parent_id: String(parentId) });
+          }}
+        />
+      </Popover>
     </View>
   );
 
@@ -173,9 +230,16 @@ export function SidebarCategory({
           }
         }}
         onBlur={() => onEditName(null)}
-        style={{ paddingLeft: 13, ...(isLast && { borderBottomWidth: 0 }) }}
+        style={{
+          paddingLeft: isSubcategory ? 13 + SUBCATEGORY_INDENT : 13,
+          ...(isLast && { borderBottomWidth: 0 }),
+        }}
         inputProps={{
-          placeholder: temporary ? t('New category name') : '',
+          placeholder: !temporary
+            ? ''
+            : isSubcategory
+              ? t('New subcategory name')
+              : t('New category name'),
         }}
       />
     </View>

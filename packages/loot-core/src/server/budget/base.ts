@@ -11,6 +11,7 @@ import type { CategoryGroupEntity } from '#types/models';
 import * as budgetActions from './actions';
 import * as envelopeBudget from './envelope';
 import * as trackingBudget from './tracking';
+import { sumAmounts as sumCellAmounts } from './util';
 
 export function getBudgetType() {
   const meta = sheet.get().meta();
@@ -70,7 +71,14 @@ function getSumAmountsByMonth(
   return sums;
 }
 
-export function createCategory(cat, sheetName, prevSheetName, start, end) {
+export function createCategory(
+  cat,
+  sheetName,
+  prevSheetName,
+  start,
+  end,
+  childIds: string[] = [],
+) {
   sheet.get().createDynamic(sheetName, 'sum-amount-' + cat.id, {
     initialValue: 0,
     run: () => {
@@ -94,6 +102,43 @@ export function createCategory(cat, sheetName, prevSheetName, start, end) {
   } else {
     void trackingBudget.createCategory(cat, sheetName, prevSheetName);
   }
+
+  // Display-only: what the category holds plus everything its
+  // subcategories hold. It doesn't feed any totals, since a subcategory's
+  // budget is already taken out of its parent's own budget.
+  if (!cat.is_income) {
+    sheet.get().createDynamic(sheetName, `parent-total-budget-${cat.id}`, {
+      initialValue: 0,
+      dependencies: [cat.id, ...childIds].map(id => `budget-${id}`),
+      run: sumCellAmounts,
+    });
+  }
+}
+
+// Keeps each parent's parent-total-budget cell in sync when a
+// subcategory is created, deleted or moved to a different parent.
+function handleCategoryParentChange(months, oldValue, newValue) {
+  const oldParent =
+    oldValue && oldValue.tombstone === 0 ? oldValue.parent_id : null;
+  const newParent = newValue.tombstone === 0 ? newValue.parent_id : null;
+  if (oldParent === newParent) {
+    return;
+  }
+
+  months.forEach(month => {
+    const sheetName = monthUtils.sheetForMonth(month);
+    const dep = [`budget-${newValue.id}`];
+    if (oldParent) {
+      sheet
+        .get()
+        .removeDependencies(sheetName, `parent-total-budget-${oldParent}`, dep);
+    }
+    if (newParent) {
+      sheet
+        .get()
+        .addDependencies(sheetName, `parent-total-budget-${newParent}`, dep);
+    }
+  });
 }
 
 function handleAccountChange(months, oldValue, newValue) {
@@ -218,6 +263,7 @@ export function triggerBudgetChanges(oldValues, newValues) {
               newValue,
             );
           }
+          handleCategoryParentChange(createdMonths, oldValue, newValue);
         } else if (table === 'category_groups') {
           if (budgetType === 'envelope') {
             envelopeBudget.handleCategoryGroupChange(
@@ -270,6 +316,15 @@ export async function createBudget(months) {
     q('category_groups').select('*'),
   );
   const categories = groups.flatMap(group => group.categories);
+
+  const childIdsByParent = new Map<string, string[]>();
+  for (const cat of categories) {
+    if (cat.parent_id) {
+      const childIds = childIdsByParent.get(cat.parent_id) ?? [];
+      childIds.push(cat.id);
+      childIdsByParent.set(cat.parent_id, childIds);
+    }
+  }
 
   sheet.startTransaction();
   const meta = sheet.get().meta();
@@ -332,7 +387,14 @@ export async function createBudget(months) {
           .load(name, getSumAmounts().get(`${dbMonth}-${cat.id}`) || 0);
         seededCells.push(name);
       }
-      createCategory(cat, sheetName, prevSheetName, start, end);
+      createCategory(
+        cat,
+        sheetName,
+        prevSheetName,
+        start,
+        end,
+        childIdsByParent.get(cat.id),
+      );
     });
     groups.forEach(group => {
       if (budgetType === 'envelope') {

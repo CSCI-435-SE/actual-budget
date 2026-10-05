@@ -150,3 +150,80 @@ test.describe('Budget scroll position', () => {
     expect(scrollTopAfterReturningFromSpent).toBe(scrollTopBeforeViewingSpent);
   });
 });
+
+test.describe('Budget subcategories', () => {
+  let page: Page;
+  let configurationPage: ConfigurationPage;
+  let budgetPage: BudgetPage;
+
+  test.beforeEach(async ({ browser }) => {
+    page = await browser.newPage();
+    configurationPage = new ConfigurationPage(page);
+
+    await page.goto('/');
+    budgetPage = await configurationPage.createTestFile();
+    await page.mouse.move(0, 0);
+
+    // Start from a known parent amount; the demo's amounts vary by month
+    await budgetPage.setBudgetedAmount('Food', '200');
+    await expect
+      .poll(() => budgetPage.getBudgetedForCategory('Food'))
+      .toBe(20000);
+    await budgetPage.addSubcategory('Food', 'Dining Out');
+  });
+
+  test.afterEach(async () => {
+    await page?.close();
+  });
+
+  test('a subcategory is listed under its parent and funded from it', async () => {
+    const names = await budgetPage.getCategoryNames();
+    expect(names[names.indexOf('Food') + 1]).toBe('Dining Out');
+
+    const totalBefore = await budgetPage.getTotalBudgetedAmount();
+    await budgetPage.setBudgetedAmount('Dining Out', '50');
+
+    await expect
+      .poll(() => budgetPage.getBudgetedForCategory('Dining Out'))
+      .toBe(5000);
+    await expect
+      .poll(() => budgetPage.getBudgetedForCategory('Food'))
+      .toBe(15000);
+    expect(await budgetPage.getTotalBudgetedAmount()).toBe(totalBefore);
+    await expect(
+      budgetPage
+        .getCategoryRow('Food')
+        .getByTestId('parent-total-hint')
+        .first(),
+    ).toBeVisible();
+  });
+
+  test('a subcategory cannot take more than its parent has', async () => {
+    await budgetPage.setBudgetedAmount('Food', '100');
+    await expect
+      .poll(() => budgetPage.getBudgetedForCategory('Food'))
+      .toBe(10000);
+
+    await budgetPage.setBudgetedAmount('Dining Out', '250');
+
+    await expect
+      .poll(() => budgetPage.getBudgetedForCategory('Dining Out'))
+      .toBe(10000);
+    await expect.poll(() => budgetPage.getBudgetedForCategory('Food')).toBe(0);
+  });
+
+  test('removing a subcategory from its parent keeps its money', async () => {
+    await budgetPage.setBudgetedAmount('Dining Out', '50');
+    await expect
+      .poll(() => budgetPage.getBudgetedForCategory('Food'))
+      .toBe(15000);
+
+    await budgetPage.removeFromParent('Dining Out');
+
+    await expect(
+      budgetPage.getCategoryRow('Food').getByTestId('parent-total-hint'),
+    ).toHaveCount(0);
+    expect(await budgetPage.getBudgetedForCategory('Dining Out')).toBe(5000);
+    expect(await budgetPage.getBudgetedForCategory('Food')).toBe(15000);
+  });
+});

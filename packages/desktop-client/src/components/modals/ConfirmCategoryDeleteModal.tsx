@@ -35,6 +35,9 @@ export function ConfirmCategoryDeleteModal({
   } = useCategories();
   const group = categoryGroups.find(g => g.id === groupId);
   const category = categories.find(c => c.id === categoryId);
+  // A subcategory's money came from its parent, so suggest giving it back
+  const selectedTransferCategory =
+    transferCategory ?? category?.parent_id ?? null;
 
   const renderError = (error: string) => {
     let msg: string;
@@ -155,7 +158,7 @@ export function ConfirmCategoryDeleteModal({
                             ),
                           }))
                   }
-                  value={transferCategory}
+                  value={selectedTransferCategory}
                   focused
                   inputProps={{
                     placeholder: t('Select category...'),
@@ -168,10 +171,10 @@ export function ConfirmCategoryDeleteModal({
               <Button
                 variant="primary"
                 onPress={() => {
-                  if (!transferCategory) {
+                  if (!selectedTransferCategory) {
                     setError('required-transfer');
                   } else {
-                    onDelete(transferCategory);
+                    onDelete(selectedTransferCategory);
                     state.close();
                   }
                 }}

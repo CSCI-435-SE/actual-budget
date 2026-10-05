@@ -5,6 +5,7 @@ export type CategoryEntity = {
   name: string;
   is_income?: boolean;
   group: CategoryGroupEntity['id'];
+  parent_id?: CategoryEntity['id'] | null;
   goal_def?: string;
   cleanup_def?: string;
   template_settings?: { source: 'notes' | 'ui' };

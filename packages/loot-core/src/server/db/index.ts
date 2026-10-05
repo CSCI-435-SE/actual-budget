@@ -456,6 +456,8 @@ export async function insertCategory(
       );
     }
 
+    await validateCategoryParent(category);
+
     if (atEnd) {
       const lastCat = await first<Pick<DbCategory, 'sort_order'>>(`
         SELECT sort_order FROM categories WHERE tombstone = 0 ORDER BY sort_order DESC, id DESC LIMIT 1
@@ -492,13 +494,65 @@ export async function insertCategory(
   return id_;
 }
 
-export function updateCategory(
+// Subcategories are one level deep: a child must live in the same group as
+// its parent, the parent can't itself be a child, and a category that
+// already has children can't become a child.
+async function validateCategoryParent(
+  category: Pick<
+    Partial<DbCategory>,
+    'id' | 'parent_id' | 'cat_group' | 'is_income'
+  >,
+) {
+  if (category.parent_id == null) {
+    return;
+  }
+
+  if (category.id && category.parent_id === category.id) {
+    throw new Error('A category cannot be its own parent');
+  }
+
+  const parent = await first<
+    Pick<DbCategory, 'id' | 'cat_group' | 'is_income' | 'parent_id'>
+  >(
+    'SELECT id, cat_group, is_income, parent_id FROM categories WHERE id = ? AND tombstone = 0',
+    [category.parent_id],
+  );
+  if (!parent) {
+    throw new Error(`Parent category '${category.parent_id}' does not exist`);
+  }
+  if (parent.is_income || category.is_income) {
+    throw new Error('Income categories cannot have subcategories');
+  }
+  if (parent.cat_group !== category.cat_group) {
+    throw new Error(
+      'A subcategory must be in the same group as its parent category',
+    );
+  }
+  if (parent.parent_id) {
+    throw new Error('A subcategory cannot have subcategories of its own');
+  }
+
+  if (category.id) {
+    const child = await first<Pick<DbCategory, 'id'>>(
+      'SELECT id FROM categories WHERE parent_id = ? AND tombstone = 0 LIMIT 1',
+      [category.id],
+    );
+    if (child) {
+      throw new Error(
+        'A category with subcategories cannot become a subcategory',
+      );
+    }
+  }
+}
+
+export async function updateCategory(
   category: WithRequired<
     Partial<DbCategory>,
     'name' | 'is_income' | 'cat_group'
   >,
 ) {
   category = categoryModel.validate(category, { update: true });
+  await validateCategoryParent(category);
   // Change from cat_group to group because category AQL schema named it group.
   // const { cat_group: group, ...rest } = category;
   return update('categories', category);
@@ -513,6 +567,36 @@ export async function moveCategory(
     throw new Error('moveCategory: groupId is required');
   }
 
+  const category = await first<Pick<DbCategory, 'cat_group' | 'parent_id'>>(
+    'SELECT cat_group, parent_id FROM categories WHERE id = ?',
+    [id],
+  );
+  if (category?.parent_id && category.cat_group !== groupId) {
+    throw new Error(
+      'A subcategory cannot be moved to a different group than its parent',
+    );
+  }
+
+  await moveCategoryRow(id, groupId, targetId);
+
+  // Subcategories follow their parent into the new group, in their
+  // current order, placed right after it.
+  if (category && category.cat_group !== groupId) {
+    const children = await all<Pick<DbCategory, 'id'>>(
+      'SELECT id FROM categories WHERE parent_id = ? AND tombstone = 0 ORDER BY sort_order, id',
+      [id],
+    );
+    for (const child of children) {
+      await moveCategoryRow(child.id, groupId, targetId);
+    }
+  }
+}
+
+async function moveCategoryRow(
+  id: DbCategory['id'],
+  groupId: DbCategoryGroup['id'],
+  targetId?: DbCategory['id'] | null,
+) {
   const categories = await all<Pick<DbCategory, 'id' | 'sort_order'>>(
     `SELECT id, sort_order FROM categories WHERE cat_group = ? AND tombstone = 0 ORDER BY sort_order, id`,
     [groupId],
@@ -546,6 +630,15 @@ export async function deleteCategory(
 
     // Finally, map the category we're about to delete to the new one
     await update('category_mapping', { id: category.id, transferId });
+  }
+
+  // Subcategories outlive their parent as regular categories
+  const children = await all<Pick<DbCategory, 'id'>>(
+    'SELECT id FROM categories WHERE parent_id = ? AND tombstone = 0',
+    [category.id],
+  );
+  for (const child of children) {
+    await update('categories', { id: child.id, parent_id: null });
   }
 
   return delete_('categories', category.id);
