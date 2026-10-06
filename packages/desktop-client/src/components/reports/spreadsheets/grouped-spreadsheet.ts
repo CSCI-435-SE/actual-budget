@@ -1,12 +1,16 @@
 import { send } from '@actual-app/core/platform/client/connection';
 import * as monthUtils from '@actual-app/core/shared/months';
 import type { GroupedEntity } from '@actual-app/core/types/models';
+import { t } from 'i18next';
 
 import {
   categoryLists,
   ReportOptions,
 } from '#components/reports/ReportOptions';
-import type { QueryDataEntity } from '#components/reports/ReportOptions';
+import type {
+  QueryDataEntity,
+  UncategorizedEntity,
+} from '#components/reports/ReportOptions';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 
 import type { createCustomSpreadsheetProps } from './custom-spreadsheet';
@@ -14,6 +18,10 @@ import { fetchSpreadsheetQueryData } from './fetchSpreadsheetQueryData';
 import { filterEmptyRows } from './filterEmptyRows';
 import { recalculate } from './recalculate';
 import { sortData } from './sortData';
+import {
+  getNestedSubcategoryIds,
+  getSubcategoryIdsByParent,
+} from './subcategories';
 import {
   determineIntervalRange,
   trimGroupedDataIntervals,
@@ -37,6 +45,8 @@ export function createGroupedSpreadsheet({
   firstDayOfWeekIdx,
 }: createCustomSpreadsheetProps) {
   const [categoryList, categoryGroup] = categoryLists(categories);
+  const subcategoryIdsByParent = getSubcategoryIdsByParent(categories.grouped);
+  const nestedSubcategoryIds = getNestedSubcategoryIds(subcategoryIdsByParent);
 
   return async (
     spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -106,23 +116,68 @@ export function createGroupedSpreadsheet({
           endDate,
         });
 
+        const calculateCategory = (
+          item: UncategorizedEntity,
+          categoryIds?: string[],
+        ) =>
+          recalculate({
+            item,
+            intervals,
+            assets,
+            debts,
+            groupByLabel: 'category',
+            showOffBudget,
+            showHiddenCategories,
+            showUncategorized,
+            startDate,
+            endDate,
+            categoryIds,
+          });
+
+        // Only top-level categories go in `categories`, each parent with
+        // its subcategories rolled into it, so adding up `categories`
+        // never counts a subcategory twice. The rows shown under a parent
+        // go in its `subcategories`, which nothing adds up.
         const stackedCategories =
           group.categories &&
-          group.categories.map(item => {
-            const calc = recalculate({
-              item,
-              intervals,
-              assets,
-              debts,
-              groupByLabel: 'category',
-              showOffBudget,
-              showHiddenCategories,
-              showUncategorized,
-              startDate,
-              endDate,
+          group.categories
+            .filter(item => !nestedSubcategoryIds.has(item.id))
+            .map(item => {
+              const subcategoryIds = subcategoryIdsByParent.get(item.id);
+              if (!subcategoryIds) {
+                return calculateCategory(item);
+              }
+
+              const subcategories = (group.categories ?? [])
+                .filter(cat => subcategoryIds.includes(cat.id))
+                .map(cat => calculateCategory(cat))
+                .filter(i =>
+                  filterEmptyRows({ showEmpty, data: i, balanceTypeOp }),
+                )
+                .sort(sortData({ balanceTypeOp, sortByOp }));
+              const unallocated: GroupedEntity = {
+                ...calculateCategory(item),
+                name:
+                  balanceTypeOp === 'totalBudgeted'
+                    ? t('Unallocated')
+                    : t('Not in a subcategory'),
+                isUnallocated: true,
+              };
+
+              return {
+                ...calculateCategory(item, [item.id, ...subcategoryIds]),
+                subcategories: [
+                  ...subcategories,
+                  ...(filterEmptyRows({
+                    showEmpty,
+                    data: unallocated,
+                    balanceTypeOp,
+                  })
+                    ? [unallocated]
+                    : []),
+                ],
+              };
             });
-            return { ...calc };
-          });
 
         return {
           ...grouped,

@@ -22,6 +22,9 @@ type recalculateProps = {
   showUncategorized?: boolean;
   startDate: string;
   endDate: string;
+  // When set, the row adds up these categories instead of matching on
+  // `item.id`; a parent category passes its own id and its subcategories'.
+  categoryIds?: string[];
 };
 
 export function recalculate({
@@ -35,15 +38,22 @@ export function recalculate({
   showUncategorized,
   startDate,
   endDate,
+  categoryIds,
 }: recalculateProps): GroupedEntity {
   let totalAssets = 0;
   let totalDebts = 0;
+  const groupsByCategory =
+    groupByLabel === 'category' || groupByLabel === 'categoryGroup';
+  const matchesItem = (row: QueryDataEntity) =>
+    categoryIds
+      ? categoryIds.includes(row.category)
+      : row[groupByLabel] === (item.id ?? null) ||
+        (item.uncategorized_id && groupsByCategory);
+
   const intervalData = intervals.reduce(
     (arr: IntervalEntity[], intervalItem, index) => {
       const last = arr.length === 0 ? null : arr[arr.length - 1];
 
-      const groupsByCategory =
-        groupByLabel === 'category' || groupByLabel === 'categoryGroup';
       const intervalAssets = filterHiddenItems(
         item,
         assets,
@@ -52,12 +62,7 @@ export function recalculate({
         showUncategorized,
         groupsByCategory,
       )
-        .filter(
-          asset =>
-            asset.date === intervalItem &&
-            (asset[groupByLabel] === (item.id ?? null) ||
-              (item.uncategorized_id && groupsByCategory)),
-        )
+        .filter(asset => asset.date === intervalItem && matchesItem(asset))
         .reduce((a, v) => a + v.amount, 0);
       totalAssets += intervalAssets;
 
@@ -69,12 +74,7 @@ export function recalculate({
         showUncategorized,
         groupsByCategory,
       )
-        .filter(
-          debt =>
-            debt.date === intervalItem &&
-            (debt[groupByLabel] === (item.id ?? null) ||
-              (item.uncategorized_id && groupsByCategory)),
-        )
+        .filter(debt => debt.date === intervalItem && matchesItem(debt))
         .reduce((a, v) => a + v.amount, 0);
       totalDebts += intervalDebts;
 

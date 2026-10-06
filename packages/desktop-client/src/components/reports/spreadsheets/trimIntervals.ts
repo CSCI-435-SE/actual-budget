@@ -135,22 +135,24 @@ export function trimGroupedDataIntervals(
       group.intervalData = group.intervalData.slice(startIndex, endIndex + 1);
     }
 
-    // Trim the nested categories' intervalData
+    // Trim the nested categories' intervalData, and their subcategories'
     if (group.categories) {
-      group.categories.forEach(category => {
-        if (
-          startIndex > endIndex ||
-          startIndex < 0 ||
-          endIndex >= category.intervalData.length
-        ) {
-          category.intervalData = [];
-        } else {
-          category.intervalData = category.intervalData.slice(
-            startIndex,
-            endIndex + 1,
-          );
-        }
-      });
+      group.categories
+        .flatMap(category => [category, ...(category.subcategories ?? [])])
+        .forEach(category => {
+          if (
+            startIndex > endIndex ||
+            startIndex < 0 ||
+            endIndex >= category.intervalData.length
+          ) {
+            category.intervalData = [];
+          } else {
+            category.intervalData = category.intervalData.slice(
+              startIndex,
+              endIndex + 1,
+            );
+          }
+        });
     }
   });
 }

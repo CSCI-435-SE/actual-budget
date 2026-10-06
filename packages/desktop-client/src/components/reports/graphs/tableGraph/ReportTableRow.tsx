@@ -38,7 +38,11 @@ type ReportTableRowProps = {
   handleScroll?: UIEventHandler<HTMLDivElement>;
   height?: number;
   colorized?: boolean;
+  isSubcategory?: boolean;
 };
+
+// Matches the subcategory indent on the budget page.
+const SUBCATEGORY_INDENT = 16;
 
 const getAmountColor = (amount: number) => {
   if (amount === 0) return theme.reportsNumberNeutral;
@@ -66,6 +70,7 @@ export const ReportTableRow = memo(
     height,
     interval,
     colorized,
+    isSubcategory = false,
   }: ReportTableRowProps) => {
     const average = Math.round(item[balanceTypeOp] / intervalsCount);
     const groupByItem = groupBy === 'Interval' ? 'date' : 'name';
@@ -124,7 +129,10 @@ export const ReportTableRow = memo(
               flexGrow: 1,
               backgroundColor: style?.backgroundColor,
             }}
-            valueStyle={compactStyle}
+            valueStyle={{
+              ...compactStyle,
+              ...(isSubcategory && { paddingLeft: 5 + SUBCATEGORY_INDENT }),
+            }}
           />
           {item.intervalData && mode === 'time'
             ? item.intervalData.map((intervalItem, index) => {
@@ -173,6 +181,7 @@ export const ReportTableRow = memo(
                         field: drilldownField,
                         id: item.id,
                         uncategorizedId: item.uncategorizedId,
+                        includeSubcategories: !item.isUnallocated,
                         interval,
                       })
                     }
@@ -228,6 +237,7 @@ export const ReportTableRow = memo(
                         field: drilldownField,
                         id: item.id,
                         uncategorizedId: item.uncategorizedId,
+                        includeSubcategories: !item.isUnallocated,
                       })
                     }
                   />
@@ -276,6 +286,7 @@ export const ReportTableRow = memo(
                         field: drilldownField,
                         id: item.id,
                         uncategorizedId: item.uncategorizedId,
+                        includeSubcategories: !item.isUnallocated,
                       })
                     }
                   />
@@ -323,6 +334,7 @@ export const ReportTableRow = memo(
                 field: drilldownField,
                 id: item.id,
                 uncategorizedId: item.uncategorizedId,
+                includeSubcategories: !item.isUnallocated,
               })
             }
             width="flex"

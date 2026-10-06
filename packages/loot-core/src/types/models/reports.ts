@@ -124,6 +124,14 @@ export type GroupedEntity = {
   netDebts: number;
   totalBudgeted: number;
   categories?: GroupedEntity[];
+  // On a category that has subcategories: a row for each of them, then
+  // one for what the category holds itself. The category's own amounts
+  // already include all of these, so they're for display only and must
+  // never be added into a total.
+  subcategories?: GroupedEntity[];
+  // Marks the row holding a parent category's own amounts, apart from
+  // what its subcategories hold.
+  isUnallocated?: boolean;
 };
 
 export type Interval = {

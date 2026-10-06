@@ -10,6 +10,10 @@ import type {
 } from '@actual-app/core/types/models';
 
 import { ReportOptions } from '#components/reports/ReportOptions';
+import {
+  getSubcategoryIdsByParent,
+  getSubcategoryIdsOfHiddenParents,
+} from '#components/reports/spreadsheets/subcategories';
 
 type showActivityProps = {
   navigate: NavigateFunction;
@@ -26,6 +30,9 @@ type showActivityProps = {
   id?: string | string[]; // changed: supports array for oneOf
   uncategorizedId?: 'off_budget' | 'transfer' | 'other' | 'all';
   interval?: string;
+  // A category's report row includes its subcategories, so its activity
+  // does too. Set to false for a row of the category's own amounts only.
+  includeSubcategories?: boolean;
 };
 
 export function showActivity({
@@ -43,10 +50,23 @@ export function showActivity({
   id,
   uncategorizedId,
   interval = 'Day',
+  includeSubcategories = true,
 }: showActivityProps) {
   const isOutFlow =
     balanceTypeOp === 'totalDebts' || type === 'debts' ? true : false;
-  const hiddenCategories = categories.list.filter(f => f.hidden).map(e => e.id);
+  const hiddenCategories = [
+    ...categories.list.filter(f => f.hidden).map(e => e.id),
+    ...getSubcategoryIdsOfHiddenParents(categories.grouped),
+  ];
+  let drilldownId = id;
+  if (field === 'category' && includeSubcategories && typeof id === 'string') {
+    const subcategoryIds = getSubcategoryIdsByParent(categories.grouped).get(
+      id,
+    );
+    if (subcategoryIds) {
+      drilldownId = [id, ...subcategoryIds];
+    }
+  }
   const offBudgetAccounts = accounts.filter(f => f.offbudget).map(e => e.id);
   const fromDate =
     interval === 'Weekly'
@@ -70,11 +90,11 @@ export function showActivity({
             value: id,
             type: 'id',
           }
-        : id && {
+        : drilldownId && {
             // changed: use oneOf when id is an array, is when it's a string
             field,
-            op: Array.isArray(id) ? 'oneOf' : 'is',
-            value: id,
+            op: Array.isArray(drilldownId) ? 'oneOf' : 'is',
+            value: drilldownId,
             type: 'id',
           };
 

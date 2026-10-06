@@ -73,15 +73,32 @@ export function ReportTableList({
                       {item.categories.map(
                         (category: GroupedEntity, i: number) => {
                           return (
-                            <RenderTableRow
-                              key={category.id}
-                              index={i}
-                              renderRow={renderRow}
-                              mode={mode}
-                              metadata={metadata}
-                              parent_index={index}
-                              style={style}
-                            />
+                            <View key={category.id}>
+                              <RenderTableRow
+                                index={i}
+                                renderRow={renderRow}
+                                mode={mode}
+                                metadata={metadata}
+                                parent_index={index}
+                                style={style}
+                              />
+                              {category.subcategories?.map(subcategory => (
+                                <View
+                                  key={
+                                    subcategory.isUnallocated
+                                      ? `${subcategory.id}-unallocated`
+                                      : subcategory.id
+                                  }
+                                >
+                                  {renderRow({
+                                    item: subcategory,
+                                    mode,
+                                    style,
+                                    isSubcategory: true,
+                                  })}
+                                </View>
+                              ))}
+                            </View>
                           );
                         },
                       )}
