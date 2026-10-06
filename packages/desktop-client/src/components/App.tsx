@@ -31,6 +31,7 @@ import {
   hasHiddenScrollbars,
   ThemeStyle,
   useTheme,
+  FontSizeStyle,
 } from '#style';
 import { signOut } from '#users/usersSlice';
 import { ExposeNavigate } from '#util/router-tools';
@@ -225,6 +226,7 @@ export function App() {
                     </ErrorBoundary>
                     <ThemeStyle />
                     <CustomThemeStyle />
+                    <FontSizeStyle />
                     <ErrorBoundary FallbackComponent={FatalError}>
                       <Modals />
                     </ErrorBoundary>

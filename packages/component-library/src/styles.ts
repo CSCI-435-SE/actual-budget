@@ -19,7 +19,7 @@ export const styles: CSSProperties = {
   menuBorderRadius: 4,
   mobileMinHeight: MOBILE_MIN_HEIGHT,
   mobileMenuItem: {
-    fontSize: 17,
+    fontSize: 'var(--font-size-mobile-menu)',
     fontWeight: 400,
     paddingTop: 8,
     paddingBottom: 8,
@@ -29,33 +29,33 @@ export const styles: CSSProperties = {
   mobileEditingPadding: 12,
   altMenuMaxHeight: 250,
   altMenuText: {
-    fontSize: 13,
+    fontSize: 'var(--font-size-alt-menu)',
   },
   altMenuHeaderText: {
     fontSize: 13,
     fontWeight: 700,
   },
   veryLargeText: {
-    fontSize: 30,
+    fontSize: 'var(--font-size-very-large)',
     fontWeight: 600,
   },
   largeText: {
-    fontSize: 20,
+    fontSize: 'var(--font-size-large)',
     fontWeight: 700,
     letterSpacing: 0.5,
   },
   mediumText: {
-    fontSize: 15,
+    fontSize: 'var(--font-size-medium)',
     fontWeight: 500,
   },
   smallText: {
-    fontSize: 13,
+    fontSize: 'var(--font-size-small)',
   },
   verySmallText: {
-    fontSize: 12,
+    fontSize: 'var(--font-size-very-small)',
   },
   tinyText: {
-    fontSize: 10,
+    fontSize: 'var(--font-size-tiny)',
   },
   page: {
     flex: 1,
@@ -97,7 +97,7 @@ export const styles: CSSProperties = {
   },
   notFixed: { fontFeatureSettings: '' },
   text: {
-    fontSize: 16,
+    fontSize: 'var(--font-size-base)',
     // lineHeight: 22.4 // TODO: This seems like trouble, but what's the right value?
   },
   delayedFadeIn: {
