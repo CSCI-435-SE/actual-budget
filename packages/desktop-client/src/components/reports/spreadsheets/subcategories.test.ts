@@ -125,13 +125,16 @@ async function runGrouped(
   return result;
 }
 
-async function runCustom(categories: ReturnType<typeof makeCategories>) {
+async function runCustom(
+  categories: ReturnType<typeof makeCategories>,
+  balanceTypeOp: 'totalDebts' | 'totalBudgeted' = 'totalDebts',
+) {
   let result: DataEntity | undefined;
   await createCustomSpreadsheet({
     ...options,
     categories,
     groupBy: 'Category',
-    balanceTypeOp: 'totalDebts',
+    balanceTypeOp,
   })(spreadsheet, data => (result = data));
   return result;
 }
@@ -297,5 +300,74 @@ describe('reports with subcategories', () => {
 
     expect(data?.totalDebts).toBe(-10000);
     expect(data?.data?.map(c => c.id)).toEqual(['rent']);
+  });
+});
+
+describe('budgeted reports compare budgets with spending', () => {
+  // Food kept 50 itself and spent 10 of it. Restaurants was given 150 and
+  // spent 180. Groceries was given nothing but spent 25. Rent was given
+  // 1,000 and spent all of it.
+  const cells = {
+    food: [5000, -1000],
+    restaurants: [15000, -18000],
+    groceries: [0, -2500],
+    rent: [100000, -100000],
+  };
+
+  beforeEach(() => {
+    vi.mocked(send).mockImplementation((async (name: string) => {
+      if (name === 'make-filters-from-conditions') {
+        return { filters: [] };
+      }
+      return Object.entries(cells).flatMap(([id, [budget, spent]]) => [
+        { name: `budget202609!budget-${id}`, value: budget },
+        { name: `budget202609!sum-amount-${id}`, value: spent },
+      ]);
+    }) as typeof send);
+    vi.mocked(aqlQuery).mockImplementation((async (type: unknown) => ({
+      data: type === 'debts' ? spending : [],
+    })) as typeof aqlQuery);
+  });
+
+  function comparison(row: GroupedEntity | undefined) {
+    return row && [row.name, row.totalBudgeted, row.totalSpent];
+  }
+
+  it('shows what each subcategory was given and spent', async () => {
+    const [foodGroup] = await runGrouped(makeCategories(), 'totalBudgeted');
+    const foodRow = byId(foodGroup.categories, 'food');
+
+    expect(foodRow?.subcategories?.map(comparison)).toEqual([
+      ['Restaurants', 15000, -18000],
+      // Kept even without a budget, so its overspending shows
+      ['Groceries', 0, -2500],
+      ['Unallocated', 5000, -1000],
+    ]);
+  });
+
+  it('rolls spending into the parent without counting it twice', async () => {
+    const [foodGroup] = await runGrouped(makeCategories(), 'totalBudgeted');
+    const foodRow = byId(foodGroup.categories, 'food');
+
+    expect(comparison(foodRow)).toEqual(['Food', 20000, -21500]);
+    expect(comparison(foodGroup)).toEqual(['Food', 20000, -21500]);
+  });
+
+  it('adds up spending for the totals row from top-level rows only', async () => {
+    const data = await runCustom(makeCategories(), 'totalBudgeted');
+
+    expect(data?.data?.map(comparison)).toEqual([
+      ['Food', 20000, -21500],
+      ['Rent', 100000, -100000],
+    ]);
+    expect(data?.totalSpent).toBe(-121500);
+    expect(data?.intervalData[0].totalSpent).toBe(-121500);
+  });
+
+  it('leaves spending out of other report types', async () => {
+    const data = await runCustom(makeCategories());
+
+    expect(data?.totalSpent).toBeUndefined();
+    expect(data?.data?.[0].totalSpent).toBeUndefined();
   });
 });

@@ -42,6 +42,11 @@ export function recalculate({
 }: recalculateProps): GroupedEntity {
   let totalAssets = 0;
   let totalDebts = 0;
+  let totalSpent = 0;
+  // Budget rows also carry what each category spent.
+  const hasSpent = [...assets, ...debts].some(row => row.spent !== undefined);
+  const sumSpent = (rows: QueryDataEntity[]) =>
+    rows.reduce((a, v) => a + (v.spent ?? 0), 0);
   const groupsByCategory =
     groupByLabel === 'category' || groupByLabel === 'categoryGroup';
   const matchesItem = (row: QueryDataEntity) =>
@@ -54,29 +59,32 @@ export function recalculate({
     (arr: IntervalEntity[], intervalItem, index) => {
       const last = arr.length === 0 ? null : arr[arr.length - 1];
 
-      const intervalAssets = filterHiddenItems(
+      const assetRows = filterHiddenItems(
         item,
         assets,
         showOffBudget,
         showHiddenCategories,
         showUncategorized,
         groupsByCategory,
-      )
-        .filter(asset => asset.date === intervalItem && matchesItem(asset))
-        .reduce((a, v) => a + v.amount, 0);
+      ).filter(asset => asset.date === intervalItem && matchesItem(asset));
+      const intervalAssets = assetRows.reduce((a, v) => a + v.amount, 0);
       totalAssets += intervalAssets;
 
-      const intervalDebts = filterHiddenItems(
+      const debtRows = filterHiddenItems(
         item,
         debts,
         showOffBudget,
         showHiddenCategories,
         showUncategorized,
         groupsByCategory,
-      )
-        .filter(debt => debt.date === intervalItem && matchesItem(debt))
-        .reduce((a, v) => a + v.amount, 0);
+      ).filter(debt => debt.date === intervalItem && matchesItem(debt));
+      const intervalDebts = debtRows.reduce((a, v) => a + v.amount, 0);
       totalDebts += intervalDebts;
+
+      // Each budget row is in exactly one of the two lists, so this
+      // counts every row's spending once.
+      const intervalSpent = sumSpent(assetRows) + sumSpent(debtRows);
+      totalSpent += intervalSpent;
 
       const intervalTotals = intervalAssets + intervalDebts;
 
@@ -90,6 +98,7 @@ export function recalculate({
         netDebts: intervalTotals < 0 ? intervalTotals : 0,
         totalTotals: intervalTotals,
         totalBudgeted: intervalTotals,
+        ...(hasSpent && { totalSpent: intervalSpent }),
         change,
         intervalStartDate: index === 0 ? startDate : intervalItem,
         intervalEndDate:
@@ -115,6 +124,7 @@ export function recalculate({
     netDebts: totalTotals < 0 ? totalTotals : 0,
     totalTotals,
     totalBudgeted: totalTotals,
+    ...(hasSpent && { totalSpent }),
     intervalData,
   };
 }

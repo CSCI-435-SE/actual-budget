@@ -44,12 +44,16 @@ function makeRow(isUnallocated: boolean): GroupedEntity {
   };
 }
 
-function renderRow(item: GroupedEntity, mode: 'total' | 'time') {
+function renderRow(
+  item: GroupedEntity,
+  mode: 'total' | 'time',
+  balanceTypeOp: 'totalTotals' | 'totalBudgeted' = 'totalTotals',
+) {
   render(
     <TestProviders>
       <ReportTableRow
         item={item}
-        balanceTypeOp="totalTotals"
+        balanceTypeOp={balanceTypeOp}
         groupBy="Category"
         mode={mode}
         intervalsCount={1}
@@ -100,5 +104,58 @@ describe('ReportTableRow drilldown', () => {
     for (const [args] of vi.mocked(showActivity).mock.calls) {
       expect(args).toMatchObject({ includeSubcategories: true });
     }
+  });
+});
+
+describe('ReportTableRow budgeted totals', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  // Given 150, spent 180: 30 over budget.
+  const restaurants: GroupedEntity = {
+    id: 'restaurants',
+    name: 'Restaurants',
+    totalAssets: 15000,
+    totalDebts: 0,
+    totalTotals: 15000,
+    netAssets: 15000,
+    netDebts: 0,
+    totalBudgeted: 15000,
+    totalSpent: -18000,
+    intervalData: [],
+  };
+
+  it('shows budgeted, spent and remaining side by side', () => {
+    renderRow(restaurants, 'total', 'totalBudgeted');
+
+    const cells = screen
+      .getAllByText(/^-?\d+\.\d\d$/)
+      .map(cell => cell.textContent);
+    // Budgeted, Spent, Remaining, then the monthly average budgeted
+    expect(cells).toEqual(['150.00', '-180.00', '-30.00', '150.00']);
+  });
+
+  it("opens the transactions behind a row's spending", () => {
+    renderRow(
+      { ...restaurants, isUnallocated: true },
+      'total',
+      'totalBudgeted',
+    );
+    fireEvent.click(screen.getByText('-180.00'));
+
+    expect(showActivity).toHaveBeenCalledWith(
+      expect.objectContaining({
+        balanceTypeOp: 'totalTotals',
+        id: 'restaurants',
+        includeSubcategories: false,
+      }),
+    );
+  });
+
+  it('keeps the spending columns out of the time view', () => {
+    renderRow(restaurants, 'time', 'totalBudgeted');
+
+    expect(screen.queryByText('-180.00')).toBeNull();
   });
 });

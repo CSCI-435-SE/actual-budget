@@ -88,6 +88,9 @@ export type DataEntity = {
   netDebts: number;
   totalTotals: number;
   totalBudgeted: number;
+  // What was spent from the budgeted categories; only set by Budgeted
+  // reports, so they can compare it with what was budgeted.
+  totalSpent?: number;
 };
 
 export type LegendEntity = {
@@ -109,6 +112,8 @@ export type IntervalEntity = {
   netDebts: number;
   totalTotals: number;
   totalBudgeted: number;
+  // Only set by Budgeted reports; see DataEntity.totalSpent.
+  totalSpent?: number;
 };
 
 export type GroupedEntity = {
@@ -123,6 +128,8 @@ export type GroupedEntity = {
   netAssets: number;
   netDebts: number;
   totalBudgeted: number;
+  // Only set by Budgeted reports; see DataEntity.totalSpent.
+  totalSpent?: number;
   categories?: GroupedEntity[];
   // On a category that has subcategories: a row for each of them, then
   // one for what the category holds itself. The category's own amounts

@@ -302,6 +302,23 @@ export function createCustomSpreadsheet({
       return { ...calc };
     });
 
+    // Budgeted reports also compare with what was spent. It's added up
+    // from the rows above, which are top-level only, so each category's
+    // spending is counted once.
+    const isBudgeted = balanceTypeOp === 'totalBudgeted';
+    if (isBudgeted) {
+      intervalData.forEach((intervalItem, index) => {
+        intervalItem.totalSpent = calcData.reduce(
+          (sum, row) => sum + (row.intervalData[index]?.totalSpent ?? 0),
+          0,
+        );
+      });
+    }
+    const totalSpent = calcData.reduce(
+      (sum, row) => sum + (row.totalSpent ?? 0),
+      0,
+    );
+
     // First, filter rows so trimming reflects the visible dataset
     const calcDataFiltered = calcData.filter(i =>
       filterEmptyRows({ showEmpty, data: i, balanceTypeOp }),
@@ -351,6 +368,7 @@ export function createCustomSpreadsheet({
       // the underlying dataset when `balanceTypeOp === 'totalBudgeted'`.
       totalTotals: totalAssets + totalDebts,
       totalBudgeted: totalAssets + totalDebts,
+      ...(isBudgeted && { totalSpent }),
     });
   };
 }

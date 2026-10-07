@@ -239,8 +239,15 @@ export async function fetchBudgetData({
         cell.name.endsWith(`budget-${cat.id}`),
       );
 
+      const spentCell = monthData.find((cell: BudgetMonthCell) =>
+        cell.name.endsWith(`sum-amount-${cat.id}`),
+      );
+
       const amount = Number(budgetCell?.value) || 0;
-      if (amount === 0) {
+      const spent = Number(spentCell?.value) || 0;
+      // Keep a category that spent without a budget, so overspending on
+      // money it was never given still shows up.
+      if (amount === 0 && spent === 0) {
         continue;
       }
 
@@ -257,6 +264,7 @@ export async function fetchBudgetData({
         payee: '',
         transferAccount: '',
         amount,
+        spent,
       };
 
       if (amount > 0) {
