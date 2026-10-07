@@ -90,7 +90,6 @@ export type GoalCardWidget = AbstractWidget<
   {
     name?: string;
     targetAmount?: number; // integer amount (cents), like other Actual amounts
-    currentAmount?: number; // integer amount (cents)
     linkedTag?: string; // tag name (without '#') whose transactions count toward the goal
     conditions?: RuleConditionEntity[];
     conditionsOp?: 'and' | 'or';

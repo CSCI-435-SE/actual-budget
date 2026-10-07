@@ -1,9 +1,15 @@
 import React from 'react';
 
-import type { GoalCardWidget, TagEntity } from '@actual-app/core/types/models';
+import type {
+  GoalCardWidget,
+  RuleConditionEntity,
+  TagEntity,
+} from '@actual-app/core/types/models';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { summarySpreadsheet } from '#components/reports/spreadsheets/summary-spreadsheet';
+import { useReport } from '#components/reports/useReport';
 import type { ContextMenuItem } from '#contextmenu/types';
 import { useNavigate } from '#hooks/useNavigate';
 import {
@@ -11,11 +17,24 @@ import {
   createTestQueryClient,
   TestProviders,
 } from '#mocks';
+import { initServer, serverPush } from '#mocks/connection';
 import { tagQueries } from '#tags/queries';
 
 import { GoalCard } from './GoalCard';
 
+vi.mock(
+  '@actual-app/core/platform/client/connection',
+  () => import('#mocks/connection'),
+);
 vi.mock('#hooks/useNavigate');
+// The summary spreadsheet queries the backend; stub it so tests can control
+// the computed total directly through `useReport`.
+vi.mock('#components/reports/spreadsheets/summary-spreadsheet', () => ({
+  summarySpreadsheet: vi.fn(() => async () => undefined),
+}));
+vi.mock('#components/reports/useReport', () => ({
+  useReport: vi.fn(() => null),
+}));
 // jsdom has no IntersectionObserver; treat the card as always on screen so
 // ReportCard renders its children.
 vi.mock('#hooks/useIsInViewport', () => ({
@@ -71,12 +90,18 @@ function getProgressFill(container: HTMLElement) {
   return fill;
 }
 
+function mockTotal(total: number) {
+  vi.mocked(useReport).mockReturnValue({ total });
+}
+
 describe('GoalCard', () => {
   const mockNavigate = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+    vi.mocked(useReport).mockReturnValue(null);
+    initServer({ 'get-latest-transaction': () => null });
   });
 
   describe('name', () => {
@@ -98,9 +123,10 @@ describe('GoalCard', () => {
   });
 
   describe('amounts', () => {
-    it('shows the current and target amounts', () => {
+    it('shows the computed current amount and the target amount', () => {
+      mockTotal(250000);
       renderGoalCard({
-        meta: { currentAmount: 250000, targetAmount: 1000000 },
+        meta: { linkedTag: 'vacation', targetAmount: 1000000 },
       });
 
       expect(screen.getByText('2,500.00')).toBeInTheDocument();
@@ -119,89 +145,181 @@ describe('GoalCard', () => {
     it.each([
       {
         label: 'partway to the goal',
-        currentAmount: 250000,
+        total: 250000,
         targetAmount: 1000000,
         expected: 25,
       },
       {
         label: 'nothing saved yet',
-        currentAmount: 0,
+        total: 0,
         targetAmount: 1000000,
         expected: 0,
       },
       {
         label: 'goal reached exactly',
-        currentAmount: 1000000,
+        total: 1000000,
         targetAmount: 1000000,
         expected: 100,
       },
       {
         label: 'rounding down to a whole percent',
-        currentAmount: 1000,
+        total: 1000,
         targetAmount: 3000,
         expected: 33,
       },
       {
         label: 'rounding up to a whole percent',
-        currentAmount: 2000,
+        total: 2000,
         targetAmount: 3000,
         expected: 67,
       },
       {
-        label: 'goal exceeded (capped at 100%)',
-        currentAmount: 1500000,
+        label: 'goal exceeded (bar stays full)',
+        total: 1500000,
         targetAmount: 1000000,
-        expected: 100,
+        expected: 150,
       },
       {
-        label: 'negative balance (floored at 0%)',
-        currentAmount: -50000,
+        label: 'negative total (floored at 0%)',
+        total: -50000,
         targetAmount: 1000000,
         expected: 0,
       },
       {
         label: 'no target set (no divide by zero)',
-        currentAmount: 50000,
+        total: 50000,
         targetAmount: 0,
         expected: 0,
       },
-    ])(
-      'shows $expected% when $label',
-      ({ currentAmount, targetAmount, expected }) => {
-        const { container } = renderGoalCard({
-          meta: { currentAmount, targetAmount },
-        });
-
-        expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
-        expect(getComputedStyle(getProgressFill(container)).width).toBe(
-          `${expected}%`,
-        );
-      },
-    );
-
-    it('updates when the goal amounts change', () => {
-      const environment = createTestEnvironment();
-      const { rerender, container } = renderGoalCard({
-        meta: { currentAmount: 100000, targetAmount: 1000000 },
-        environment,
+    ])('shows $expected% when $label', ({ total, targetAmount, expected }) => {
+      mockTotal(total);
+      const { container } = renderGoalCard({
+        meta: { linkedTag: 'vacation', targetAmount },
       });
+
+      expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
+      expect(getComputedStyle(getProgressFill(container)).width).toBe(
+        `${Math.min(expected, 100)}%`,
+      );
+    });
+
+    it('updates when the computed total changes', () => {
+      const environment = createTestEnvironment();
+      const meta: Meta = { linkedTag: 'vacation', targetAmount: 1000000 };
+      mockTotal(100000);
+      const { rerender, container } = renderGoalCard({ meta, environment });
       expect(screen.getByText('10%')).toBeInTheDocument();
 
+      mockTotal(600000);
       rerender(
         <TestProviders
           queryClient={environment.queryClient}
           store={environment.store}
         >
-          <GoalCard
-            widgetId={WIDGET_ID}
-            meta={{ currentAmount: 600000, targetAmount: 1000000 }}
-            onMetaChange={vi.fn()}
-          />
+          <GoalCard widgetId={WIDGET_ID} meta={meta} onMetaChange={vi.fn()} />
         </TestProviders>,
       );
 
       expect(screen.getByText('60%')).toBeInTheDocument();
       expect(getComputedStyle(getProgressFill(container)).width).toBe('60%');
+    });
+
+    it('shows no progress when no tag is linked', () => {
+      mockTotal(500000);
+      const { container } = renderGoalCard({
+        meta: { targetAmount: 1000000 },
+      });
+
+      expect(screen.getByText('0%')).toBeInTheDocument();
+      expect(getComputedStyle(getProgressFill(container)).width).toBe('0%');
+      expect(summarySpreadsheet).not.toHaveBeenCalled();
+    });
+
+    it('sums tagged transactions using the stored conditions', () => {
+      const conditions: RuleConditionEntity[] = [
+        { field: 'amount', op: 'gt', value: 0, type: 'number' },
+      ];
+      renderGoalCard({
+        meta: {
+          linkedTag: 'vacation',
+          targetAmount: 1000000,
+          conditions,
+          conditionsOp: 'or',
+        },
+      });
+
+      expect(summarySpreadsheet).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(String),
+        conditions,
+        'or',
+        { type: 'sum' },
+        expect.anything(),
+        [
+          {
+            field: 'notes',
+            op: 'hasTags',
+            value: '#vacation',
+            type: 'string',
+          },
+        ],
+      );
+    });
+  });
+
+  describe('live updates', () => {
+    const meta: Meta = { linkedTag: 'vacation', targetAmount: 1000000 };
+
+    async function pushTableChange(tables: string[]) {
+      await act(async () => {
+        serverPush('sync-event', { type: 'applied', tables });
+      });
+    }
+
+    it('recalculates when transactions change', async () => {
+      mockTotal(400000);
+      renderGoalCard({ meta });
+      expect(await screen.findByText('40%')).toBeInTheDocument();
+      const callsBefore = vi.mocked(summarySpreadsheet).mock.calls.length;
+
+      mockTotal(700000);
+      await pushTableChange(['transactions']);
+
+      expect(vi.mocked(summarySpreadsheet).mock.calls.length).toBe(
+        callsBefore + 1,
+      );
+      expect(screen.getByText('70%')).toBeInTheDocument();
+    });
+
+    it('ignores changes that do not touch transactions', async () => {
+      mockTotal(400000);
+      renderGoalCard({ meta });
+      await screen.findByText('40%');
+      const callsBefore = vi.mocked(summarySpreadsheet).mock.calls.length;
+
+      await pushTableChange(['categories']);
+
+      expect(vi.mocked(summarySpreadsheet).mock.calls.length).toBe(callsBefore);
+    });
+
+    it('keeps showing the last total while recalculating', async () => {
+      mockTotal(400000);
+      renderGoalCard({ meta });
+      await screen.findByText('40%');
+
+      // useReport returns null while a new query is in flight.
+      vi.mocked(useReport).mockReturnValue(null);
+      await pushTableChange(['transactions']);
+
+      expect(screen.getByText('40%')).toBeInTheDocument();
+    });
+
+    it('does not listen for changes when no tag is linked', async () => {
+      renderGoalCard({ meta: { targetAmount: 1000000 } });
+
+      await pushTableChange(['transactions']);
+
+      expect(summarySpreadsheet).not.toHaveBeenCalled();
     });
   });
 
@@ -228,11 +346,11 @@ describe('GoalCard', () => {
   });
 
   describe('renaming', () => {
-    it('saves the new name and keeps the goal amounts', async () => {
+    it('saves the new name and keeps the rest of the goal', async () => {
       const user = userEvent.setup();
       const meta: Meta = {
         name: 'Vacation',
-        currentAmount: 250000,
+        linkedTag: 'vacation',
         targetAmount: 1000000,
       };
       const { onMetaChange, store } = renderGoalCard({ meta });
@@ -245,7 +363,7 @@ describe('GoalCard', () => {
 
       expect(onMetaChange).toHaveBeenCalledWith({
         name: 'Trip to Japan',
-        currentAmount: 250000,
+        linkedTag: 'vacation',
         targetAmount: 1000000,
       });
     });
@@ -256,7 +374,7 @@ describe('GoalCard', () => {
       const user = userEvent.setup();
       const meta: Meta = {
         name: 'Vacation',
-        currentAmount: 250000,
+        conditionsOp: 'or',
         targetAmount: 1000000,
       };
       const { onMetaChange, store } = renderGoalCard({ meta });
@@ -269,7 +387,7 @@ describe('GoalCard', () => {
 
       expect(onMetaChange).toHaveBeenCalledWith({
         name: 'Vacation',
-        currentAmount: 250000,
+        conditionsOp: 'or',
         targetAmount: 750000,
       });
       expect(screen.queryByLabelText('Goal amount')).not.toBeInTheDocument();
@@ -328,7 +446,7 @@ describe('GoalCard', () => {
     it('links the chosen tag together with the goal amount', async () => {
       const user = userEvent.setup();
       const { onMetaChange, store } = renderGoalCard({
-        meta: { name: 'Vacation', currentAmount: 0, targetAmount: 1000000 },
+        meta: { name: 'Vacation', targetAmount: 1000000 },
       });
 
       chooseContextMenuItem(store, 'Vacation', 'set-goal');
@@ -341,7 +459,6 @@ describe('GoalCard', () => {
       expect(onMetaChange).toHaveBeenCalledTimes(1);
       expect(onMetaChange).toHaveBeenCalledWith({
         name: 'Vacation',
-        currentAmount: 0,
         targetAmount: 200000,
         linkedTag: 'vacation',
       });

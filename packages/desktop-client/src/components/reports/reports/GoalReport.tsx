@@ -19,10 +19,13 @@ import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
 import { PrivacyFilter } from '#components/PrivacyFilter';
 import { DateRange } from '#components/reports/DateRange';
+import { GoalProgress } from '#components/reports/GoalProgress';
 import { GoalTagSelect } from '#components/reports/GoalTagSelect';
+import { GoalTransactions } from '#components/reports/GoalTransactions';
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { useGoalTotal } from '#components/reports/useGoalTotal';
 import { AmountInput } from '#components/util/AmountInput';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useFormat } from '#hooks/useFormat';
@@ -146,12 +149,15 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
 
   const title = widget?.meta?.name || t('Personal goal');
-  const currentAmount = widget?.meta?.currentAmount ?? 0;
-  const progress =
-    targetAmount > 0
-      ? Math.min(Math.max(currentAmount / targetAmount, 0), 1)
-      : 0;
-  const progressPercent = Math.round(progress * 100);
+  // Uses the unsaved editor state so the report previews changes before the
+  // widget is saved.
+  const currentAmount = useGoalTotal({
+    start,
+    end,
+    conditions,
+    conditionsOp,
+    linkedTag,
+  });
 
   function notifyMissingWidget() {
     dispatch(
@@ -359,42 +365,16 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
           </View>
         </View>
 
-        <View>
-          <View
-            aria-hidden
-            style={{
-              height: 16,
-              borderRadius: 8,
-              backgroundColor: theme.pillBackground,
-              overflow: 'hidden',
-            }}
-          >
-            <View
-              style={{
-                width: `${progressPercent}%`,
-                height: '100%',
-                backgroundColor: theme.reportsGreen,
-              }}
-            />
-          </View>
-          <Block
-            style={{
-              ...styles.tnum,
-              marginTop: 5,
-              textAlign: 'right',
-              color: theme.pageTextSubdued,
-            }}
-          >
-            {progressPercent}%
-          </Block>
-        </View>
+        <GoalProgress
+          currentAmount={currentAmount}
+          targetAmount={targetAmount}
+          size="large"
+        />
 
-        {/* Placeholder: will list the transactions matching `conditions`
-            over the selected time frame. */}
         <View
           style={{
             flex: 1,
-            minHeight: 200,
+            minHeight: 300,
             padding: 20,
             borderRadius: 4,
             backgroundColor: theme.tableBackground,
@@ -405,20 +385,33 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
             <Trans>Matching transactions</Trans>
           </Block>
           <DateRange start={start} end={end} />
-          <Block style={{ color: theme.pageTextSubdued, fontStyle: 'italic' }}>
-            {linkedTag ? (
-              <Trans>
-                Transactions tagged{' '}
-                {{ tag: `#${linkedTag}` } as TransObjectLiteral} during the
-                selected time frame will appear here.
-              </Trans>
-            ) : (
+          {linkedTag ? (
+            <>
+              <Block style={{ color: theme.pageTextSubdued }}>
+                <Trans>
+                  Transactions tagged{' '}
+                  {{ tag: `#${linkedTag}` } as TransObjectLiteral} that count
+                  toward this goal.
+                </Trans>
+              </Block>
+              <GoalTransactions
+                start={start}
+                end={end}
+                conditions={conditions}
+                conditionsOp={conditionsOp}
+                linkedTag={linkedTag}
+              />
+            </>
+          ) : (
+            <Block
+              style={{ color: theme.pageTextSubdued, fontStyle: 'italic' }}
+            >
               <Trans>
                 Link a tag to this goal to choose which transactions count
                 toward it.
               </Trans>
-            )}
-          </Block>
+            </Block>
+          )}
         </View>
       </View>
     </Page>

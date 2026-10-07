@@ -1,18 +1,23 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Block } from '@actual-app/components/block';
 import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
+import { send } from '@actual-app/core/platform/client/connection';
+import * as monthUtils from '@actual-app/core/shared/months';
 import type { GoalCardWidget } from '@actual-app/core/types/models';
 import type { TransObjectLiteral } from '@actual-app/core/types/util';
 
 import { FinancialText } from '#components/FinancialText';
 import { PrivacyFilter } from '#components/PrivacyFilter';
+import { GoalProgress } from '#components/reports/GoalProgress';
 import { GoalSettingsEditor } from '#components/reports/GoalSettingsEditor';
 import { ReportCard } from '#components/reports/ReportCard';
 import { ReportCardName } from '#components/reports/ReportCardName';
+import { calculateTimeRange } from '#components/reports/reportRanges';
+import { useGoalTotal } from '#components/reports/useGoalTotal';
 import { useContextMenu } from '#hooks/useContextMenu';
 import { useFormat } from '#hooks/useFormat';
 import { useTagCSS } from '#hooks/useTagCSS';
@@ -33,6 +38,7 @@ export function GoalCard({
   const { t } = useTranslation();
   const format = useFormat();
   const getTagCSS = useTagCSS();
+  const [latestTransaction, setLatestTransaction] = useState<string>('');
 
   const [nameMenuOpen, setNameMenuOpen] = useState(false);
   const [isCardHovered, setIsCardHovered] = useState(false);
@@ -51,14 +57,36 @@ export function GoalCard({
     ],
   });
 
-  const currentAmount = meta?.currentAmount ?? 0;
+  useEffect(() => {
+    async function fetchLatestTransaction() {
+      const latestTrans = await send('get-latest-transaction');
+      setLatestTransaction(
+        latestTrans ? latestTrans.date : monthUtils.currentDay(),
+      );
+    }
+    void fetchLatestTransaction();
+  }, []);
+
+  const [start, end] = calculateTimeRange(
+    meta?.timeFrame,
+    {
+      start: monthUtils.dayFromDate(monthUtils.currentMonth()),
+      end: monthUtils.currentDay(),
+      mode: 'full',
+    },
+    latestTransaction,
+  );
+
   const targetAmount = meta?.targetAmount ?? 0;
   const linkedTag = meta?.linkedTag;
-  const progress =
-    targetAmount > 0
-      ? Math.min(Math.max(currentAmount / targetAmount, 0), 1)
-      : 0;
-  const progressPercent = Math.round(progress * 100);
+
+  const currentAmount = useGoalTotal({
+    start,
+    end,
+    conditions: meta?.conditions,
+    conditionsOp: meta?.conditionsOp,
+    linkedTag,
+  });
 
   return (
     <ReportCard
@@ -152,35 +180,10 @@ export function GoalCard({
               onCancel={() => setIsSettingGoal(false)}
             />
           ) : (
-            <>
-              <View
-                aria-hidden
-                style={{
-                  height: 12,
-                  borderRadius: 6,
-                  backgroundColor: theme.pillBackground,
-                  overflow: 'hidden',
-                }}
-              >
-                <View
-                  style={{
-                    width: `${progressPercent}%`,
-                    height: '100%',
-                    backgroundColor: theme.reportsGreen,
-                  }}
-                />
-              </View>
-              <Block
-                style={{
-                  ...styles.tnum,
-                  marginTop: 5,
-                  textAlign: 'right',
-                  color: theme.pageTextSubdued,
-                }}
-              >
-                {progressPercent}%
-              </Block>
-            </>
+            <GoalProgress
+              currentAmount={currentAmount}
+              targetAmount={targetAmount}
+            />
           )}
         </View>
       </View>
