@@ -43,6 +43,7 @@ import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
 import { calendarSpreadsheet } from '#components/reports/spreadsheets/calendar-spreadsheet';
 import type { CalendarDataType } from '#components/reports/spreadsheets/calendar-spreadsheet';
+import { includeSubcategoriesInConditions } from '#components/reports/spreadsheets/subcategories';
 import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
 import type { TableHandleRef } from '#components/table';
@@ -193,9 +194,12 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
   useEffect(() => {
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 
-    send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
-    })
+    includeSubcategoriesInConditions(conditions)
+      .then(reportConditions =>
+        send('make-filters-from-conditions', {
+          conditions: reportConditions.filter(cond => !cond.customName),
+        }),
+      )
       .then((data: { filters: unknown[] }) => {
         let query = q('transactions')
           .filter({

@@ -9,6 +9,7 @@ import type {
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 
 import type { BudgetMonthCell } from './budgetMonthCell';
+import { expandSubcategoryConditions } from './subcategories';
 
 type BudgetAnalysisIntervalData = {
   date: string;
@@ -67,7 +68,10 @@ export function createBudgetAnalysisSpreadsheet({
     );
 
     // Filter categories based on conditions (supports both 'category' and 'category_group' fields)
-    const relevantConditions = conditions.filter(
+    const relevantConditions = expandSubcategoryConditions(
+      conditions,
+      allCategoryGroups,
+    ).filter(
       cond =>
         !cond.customName &&
         (cond.field === 'category' || cond.field === 'category_group'),

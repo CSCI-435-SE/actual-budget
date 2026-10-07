@@ -191,6 +191,22 @@ describe('showActivity', () => {
       ]);
     });
 
+    it('keeps a report filter on the parent covering its subcategories', () => {
+      const filters = categoryFilter({
+        filters: [{ field: 'category', op: 'is', value: 'food', type: 'id' }],
+      });
+
+      expect(filters).toContainEqual({
+        field: 'category',
+        op: 'oneOf',
+        value: ['food', 'restaurants'],
+        type: 'id',
+      });
+      expect(filters).not.toContainEqual(
+        expect.objectContaining({ op: 'is', value: 'food' }),
+      );
+    });
+
     it('treats subcategories of a hidden parent as hidden', () => {
       const hiddenFood = { ...food, hidden: true };
       const filters = categoryFilter({

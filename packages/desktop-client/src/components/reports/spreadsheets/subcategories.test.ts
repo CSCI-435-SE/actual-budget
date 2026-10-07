@@ -4,6 +4,7 @@ import type {
   CategoryGroupEntity,
   DataEntity,
   GroupedEntity,
+  RuleConditionEntity,
 } from '@actual-app/core/types/models';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,9 +12,11 @@ import type { QueryDataEntity } from '#components/reports/ReportOptions';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 import { aqlQuery } from '#queries/aqlQuery';
 
+import { createBudgetAnalysisSpreadsheet } from './budget-analysis-spreadsheet';
 import { createCustomSpreadsheet } from './custom-spreadsheet';
 import { createGroupedSpreadsheet } from './grouped-spreadsheet';
 import {
+  expandSubcategoryConditions,
   getNestedSubcategoryIds,
   getRolledUpCategoryIds,
   getSubcategoryIdsByParent,
@@ -115,12 +118,14 @@ const spreadsheet = {} as ReturnType<typeof useSpreadsheet>;
 async function runGrouped(
   categories: ReturnType<typeof makeCategories>,
   balanceTypeOp: 'totalDebts' | 'totalBudgeted' = 'totalDebts',
+  conditions: RuleConditionEntity[] = [],
 ) {
   let result: GroupedEntity[] = [];
   await createGroupedSpreadsheet({
     ...options,
     categories,
     balanceTypeOp,
+    conditions,
   })(spreadsheet, data => (result = data));
   return result;
 }
@@ -369,5 +374,135 @@ describe('budgeted reports compare budgets with spending', () => {
 
     expect(data?.totalSpent).toBeUndefined();
     expect(data?.data?.[0].totalSpent).toBeUndefined();
+  });
+});
+
+describe('filters on a parent category', () => {
+  const { grouped } = makeCategories();
+  const family = ['food', 'restaurants', 'groceries'];
+
+  it.each([
+    ['is', 'food', 'oneOf'],
+    ['isNot', 'food', 'notOneOf'],
+    ['oneOf', ['food', 'rent'], 'oneOf'],
+    ['notOneOf', ['food'], 'notOneOf'],
+  ] as const)('expands "%s" to cover its subcategories', (op, value, newOp) => {
+    const [cond] = expandSubcategoryConditions(
+      [{ field: 'category', op, value, type: 'id' } as RuleConditionEntity],
+      grouped,
+    );
+
+    expect(cond.op).toBe(newOp);
+    expect(cond.value).toEqual(
+      Array.isArray(value) && value.includes('rent')
+        ? [...family, 'rent']
+        : family,
+    );
+  });
+
+  it('leaves other filters as they are', () => {
+    const conditions = [
+      { field: 'category', op: 'is', value: 'rent', type: 'id' },
+      { field: 'category', op: 'is', value: 'restaurants', type: 'id' },
+      { field: 'category', op: 'contains', value: 'Food', type: 'string' },
+      { field: 'category_group', op: 'is', value: 'g-food', type: 'id' },
+      { field: 'payee', op: 'is', value: 'food', type: 'id' },
+    ] satisfies RuleConditionEntity[];
+
+    const expanded = expandSubcategoryConditions(conditions, grouped);
+
+    conditions.forEach((cond, i) => expect(expanded[i]).toBe(cond));
+  });
+
+  it('keeps the rest of the filter, such as a saved name', () => {
+    const [cond] = expandSubcategoryConditions(
+      [
+        {
+          field: 'category',
+          op: 'is',
+          value: 'food',
+          type: 'id',
+          customName: 'Eating',
+        },
+      ],
+      grouped,
+    );
+
+    expect(cond).toEqual({
+      field: 'category',
+      op: 'oneOf',
+      value: family,
+      type: 'id',
+      customName: 'Eating',
+    });
+  });
+
+  it('filters spending reports on the whole family', async () => {
+    vi.mocked(send).mockImplementation((async (name: string) =>
+      name === 'make-filters-from-conditions'
+        ? { filters: [] }
+        : undefined) as typeof send);
+    vi.mocked(aqlQuery).mockImplementation((async (_type: unknown) => ({
+      data: [],
+    })) as typeof aqlQuery);
+
+    await runGrouped(makeCategories(), 'totalDebts', [
+      { field: 'category', op: 'is', value: 'food', type: 'id' },
+    ]);
+
+    expect(send).toHaveBeenCalledWith('make-filters-from-conditions', {
+      conditions: [
+        { field: 'category', op: 'oneOf', value: family, type: 'id' },
+      ],
+    });
+  });
+
+  it('keeps the subcategories in a Budgeted report filtered on the parent', async () => {
+    vi.mocked(send).mockImplementation((async (name: string) => {
+      if (name === 'make-filters-from-conditions') {
+        return { filters: [] };
+      }
+      return [
+        { name: 'budget202609!budget-food', value: 5000 },
+        { name: 'budget202609!budget-restaurants', value: 15000 },
+        { name: 'budget202609!budget-groceries', value: 20000 },
+        { name: 'budget202609!budget-rent', value: 100000 },
+      ];
+    }) as typeof send);
+
+    const groups = await runGrouped(makeCategories(), 'totalBudgeted', [
+      { field: 'category', op: 'is', value: 'food', type: 'id' },
+    ]);
+
+    expect(groups.map(g => [g.name, g.totalBudgeted])).toEqual([
+      ['Food', 40000],
+    ]);
+    expect(
+      byId(groups[0].categories, 'food')?.subcategories?.map(c => c.name),
+    ).toEqual(['Restaurants', 'Groceries', 'Unallocated']);
+  });
+
+  it('keeps the subcategories in Budget Analysis filtered on the parent', async () => {
+    const categories = makeCategories();
+    vi.mocked(send).mockImplementation((async (name: string) => {
+      if (name === 'get-categories') {
+        return categories;
+      }
+      // Every category budgets 100 and spends 40 each month
+      return categories.list.flatMap(cat => [
+        { name: `budget!budget-${cat.id}`, value: 10000 },
+        { name: `budget!sum-amount-${cat.id}`, value: -4000 },
+      ]);
+    }) as typeof send);
+
+    let result: { totalBudgeted: number; totalSpent: number } | undefined;
+    await createBudgetAnalysisSpreadsheet({
+      startDate: '2026-09-01',
+      endDate: '2026-09-30',
+      conditions: [{ field: 'category', op: 'is', value: 'food', type: 'id' }],
+    })(spreadsheet, data => (result = data));
+
+    // Food, Restaurants and Groceries, but not Rent
+    expect(result).toMatchObject({ totalBudgeted: 30000, totalSpent: -12000 });
   });
 });

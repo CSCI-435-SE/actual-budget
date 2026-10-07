@@ -19,6 +19,7 @@ import { filterEmptyRows } from './filterEmptyRows';
 import { recalculate } from './recalculate';
 import { sortData } from './sortData';
 import {
+  expandSubcategoryConditions,
   getNestedSubcategoryIds,
   getSubcategoryIdsByParent,
 } from './subcategories';
@@ -57,8 +58,12 @@ export function createGroupedSpreadsheet({
       return;
     }
 
+    const reportConditions = expandSubcategoryConditions(
+      conditions,
+      categories.grouped,
+    );
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 
@@ -72,7 +77,7 @@ export function createGroupedSpreadsheet({
       interval,
       categories: categories.list,
       categoryGroups: categories.grouped,
-      conditions,
+      conditions: reportConditions,
       conditionsOp,
       conditionsOpKey,
       filters,

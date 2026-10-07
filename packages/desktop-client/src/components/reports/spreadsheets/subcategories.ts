@@ -1,5 +1,9 @@
+import { send } from '@actual-app/core/platform/client/connection';
 import { nestCategories } from '@actual-app/core/shared/categories';
-import type { CategoryGroupEntity } from '@actual-app/core/types/models';
+import type {
+  CategoryGroupEntity,
+  RuleConditionEntity,
+} from '@actual-app/core/types/models';
 
 import type { QueryDataEntity } from '#components/reports/ReportOptions';
 
@@ -80,4 +84,54 @@ export function hideSubcategoriesOfHiddenParents(
       ? { ...row, categoryHidden: true }
       : row,
   );
+}
+
+// A report filter on a parent category covers its subcategories too, the
+// same way the parent's report row includes them: "is" and "one of" match
+// the whole family, "is not" and "not one of" leave the whole family out.
+// Filters on the category's name are left as they are.
+export function expandSubcategoryConditions(
+  conditions: RuleConditionEntity[],
+  categoryGroups: Pick<CategoryGroupEntity, 'categories'>[],
+): RuleConditionEntity[] {
+  const subcategoryIdsByParent = getSubcategoryIdsByParent(categoryGroups);
+  if (subcategoryIdsByParent.size === 0) {
+    return conditions;
+  }
+  const withSubcategories = (ids: string[]) => [
+    ...new Set(
+      ids.flatMap(id => [id, ...(subcategoryIdsByParent.get(id) ?? [])]),
+    ),
+  ];
+
+  return conditions.map(cond => {
+    if (
+      cond.field !== 'category' ||
+      !['is', 'isNot', 'oneOf', 'notOneOf'].includes(cond.op)
+    ) {
+      return cond;
+    }
+    const ids = Array.isArray(cond.value) ? cond.value : [cond.value];
+    if (!ids.some(id => subcategoryIdsByParent.has(id))) {
+      return cond;
+    }
+    const excludes = cond.op === 'isNot' || cond.op === 'notOneOf';
+    return {
+      ...cond,
+      op: excludes ? 'notOneOf' : 'oneOf',
+      value: withSubcategories(ids),
+    };
+  });
+}
+
+// expandSubcategoryConditions for reports that don't already have the
+// categories loaded; only fetches them when there's a category filter.
+export async function includeSubcategoriesInConditions(
+  conditions: RuleConditionEntity[],
+): Promise<RuleConditionEntity[]> {
+  if (!conditions.some(cond => cond.field === 'category')) {
+    return conditions;
+  }
+  const { grouped } = await send('get-categories');
+  return expandSubcategoryConditions(conditions, grouped);
 }

@@ -11,6 +11,7 @@ import type {
 
 import { ReportOptions } from '#components/reports/ReportOptions';
 import {
+  expandSubcategoryConditions,
   getSubcategoryIdsByParent,
   getSubcategoryIdsOfHiddenParents,
 } from '#components/reports/spreadsheets/subcategories';
@@ -99,7 +100,8 @@ export function showActivity({
           };
 
   const filterConditions = [
-    ...filters,
+    // A filter on a parent covers its subcategories, as in the report
+    ...expandSubcategoryConditions(filters, categories.grouped),
     drilldownFilter,
     {
       field: 'date',

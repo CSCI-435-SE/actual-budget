@@ -33,6 +33,7 @@ import { filterHiddenItems } from './filterHiddenItems';
 import { recalculate } from './recalculate';
 import { sortData } from './sortData';
 import {
+  expandSubcategoryConditions,
   getNestedSubcategoryIds,
   getRolledUpCategoryIds,
   getSubcategoryIdsByParent,
@@ -127,8 +128,12 @@ export function createCustomSpreadsheet({
       return;
     }
 
+    const reportConditions = expandSubcategoryConditions(
+      conditions,
+      categories.grouped,
+    );
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 
@@ -142,7 +147,7 @@ export function createCustomSpreadsheet({
       interval,
       categories: categories.list,
       categoryGroups: categories.grouped,
-      conditions,
+      conditions: reportConditions,
       conditionsOp,
       conditionsOpKey,
       filters,

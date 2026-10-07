@@ -12,6 +12,11 @@ import { getColorScale } from '#components/reports/chart-theme';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 import { aqlQuery } from '#queries/aqlQuery';
 
+import {
+  expandSubcategoryConditions,
+  includeSubcategoriesInConditions,
+} from './subcategories';
+
 type BudgetMonthCategory = {
   id: string;
   name: string;
@@ -303,7 +308,7 @@ export function createBudgetSpreadsheet(
 
     const filteredCategoryGroups = filterCategoryGroups(
       categoryGroups,
-      conditions,
+      await includeSubcategoriesInConditions(conditions),
       conditionsOp,
     );
 
@@ -355,8 +360,12 @@ export function createTransactionsSpreadsheet(
 ) {
   return async () => {
     // gather filters user has set
+    const reportConditions = expandSubcategoryConditions(
+      conditions,
+      categories,
+    );
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 

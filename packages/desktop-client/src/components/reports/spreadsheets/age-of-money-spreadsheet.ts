@@ -10,6 +10,8 @@ import * as d from 'date-fns';
 import { runAll } from '#components/reports/util';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 
+import { includeSubcategoriesInConditions } from './subcategories';
+
 export type AgeOfMoneyData = {
   graphData: Array<{
     date: string; // Month label (e.g., "Jan 2024")
@@ -330,8 +332,9 @@ export function createAgeOfMoneySpreadsheet({
     const today = monthUtils.currentDay();
     const fixedEnd = endDate > today ? today : endDate;
 
+    const reportConditions = await includeSubcategoriesInConditions(conditions);
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 
