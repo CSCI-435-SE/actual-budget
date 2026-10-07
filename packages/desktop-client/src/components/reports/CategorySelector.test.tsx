@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ComponentProps } from 'react';
 
 import type {
   CategoryEntity,
@@ -121,5 +122,102 @@ describe('CategorySelector', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Unselect All' }));
     expect(setSelectedCategories).toHaveBeenCalledWith([]);
+  });
+});
+
+describe('CategorySelector with subcategories', () => {
+  const food = makeCategory({ id: 'food', name: 'Food', group: 'g' });
+  const rent = makeCategory({ id: 'rent', name: 'Rent', group: 'g' });
+  const dining = {
+    ...makeCategory({ id: 'dining', name: 'Dining Out', group: 'g' }),
+    parent_id: 'food',
+  };
+  const snacks = {
+    ...makeCategory({ id: 'snacks', name: 'Snacks', group: 'g' }),
+    parent_id: 'food',
+  };
+  // Stored with a subcategory after an unrelated category, to check the
+  // picker lists it under its parent anyway.
+  const group = makeCategoryGroup({
+    id: 'g',
+    name: 'Everyday',
+    categories: [food, rent, dining, snacks],
+  });
+
+  function renderSelector(
+    props: Partial<ComponentProps<typeof CategorySelector>> = {},
+  ) {
+    const setSelectedCategories = vi.fn();
+    render(
+      <CategorySelector
+        {...defaultProps}
+        categoryGroups={[group]}
+        setSelectedCategories={setSelectedCategories}
+        {...props}
+      />,
+    );
+    return setSelectedCategories;
+  }
+
+  function selectedIds(setSelectedCategories: ReturnType<typeof vi.fn>) {
+    const [selected] = setSelectedCategories.mock.calls[0];
+    return selected.map((cat: CategoryEntity) => cat.id).sort();
+  }
+
+  it('lists subcategories indented under their parent', () => {
+    renderSelector();
+
+    const names = screen
+      .getAllByRole('checkbox')
+      .map(box => box.closest('li')?.textContent);
+    expect(names).toEqual(['Everyday', 'Food', 'Dining Out', 'Snacks', 'Rent']);
+
+    const indent = (name: string) =>
+      screen.getByLabelText(name).closest('li')?.style.paddingLeft;
+    expect(indent('Food')).toBe('0px');
+    expect(indent('Dining Out')).toBe('16px');
+  });
+
+  it('ticks a parent together with its subcategories', async () => {
+    const setSelectedCategories = renderSelector({
+      selectedCategories: [rent],
+    });
+    await userEvent.click(screen.getByLabelText('Food'));
+
+    expect(selectedIds(setSelectedCategories)).toEqual([
+      'dining',
+      'food',
+      'rent',
+      'snacks',
+    ]);
+  });
+
+  it('unticks a parent together with its subcategories', async () => {
+    const setSelectedCategories = renderSelector({
+      selectedCategories: [food, dining, snacks, rent],
+    });
+    await userEvent.click(screen.getByLabelText('Food'));
+
+    expect(selectedIds(setSelectedCategories)).toEqual(['rent']);
+  });
+
+  it('still lets a subcategory be ticked on its own', async () => {
+    const setSelectedCategories = renderSelector();
+    await userEvent.click(screen.getByLabelText('Dining Out'));
+
+    expect(selectedIds(setSelectedCategories)).toEqual(['dining']);
+  });
+
+  it('hides the subcategories of a hidden parent', () => {
+    renderSelector({
+      showHiddenCategories: false,
+      categoryGroups: [
+        { ...group, categories: [{ ...food, hidden: true }, rent, dining] },
+      ],
+    });
+
+    expect(screen.queryByLabelText('Food')).toBeNull();
+    expect(screen.queryByLabelText('Dining Out')).toBeNull();
+    expect(screen.getByLabelText('Rent')).toBeInTheDocument();
   });
 });

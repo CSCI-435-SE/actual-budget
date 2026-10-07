@@ -1,4 +1,7 @@
-import type { RuleConditionEntity } from '@actual-app/core/types/models';
+import type {
+  CategoryGroupEntity,
+  RuleConditionEntity,
+} from '@actual-app/core/types/models';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
@@ -20,6 +23,8 @@ import {
   hasChild,
   hasParent,
   isGraphLayer,
+  keepSubcategoriesAfterParent,
+  labelSubcategories,
   moveNodeToEnd,
   moveNodeToStart,
   nodesInLayer,
@@ -814,5 +819,82 @@ describe('sankey-spreadsheet', () => {
 
       expect(result.nodes[0].name).toBe('translated: Budgeted');
     });
+  });
+});
+
+describe('sankey subcategories', () => {
+  const categories = [
+    {
+      id: 'g-food',
+      name: 'Food',
+      categories: [
+        { id: 'food', name: 'Food', group: 'g-food' },
+        { id: 'rest', name: 'Restaurants', group: 'g-food', parent_id: 'food' },
+        { id: 'groc', name: 'Groceries', group: 'g-food', parent_id: 'food' },
+        { id: 'snacks', name: 'Snacks', group: 'g-food' },
+      ],
+    },
+  ] satisfies CategoryGroupEntity[];
+
+  function entry(categoryId: string, category: string) {
+    return {
+      categoryGroup: 'Food',
+      categoryGroupId: 'g-food',
+      category,
+      categoryId,
+      value: 100,
+      isIncome: false,
+      isNegative: false,
+    };
+  }
+
+  it('names subcategories after their parent', () => {
+    const labelled = labelSubcategories(
+      [
+        entry('food', 'Food'),
+        entry('rest', 'Restaurants'),
+        entry('snacks', 'Snacks'),
+      ],
+      categories,
+    );
+
+    expect(labelled.map(e => e.category)).toEqual([
+      'Food',
+      'Food › Restaurants',
+      'Snacks',
+    ]);
+  });
+
+  it('places subcategories right after their parent when sorting by value', () => {
+    const graph: Graph = new Map();
+    addNode(graph, 'g-food', GraphLayers.CategoryGroup, 'Food');
+    for (const [id, value] of [
+      ['groc', 500],
+      ['snacks', 400],
+      ['food', 300],
+      ['rest', 600],
+    ] as const) {
+      addNode(graph, id, GraphLayers.Category, id);
+      addValueToLink(graph, 'g-food', id, value);
+    }
+
+    for (const mode of ['global', 'per-group'] as const) {
+      const keys = Array.from(sortGraph(graph, mode, categories).keys()).filter(
+        key => key !== 'g-food',
+      );
+      // Food is placed by its own value; its subcategories follow it in
+      // value order, and Snacks keeps its place.
+      expect(keys).toEqual(['snacks', 'food', 'rest', 'groc']);
+    }
+  });
+
+  it('leaves a subcategory in place when its parent is not shown', () => {
+    const node = (key: string): [string, NodeData] => [
+      key,
+      { to: new Map(), type: GraphLayers.Category },
+    ];
+    const entries = [node('rest'), node('snacks')];
+
+    expect(keepSubcategoriesAfterParent(entries, categories)).toEqual(entries);
   });
 });
