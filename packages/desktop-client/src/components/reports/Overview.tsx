@@ -577,10 +577,8 @@ export function Overview({ dashboard }: OverviewProps) {
                             }
 
                             if (item === 'goal-card') {
-                              // Placeholder amounts until goal progress is calculated
                               onAddWidget<GoalCardWidget>(item, {
                                 targetAmount: 0,
-                                currentAmount: 0,
                               });
                               return;
                             }

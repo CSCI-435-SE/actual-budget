@@ -18,6 +18,7 @@ export function summarySpreadsheet(
   conditionsOp: 'and' | 'or' = 'and',
   summaryContent: SummaryContent,
   locale: Locale,
+  requiredConditions: RuleConditionEntity[] = [],
 ) {
   return async (
     spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -40,23 +41,25 @@ export function summarySpreadsheet(
     }
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 
+    // Required conditions are always ANDed, regardless of conditionsOp.
+    let requiredFilters: unknown[] = [];
+    if (requiredConditions.length > 0) {
+      try {
+        const response = await send('make-filters-from-conditions', {
+          conditions: requiredConditions,
+        });
+        requiredFilters = response.filters;
+      } catch (error) {
+        console.error('Error fetching required filters:', error);
+      }
+    }
+
     let startDay: Date;
     let endDay: Date;
     try {
-      startDay = d.parse(
-        monthUtils.firstDayOfMonth(start),
-        'yyyy-MM-dd',
-        new Date(),
-      );
-
-      endDay = d.parse(
-        monthUtils.getMonth(end) ===
-          monthUtils.getMonth(monthUtils.currentDay())
-          ? monthUtils.currentDay()
-          : monthUtils.lastDayOfMonth(end),
-        'yyyy-MM-dd',
-        new Date(),
-      );
+      const bounds = getSummaryDateBounds(start, end);
+      startDay = d.parse(bounds.startDate, 'yyyy-MM-dd', new Date());
+      endDay = d.parse(bounds.endDate, 'yyyy-MM-dd', new Date());
     } catch (error) {
       console.error('Error parsing dates:', error);
       throw new Error('Invalid date format provided');
@@ -83,8 +86,12 @@ export function summarySpreadsheet(
       return months;
     };
 
-    const makeRootQuery = () =>
-      q('transactions')
+    const makeRootQuery = () => {
+      let rootQuery = q('transactions');
+      if (requiredFilters.length > 0) {
+        rootQuery = rootQuery.filter({ $and: requiredFilters });
+      }
+      return rootQuery
         .filter({
           $and: [
             {
@@ -107,6 +114,7 @@ export function summarySpreadsheet(
           { amount: { $sum: '$amount' } },
           { count: { $count: '*' } },
         ]);
+    };
 
     let query = makeRootQuery();
 
@@ -181,6 +189,21 @@ export function summarySpreadsheet(
       default:
         throw new Error(`Unsupported summary type`);
     }
+  };
+}
+
+/**
+ * The inclusive `yyyy-MM-dd` dates a summary covers: from the first day of the
+ * start month to today when the range ends in the current month, otherwise to
+ * the last day of the end month.
+ */
+export function getSummaryDateBounds(start: string, end: string) {
+  return {
+    startDate: monthUtils.firstDayOfMonth(start),
+    endDate:
+      monthUtils.getMonth(end) === monthUtils.getMonth(monthUtils.currentDay())
+        ? monthUtils.currentDay()
+        : monthUtils.lastDayOfMonth(end),
   };
 }
 

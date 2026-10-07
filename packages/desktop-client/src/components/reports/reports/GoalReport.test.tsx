@@ -18,6 +18,8 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 
+import { summarySpreadsheet } from '#components/reports/spreadsheets/summary-spreadsheet';
+import { useReport } from '#components/reports/useReport';
 import { useNavigate } from '#hooks/useNavigate';
 import {
   configureTestAppStore,
@@ -32,6 +34,29 @@ vi.mock(
   () => import('#mocks/connection'),
 );
 vi.mock('#hooks/useNavigate');
+// The summary spreadsheet queries the backend; stub it so tests can control
+// the computed total directly through `useReport`.
+vi.mock('#components/reports/spreadsheets/summary-spreadsheet', () => ({
+  summarySpreadsheet: vi.fn(() => async () => undefined),
+}));
+vi.mock('#components/reports/useReport', () => ({
+  useReport: vi.fn(() => null),
+}));
+// The real list needs the full transaction table setup; its query is covered
+// in GoalTransactions.test.ts. This stub shows what the report passes in.
+vi.mock('#components/reports/GoalTransactions', () => ({
+  GoalTransactions: (props: {
+    start: string;
+    end: string;
+    conditions: RuleConditionEntity[];
+    conditionsOp: 'and' | 'or';
+    linkedTag: string;
+  }) => (
+    <span data-testid="goal-transactions">
+      {JSON.stringify({ ...props, conditions: props.conditions.length })}
+    </span>
+  ),
+}));
 vi.mock('#hooks/useSyncedPref', () => ({
   useSyncedPref: () => [undefined, vi.fn()],
 }));
@@ -184,12 +209,17 @@ function getProgressFill() {
   return fill;
 }
 
+function mockTotal(total: number) {
+  vi.mocked(useReport).mockReturnValue({ total });
+}
+
 describe('GoalReport', () => {
   const mockNavigate = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
+    vi.mocked(useReport).mockReturnValue(null);
     (useResponsive as unknown as Mock).mockReturnValue({
       isNarrowWidth: false,
     });
@@ -308,9 +338,10 @@ describe('GoalReport', () => {
   });
 
   describe('amounts and progress', () => {
-    it('shows the current and target amounts', async () => {
+    it('shows the computed current amount and the target amount', async () => {
+      mockTotal(250000);
       renderGoalReport({
-        meta: { currentAmount: 250000, targetAmount: 1000000 },
+        meta: { linkedTag: 'vacation', targetAmount: 1000000 },
       });
       await waitForReport();
 
@@ -321,36 +352,39 @@ describe('GoalReport', () => {
     it.each([
       {
         label: 'partway to the goal',
-        currentAmount: 250000,
+        total: 250000,
         targetAmount: 1000000,
         expected: 25,
       },
       {
-        label: 'goal exceeded (capped at 100%)',
-        currentAmount: 1500000,
+        label: 'goal exceeded (bar stays full)',
+        total: 1500000,
         targetAmount: 1000000,
-        expected: 100,
+        expected: 150,
       },
       {
-        label: 'negative balance (floored at 0%)',
-        currentAmount: -50000,
+        label: 'negative total (floored at 0%)',
+        total: -50000,
         targetAmount: 1000000,
         expected: 0,
       },
       {
         label: 'no target set (no divide by zero)',
-        currentAmount: 50000,
+        total: 50000,
         targetAmount: 0,
         expected: 0,
       },
     ])(
       'shows $expected% when $label',
-      async ({ currentAmount, targetAmount, expected }) => {
-        renderGoalReport({ meta: { currentAmount, targetAmount } });
+      async ({ total, targetAmount, expected }) => {
+        mockTotal(total);
+        renderGoalReport({ meta: { linkedTag: 'vacation', targetAmount } });
         await waitForReport();
 
         expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
-        expect(getComputedStyle(getProgressFill()).width).toBe(`${expected}%`);
+        expect(getComputedStyle(getProgressFill()).width).toBe(
+          `${Math.min(expected, 100)}%`,
+        );
       },
     );
 
@@ -364,8 +398,9 @@ describe('GoalReport', () => {
 
     it('updates the progress when the goal amount is edited', async () => {
       const user = userEvent.setup();
+      mockTotal(250000);
       renderGoalReport({
-        meta: { currentAmount: 250000, targetAmount: 1000000 },
+        meta: { linkedTag: 'vacation', targetAmount: 1000000 },
       });
       await waitForReport();
       expect(screen.getByText('25%')).toBeInTheDocument();
@@ -376,6 +411,62 @@ describe('GoalReport', () => {
 
       expect(screen.getByText('50%')).toBeInTheDocument();
       expect(getComputedStyle(getProgressFill()).width).toBe('50%');
+    });
+
+    it('shows no progress when no tag is linked', async () => {
+      mockTotal(500000);
+      renderGoalReport({ meta: { targetAmount: 1000000 } });
+      await waitForReport();
+
+      expect(screen.getByText('0%')).toBeInTheDocument();
+      expect(summarySpreadsheet).not.toHaveBeenCalled();
+    });
+
+    it('sums tagged transactions using the saved filters and time frame', async () => {
+      renderGoalReport({
+        meta: {
+          linkedTag: 'vacation',
+          targetAmount: 1000000,
+          conditions: [TEST_CONDITION],
+          conditionsOp: 'or',
+          timeFrame: STATIC_TIME_FRAME,
+        },
+      });
+      await waitForReport();
+
+      await waitFor(() =>
+        expect(summarySpreadsheet).toHaveBeenLastCalledWith(
+          '2024-01-01',
+          '2024-06-30',
+          [TEST_CONDITION],
+          'or',
+          { type: 'sum' },
+          expect.anything(),
+          [tagCondition('vacation')],
+        ),
+      );
+    });
+
+    it('recalculates from unsaved tag, filter and date changes', async () => {
+      const user = userEvent.setup();
+      renderGoalReport({
+        meta: { linkedTag: 'vacation', timeFrame: STATIC_TIME_FRAME },
+      });
+      await waitForReport();
+
+      await chooseTag(user, '#emergency');
+      await user.click(screen.getByRole('button', { name: 'Add filter' }));
+      await user.click(screen.getByRole('button', { name: 'Change dates' }));
+
+      expect(summarySpreadsheet).toHaveBeenLastCalledWith(
+        '2025-01-01',
+        '2025-03-31',
+        [TEST_CONDITION],
+        'and',
+        { type: 'sum' },
+        expect.anything(),
+        [tagCondition('emergency')],
+      );
     });
   });
 
@@ -406,6 +497,63 @@ describe('GoalReport', () => {
       expect(screen.getByText(/Transactions tagged/)).toHaveTextContent(
         '#emergency',
       );
+    });
+  });
+
+  describe('matching transactions', () => {
+    function getListProps() {
+      return JSON.parse(
+        screen.getByTestId('goal-transactions').textContent ?? '{}',
+      );
+    }
+
+    it('lists the transactions for the saved tag, filters and time frame', async () => {
+      renderGoalReport({
+        meta: {
+          linkedTag: 'vacation',
+          conditions: [TEST_CONDITION],
+          conditionsOp: 'or',
+          timeFrame: STATIC_TIME_FRAME,
+        },
+      });
+      await waitForReport();
+
+      await waitFor(() =>
+        expect(getListProps()).toEqual({
+          start: '2024-01-01',
+          end: '2024-06-30',
+          conditions: 1,
+          conditionsOp: 'or',
+          linkedTag: 'vacation',
+        }),
+      );
+    });
+
+    it('updates the list from unsaved tag, filter and date changes', async () => {
+      const user = userEvent.setup();
+      renderGoalReport({
+        meta: { linkedTag: 'vacation', timeFrame: STATIC_TIME_FRAME },
+      });
+      await waitForReport();
+
+      await chooseTag(user, '#emergency');
+      await user.click(screen.getByRole('button', { name: 'Add filter' }));
+      await user.click(screen.getByRole('button', { name: 'Change dates' }));
+
+      expect(getListProps()).toEqual({
+        start: '2025-01-01',
+        end: '2025-03-31',
+        conditions: 1,
+        conditionsOp: 'and',
+        linkedTag: 'emergency',
+      });
+    });
+
+    it('shows no list until a tag is linked', async () => {
+      renderGoalReport({ meta: {} });
+      await waitForReport();
+
+      expect(screen.queryByTestId('goal-transactions')).not.toBeInTheDocument();
     });
   });
 
@@ -490,7 +638,6 @@ describe('GoalReport', () => {
       const { updateWidget, store } = renderGoalReport({
         meta: {
           name: 'Vacation',
-          currentAmount: 250000,
           targetAmount: 1000000,
           timeFrame: STATIC_TIME_FRAME,
         },
@@ -515,7 +662,6 @@ describe('GoalReport', () => {
           id: WIDGET_ID,
           meta: {
             name: 'Vacation',
-            currentAmount: 250000,
             targetAmount: 750000,
             linkedTag: 'vacation',
             conditions: [TEST_CONDITION],
@@ -556,6 +702,10 @@ describe('GoalReport', () => {
     });
   });
 });
+
+function tagCondition(tag: string): RuleConditionEntity {
+  return { field: 'notes', op: 'hasTags', value: `#${tag}`, type: 'string' };
+}
 
 /**
  * Opens the "Linked tag" dropdown and picks the option with the given label.
