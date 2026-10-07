@@ -130,7 +130,7 @@ export const LimitAutomation = ({
 
       <Text
         style={{
-          fontSize: 12,
+          fontSize: 'var(--font-size-12)',
           color: theme.pageTextLight,
           display: 'block',
           marginTop: 8,
@@ -179,7 +179,7 @@ export const LimitAutomation = ({
               )
             }
           >
-            <span style={{ marginLeft: 6, fontSize: 12, whiteSpace: 'nowrap' }}>
+            <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)', whiteSpace: 'nowrap' }}>
               <Trans>Retain existing funds over the cap</Trans>
             </span>
           </LabeledCheckbox>

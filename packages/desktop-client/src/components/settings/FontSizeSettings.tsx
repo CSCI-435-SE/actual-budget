@@ -9,16 +9,16 @@ import { useGlobalPref } from '#hooks/useGlobalPref';
 
 import { Setting } from './UI';
 
-const fontSizeOptions: SelectOption[] = [
-  ['0.85', 'Small'],
-  ['1', 'Medium (Default)'],
-  ['1.15', 'Large'],
-  ['1.3', 'Extra Large']
-];
-
 export function FontSizeSettings() {
   const { t } = useTranslation();
   const [fontSize, setFontSize] = useGlobalPref('fontSize');
+
+const fontSizeOptions: SelectOption[] = [
+  ['0.85', t('Small')],
+  ['1', t('Medium (Default)')],
+  ['1.15', t('Large')],
+  ['1.3', t('Extra Large')]
+];
 
   return (
     <Setting
@@ -26,14 +26,10 @@ export function FontSizeSettings() {
         <Select
           aria-label={t('Select font size')}
           options={fontSizeOptions}
-          value={fontSize ?? '16'}
-          defaultLabel={t('Default (16px)')}
+          value={fontSize ?? '1'}
+          defaultLabel={t('Medium (Default)')}
           onChange={value => {
             setFontSize(value);
-            document.documentElement.style.setProperty(
-              '--base-font-size',
-              `${value}px`,
-            );
           }}
         />
       }

@@ -113,7 +113,7 @@ export function AutomationListRow({
             flexDirection: 'row',
             alignItems: 'center',
             gap: 4,
-            fontSize: 12,
+            fontSize: 'var(--font-size-12)',
             fontWeight: 600,
             color: titleColor,
           }}
@@ -135,7 +135,7 @@ export function AutomationListRow({
                 <Text
                   style={{
                     display: 'block',
-                    fontSize: 11,
+                    fontSize: 'var(--font-size-11)',
                     color: theme.pageTextLight,
                     whiteSpace: 'pre-wrap',
                   }}
@@ -148,7 +148,7 @@ export function AutomationListRow({
         >
           <Text
             style={{
-              fontSize: 11,
+              fontSize: 'var(--font-size-11)',
               color: subtitleColor,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -170,7 +170,7 @@ export function AutomationListRow({
         >
           <Text
             style={{
-              fontSize: 12,
+              fontSize: 'var(--font-size-12)',
               fontWeight: 600,
               fontVariantNumeric: 'tabular-nums',
               color:
@@ -190,7 +190,7 @@ export function AutomationListRow({
           {priority != null && (
             <Text
               style={{
-                fontSize: 10,
+                fontSize: 'var(--font-size-10)',
                 color: theme.pageTextLight,
                 fontVariantNumeric: 'tabular-nums',
                 letterSpacing: '0.04em',

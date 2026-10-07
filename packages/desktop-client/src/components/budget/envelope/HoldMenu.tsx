@@ -53,7 +53,7 @@ export function HoldMenu({ onSubmit, onClose }: HoldMenuProps) {
             type="submit"
             variant="primary"
             style={{
-              fontSize: 12,
+              fontSize: 'var(--font-size-12)',
               paddingTop: 3,
               paddingBottom: 3,
             }}

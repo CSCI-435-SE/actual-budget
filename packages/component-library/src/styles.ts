@@ -18,8 +18,11 @@ export const styles: CSSProperties = {
   monthRightPadding: 5,
   menuBorderRadius: 4,
   mobileMinHeight: MOBILE_MIN_HEIGHT,
+  
+  //--font-size* variables are defined by FontSizeStyle in desktop-client
+
   mobileMenuItem: {
-    fontSize: 'var(--font-size-mobile-menu)',
+    fontSize: 'var(--font-size-17)',
     fontWeight: 400,
     paddingTop: 8,
     paddingBottom: 8,
@@ -29,33 +32,33 @@ export const styles: CSSProperties = {
   mobileEditingPadding: 12,
   altMenuMaxHeight: 250,
   altMenuText: {
-    fontSize: 'var(--font-size-alt-menu)',
+    fontSize: 'var(--font-size-13)',
   },
   altMenuHeaderText: {
-    fontSize: 13,
+    fontSize: 'var(--font-size-13)',
     fontWeight: 700,
   },
   veryLargeText: {
-    fontSize: 'var(--font-size-very-large)',
+    fontSize: 'var(--font-size-30)',
     fontWeight: 600,
   },
   largeText: {
-    fontSize: 'var(--font-size-large)',
+    fontSize: 'var(--font-size-20)',
     fontWeight: 700,
     letterSpacing: 0.5,
   },
   mediumText: {
-    fontSize: 'var(--font-size-medium)',
+    fontSize: 'var(--font-size-15)',
     fontWeight: 500,
   },
   smallText: {
-    fontSize: 'var(--font-size-small)',
+    fontSize: 'var(--font-size-13)',
   },
   verySmallText: {
-    fontSize: 'var(--font-size-very-small)',
+    fontSize: 'var(--font-size-12)',
   },
   tinyText: {
-    fontSize: 'var(--font-size-tiny)',
+    fontSize: 'var(--font-size-10)',
   },
   page: {
     flex: 1,
@@ -97,8 +100,7 @@ export const styles: CSSProperties = {
   },
   notFixed: { fontFeatureSettings: '' },
   text: {
-    fontSize: 'var(--font-size-base)',
-    // lineHeight: 22.4 // TODO: This seems like trouble, but what's the right value?
+    fontSize: 'var(--font-size-16)',
   },
   delayedFadeIn: {
     animationName: keyframes({

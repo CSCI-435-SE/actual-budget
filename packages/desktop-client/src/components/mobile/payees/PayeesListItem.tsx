@@ -97,7 +97,7 @@ export function PayeesListItem({
         >
           <span
             style={{
-              fontSize: 15,
+              fontSize: 'var(--font-size-15)',
               fontWeight: 500,
               color: payee.transfer_acct
                 ? theme.pageTextSubdued
@@ -120,14 +120,14 @@ export function PayeesListItem({
               backgroundColor: theme.noticeBackground,
               border: '1px solid ' + theme.noticeBackground,
               color: theme.noticeTextDark,
-              fontSize: 12,
+              fontSize: 'var(--font-size-12)',
               flexShrink: 0,
             }}
           >
             <PayeeRuleCountLabel
               count={ruleCount}
               isLoading={isRuleCountLoading}
-              style={{ fontSize: 12 }}
+              style={{ fontSize: 'var(--font-size-12)' }}
             />
           </span>
         </SpaceBetween>

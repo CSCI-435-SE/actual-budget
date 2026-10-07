@@ -65,11 +65,6 @@ export const loadPrefs = createAppAsyncThunk(
     // We need to load translations before the app renders
     setI18NextLanguage(globalPrefs.language ?? '');
 
-
-    document.documentElement.style.setProperty(
-      '--base-font-size',
-      `${globalPrefs.fontSize ?? '16'}px`,);
-
     return prefs;
   },
 );

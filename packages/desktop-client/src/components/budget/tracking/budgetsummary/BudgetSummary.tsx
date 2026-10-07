@@ -120,7 +120,7 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
             className={css({
               textAlign: 'center',
               marginTop: 3,
-              fontSize: 18,
+              fontSize: 'var(--font-size-18)',
               fontWeight: 500,
               textDecorationSkip: 'ink',
             })}

@@ -959,7 +959,7 @@ function SankeyInner({ widget }: SankeyInnerProps) {
                       color: theme.pageTextSubdued,
                     }}
                   >
-                    <Text style={{ fontSize: 16, textAlign: 'center' }}>
+                    <Text style={{ fontSize: 'var(--font-size-16)', textAlign: 'center' }}>
                       {graphMode === 'budgeted' && (
                         <Trans>
                           No data available for this period. Try budgeting
@@ -986,7 +986,7 @@ function SankeyInner({ widget }: SankeyInnerProps) {
                       color: theme.warningText,
                     }}
                   >
-                    <Text style={{ fontSize: 13 }}>
+                    <Text style={{ fontSize: 'var(--font-size-13)' }}>
                       <Trans>
                         Filters on <strong>{ignoredFilterFieldsList}</strong>{' '}
                         are ignored in <strong>Budgeted</strong> mode.

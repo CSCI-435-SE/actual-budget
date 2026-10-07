@@ -118,7 +118,7 @@ export function BankSync() {
             <View key={syncProvider} style={{ minHeight: 'initial' }}>
               {groupedAccountEntries.length > 1 && (
                 <Text
-                  style={{ fontWeight: 500, fontSize: 20, margin: '.5em 0' }}
+                  style={{ fontWeight: 500, fontSize: 'var(--font-size-20)', margin: '.5em 0' }}
                 >
                   {syncSourceReadable[syncProvider]}
                 </Text>

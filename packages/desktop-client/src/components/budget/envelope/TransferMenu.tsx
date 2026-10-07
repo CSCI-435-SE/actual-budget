@@ -115,7 +115,7 @@ export function TransferMenu({
             variant="primary"
             isDisabled={!toCategoryId || amount <= 0}
             style={{
-              fontSize: 12,
+              fontSize: 'var(--font-size-12)',
               paddingTop: 3,
               paddingBottom: 3,
             }}

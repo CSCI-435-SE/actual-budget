@@ -22,7 +22,7 @@ export function WelcomeScreen() {
       style={{
         gap: 10,
         maxWidth: 500,
-        fontSize: 15,
+        fontSize: 'var(--font-size-15)',
         maxHeight: '100vh',
         marginBlock: 20,
       }}

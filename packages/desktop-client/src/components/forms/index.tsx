@@ -37,7 +37,7 @@ type FormLabelProps = {
 };
 
 const defaultLabelStyle: CSSProperties = {
-  fontSize: 13,
+  fontSize: 'var(--font-size-13)',
   marginBottom: 3,
   color: theme.tableText,
 };

@@ -84,6 +84,18 @@ export type SpendingWidget = AbstractWidget<
     averageRange?: SpendingAverageRange;
   } | null
 >;
+
+export type GoalCardWidget = AbstractWidget<
+  'goal-card',
+  {
+    name?: string;
+    targetAmount?: number; // integer amount (cents), like other Actual amounts
+    linkedTag?: string; // tag name (without '#') whose transactions count toward the goal
+    conditions?: RuleConditionEntity[];
+    conditionsOp?: 'and' | 'or';
+    timeFrame?: TimeFrame;
+  } | null
+>;
 export type BudgetAnalysisWidget = AbstractWidget<
   'budget-analysis-card',
   {
@@ -139,6 +151,7 @@ type SpecializedWidget =
   | NetWorthWidget
   | CashFlowWidget
   | SpendingWidget
+  | GoalCardWidget
   | BudgetAnalysisWidget
   | CrossoverWidget
   | MarkdownWidget

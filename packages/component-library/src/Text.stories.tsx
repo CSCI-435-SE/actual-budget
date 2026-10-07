@@ -33,7 +33,7 @@ export const WithStyle: Story = {
   args: {
     children: 'Styled text',
     style: {
-      fontSize: 18,
+      fontSize: 'var(--font-size-18)',
       fontWeight: 'bold',
       color: '#1a73e8',
     },
@@ -50,11 +50,11 @@ export const WithStyle: Story = {
 export const FontSizes: Story = {
   render: () => (
     <View style={{ gap: 8 }}>
-      <Text style={{ fontSize: 12 }}>Small (12px)</Text>
-      <Text style={{ fontSize: 14 }}>Default (14px)</Text>
-      <Text style={{ fontSize: 18 }}>Medium (18px)</Text>
-      <Text style={{ fontSize: 24 }}>Large (24px)</Text>
-      <Text style={{ fontSize: 32 }}>Extra Large (32px)</Text>
+      <Text style={{ fontSize: 'var(--font-size-12)' }}>Small (12px)</Text>
+      <Text style={{ fontSize: 'var(--font-size-14)' }}>Default (14px)</Text>
+      <Text style={{ fontSize: 'var(--font-size-18)' }}>Medium (18px)</Text>
+      <Text style={{ fontSize: 'var(--font-size-24)' }}>Large (24px)</Text>
+      <Text style={{ fontSize: 'var(--font-size-32)' }}>Extra Large (32px)</Text>
     </View>
   ),
   parameters: {

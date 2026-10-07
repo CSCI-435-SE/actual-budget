@@ -19,6 +19,7 @@ import type {
   DashboardPageEntity,
   DashboardWidgetEntity,
   ExportImportDashboard,
+  GoalCardWidget,
   MarkdownWidget,
 } from '@actual-app/core/types/models';
 
@@ -62,6 +63,7 @@ import { CashFlowCard } from './reports/CashFlowCard';
 import { CrossoverCard } from './reports/CrossoverCard';
 import { CustomReportListCards } from './reports/CustomReportListCards';
 import { FormulaCard } from './reports/FormulaCard';
+import { GoalCard } from './reports/GoalCard';
 import { MarkdownCard } from './reports/MarkdownCard';
 import { MissingReportCard } from './reports/MissingReportCard';
 import { NetWorthCard } from './reports/NetWorthCard';
@@ -574,6 +576,13 @@ export function Overview({ dashboard }: OverviewProps) {
                               return;
                             }
 
+                            if (item === 'goal-card') {
+                              onAddWidget<GoalCardWidget>(item, {
+                                targetAmount: 0,
+                              });
+                              return;
+                            }
+
                             onAddWidget(item);
                           }}
                           items={[
@@ -600,6 +609,10 @@ export function Overview({ dashboard }: OverviewProps) {
                             {
                               name: 'spending-card' as const,
                               text: t('Spending analysis'),
+                            },
+                            {
+                              name: 'goal-card' as const,
+                              text: t('Personal goal'),
                             },
                             ...(budgetAnalysisReportEnabled
                               ? [
@@ -837,6 +850,15 @@ export function Overview({ dashboard }: OverviewProps) {
                           />
                         ) : widget.type === 'spending-card' ? (
                           <SpendingCard
+                            widgetId={item.i}
+                            isEditing={isEditing}
+                            meta={widget.meta}
+                            onMetaChange={newMeta =>
+                              onMetaChange(item, newMeta)
+                            }
+                          />
+                        ) : widget.type === 'goal-card' ? (
+                          <GoalCard
                             widgetId={item.i}
                             isEditing={isEditing}
                             meta={widget.meta}

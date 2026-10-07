@@ -39,7 +39,7 @@ export function EditablePageHeaderTitle({
           onUpdate={onSaveValue}
           onEscape={() => setIsEditing(false)}
           style={{
-            fontSize: 25,
+            fontSize: 'var(--font-size-25)',
             fontWeight: 500,
             marginTop: -3,
             marginBottom: -3,

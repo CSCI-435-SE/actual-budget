@@ -184,7 +184,7 @@ export function FilesSettingsModal() {
               variant="primary"
               style={{
                 padding: '10px 30px',
-                fontSize: 14,
+                fontSize: 'var(--font-size-14)',
                 alignSelf: 'center',
               }}
               onPress={() => closeModal(() => state.close())}

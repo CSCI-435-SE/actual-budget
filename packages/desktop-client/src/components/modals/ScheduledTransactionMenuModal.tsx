@@ -76,10 +76,10 @@ export function ScheduledTransactionMenuModal({
               marginBottom: 20,
             }}
           >
-            <Text style={{ fontSize: 17, fontWeight: 400 }}>
+            <Text style={{ fontSize: 'var(--font-size-17)', fontWeight: 400 }}>
               <Trans>Scheduled date</Trans>
             </Text>
-            <Text style={{ fontSize: 17, fontWeight: 700 }}>
+            <Text style={{ fontSize: 'var(--font-size-17)', fontWeight: 700 }}>
               {format(schedule?.next_date || '', 'MMMM dd, yyyy', locale)}
             </Text>
           </View>

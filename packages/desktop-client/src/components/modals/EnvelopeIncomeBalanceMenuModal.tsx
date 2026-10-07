@@ -69,7 +69,7 @@ export function EnvelopeIncomeBalanceMenuModal({
           >
             <Text
               style={{
-                fontSize: 17,
+                fontSize: 'var(--font-size-17)',
                 fontWeight: 400,
               }}
             >

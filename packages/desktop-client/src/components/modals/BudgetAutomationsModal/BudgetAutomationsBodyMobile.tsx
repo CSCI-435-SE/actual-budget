@@ -44,7 +44,7 @@ function SectionHeader({
       style={{
         flexShrink: 0,
         padding: '6px 4px',
-        fontSize: 11,
+        fontSize: 'var(--font-size-11)',
         textTransform: 'uppercase',
         color: theme.pageTextLight,
         fontWeight: 600,
@@ -294,12 +294,12 @@ export function BudgetAutomationsBodyMobile({
         }}
       >
         <View style={{ minWidth: 0 }}>
-          <Text style={{ fontSize: 11, color: theme.pageTextLight }}>
+          <Text style={{ fontSize: 'var(--font-size-11)', color: theme.pageTextLight }}>
             <Trans>Budget automation</Trans>
           </Text>
           <Text
             style={{
-              fontSize: 18,
+              fontSize: 'var(--font-size-18)',
               fontWeight: 600,
               color: theme.pageText,
               marginTop: 2,
@@ -311,7 +311,7 @@ export function BudgetAutomationsBodyMobile({
         <View style={{ textAlign: 'right', flexShrink: 0 }}>
           <Text
             style={{
-              fontSize: 10,
+              fontSize: 'var(--font-size-10)',
               textTransform: 'uppercase',
               color: theme.pageTextLight,
               letterSpacing: '0.04em',
@@ -324,7 +324,7 @@ export function BudgetAutomationsBodyMobile({
           </Text>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 'var(--font-size-20)',
               fontWeight: 600,
               color: theme.pageTextPositive,
               fontVariantNumeric: 'tabular-nums',

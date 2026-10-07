@@ -209,7 +209,7 @@ export function BudgetCell<
                   ...styles.tnum,
                   maxWidth: columnWidth,
                   textAlign: 'right',
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                 }}
               >
                 {format(value, type)}

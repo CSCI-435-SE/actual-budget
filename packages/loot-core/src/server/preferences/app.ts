@@ -76,7 +76,7 @@ async function getSyncedPrefs(): Promise<SyncedPrefs> {
   }, {});
 }
 
-async function saveGlobalPrefs(prefs: GlobalPrefs) {
+export async function saveGlobalPrefs(prefs: GlobalPrefs) {
   if (!prefs) {
     return 'ok';
   }
@@ -145,7 +145,7 @@ async function saveGlobalPrefs(prefs: GlobalPrefs) {
   return 'ok';
 }
 
-async function loadGlobalPrefs(): Promise<GlobalPrefs> {
+export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
   const {
     'floating-sidebar': floatingSidebar,
     'font-size': fontSize,

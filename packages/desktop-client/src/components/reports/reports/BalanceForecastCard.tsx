@@ -190,7 +190,7 @@ export function BalanceForecastCard({
                 </PrivacyFilter>
               </Block>
               <PrivacyFilter activationFilters={[!isCardHovered]}>
-                <Block style={{ fontSize: 12, color: theme.pageTextLight }}>
+                <Block style={{ fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}>
                   {endingPoint.date}
                 </Block>
               </PrivacyFilter>
@@ -198,7 +198,7 @@ export function BalanceForecastCard({
                 <PrivacyFilter activationFilters={[!isCardHovered]}>
                   <Block
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--font-size-12)',
                       color: theme.pageTextLight,
                       marginTop: 4,
                     }}
@@ -218,7 +218,7 @@ export function BalanceForecastCard({
           <View style={{ height: 120, padding: 20 }}>
             <Block
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.errorText,
                 textAlign: 'center',
               }}
@@ -325,7 +325,7 @@ export function BalanceForecastCard({
             <Block
               style={{
                 padding: '0 20px 16px',
-                fontSize: 12,
+                fontSize: 'var(--font-size-12)',
                 color: theme.pageTextLight,
               }}
             >
@@ -369,7 +369,7 @@ export function BalanceForecastCard({
           <View style={{ height: 120, padding: 20 }}>
             <Block
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.pageTextLight,
                 textAlign: 'center',
               }}

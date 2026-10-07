@@ -167,7 +167,7 @@ export function MergeUnusedPayeesModal({
             {!isEditingRule && (
               <label
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--font-size-13)',
                   marginTop: 10,
                   color: theme.pageTextLight,
                   userSelect: 'none',

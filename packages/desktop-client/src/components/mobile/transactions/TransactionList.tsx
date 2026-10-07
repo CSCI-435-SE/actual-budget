@@ -196,7 +196,7 @@ export function TransactionList({
                     backgroundColor: theme.mobilePageBackground,
                   }}
                 >
-                  <Text style={{ fontSize: 15 }}>
+                  <Text style={{ fontSize: 'var(--font-size-15)' }}>
                     <Trans>No transactions</Trans>
                   </Text>
                 </View>

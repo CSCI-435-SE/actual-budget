@@ -41,7 +41,7 @@ export function EmptyState({ onAdd }: EmptyStateProps) {
       </View>
       <Text
         style={{
-          fontSize: 18,
+          fontSize: 'var(--font-size-18)',
           fontWeight: 600,
           color: theme.pageText,
           letterSpacing: '-0.01em',
@@ -51,7 +51,7 @@ export function EmptyState({ onAdd }: EmptyStateProps) {
       </Text>
       <Text
         style={{
-          fontSize: 13,
+          fontSize: 'var(--font-size-13)',
           color: theme.pageTextLight,
           marginTop: 4,
           marginBottom: 22,
@@ -113,7 +113,7 @@ export function EmptyState({ onAdd }: EmptyStateProps) {
               </View>
               <Text
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--font-size-13)',
                   fontWeight: 600,
                   color: theme.pageText,
                 }}
@@ -122,7 +122,7 @@ export function EmptyState({ onAdd }: EmptyStateProps) {
               </Text>
               <Text
                 style={{
-                  fontSize: 11,
+                  fontSize: 'var(--font-size-11)',
                   color: theme.pageTextLight,
                   lineHeight: 1.4,
                 }}

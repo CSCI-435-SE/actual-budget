@@ -202,7 +202,7 @@ export function ScheduleEditForm({
                 style={{
                   padding: '0 10px',
                   color: theme.pageTextLight,
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                 }}
                 onChange={(_, op) =>
                   dispatch({
@@ -273,7 +273,7 @@ export function ScheduleEditForm({
             )}
 
             {upcomingDates && (
-              <View style={{ fontSize: 13, marginTop: 20 }}>
+              <View style={{ fontSize: 'var(--font-size-13)', marginTop: 20 }}>
                 <Text style={{ color: theme.pageTextLight, fontWeight: 600 }}>
                   <Trans>Upcoming dates</Trans>
                 </Text>
@@ -397,7 +397,7 @@ export function ScheduleEditForm({
             <Text
               style={{
                 color: theme.pageTextLight,
-                fontSize: 12,
+                fontSize: 'var(--font-size-12)',
                 marginTop: 3,
               }}
             >
@@ -438,7 +438,7 @@ export function ScheduleEditForm({
             <Text
               style={{
                 color: theme.pageTextLight,
-                fontSize: 12,
+                fontSize: 'var(--font-size-12)',
                 marginTop: 3,
               }}
             >
@@ -461,7 +461,7 @@ export function ScheduleEditForm({
                 <Text
                   style={{
                     color: theme.pageTextLight,
-                    fontSize: 13,
+                    fontSize: 'var(--font-size-13)',
                     textAlign: 'right',
                     width: 350,
                   }}
@@ -505,7 +505,7 @@ export function ScheduleEditForm({
                       ? theme.pageTextLink
                       : theme.pageTextSubdued,
                   marginRight: 10,
-                  fontSize: 14,
+                  fontSize: 'var(--font-size-14)',
                 }}
                 onPress={() => onSwitchTransactions('linked')}
               >
@@ -518,7 +518,7 @@ export function ScheduleEditForm({
                     transactionsMode === 'matched'
                       ? theme.pageTextLink
                       : theme.pageTextSubdued,
-                  fontSize: 14,
+                  fontSize: 'var(--font-size-14)',
                 }}
                 onPress={() => onSwitchTransactions('matched')}
               >

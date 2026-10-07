@@ -330,7 +330,7 @@ function BudgetFileListItem({
           style={{ alignItems: 'flex-start', width: '100%' }}
         >
           <View style={{ flexDirection: 'row', width: '100%' }}>
-            <Text style={{ fontSize: 16, fontWeight: 700 }}>{file.name}</Text>
+            <Text style={{ fontSize: 'var(--font-size-16)', fontWeight: 700 }}>{file.name}</Text>
             {multiuserEnabled && 'cloudFileId' in file && (
               <UserAccessForFile
                 fileId={file.cloudFileId}

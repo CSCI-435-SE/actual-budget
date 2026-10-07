@@ -64,7 +64,7 @@ function SidebarSectionHeader({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '6px 8px',
-        fontSize: 11,
+        fontSize: 'var(--font-size-11)',
         textTransform: 'uppercase',
         color: theme.pageTextLight,
         fontWeight: 600,
@@ -96,7 +96,7 @@ function SidebarAddButton({
         borderRadius: 6,
         color: theme.pageTextPositive,
         fontWeight: 600,
-        fontSize: 12,
+        fontSize: 'var(--font-size-12)',
         justifyContent: 'center',
       }}
     >
@@ -185,12 +185,12 @@ export function BudgetAutomationsBody({
         }}
       >
         <View style={{ minWidth: 0 }}>
-          <Text style={{ fontSize: 12, color: theme.pageTextLight }}>
+          <Text style={{ fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}>
             <Trans>Budget automation</Trans>
           </Text>
           <Text
             style={{
-              fontSize: 20,
+              fontSize: 'var(--font-size-20)',
               fontWeight: 600,
               color: theme.pageText,
               marginTop: 2,
@@ -210,7 +210,7 @@ export function BudgetAutomationsBody({
           >
             <Text
               style={{
-                fontSize: 11,
+                fontSize: 'var(--font-size-11)',
                 textTransform: 'uppercase',
                 color: theme.pageTextLight,
                 letterSpacing: '0.04em',
@@ -242,7 +242,7 @@ export function BudgetAutomationsBody({
           </View>
           <Text
             style={{
-              fontSize: 22,
+              fontSize: 'var(--font-size-22)',
               fontWeight: 600,
               color: theme.pageTextPositive,
               fontVariantNumeric: 'tabular-nums',

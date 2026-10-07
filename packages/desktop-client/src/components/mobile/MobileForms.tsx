@@ -27,7 +27,7 @@ export function FieldLabel({ title, flush, style }: FieldLabelProps) {
       style={{
         marginBottom: 5,
         marginTop: flush ? 0 : 25,
-        fontSize: 14,
+        fontSize: 'var(--font-size-14)',
         color: theme.tableRowHeaderText,
         padding: `0 ${styles.mobileEditingPadding}px`,
         userSelect: 'none',

@@ -31,7 +31,7 @@ const Alert = ({
     <View
       style={{
         color,
-        fontSize: 13,
+        fontSize: 'var(--font-size-13)',
         ...styles.shadow,
         borderRadius: 4,
         backgroundColor,

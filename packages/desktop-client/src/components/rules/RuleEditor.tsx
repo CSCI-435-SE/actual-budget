@@ -241,7 +241,7 @@ function FieldError({ type }) {
   return (
     <Text
       style={{
-        fontSize: 12,
+        fontSize: 'var(--font-size-12)',
         textAlign: 'center',
         color: theme.errorText,
         marginBottom: 5,
@@ -594,7 +594,7 @@ function ActionEditor({
               >
                 <span
                   style={{
-                    fontSize: 14,
+                    fontSize: 'var(--font-size-14)',
                     fontFamily: 'serif',
                     textAlign: 'center',
                   }}
@@ -684,7 +684,7 @@ function ActionEditor({
             >
               <span
                 style={{
-                  fontSize: 14,
+                  fontSize: 'var(--font-size-14)',
                   fontFamily: 'serif',
                   textAlign: 'center',
                 }}

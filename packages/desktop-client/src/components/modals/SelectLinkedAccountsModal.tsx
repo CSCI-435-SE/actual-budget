@@ -895,7 +895,7 @@ function StartingOptionsFields({
           <Text
             style={{
               marginBottom: 4,
-              fontSize: 13,
+              fontSize: 'var(--font-size-13)',
               color: theme.pageTextSubdued,
             }}
           >
@@ -917,7 +917,7 @@ function StartingOptionsFields({
           <Text
             style={{
               marginBottom: 4,
-              fontSize: 13,
+              fontSize: 'var(--font-size-13)',
               color: theme.pageTextSubdued,
             }}
           >

@@ -151,7 +151,7 @@ function StackedTooltip({
             backgroundColor: theme.menuBackground,
             color: theme.menuItemText,
             padding: 10,
-            fontSize: 12,
+            fontSize: 'var(--font-size-12)',
             maxHeight: '80vh',
             overflowY: 'auto',
           },

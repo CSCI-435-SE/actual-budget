@@ -76,7 +76,7 @@ export const AdvancedToggle = ({ children }: AdvancedToggleProps) => {
         }
       }}
     >
-      <View style={{ fontSize: 20, fontWeight: 500, flexShrink: 0 }}>
+      <View style={{ fontSize: 'var(--font-size-20)', fontWeight: 500, flexShrink: 0 }}>
         <Trans>Advanced Settings</Trans>
       </View>
       {children}

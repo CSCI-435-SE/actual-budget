@@ -71,7 +71,7 @@ export const CustomStyle: Story = {
   args: {
     children: 'Custom styled error message',
     style: {
-      fontSize: 14,
+      fontSize: 'var(--font-size-14)',
       fontWeight: 'bold',
       padding: 10,
       backgroundColor: '#ffebee',

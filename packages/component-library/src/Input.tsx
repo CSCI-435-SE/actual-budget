@@ -93,7 +93,7 @@ export function Input({
 
 const defaultBigInputClassName = css({
   padding: 10,
-  fontSize: 15,
+  fontSize: 'var(--font-size-15)',
   border: 'none',
   ...styles.shadow,
   '&[data-focused]': { border: 'none', ...styles.shadow },

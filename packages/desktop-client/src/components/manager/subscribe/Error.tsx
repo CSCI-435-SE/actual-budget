@@ -32,7 +32,7 @@ export function Error() {
     <View style={{ alignItems: 'center', color: theme.pageText }}>
       <Text
         style={{
-          fontSize: 16,
+          fontSize: 'var(--font-size-16)',
           color: theme.pageTextDark,
           lineHeight: 1.4,
         }}

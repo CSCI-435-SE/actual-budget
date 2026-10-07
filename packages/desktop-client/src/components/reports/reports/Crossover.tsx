@@ -1025,7 +1025,7 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
                 {!useCustomGrowth && historicalReturn != null && (
                   <div
                     style={{
-                      fontSize: 12,
+                      fontSize: 'var(--font-size-12)',
                       color: theme.pageTextSubdued,
                       marginLeft: 24,
                     }}

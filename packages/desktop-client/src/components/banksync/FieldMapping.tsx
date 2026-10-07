@@ -112,7 +112,7 @@ export function FieldMapping({
               plain
             >
               <Text
-                style={{ whiteSpace: 'nowrap', fontSize: 13, fontWeight: 500 }}
+                style={{ whiteSpace: 'nowrap', fontSize: 'var(--font-size-13)', fontWeight: 500 }}
               >
                 {calculatedActualFieldWidth > 70 ? t('Actual field') : 'Actual'}
               </Text>
@@ -136,7 +136,7 @@ export function FieldMapping({
               <Row
                 key={field.actualField}
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--font-size-13)',
                   backgroundColor: theme.tableBackground,
                   display: 'flex',
                   alignItems: 'center',
@@ -150,7 +150,7 @@ export function FieldMapping({
                   style={{ ...commonCellStyle, paddingLeft: '10px' }}
                   plain
                 >
-                  <Text style={{ whiteSpace: 'nowrap', fontSize: 13 }}>
+                  <Text style={{ whiteSpace: 'nowrap', fontSize: 'var(--font-size-13)' }}>
                     {field.actualField}
                   </Text>
                 </Cell>

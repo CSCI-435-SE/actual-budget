@@ -19,7 +19,7 @@ export const Label = forwardRef<HTMLSpanElement, LabelProps>(
           ...styles.text,
           color: theme.tableRowHeaderText,
           textAlign: 'right',
-          fontSize: 14,
+          fontSize: 'var(--font-size-14)',
           marginBottom: 2,
           ...style,
         }}
