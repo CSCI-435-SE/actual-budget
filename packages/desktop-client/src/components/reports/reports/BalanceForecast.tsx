@@ -451,7 +451,7 @@ function BalanceForecastInner({ widget }: BalanceForecastInnerProps) {
               <View
                 style={{
                   color: theme.pageTextLight,
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                   marginTop: 4,
                 }}
               >
@@ -579,7 +579,7 @@ function BalanceForecastInner({ widget }: BalanceForecastInnerProps) {
                           label={{
                             value: t('Today'),
                             fill: theme.reportsBlue,
-                            fontSize: 12,
+                            fontSize: 'var(--font-size-12)',
                             position: 'insideTop',
                             offset: 8,
                           }}
@@ -604,7 +604,7 @@ function BalanceForecastInner({ widget }: BalanceForecastInnerProps) {
               <div
                 style={{
                   marginTop: 12,
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                   color: theme.pageTextLight,
                 }}
               >
@@ -654,7 +654,7 @@ function BalanceForecastInner({ widget }: BalanceForecastInnerProps) {
 
         {!errorMessage && !isTrackingBudgetForecast && (
           <div
-            style={{ marginTop: 20, fontSize: 12, color: theme.pageTextLight }}
+            style={{ marginTop: 20, fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}
           >
             {hasFilters ? (
               <Trans>

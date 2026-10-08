@@ -234,7 +234,7 @@ export function CrossoverCard({
               </Block>
               <Block
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                   color: theme.pageTextSubdued,
                 }}
               >

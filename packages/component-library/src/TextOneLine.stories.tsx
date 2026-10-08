@@ -92,7 +92,7 @@ export const WithCustomStyle: Story = {
     style: {
       maxWidth: 200,
       fontWeight: 'bold',
-      fontSize: 16,
+      fontSize: 'var(--font-size-16)',
     },
   },
   parameters: {

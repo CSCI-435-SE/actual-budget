@@ -18,8 +18,11 @@ export const styles: CSSProperties = {
   monthRightPadding: 5,
   menuBorderRadius: 4,
   mobileMinHeight: MOBILE_MIN_HEIGHT,
+  
+  //--font-size* variables are defined by FontSizeStyle in desktop-client
+
   mobileMenuItem: {
-    fontSize: 17,
+    fontSize: 'var(--font-size-17)',
     fontWeight: 400,
     paddingTop: 8,
     paddingBottom: 8,
@@ -29,33 +32,33 @@ export const styles: CSSProperties = {
   mobileEditingPadding: 12,
   altMenuMaxHeight: 250,
   altMenuText: {
-    fontSize: 13,
+    fontSize: 'var(--font-size-13)',
   },
   altMenuHeaderText: {
-    fontSize: 13,
+    fontSize: 'var(--font-size-13)',
     fontWeight: 700,
   },
   veryLargeText: {
-    fontSize: 30,
+    fontSize: 'var(--font-size-30)',
     fontWeight: 600,
   },
   largeText: {
-    fontSize: 20,
+    fontSize: 'var(--font-size-20)',
     fontWeight: 700,
     letterSpacing: 0.5,
   },
   mediumText: {
-    fontSize: 15,
+    fontSize: 'var(--font-size-15)',
     fontWeight: 500,
   },
   smallText: {
-    fontSize: 13,
+    fontSize: 'var(--font-size-13)',
   },
   verySmallText: {
-    fontSize: 12,
+    fontSize: 'var(--font-size-12)',
   },
   tinyText: {
-    fontSize: 10,
+    fontSize: 'var(--font-size-10)',
   },
   page: {
     flex: 1,
@@ -97,8 +100,7 @@ export const styles: CSSProperties = {
   },
   notFixed: { fontFeatureSettings: '' },
   text: {
-    fontSize: 16,
-    // lineHeight: 22.4 // TODO: This seems like trouble, but what's the right value?
+    fontSize: 'var(--font-size-16)',
   },
   delayedFadeIn: {
     animationName: keyframes({

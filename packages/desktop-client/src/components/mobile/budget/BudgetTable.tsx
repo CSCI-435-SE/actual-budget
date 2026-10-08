@@ -109,7 +109,7 @@ function ToBudget({ toBudget, onPress, show3Columns }: ToBudgetProps) {
                     mode="oneline"
                     style={{
                       ...styles.tnum,
-                      fontSize: 12,
+                      fontSize: 'var(--font-size-12)',
                       fontWeight: '700',
                       color:
                         amount < 0
@@ -179,7 +179,7 @@ function Saved({ projected, onPress, show3Columns }: SavedProps) {
                 style={{
                   color: theme.formInputText,
                   textAlign: 'left',
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                 }}
               />
             </View>
@@ -209,7 +209,7 @@ function Saved({ projected, onPress, show3Columns }: SavedProps) {
                     style={{
                       ...styles.tnum,
                       textAlign: 'left',
-                      fontSize: 12,
+                      fontSize: 'var(--font-size-12)',
                       fontWeight: '700',
                       color: projected
                         ? theme.warningText
@@ -433,7 +433,7 @@ function BudgetTableHeader({
     ...styles.tnum,
     color: theme.budgetNumberNeutral,
     textAlign: 'right',
-    fontSize: 12,
+    fontSize: 'var(--font-size-12)',
     fontWeight: '500',
   };
 

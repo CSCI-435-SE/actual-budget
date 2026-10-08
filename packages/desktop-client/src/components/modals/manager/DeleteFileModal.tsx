@@ -79,7 +79,7 @@ export function DeleteFileModal({ file }: DeleteFileModalProps) {
                         alignSelf: 'center',
                         border: 0,
                         padding: '10px 30px',
-                        fontSize: 14,
+                        fontSize: 'var(--font-size-14)',
                       }}
                       onPress={async () => {
                         setLoadingState('cloud');
@@ -102,7 +102,7 @@ export function DeleteFileModal({ file }: DeleteFileModalProps) {
                       style={{
                         alignSelf: 'center',
                         padding: '10px 30px',
-                        fontSize: 14,
+                        fontSize: 'var(--font-size-14)',
                       }}
                     >
                       <Trans>Server is not available</Trans>
@@ -156,7 +156,7 @@ export function DeleteFileModal({ file }: DeleteFileModalProps) {
                     alignSelf: 'center',
                     marginTop: 10,
                     padding: '10px 30px',
-                    fontSize: 14,
+                    fontSize: 'var(--font-size-14)',
                     ...(isCloudFile
                       ? {
                           color: theme.errorText,

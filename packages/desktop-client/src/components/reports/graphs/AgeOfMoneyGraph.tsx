@@ -132,14 +132,14 @@ export function AgeOfMoneyGraph({
               {!compact && (
                 <XAxis
                   dataKey="date"
-                  tick={{ fill: theme.reportsLabel, fontSize: 12 }}
+                  tick={{ fill: theme.reportsLabel, fontSize: 'var(--font-size-12)' }}
                   tickLine={{ stroke: theme.reportsLabel }}
                 />
               )}
               {!compact && (
                 <YAxis
                   tickFormatter={value => (privacyMode ? '•••' : `${value}d`)}
-                  tick={{ fill: theme.reportsLabel, fontSize: 12 }}
+                  tick={{ fill: theme.reportsLabel, fontSize: 'var(--font-size-12)' }}
                   tickLine={{ stroke: theme.reportsLabel }}
                   domain={[0, yAxisMax]}
                 />
@@ -159,7 +159,7 @@ export function AgeOfMoneyGraph({
                     value: t('30 days'),
                     position: 'insideTopRight',
                     fill: theme.reportsGreen,
-                    fontSize: 10,
+                    fontSize: 'var(--font-size-10)',
                   }}
                 />
               )}

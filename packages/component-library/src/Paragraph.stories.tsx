@@ -92,7 +92,7 @@ export const WithCustomStyle: Story = {
     style: {
       color: '#007bff',
       fontStyle: 'italic',
-      fontSize: 18,
+      fontSize: 'var(--font-size-18)',
     },
   },
   decorators: [

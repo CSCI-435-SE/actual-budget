@@ -281,7 +281,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
           <View style={{ padding: 20, paddingBottom: 0 }}>
             <div
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.pageTextSubdued,
                 marginBottom: 5,
               }}
@@ -307,7 +307,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
           >
             <div
               style={{
-                fontSize: 14,
+                fontSize: 'var(--font-size-14)',
                 color: theme.pageTextSubdued,
               }}
             >
@@ -346,7 +346,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
           >
             <div
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.pageTextSubdued,
                 marginBottom: 5,
               }}
@@ -377,7 +377,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
             <View>
               <div
                 style={{
-                  fontSize: 13,
+                  fontSize: 'var(--font-size-13)',
                   color: theme.pageTextSubdued,
                   marginBottom: 5,
                 }}
@@ -400,7 +400,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
               <View>
                 <div
                   style={{
-                    fontSize: 13,
+                    fontSize: 'var(--font-size-13)',
                     color: theme.pageTextSubdued,
                     marginBottom: 5,
                   }}
@@ -425,7 +425,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
           >
             <div
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.pageTextSubdued,
                 marginBottom: 5,
               }}
@@ -455,7 +455,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
             </View>
             <div
               style={{
-                fontSize: 11,
+                fontSize: 'var(--font-size-11)',
                 color: theme.pageTextSubdued,
                 marginTop: 5,
               }}

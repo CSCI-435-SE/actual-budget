@@ -128,7 +128,7 @@ export function MobileBankSyncPage() {
         >
           <Text
             style={{
-              fontSize: 16,
+              fontSize: 'var(--font-size-16)',
               color: theme.pageTextSubdued,
               textAlign: 'center',
             }}

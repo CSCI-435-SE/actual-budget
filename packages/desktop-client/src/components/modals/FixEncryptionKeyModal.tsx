@@ -128,7 +128,7 @@ export function FixEncryptionKeyModal({
                   style={{
                     color: theme.errorText,
                     textAlign: 'center',
-                    fontSize: 13,
+                    fontSize: 'var(--font-size-13)',
                     marginBottom: 3,
                   }}
                 >

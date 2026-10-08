@@ -230,7 +230,7 @@ export function Balances({
             <CellValueText
               {...props}
               style={{
-                fontSize: 22,
+                fontSize: 'var(--font-size-22)',
                 fontWeight: 400,
                 color:
                   props.value < 0

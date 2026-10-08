@@ -79,7 +79,7 @@ export function RulesListItem({
           >
             <span
               style={{
-                fontSize: 11,
+                fontSize: 'var(--font-size-11)',
                 fontWeight: 500,
                 color:
                   rule.stage === 'pre'
@@ -111,7 +111,7 @@ export function RulesListItem({
           <SpaceBetween gap={6}>
             <span
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 fontWeight: 600,
                 color: theme.pageTextLight,
                 marginRight: 4,
@@ -143,7 +143,7 @@ export function RulesListItem({
           >
             <span
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 fontWeight: 600,
                 color: theme.pageTextLight,
                 marginBottom: 2,
@@ -169,7 +169,7 @@ export function RulesListItem({
                   >
                     <span
                       style={{
-                        fontSize: 11,
+                        fontSize: 'var(--font-size-11)',
                         fontWeight: 500,
                         color: theme.pageTextLight,
                         marginBottom: 4,

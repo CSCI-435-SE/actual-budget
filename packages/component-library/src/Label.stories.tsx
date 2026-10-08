@@ -82,7 +82,7 @@ export const CustomStyle: Story = {
   args: {
     title: 'Custom Styled Label',
     style: {
-      fontSize: 16,
+      fontSize: 'var(--font-size-16)',
       color: '#007bff',
       textAlign: 'left',
     },

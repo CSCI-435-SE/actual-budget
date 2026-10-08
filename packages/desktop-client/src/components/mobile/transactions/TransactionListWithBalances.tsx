@@ -203,7 +203,7 @@ function BalanceWithCleared({
       >
         <Label
           title={t('Cleared')}
-          style={{ textAlign: 'center', fontSize: 12 }}
+          style={{ textAlign: 'center', fontSize: 'var(--font-size-12)' }}
         />
         <TransactionListBalanceCellValue
           binding={balanceCleared}
@@ -213,7 +213,7 @@ function BalanceWithCleared({
             <CellValueText
               {...props}
               style={{
-                fontSize: 12,
+                fontSize: 'var(--font-size-12)',
                 textAlign: 'center',
                 fontWeight: '500',
               }}
@@ -231,7 +231,7 @@ function BalanceWithCleared({
       >
         <Label
           title={t('Uncleared')}
-          style={{ textAlign: 'center', fontSize: 12 }}
+          style={{ textAlign: 'center', fontSize: 'var(--font-size-12)' }}
         />
         <TransactionListBalanceCellValue
           binding={balanceUncleared}
@@ -241,7 +241,7 @@ function BalanceWithCleared({
             <CellValueText
               {...props}
               style={{
-                fontSize: 12,
+                fontSize: 'var(--font-size-12)',
                 textAlign: 'center',
                 fontWeight: '500',
               }}
@@ -268,7 +268,7 @@ function Balance({ balance }: BalanceProps) {
           <CellValueText
             {...props}
             style={{
-              fontSize: 18,
+              fontSize: 'var(--font-size-18)',
               textAlign: 'center',
               fontWeight: '500',
               color:

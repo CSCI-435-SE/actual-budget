@@ -317,7 +317,7 @@ export function SankeyGraph({
                             <div
                               style={{
                                 marginTop: 6,
-                                fontSize: 11,
+                                fontSize: 'var(--font-size-11)',
                                 opacity: 0.7,
                               }}
                             >

@@ -337,7 +337,7 @@ function SplitTransactionButton({
         flexShrink: 0,
         flexDirection: 'row',
         alignItems: 'center',
-        fontSize: 11,
+        fontSize: 'var(--font-size-11)',
         fontWeight: 500,
         color: theme.noticeTextMenu,
         padding: '6px 8px',

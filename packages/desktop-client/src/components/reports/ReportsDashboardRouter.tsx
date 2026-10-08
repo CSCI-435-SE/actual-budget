@@ -45,7 +45,7 @@ export function ReportsDashboardRouter() {
             alignItems: 'center',
           }}
         >
-          <Block style={{ marginBottom: 20, fontSize: 18 }}>
+          <Block style={{ marginBottom: 20, fontSize: 'var(--font-size-18)' }}>
             <Trans>Dashboard not found</Trans>
           </Block>
         </View>

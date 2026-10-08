@@ -173,7 +173,7 @@ export function AccountSyncCheck() {
         placement="bottom start"
         isOpen={open}
         onOpenChange={() => setOpen(false)}
-        style={{ fontSize: 14, padding: 15, maxWidth: 400 }}
+        style={{ fontSize: 'var(--font-size-14)', padding: 15, maxWidth: 400 }}
       >
         <div style={{ marginBottom: '1.15em' }}>
           <Trans>The server returned the following error:</Trans>

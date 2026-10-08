@@ -30,7 +30,7 @@ export const UserDirectoryRow = memo(
       <Row
         height="auto"
         style={{
-          fontSize: 13,
+          fontSize: 'var(--font-size-13)',
           zIndex: selected ? 101 : 'auto',
           borderColor,
           backgroundColor: selected
@@ -130,7 +130,7 @@ export const UserDirectoryRow = memo(
           style={{ padding: 0, paddingLeft: 5 }}
         >
           <Button
-            style={{ margin: 4, fontSize: 14, color: theme.pageTextLink }}
+            style={{ margin: 4, fontSize: 'var(--font-size-14)', color: theme.pageTextLink }}
             variant="bare"
             onPress={() => onEditUser?.(user)}
           >

@@ -110,7 +110,7 @@ export function BalanceCell({
                   ...styles.tnum,
                   maxWidth: columnWidth,
                   textAlign: 'right',
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                 }),
               )}
             >

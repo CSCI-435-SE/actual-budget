@@ -17,7 +17,7 @@ export function ConflictBanner({ conflict }: ConflictBannerProps) {
       style={{
         padding: '8px 12px',
         margin: '12px 24px 0',
-        fontSize: 12,
+        fontSize: 'var(--font-size-12)',
         flexShrink: 0,
       }}
     >

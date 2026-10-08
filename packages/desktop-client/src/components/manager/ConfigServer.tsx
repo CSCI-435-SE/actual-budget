@@ -129,7 +129,7 @@ export function ElectronServerConfig({
       >
         <Text
           style={{
-            fontSize: 16,
+            fontSize: 'var(--font-size-16)',
             color: theme.pageText,
             lineHeight: 1.5,
           }}
@@ -141,7 +141,7 @@ export function ElectronServerConfig({
         </Text>
         <Text
           style={{
-            fontSize: 16,
+            fontSize: 'var(--font-size-16)',
             color: theme.pageText,
             lineHeight: 1.5,
           }}
@@ -403,7 +403,7 @@ export function ConfigServer() {
           <Title text={t("Where's the server?")} />
           <Text
             style={{
-              fontSize: 16,
+              fontSize: 'var(--font-size-16)',
               color: theme.tableRowHeaderText,
               lineHeight: 1.5,
             }}
@@ -428,7 +428,7 @@ export function ConfigServer() {
                   marginTop: 20,
                   color: theme.errorText,
                   borderRadius: 4,
-                  fontSize: 15,
+                  fontSize: 'var(--font-size-15)',
                 }}
               >
                 {getErrorMessage(error)}
@@ -445,14 +445,14 @@ export function ConfigServer() {
                     style={{
                       color: theme.errorText,
                       borderRadius: 4,
-                      fontSize: 15,
+                      fontSize: 'var(--font-size-15)',
                     }}
                   >
                     <Trans>
                       If the server is using a self-signed certificate{' '}
                       <Link
                         variant="text"
-                        style={{ fontSize: 15 }}
+                        style={{ fontSize: 'var(--font-size-15)' }}
                         onClick={onSelectSelfSignedCertificate}
                       >
                         select it here
@@ -478,7 +478,7 @@ export function ConfigServer() {
             <ButtonWithLoading
               variant="primary"
               isLoading={loading}
-              style={{ fontSize: 15 }}
+              style={{ fontSize: 'var(--font-size-15)' }}
               onPress={onSubmit}
             >
               <Trans>OK</Trans>
@@ -486,7 +486,7 @@ export function ConfigServer() {
             {currentUrl && (
               <Button
                 variant="bare"
-                style={{ fontSize: 15, marginLeft: 10 }}
+                style={{ fontSize: 'var(--font-size-15)', marginLeft: 10 }}
                 onPress={() => navigate(-1)}
               >
                 <Trans>Cancel</Trans>

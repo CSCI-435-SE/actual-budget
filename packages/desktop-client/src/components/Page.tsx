@@ -29,7 +29,7 @@ export function PageHeader({ title, style }: PageHeaderProps) {
       <View
         style={{
           flexDirection: 'row',
-          fontSize: 25,
+          fontSize: 'var(--font-size-25)',
           fontWeight: 500,
         }}
       >
@@ -85,7 +85,7 @@ export function MobilePageHeader({
           justifyContent: 'center',
           flexDirection: 'row',
           flexBasis: '50%',
-          fontSize: 17,
+          fontSize: 'var(--font-size-17)',
           fontWeight: 500,
           overflowY: 'auto',
           display: 'flex',

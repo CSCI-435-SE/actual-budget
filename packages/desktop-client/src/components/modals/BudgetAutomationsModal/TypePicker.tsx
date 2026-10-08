@@ -88,7 +88,7 @@ export function TypePicker({ active, disabledTypes, onPick }: TypePickerProps) {
               <Text
                 style={{
                   display: 'block',
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                   fontWeight: 600,
                   color: isActive ? theme.pageTextPositive : theme.pageText,
                   lineHeight: 1.25,
@@ -100,7 +100,7 @@ export function TypePicker({ active, disabledTypes, onPick }: TypePickerProps) {
             <Text
               style={{
                 display: 'block',
-                fontSize: 11,
+                fontSize: 'var(--font-size-11)',
                 color: theme.pageTextLight,
                 lineHeight: 1.35,
               }}

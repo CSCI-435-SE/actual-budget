@@ -345,7 +345,7 @@ function AgeOfMoneyInner({ widget }: AgeOfMoneyInnerProps) {
           </View>
           {data.insufficientData && (
             <View
-              style={{ color: theme.warningText, fontSize: 12, marginTop: 5 }}
+              style={{ color: theme.warningText, fontSize: 'var(--font-size-12)', marginTop: 5 }}
             >
               {t(
                 'Note: Some expenses could not be matched to income (spending exceeded income in this period)',

@@ -69,7 +69,7 @@ export function CleanupListRow({
       <View style={{ minWidth: 0, flex: 1 }}>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 'var(--font-size-12)',
             fontWeight: 600,
             color: theme.pageText,
             display: 'block',
@@ -79,7 +79,7 @@ export function CleanupListRow({
         </Text>
         <Text
           style={{
-            fontSize: 11,
+            fontSize: 'var(--font-size-11)',
             color: theme.pageTextLight,
             display: 'block',
           }}

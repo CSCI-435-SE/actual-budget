@@ -205,7 +205,7 @@ export function ThemeInstaller({
           marginBottom: 16,
         }}
       >
-        <Text style={{ fontWeight: 600, fontSize: 14 }}>
+        <Text style={{ fontWeight: 600, fontSize: 'var(--font-size-14)' }}>
           <Trans>Install Custom Theme</Trans>
         </Text>
         <Button variant="bare" onPress={onClose}>
@@ -222,7 +222,7 @@ export function ThemeInstaller({
           style={{
             color: themeStyle.errorText,
             marginBottom: 12,
-            fontSize: 12,
+            fontSize: 'var(--font-size-12)',
           }}
         >
           <Trans>
@@ -360,7 +360,7 @@ export function ThemeInstaller({
                                 <ColorPalette colors={theme.colors} />
                                 <TextOneLine
                                   style={{
-                                    fontSize: 12,
+                                    fontSize: 'var(--font-size-12)',
                                     fontWeight: 500,
                                     textAlign: 'center',
                                     width: '100%',
@@ -375,7 +375,7 @@ export function ThemeInstaller({
                                   align="center"
                                   wrap={false}
                                   gap={4}
-                                  style={{ fontSize: 10 }}
+                                  style={{ fontSize: 'var(--font-size-10)' }}
                                 >
                                   <TextOneLine
                                     style={{
@@ -450,7 +450,7 @@ export function ThemeInstaller({
           style={{
             color: themeStyle.errorText,
             marginBottom: 12,
-            fontSize: 12,
+            fontSize: 'var(--font-size-12)',
           }}
         >
           {error}

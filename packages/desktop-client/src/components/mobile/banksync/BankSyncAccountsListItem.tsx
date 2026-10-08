@@ -51,7 +51,7 @@ export function BankSyncAccountsListItem({
         >
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 'var(--font-size-15)',
               fontWeight: 500,
               color: theme.tableText,
             }}
@@ -61,7 +61,7 @@ export function BankSyncAccountsListItem({
           {isLinked && (
             <Text
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.pageTextSubdued,
               }}
             >
@@ -71,7 +71,7 @@ export function BankSyncAccountsListItem({
           {isLinked && lastSyncString && (
             <Text
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.pageTextSubdued,
               }}
               data-vrt-mask
@@ -88,7 +88,7 @@ export function BankSyncAccountsListItem({
             backgroundColor: theme.noticeBackground,
             border: '1px solid ' + theme.noticeBackground,
             color: theme.noticeTextDark,
-            fontSize: 13,
+            fontSize: 'var(--font-size-13)',
             fontWeight: 500,
             flexShrink: 0,
           }}

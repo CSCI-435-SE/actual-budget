@@ -243,7 +243,7 @@ export function TagAutocomplete({
                   <span
                     style={{
                       textWrap: 'nowrap',
-                      fontSize: 11,
+                      fontSize: 'var(--font-size-11)',
                     }}
                   >
                     <Trans>Create tag</Trans>

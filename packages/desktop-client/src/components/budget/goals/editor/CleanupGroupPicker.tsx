@@ -130,7 +130,7 @@ export function CleanupGroupPicker({
                   backgroundColor: active
                     ? theme.menuAutoCompleteBackgroundHover
                     : 'transparent',
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                   fontWeight: isCreate ? 500 : undefined,
                   color: isCreate
                     ? active

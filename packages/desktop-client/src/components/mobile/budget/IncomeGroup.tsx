@@ -282,7 +282,7 @@ function IncomeGroupCells({ group }: IncomeGroupCellsProps) {
                     alignItems: 'flex-end',
                     paddingLeft: 5,
                     textAlign: 'right',
-                    fontSize: 12,
+                    fontSize: 'var(--font-size-12)',
                     fontWeight: '500',
                   }}
                 >
@@ -313,7 +313,7 @@ function IncomeGroupCells({ group }: IncomeGroupCellsProps) {
                   alignItems: 'flex-end',
                   paddingLeft: 5,
                   textAlign: 'right',
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                   fontWeight: '500',
                 }}
               >

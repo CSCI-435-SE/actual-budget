@@ -330,7 +330,7 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
             <label
               htmlFor="goal-target-amount"
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.pageTextSubdued,
                 marginBottom: 5,
               }}
@@ -349,7 +349,7 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
             <label
               htmlFor="goal-linked-tag"
               style={{
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 color: theme.pageTextSubdued,
                 marginBottom: 5,
               }}

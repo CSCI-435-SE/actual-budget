@@ -103,6 +103,7 @@ export type DarkTheme = 'dark' | 'midnight';
 
 // GlobalPrefs are the parsed global-store.json values
 export type GlobalPrefs = Partial<{
+  fontSize: string;
   floatingSidebar: boolean;
   maxMonths: number;
   categoryExpandedState: number;
@@ -136,6 +137,7 @@ export type GlobalPrefs = Partial<{
 
 // GlobalPrefsJson represents what's saved in the global-store.json file
 export type GlobalPrefsJson = Partial<{
+  'font-size'?: GlobalPrefs['fontSize'];
   'user-id'?: string;
   'user-key'?: string;
   'encrypt-keys'?: string;

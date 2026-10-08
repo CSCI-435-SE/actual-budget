@@ -39,7 +39,7 @@ export function OutOfSyncMigrationsModal() {
             }}
           >
             <Text>
-              <Paragraph style={{ fontSize: 16 }}>
+              <Paragraph style={{ fontSize: 'var(--font-size-16)' }}>
                 <Trans>
                   It looks like you&apos;re using an outdated version of the
                   Actual client. Your budget data has been updated by another
@@ -51,7 +51,7 @@ export function OutOfSyncMigrationsModal() {
 
             <Paragraph
               style={{
-                fontSize: 16,
+                fontSize: 'var(--font-size-16)',
               }}
             >
               <Trans>

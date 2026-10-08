@@ -287,7 +287,7 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
             display: 'none',
           }),
         }}
-        textStyle={{ fontSize: 15, textAlign: 'right', ...textStyle }}
+        textStyle={{ fontSize: 'var(--font-size-15)', textAlign: 'right', ...textStyle }}
       />
 
       <View>
@@ -334,7 +334,7 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
                   negativeColor: theme.numberNegative,
                   zeroColor: theme.numberNeutral,
                 }),
-                fontSize: 15,
+                fontSize: 'var(--font-size-15)',
                 userSelect: 'none',
                 ...textStyle,
               }}

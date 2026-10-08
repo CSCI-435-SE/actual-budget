@@ -48,7 +48,7 @@ export const AccountRow = memo(
       <Row
         height="auto"
         style={{
-          fontSize: 13,
+          fontSize: 'var(--font-size-13)',
           backgroundColor: backgroundFocus
             ? theme.tableRowBackgroundHover
             : theme.tableBackground,

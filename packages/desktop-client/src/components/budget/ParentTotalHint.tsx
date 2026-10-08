@@ -50,7 +50,7 @@ export function ParentTotalHint({ budgeted, total }: ParentTotalHintProps) {
           borderColor: theme.tableBorder,
         }}
       >
-        <Text style={{ color: theme.pageTextLight, fontSize: 11 }}>Σ</Text>
+        <Text style={{ color: theme.pageTextLight, fontSize: 'var(--font-size-11)' }}>Σ</Text>
       </View>
     </Tooltip>
   );

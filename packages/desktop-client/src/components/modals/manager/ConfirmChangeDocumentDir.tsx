@@ -183,7 +183,7 @@ export function ConfirmChangeDocumentDirModal({
                 variant="normal"
                 style={{
                   padding: '10px 30px',
-                  fontSize: 14,
+                  fontSize: 'var(--font-size-14)',
                   alignSelf: 'center',
                 }}
                 onPress={() => state.close()}
@@ -195,7 +195,7 @@ export function ConfirmChangeDocumentDirModal({
                 isLoading={loading}
                 style={{
                   padding: '10px 30px',
-                  fontSize: 14,
+                  fontSize: 'var(--font-size-14)',
                   alignSelf: 'center',
                 }}
                 onPress={() => moveDirectory(() => state.close())}

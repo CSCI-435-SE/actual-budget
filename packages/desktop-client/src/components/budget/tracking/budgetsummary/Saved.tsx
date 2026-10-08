@@ -32,7 +32,7 @@ export function Saved({ projected, style }: SavedProps) {
   const diff = totalSaved - budgetedSaved;
 
   return (
-    <View style={{ alignItems: 'center', fontSize: 14, ...style }}>
+    <View style={{ alignItems: 'center', fontSize: 'var(--font-size-14)', ...style }}>
       {projected ? (
         <Text style={{ color: theme.pageTextLight }}>
           <Trans>Projected savings:</Trans>
@@ -44,7 +44,7 @@ export function Saved({ projected, style }: SavedProps) {
       )}
 
       <Tooltip
-        style={{ ...styles.tooltip, fontSize: 14, padding: 10 }}
+        style={{ ...styles.tooltip, fontSize: 'var(--font-size-14)', padding: 10 }}
         content={
           <>
             <AlignedText
@@ -72,7 +72,7 @@ export function Saved({ projected, style }: SavedProps) {
       >
         <View
           className={css({
-            fontSize: 25,
+            fontSize: 'var(--font-size-25)',
             color: projected
               ? theme.templateNumberUnderFunded
               : isNegative

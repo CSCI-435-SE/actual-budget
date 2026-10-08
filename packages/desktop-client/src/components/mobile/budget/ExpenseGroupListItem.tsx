@@ -287,7 +287,7 @@ function ExpenseGroupCells({
   const amountStyle: CSSProperties = {
     ...styles.tnum,
     width: columnWidth,
-    fontSize: 12,
+    fontSize: 'var(--font-size-12)',
     fontWeight: '500',
     paddingLeft: 5,
     textAlign: 'right',
