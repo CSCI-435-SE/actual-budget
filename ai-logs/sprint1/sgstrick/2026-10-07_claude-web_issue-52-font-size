@@ -1,0 +1,2283 @@
+# Sprint 1 Backlog
+
+**Created:** 10/5/2026 11:14:47  
+**Updated:** 10/7/2026 11:09:50  
+**Exported:** 10/7/2026 14:16:40  
+**Link:** [https://claude.ai/chat/524f9feb-70e7-4b29-a791-fc741cbf421a](https://claude.ai/chat/524f9feb-70e7-4b29-a791-fc741cbf421a)  
+
+## User:
+
+> 10/5/2026 11:14:49
+
+> File: packages.zip
+
+Where in this code would I find references of font size?
+
+## Assistant:
+
+> 10/5/2026 11:15:31
+
+> Viewed file, ran 6 commands
+>
+> - Check uploaded file
+> - Extract the zip and find font size references
+> - Count total files with font size references
+> - Find centralized theme/token files that define font sizes
+> - Inspect the styles.ts file and find theme files
+> - Check theme files for font size
+> - Get breakdown of font size usage by package
+> - **Done**
+
+Here's a breakdown of where font size references live in this codebase:
+
+---
+
+**The primary centralized source: `packages/component-library/src/styles.ts`**
+
+This is where the font size scale is defined as a design token system. It contains named text style objects like:
+
+- `veryLargeText` → `fontSize: 30`
+- `largeText` → `fontSize: 20`
+- `mediumText` → `fontSize: 15`
+- `smallText` → `fontSize: 13`
+- `verySmallText` → `fontSize: 12`
+- `tinyText` → `fontSize: 10`
+- `text` (base) → `fontSize: 16`
+- `mobileMenuItem` → `fontSize: 17`
+- `altMenuText` / `altMenuHeaderText` → `fontSize: 13`
+
+This is the best place to make global font size changes.
+
+---
+
+**By package, there are ~180 files total with font size references:**
+
+| Package | Files |
+|---|---|
+| `desktop-client` | 162 |
+| `component-library` | 11 |
+| `docs` | 4 |
+| `loot-core` | 3 |
+
+**Notable spots beyond the central file:**
+
+- **`packages/loot-core/src/types/models/dashboard.ts`** — Dashboard widget types include optional `fontSize?: number` and `fontSizeMode?: 'dynamic' | 'static'` fields, meaning font size can be user-configurable per widget.
+- **`packages/loot-core/src/shared/dashboard.ts`** — Default font size values for dashboard widgets (e.g., `fontSize: 20`, `fontSize: 32` for different widget defaults).
+- **`packages/desktop-client/src/components/`** — Scattered inline `fontSize` usage throughout individual component files (modals, tables, admin views, etc.).
+
+**In short:** Start with `packages/component-library/src/styles.ts` for the design token scale, and `packages/loot-core/src/shared/dashboard.ts` for dashboard-specific defaults.
+
+## User:
+
+> 10/5/2026 11:19:16
+
+On Actual Budget, there is a settings menu. Where is the structure for this menu?
+
+## Assistant:
+
+> 10/5/2026 11:19:30
+
+> Ran 2 commands
+>
+> - Find settings-related files
+> - Read the settings index file
+> - **Done**
+
+The main structure is in **`packages/desktop-client/src/components/settings/index.tsx`**.
+
+The `Settings` component defines the full page layout, and each section is its own imported component. Here's the menu structure at a glance:
+
+**Top-level sections (always visible):**
+| Section | File |
+|---|---|
+| About (version info, update notifications) | `index.tsx` (inline `About` component) |
+| Theme | `Themes.tsx` |
+| Format | `Format.tsx` |
+| Language | `LanguageSettings.tsx` |
+| Auth | `AuthSettings.tsx` |
+| Encryption | `Encryption.tsx` |
+| Budget Type | `BudgetTypeSettings.tsx` |
+| Backups *(Electron only)* | `Backups.tsx` (imported) |
+| Export Budget | `Export.tsx` (imported) |
+
+**Advanced section (collapsed toggle):**
+| Section | File |
+|---|---|
+| IDs (Budget ID, Sync ID) | `index.tsx` (inline `AdvancedAbout`) |
+| Reset Cache | `Reset.tsx` |
+| Reset Sync | `Reset.tsx` |
+| Repair Transactions | `RepairTransactions.tsx` |
+| Experimental Features | `Experimental.tsx` |
+
+All of these live in the **`packages/desktop-client/src/components/settings/`** directory. To add, remove, or reorder a section, you'd edit the `Settings` function's JSX in `index.tsx` and create or modify the corresponding component file.
+
+## User:
+
+> 10/5/2026 11:21:06
+
+Explain the structure of packages\desktop-client\src\components\settings\UI.tsx
+
+## Assistant:
+
+> 10/5/2026 11:21:19
+
+> Ran command
+>
+> - Read the UI.tsx file
+> - **Done**
+
+`UI.tsx` is a small shared layout primitives file that exports three building-block components used across all the settings sections. Here's what each one does:
+
+---
+
+### `Setting`
+The card wrapper used by every individual settings section. It renders a styled box (pill background, border, rounded corners, padding) and accepts:
+- **`children`** — the descriptive content/controls inside the card
+- **`primaryAction`** — an optional element (typically a button) rendered below the children with a 10px gap. If absent, no extra spacing is added.
+
+Every section in the settings page (`ThemeSettings`, `FormatSettings`, `EncryptionSettings`, etc.) wraps its content in this component to get the consistent card appearance.
+
+---
+
+### `AdvancedToggle`
+Controls the show/hide behaviour of the Advanced Settings section. It has two states:
+
+- **Collapsed** — renders a "Show advanced settings" text link.
+- **Expanded** — renders an `id="advanced"` container with an "Advanced Settings" heading and all the child sections inside it.
+
+The initial state is driven by `useLocation()` — if the URL hash is `#advanced` when the page loads, it opens automatically and scrolls itself into view. Clicking the link expands it (but there's no collapse button once open).
+
+---
+
+### `Column`
+A layout helper for arranging related controls side by side within a `Setting` card. It renders a vertical stack with a bold title at the top and its children below, and is designed to sit alongside other `Column`s in a row. It accepts:
+- **`title`** — a label string rendered in medium weight above the content
+- **`children`** — the controls beneath the title
+- **`style`** — optional style overrides
+
+---
+
+In summary, the file is purely structural — no business logic, no Redux, no API calls. It just provides the consistent visual scaffolding (`Setting` for cards, `AdvancedToggle` for the collapsible section, `Column` for side-by-side layouts within a card) that all the individual settings components build on top of.
+
+## User:
+
+> 10/5/2026 11:23:14
+
+Explain how I would go about adding a new Setting.
+
+## Assistant:
+
+> 10/5/2026 11:23:28
+
+Based on the codebase structure, here's how you'd add a new setting:
+
+### 1. Create a new component file
+Add a new file in `packages/desktop-client/src/components/settings/`, e.g. `MyNewSetting.tsx`. Model it after an existing simple one — here's the pattern they all follow:
+
+```tsx
+import { Trans } from 'react-i18next';
+import { Text } from '@actual-app/components/text';
+import { Setting } from './UI';
+
+export function MyNewSetting() {
+  return (
+    <Setting
+      primaryAction={
+        <Button onPress={() => { /* your action */ }}>
+          <Trans>Do Something</Trans>
+        </Button>
+      }
+    >
+      <Text>
+        <Trans>
+          <strong>My Setting</strong> does this thing.
+        </Trans>
+      </Text>
+    </Setting>
+  );
+}
+```
+
+The `Setting` card takes:
+- **`children`** — description text explaining what the setting does
+- **`primaryAction`** — the button/control the user interacts with (optional)
+
+---
+
+### 2. Register it in `index.tsx`
+Open `packages/desktop-client/src/components/settings/index.tsx` and add your component in two places:
+
+**Import it:**
+```tsx
+import { MyNewSetting } from './MyNewSetting';
+```
+
+**Add it to the JSX** in the `Settings` function, in whatever position you want it to appear:
+```tsx
+<About />
+<ThemeSettings />
+<FormatSettings />
+<MyNewSetting />   {/* <-- add here */}
+<LanguageSettings />
+...
+```
+
+If it belongs in the advanced section instead, put it inside `<AdvancedToggle>`:
+```tsx
+<AdvancedToggle>
+  <AdvancedAbout />
+  <ResetCache />
+  <MyNewSetting />   {/* <-- or here */}
+  ...
+</AdvancedToggle>
+```
+
+---
+
+### 3. Hook up a preference (if needed)
+Most settings persist a value. The codebase uses two hooks for this:
+
+- **`useGlobalPref('myPrefKey')`** — for preferences that apply across all budgets (e.g. theme, language)
+- **`useMetadataPref('myPrefKey')`** — for preferences scoped to the current budget file (e.g. budget type)
+
+```tsx
+import { useGlobalPref } from '#hooks/useGlobalPref';
+
+export function MyNewSetting() {
+  const [myPref, setMyPref] = useGlobalPref('myPrefKey');
+
+  return (
+    <Setting primaryAction={
+      <Button onPress={() => setMyPref(!myPref)}>
+        <Trans>Toggle</Trans>
+      </Button>
+    }>
+      <Text><Trans>My setting description.</Trans></Text>
+    </Setting>
+  );
+}
+```
+
+---
+
+### 4. Wrap text in `<Trans>` for i18n
+All visible strings in this codebase use `react-i18next` for translation. Wrap any user-facing text in `<Trans>` (for JSX) or use the `t()` function from `useTranslation()` for plain strings. This is a convention followed by every existing settings component.
+
+## User:
+
+> 10/5/2026 19:04:12
+
+Similar to packages\desktop-client\src\components\settings\LanguageSettings.tsx , format a component file that will change the font size.
+
+## Assistant:
+
+> 10/5/2026 19:04:39
+
+> Ran 4 commands
+>
+> - Read LanguageSettings.tsx for reference
+> - Check the font size scale values in styles.ts
+> - Check existing global pref types
+> - Read the full prefs type file
+> - **Done**
+
+Good — now I have everything needed. Here's the component, written to match the conventions of `LanguageSettings.tsx` exactly, along with the additional changes you'd need to make it fully work:
+
+---
+
+### `FontSizeSettings.tsx`
+```tsx
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+
+import { Select } from '@actual-app/components/select';
+import type { SelectOption } from '@actual-app/components/select';
+import { Text } from '@actual-app/components/text';
+
+import { useGlobalPref } from '#hooks/useGlobalPref';
+
+import { Setting } from './UI';
+
+const fontSizeOptions: SelectOption[] = [
+  ['12', 'Extra Small (12px)'],
+  ['14', 'Small (14px)'],
+  ['16', 'Default (16px)'],
+  ['18', 'Large (18px)'],
+  ['20', 'Extra Large (20px)'],
+];
+
+export function FontSizeSettings() {
+  const { t } = useTranslation();
+  const [fontSize, setFontSize] = useGlobalPref('fontSize');
+
+  return (
+    <Setting
+      primaryAction={
+        <Select
+          aria-label={t('Select font size')}
+          options={fontSizeOptions}
+          value={fontSize ?? '16'}
+          defaultLabel={t('Default (16px)')}
+          onChange={value => {
+            setFontSize(value);
+            document.documentElement.style.setProperty(
+              '--base-font-size',
+              `${value}px`,
+            );
+          }}
+        />
+      }
+    >
+      <Text>
+        <Trans>
+          <strong>Font size</strong> controls the size of text throughout the
+          app. The default size is 16px.
+        </Trans>
+      </Text>
+    </Setting>
+  );
+}
+```
+
+---
+
+### Additional changes required
+
+**1. Register the new pref key in `packages/loot-core/src/types/prefs.ts`**
+
+Add `fontSize` to `GlobalPrefs`:
+```ts
+export type GlobalPrefs = Partial<{
+  // ... existing keys ...
+  fontSize: string;
+}>;
+```
+
+And to `GlobalPrefsJson` (the raw stored format):
+```ts
+export type GlobalPrefsJson = Partial<{
+  // ... existing keys ...
+  fontSize?: GlobalPrefs['fontSize'];
+}>;
+```
+
+**2. Register it in `index.tsx`**
+
+```tsx
+import { FontSizeSettings } from './FontSizeSettings';
+
+// Inside the Settings component JSX:
+<ThemeSettings />
+<FontSizeSettings />   {/* <-- add here */}
+<FormatSettings />
+```
+
+**3. Apply the CSS variable on app load**
+
+The `onChange` handler above sets the CSS variable live, but you'd also need to apply the saved preference when the app first loads — likely in whatever initialisation code reads `GlobalPrefs` on startup — so the font size persists across sessions:
+
+```ts
+const savedFontSize = globalPrefs.fontSize ?? '16';
+document.documentElement.style.setProperty('--base-font-size', `${savedFontSize}px`);
+```
+
+And reference `--base-font-size` in your base CSS/theme so it actually propagates through the UI. How much coverage that gives you depends on whether the existing styles use relative units (`em`, `rem`) or hardcoded `px` values — the latter would each need updating to scale correctly.
+
+## User:
+
+> 10/5/2026 19:13:00
+
+Can you explain step 3 further?
+
+## Assistant:
+
+> 10/5/2026 19:13:21
+
+Sure. The `onChange` in the component handles the live change when the user picks a new size, but when the app restarts, that `onChange` never fires — the component just mounts with the saved value from `useGlobalPref`. So the CSS variable never gets set on load, and the font size reverts to whatever the browser default is.
+
+Let me find where the app initialises global prefs to show you exactly where to put it:
+
+> Ran 3 commands
+>
+> - Find where global prefs are loaded on startup
+> - Check prefsSlice for how prefs are loaded and applied
+> - Read the full prefsSlice file
+> - **Done**
+
+Now I can give you a precise answer. Look at the `loadPrefs` function in `prefsSlice.ts` — this is where all global preferences are loaded on startup. You can see the exact pattern already used for language (line 66):
+
+```ts
+setI18NextLanguage(globalPrefs.language ?? '');
+```
+
+That one line is all it takes to apply a saved pref at startup. Your font size needs the same treatment, right alongside it:
+
+```ts
+setI18NextLanguage(globalPrefs.language ?? '');
+
+// Add this line:
+document.documentElement.style.setProperty(
+  '--base-font-size',
+  `${globalPrefs.fontSize ?? '16'}px`,
+);
+```
+
+That's it for the startup side. Every time the app loads, `loadPrefs` fires, fetches the saved global prefs from `global-store.json`, and this line will read the saved `fontSize` value and apply it to the CSS variable before the page renders.
+
+---
+
+To summarise the full flow end-to-end:
+
+1. **First use / user changes the value** — `onChange` in your `FontSizeSettings` component fires, calls `setFontSize(value)` which saves it to `global-store.json` via `useGlobalPref`, and also immediately sets the CSS variable so the change is visible without a reload.
+
+2. **Every subsequent app launch** — `loadPrefs` in `prefsSlice.ts` runs, reads the saved `fontSize` from `global-store.json`, and your new line applies it to the CSS variable before anything renders.
+
+The language setting does exactly this same two-part pattern — `setI18NextLanguage` is called both in `LanguageSettings.tsx` on change, and in `prefsSlice.ts` on load — so your font size implementation would mirror it precisely.
+
+## User:
+
+> 10/5/2026 19:16:35
+
+styles.ts handles font size for different aspects of the UI. How can I scale each type of text when the user selects a font size?
+
+## Assistant:
+
+> 10/5/2026 19:17:25
+
+Let me look at how styles.ts is structured and how those styles are consumed across the app.
+
+> Ran 7 commands
+>
+> - Read the full styles.ts file
+> - Check how the named text styles from styles.ts are used
+> - Check how theme context works and if theme.ts has font sizes
+> - Read the top of theme.ts to understand how theming works
+> - Find where CSS variables are injected
+> - Find where theme CSS variables are set on the DOM
+> - Read the theme.tsx to understand how CSS variables are injected
+> - **Done**
+
+Now I have a clear picture of the whole system. Here's the key insight and the cleanest approach:
+
+---
+
+### The core problem
+
+`theme.ts` uses **CSS variables** (e.g. `var(--color-pageBackground)`) — so the theme system already has a clean injection point via `<style>` tags in `ThemeStyle`. But `styles.ts` uses **hardcoded JS numbers** (e.g. `fontSize: 13`). There's no CSS variable layer for font sizes, so there's no single switch to flip.
+
+You have two realistic approaches:
+
+---
+
+### Option A: Mirror the theme system — inject a `<style>` tag (recommended)
+
+This follows the exact same pattern as `ThemeStyle` in `style/theme.tsx`. You create a `FontSizeStyle` component that injects a `<style>` tag with CSS variables for each text scale, then reference those variables in `styles.ts`.
+
+**Step 1 — Define the scale multipliers in `FontSizeSettings.tsx`**
+
+Instead of storing raw pixel values, store a multiplier (`0.85`, `1`, `1.15`, etc.) so all sizes scale proportionally from their existing values:
+
+```tsx
+const fontSizeOptions: SelectOption[] = [
+  ['0.85', 'Extra Small'],
+  ['0.925', 'Small'],
+  ['1', 'Default'],
+  ['1.1', 'Large'],
+  ['1.2', 'Extra Large'],
+];
+```
+
+**Step 2 — Create `FontSizeStyle` in `style/fontSize.tsx`**
+
+```tsx
+import { useEffect } from 'react';
+import { useGlobalPref } from '#hooks/useGlobalPref';
+
+// Base values matching styles.ts exactly
+const baseScale = {
+  '--font-size-tiny': 10,
+  '--font-size-very-small': 12,
+  '--font-size-small': 13,
+  '--font-size-alt-menu': 13,
+  '--font-size-medium': 15,
+  '--font-size-base': 16,
+  '--font-size-mobile-menu': 17,
+  '--font-size-large': 20,
+  '--font-size-very-large': 30,
+};
+
+export function FontSizeStyle() {
+  const [fontSize] = useGlobalPref('fontSize');
+  const multiplier = parseFloat(fontSize ?? '1');
+
+  const css = `:root {
+    ${Object.entries(baseScale)
+      .map(([key, base]) => `${key}: ${Math.round(base * multiplier)}px;`)
+      .join('\n    ')}
+  }`;
+
+  return <style id="font-size-scale">{css}</style>;
+}
+```
+
+**Step 3 — Update `styles.ts` to reference the CSS variables**
+
+```ts
+smallText: {
+  fontSize: 'var(--font-size-small)',
+},
+verySmallText: {
+  fontSize: 'var(--font-size-very-small)',
+},
+tinyText: {
+  fontSize: 'var(--font-size-tiny)',
+},
+mediumText: {
+  fontSize: 'var(--font-size-medium)',
+  fontWeight: 500,
+},
+largeText: {
+  fontSize: 'var(--font-size-large)',
+  fontWeight: 700,
+  letterSpacing: 0.5,
+},
+veryLargeText: {
+  fontSize: 'var(--font-size-very-large)',
+  fontWeight: 600,
+},
+text: {
+  fontSize: 'var(--font-size-base)',
+},
+mobileMenuItem: {
+  fontSize: 'var(--font-size-mobile-menu)',
+  // ...rest unchanged
+},
+altMenuText: {
+  fontSize: 'var(--font-size-alt-menu)',
+},
+```
+
+**Step 4 — Mount `FontSizeStyle` in `App.tsx`**
+
+Find where `ThemeStyle` is rendered and add yours alongside it:
+
+```tsx
+<ThemeStyle />
+<CustomThemeStyle />
+<FontSizeStyle />   {/* <-- add here */}
+```
+
+**Step 5 — Apply on startup in `prefsSlice.ts`**
+
+The CSS variable injection is now handled reactively by the component, so you only need the startup line to set the initial pref into Redux state — `FontSizeStyle` will read it from there automatically via `useGlobalPref`. No manual `setProperty` call needed.
+
+---
+
+### Option B: Apply a single `rem` scale to the root (simpler, less precise)
+
+If you don't need per-size-category control, you can skip touching `styles.ts` entirely and just scale the root font size:
+
+```tsx
+// In FontSizeStyle:
+const css = `:root { font-size: ${multiplier}rem; }`;
+```
+
+Then change all `px` values in `styles.ts` to `rem` units. This is less surgical — everything including spacing and borders might shift — but it's far less code. It's also the standard browser accessibility approach.
+
+---
+
+**Option A is the better fit** for this codebase since it mirrors how the theme system already works, keeps each text category independently named, and doesn't risk scaling non-text layout properties unintentionally.
+
+## User:
+
+> 10/5/2026 19:26:57
+
+In Step 2, is fontSize.tsx a new file I should create?
+
+## Assistant:
+
+> 10/5/2026 19:27:00
+
+Yes, `style/fontSize.tsx` is a new file you would create at:
+
+```
+packages/desktop-client/src/style/fontSize.tsx
+```
+
+You can see that `style/theme.tsx` already exists in that same directory — `fontSize.tsx` sits right alongside it, following the same pattern. The `style/` folder is the right home for it since it's a presentation concern (injecting CSS into the page) rather than a UI component.
+
+## User:
+
+> 10/5/2026 19:32:50
+
+For Step 4, what is the path for App.tsx ?
+
+## Assistant:
+
+> 10/5/2026 19:32:51
+
+Based on what was found earlier in the codebase:
+
+```
+packages/desktop-client/src/components/App.tsx
+```
+
+You can search for where `ThemeStyle` is rendered inside it to find the exact line to add `FontSizeStyle` alongside it.
+
+## User:
+
+> 10/5/2026 19:39:45
+
+In VSCode, including FontSizeStyle gives an error message "Cannot find name 'FontSizeStyle'."
+
+## Assistant:
+
+> 10/5/2026 19:39:47
+
+That's because you need to import it at the top of `App.tsx`, just like `ThemeStyle` is imported. Find where `ThemeStyle` is imported in the file and add `FontSizeStyle` alongside it:
+
+```tsx
+import { ThemeStyle, CustomThemeStyle } from '#style/theme';
+import { FontSizeStyle } from '#style/fontSize';
+```
+
+The `#style/` path alias points to `packages/desktop-client/src/style/`, which is where you created `fontSize.tsx`.
+
+## User:
+
+> 10/5/2026 19:41:48
+
+#style/fontSize is also not found
+
+## Assistant:
+
+> 10/5/2026 19:42:05
+
+That means the file itself isn't being found. A few things to check:
+
+**1. Confirm the file exists at the right path**
+Make sure the file was saved as:
+```
+packages/desktop-client/src/style/fontSize.tsx
+```
+
+**2. Confirm the `#style` alias exists**
+Check how `ThemeStyle` is actually imported in `App.tsx` — it may use a different alias or a relative path. Run a quick search:
+
+> Ran 3 commands
+>
+> - Find how ThemeStyle is imported in App.tsx
+> - Find the exact import path for ThemeStyle
+> - Read the import block around ThemeStyle
+> - **Done**
+
+The import path is `#style`, not `#style/theme`. So you should add your import like this:
+
+```tsx
+import {
+  CustomThemeStyle,
+  hasHiddenScrollbars,
+  ThemeStyle,
+  useTheme,
+} from '#style';
+import { FontSizeStyle } from '#style/fontSize';
+```
+
+Or better yet, check if there's a barrel `index.ts` in the `style/` folder that re-exports everything — if so, you can add `FontSizeStyle` there and import it directly from `#style` alongside the others:
+
+> Ran command
+>
+> - Check for an index file in the style directory
+> - **Done**
+
+There's an `index.ts` barrel file. Add your export there:
+
+```ts
+export * from './styles';
+export * from './theme';
+export * from './fontSize';  // <-- add this line
+```
+
+Then in `App.tsx` you can import it cleanly alongside the others:
+
+```tsx
+import {
+  CustomThemeStyle,
+  FontSizeStyle,
+  hasHiddenScrollbars,
+  ThemeStyle,
+  useTheme,
+} from '#style';
+```
+
+## User:
+
+> 10/5/2026 19:53:56
+
+When running yarn start on this code, I receive this [plugin:vite:import-analysis] Failed to resolve import "jspdf" from "src/components/budget/export/budgetMonthPdf.ts". Does the file exist?
+C:/Users/sarag/actual-budget/packages/desktop-client/src/components/budget/export/budgetMonthPdf.ts:52:11
+34 |  // different numbers than the CSV export.
+35 |  export async function buildBudgetMonthPdfBytes({ title, rows }) {
+36 |  	const [{ jsPDF }, { default: autoTable }] = await Promise.all([import("jspdf"), import("jspdf-autotable")]);
+   |                                                                         ^
+37 |  	const doc = new jsPDF({
+38 |  		orientation: "portrait",
+
+## Assistant:
+
+> 10/5/2026 19:54:02
+
+That error means `jspdf` is listed as an import in the code but isn't installed as a dependency. Let me check:
+
+> Ran command
+>
+> - Check if jspdf is in the package.json dependencies
+> - **Done**
+
+The packages are listed in `package.json` but haven't been installed yet. You just need to run:
+
+```bash
+yarn install
+```
+
+from the root of the project. This will install `jspdf` and `jspdf-autotable` (and any other missing dependencies) into `node_modules`, after which `yarn start` should work without that error.
+
+## User:
+
+> 10/5/2026 20:04:38
+
+Upon testing, the font size changes back to the default size when you click on the settings tab.
+
+## Assistant:
+
+> 10/5/2026 20:05:04
+
+This happens because `FontSizeStyle` is reading `fontSize` from `useGlobalPref`, but when the settings page mounts it triggers a `loadPrefs` call (you can see this in `settings/index.tsx`) which reloads prefs from disk and causes a re-render. If the pref isn't being persisted correctly, it resets on that re-render.
+
+Let me check how `useGlobalPref` saves values and how the theme does it for comparison:
+
+> Ran 5 commands
+>
+> - Read useGlobalPref hook
+> - Check how global prefs are saved to disk
+> - Read the server prefs handler
+> - Find where global prefs are saved server-side
+> - Read the global prefs implementation
+> - **Done**
+
+Found the root cause. The `saveGlobalPrefs` and `loadGlobalPrefs` functions in `packages/loot-core/src/server/preferences/app.ts` are the actual persistence layer, and `fontSize` is not handled in either of them. This means:
+
+- When you save it via `useGlobalPref`, `saveGlobalPrefs` ignores it — it's never written to `asyncStorage`
+- When `loadGlobalPrefs` runs (which happens every time you navigate to settings), it rebuilds the prefs object from `asyncStorage` without `fontSize`, so it comes back as `undefined` and your component resets to the default
+
+You need to add `fontSize` to both functions in `packages/loot-core/src/server/preferences/app.ts`:
+
+**In `saveGlobalPrefs`**, add alongside the other prefs:
+```ts
+if (prefs.fontSize !== undefined) {
+  await asyncStorage.setItem('font-size', prefs.fontSize);
+}
+```
+
+**In `loadGlobalPrefs`**, add `'font-size'` to the `multiGet` call:
+```ts
+const {
+  'floating-sidebar': floatingSidebar,
+  'font-size': fontSize,       // <-- add this
+  // ...rest unchanged
+} = await asyncStorage.multiGet([
+  'floating-sidebar',
+  'font-size',                 // <-- add this
+  // ...rest unchanged
+] as const);
+```
+
+And add it to the returned object:
+```ts
+return {
+  floatingSidebar: floatingSidebar === 'true',
+  fontSize: fontSize || '1',   // <-- add this
+  // ...rest unchanged
+};
+```
+
+This is the same pattern every other global pref follows — `language`, `theme`, `notifyWhenUpdateIsAvailable` are all handled identically. Without these additions, `useGlobalPref('fontSize')` has nowhere to actually read from or write to on the server side.
+
+## User:
+
+> 10/5/2026 20:09:50
+
+I receive this error with every instance of 'font-size' Argument of type '"font-size"' is not assignable to parameter of type '"fontSize" | "language" | "theme" | "plugins" | "syncServerConfig" | "notifyWhenUpdateIsAvailable" | "user-id" | "user-key" | "encrypt-keys" | "lastBudget" | "readOnly" | "server-url" | ... 12 more ... | "server-self-signed-cert"'.
+
+## Assistant:
+
+> 10/5/2026 20:09:54
+
+The `asyncStorage.multiGet` is typed against `GlobalPrefsJson`, which is the raw storage key type defined in `prefs.ts`. You need to add `'font-size'` there too, following the same pattern as the other keys that differ between their JSON storage name and their parsed name (like `'floating-sidebar'` maps to `floatingSidebar`).
+
+In `packages/loot-core/src/types/prefs.ts`, add to `GlobalPrefsJson`:
+
+```ts
+export type GlobalPrefsJson = Partial<{
+  // ...existing keys...
+  'font-size'?: GlobalPrefs['fontSize'];
+}>;
+```
+
+This tells TypeScript that `'font-size'` is a valid raw storage key that maps to the `fontSize` field on `GlobalPrefs`. Once that's added, the error in `app.ts` should clear up.
+
+## User:
+
+> 10/5/2026 20:12:01
+
+Should I keep the existing fontSize?: GlobalPrefs['fontSize'];
+
+## Assistant:
+
+> 10/5/2026 20:12:03
+
+No, remove it. The `GlobalPrefsJson` type represents the raw keys as they're stored in `asyncStorage` — and by convention in this codebase, multi-word keys use kebab-case (e.g. `'floating-sidebar'`, `'preferred-dark-theme'`, `'max-months'`). 
+
+So `'font-size'` is the correct storage key, and `fontSize` in `GlobalPrefs` is the parsed camelCase version. Having both would be redundant and potentially confusing. Just add `'font-size'` and remove `fontSize` from `GlobalPrefsJson`.
+
+## User:
+
+> 10/5/2026 20:20:06
+
+What does this mean? warning: in the working copy of 'packages/desktop-client/src/style/fontSize.tsx', CRLF will be replaced by LF the next time Git touches it
+
+## Assistant:
+
+> 10/5/2026 20:20:10
+
+It's just a line ending warning from Git — nothing is broken. It means the file you created (`fontSize.tsx`) uses Windows-style line endings (CRLF — carriage return + line feed) while the rest of the repository uses Unix-style line endings (LF — line feed only). Git is telling you it will normalize the file to LF when it next processes it.
+
+You can safely ignore it, but if you want to fix it properly in VSCode:
+
+1. Look at the bottom right corner of VSCode — you'll see either `CRLF` or `LF` displayed
+2. Click on it
+3. Select **"LF"** from the dropdown that appears
+4. Save the file
+
+That will make `fontSize.tsx` consistent with the rest of the codebase and the warning will go away.
+
+## User:
+
+> 10/7/2026 10:03:42
+
+Where would I find unit tests in packages.zip ?
+
+## Assistant:
+
+> 10/7/2026 10:03:59
+
+> Ran 2 commands
+>
+> - Find all test files in the codebase
+> - Get the rest of the test files
+> - **Done**
+
+Tests are spread across the codebase in two patterns:
+
+**1. Unit & component tests** — sit right next to the file they test, named `filename.test.ts` or `filename.test.tsx`. For example:
+- `packages/desktop-client/src/components/settings/Themes.test.tsx` tests `Themes.tsx`
+- `packages/loot-core/src/shared/months.test.ts` tests `months.ts`
+
+**2. End-to-end (e2e) tests** — live in their own dedicated folder:
+- `packages/desktop-client/e2e/` — full browser tests for the UI (accounts, budget, settings, transactions, etc.), including mobile variants (e.g. `settings.mobile.test.ts`)
+
+**By package:**
+
+| Package | Test location |
+|---|---|
+| `desktop-client` | `src/**/*.test.tsx` + `e2e/*.test.ts` |
+| `loot-core` | `src/**/*.test.ts` (server logic, shared utilities) |
+| `sync-server` | `src/**/*.spec.ts` (bank integrations, sync) |
+| `component-library` | `src/*.test.tsx` |
+| `api` | `e2e/*.test.ts` + `methods.test.ts` |
+| `cli` | `src/**/*.test.ts` |
+| `crdt` | `src/**/*.test.ts` |
+
+The most relevant ones for your font size feature would be `packages/desktop-client/e2e/settings.test.ts` if you wanted to add an e2e test, or you could create a new `packages/desktop-client/src/style/fontSize.test.ts` unit test alongside the file you created.
+
+## User:
+
+> 10/7/2026 10:13:12
+
+I've been advised to make the following changes to the code:
+Fix fallback value: value={fontSize ?? '16'} and defaultLabel="Default (16px)" don't match any option ('0.85', '1', …). Use '1'.
+Translate option labels: wrap 'Small', 'Medium (Default)', 'Large' and 'Extra Large' in t().
+
+## Assistant:
+
+> 10/7/2026 10:13:21
+
+Here are the two fixes applied to `FontSizeSettings.tsx`:
+
+**1. Fix the font size options to use multiplier values and wrap labels in `t()`:**
+```tsx
+const fontSizeOptions: SelectOption[] = [
+  ['0.85', t('Extra Small')],
+  ['0.925', t('Small')],
+  ['1', t('Medium (Default)')],
+  ['1.1', t('Large')],
+  ['1.2', t('Extra Large')],
+];
+```
+
+**2. Fix the fallback value and defaultLabel to match `'1'`:**
+```tsx
+<Select
+  aria-label={t('Select font size')}
+  options={fontSizeOptions}
+  value={fontSize ?? '1'}
+  defaultLabel={t('Medium (Default)')}
+  onChange={value => {
+    setFontSize(value);
+    document.documentElement.style.setProperty(
+      '--base-font-size',
+      `${value}px`,
+    );
+  }}
+/>
+```
+
+Note that `fontSizeOptions` must be defined **inside** the component function, not outside it, since it now calls `t()` which comes from the `useTranslation()` hook. So the full component should look like:
+
+```tsx
+export function FontSizeSettings() {
+  const { t } = useTranslation();
+  const [fontSize, setFontSize] = useGlobalPref('fontSize');
+
+  const fontSizeOptions: SelectOption[] = [
+    ['0.85', t('Extra Small')],
+    ['0.925', t('Small')],
+    ['1', t('Medium (Default)')],
+    ['1.1', t('Large')],
+    ['1.2', t('Extra Large')],
+  ];
+
+  return (
+    <Setting
+      primaryAction={
+        <Select
+          aria-label={t('Select font size')}
+          options={fontSizeOptions}
+          value={fontSize ?? '1'}
+          defaultLabel={t('Medium (Default)')}
+          onChange={value => {
+            setFontSize(value);
+            document.documentElement.style.setProperty(
+              '--base-font-size',
+              `${value}px`,
+            );
+          }}
+        />
+      }
+    >
+      <Text>
+        <Trans>
+          <strong>Font size</strong> controls the size of text throughout the
+          app. The default size is 16px.
+        </Trans>
+      </Text>
+    </Setting>
+  );
+}
+```
+
+## User:
+
+> 10/7/2026 10:14:03
+
+Do I need to include any new files in order to use t() ?
+
+## Assistant:
+
+> 10/7/2026 10:14:04
+
+No, `t()` is already available from the `useTranslation` hook which you're already importing and using in the component:
+
+```tsx
+import { Trans, useTranslation } from 'react-i18next';
+```
+
+And at the top of the function:
+
+```tsx
+const { t } = useTranslation();
+```
+
+That's all you need. `t()` is destructured directly from that hook, so it's ready to use anywhere inside the component function.
+
+## User:
+
+> 10/7/2026 10:16:09
+
+How would I go about creating unit tests for this feature? My teammate recommends adding a save/load round-trip for the font-size pref in loot-core/src/server/preferences/app.ts.
+
+## Assistant:
+
+> 10/7/2026 10:16:32
+
+Let me look at an existing test for that file to understand the pattern:
+
+> Ran 3 commands
+>
+> - Find existing preference tests
+> - Find existing tests for global prefs
+> - Read the bootstrap test to understand the testing pattern
+> - **Done**
+
+Now I have a clear picture of the pattern. Here's what to create:
+
+**Create a new file: `packages/loot-core/src/server/preferences/app.test.ts`**
+
+```ts
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { handlers } from '#server/main';
+import { runHandler } from '#server/mutators';
+
+describe('global preferences', () => {
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await runHandler(handlers['save-global-prefs'], {
+        fontSize: '1.1',
+      });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.getItem).mockResolvedValue('1.1');
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await runHandler(handlers['save-global-prefs'], {
+        fontSize: '1.2',
+      });
+
+      vi.mocked(asyncStorage.getItem).mockResolvedValue('1.2');
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.getItem).mockResolvedValue(null);
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+});
+```
+
+The three things this covers, following the same patterns as `bootstrap.test.ts`:
+
+- **Save** — verifies `asyncStorage.setItem` is called with the correct key `'font-size'` and value
+- **Load** — verifies `loadGlobalPrefs` maps the `'font-size'` storage key back to `fontSize` on the returned object
+- **Round-trip** — the full save then load cycle your teammate recommended
+- **Fallback** — verifies that when no value is stored, `fontSize` defaults to `'1'` (the multiplier for default size)
+
+To run just these tests:
+```bash
+yarn jest packages/loot-core/src/server/preferences/app.test.ts
+```
+
+## User:
+
+> 10/7/2026 10:20:05
+
+In addition, about 300 hard-coded fontSize: N values in desktop-client and component-library still ignore the setting, and altMenuHeaderText in styles.ts was missed. How and where can I fix these lines of code?
+
+## Assistant:
+
+> 10/7/2026 10:20:38
+
+Let me find all the hardcoded values to understand the full scope:
+
+> Ran 3 commands
+>
+> - Read full styles.ts to see all font size definitions
+> - Sample hardcoded fontSize values in desktop-client
+> - Find which hardcoded pixel values are most common
+> - **Done**
+
+Now I have the full picture. Here's the recommended approach:
+
+---
+
+### The strategy: extend the CSS variable system
+
+You already have CSS variables defined in `fontSize.tsx` for the named scale (small, medium, large etc.). The fix for the ~300 hardcoded values is to map each raw pixel value to a CSS variable, then replace every hardcoded `fontSize: N` with `fontSize: 'var(--font-size-N)'`.
+
+---
+
+### Step 1 — Add a variable for every pixel value used in the codebase
+
+Update `style/fontSize.tsx` to include all pixel values found across the codebase:
+
+```tsx
+const baseScale = {
+  '--font-size-10': 10,   // tinyText
+  '--font-size-11': 11,
+  '--font-size-12': 12,   // verySmallText
+  '--font-size-13': 13,   // smallText, altMenuText, altMenuHeaderText
+  '--font-size-14': 14,
+  '--font-size-15': 15,   // mediumText
+  '--font-size-16': 16,   // text (base)
+  '--font-size-17': 17,   // mobileMenuItem
+  '--font-size-18': 18,
+  '--font-size-20': 20,   // largeText
+  '--font-size-22': 22,
+  '--font-size-25': 25,
+  '--font-size-30': 30,   // veryLargeText
+  '--font-size-40': 40,
+};
+```
+
+Each value scales proportionally with the user's chosen multiplier automatically, since `fontSize.tsx` already multiplies every entry by the stored multiplier.
+
+---
+
+### Step 2 — Fix `styles.ts` (including the missed `altMenuHeaderText`)
+
+Replace every hardcoded number with its corresponding CSS variable:
+
+```ts
+mobileMenuItem: {
+  fontSize: 'var(--font-size-17)',
+  // ...rest unchanged
+},
+altMenuText: {
+  fontSize: 'var(--font-size-13)',
+},
+altMenuHeaderText: {
+  fontSize: 'var(--font-size-13)',  // this was the missed one
+  fontWeight: 700,
+},
+veryLargeText: {
+  fontSize: 'var(--font-size-30)',
+  fontWeight: 600,
+},
+largeText: {
+  fontSize: 'var(--font-size-20)',
+  fontWeight: 700,
+  letterSpacing: 0.5,
+},
+mediumText: {
+  fontSize: 'var(--font-size-15)',
+  fontWeight: 500,
+},
+smallText: {
+  fontSize: 'var(--font-size-13)',
+},
+verySmallText: {
+  fontSize: 'var(--font-size-12)',
+},
+tinyText: {
+  fontSize: 'var(--font-size-10)',
+},
+text: {
+  fontSize: 'var(--font-size-16)',
+},
+```
+
+---
+
+### Step 3 — Replace hardcoded values across desktop-client
+
+For inline styles like `style={{ fontSize: 12 }}` throughout the 300 files, replace each with the matching variable. For example:
+
+```tsx
+// Before
+<Text style={{ fontSize: 12 }}>...</Text>
+<View style={{ fontSize: 13, marginTop: 20 }}>...</View>
+
+// After
+<Text style={{ fontSize: 'var(--font-size-12)' }}>...</Text>
+<View style={{ fontSize: 'var(--font-size-13)', marginTop: 20 }}>...</View>
+```
+
+Rather than doing this manually across 300 instances, you can use a regex find-and-replace in VSCode across the `packages/desktop-client/src` folder:
+
+- **Find:** `fontSize: (\d+)`
+- **Replace:** `fontSize: 'var(--font-size-$1)'`
+- **Scope:** `packages/desktop-client/src/**/*.{ts,tsx}`
+- Make sure **regex mode** is enabled in VSCode search (`.*` button)
+
+Then do the same for `packages/component-library/src`.
+
+> **Note:** A handful of places already use `'em'`-based values like `fontSize: '0.9em'` or `fontSize: 'inherit'` — leave those alone since they're already relative and will scale correctly with the CSS variable on the root.
+
+---
+
+### Step 4 — Verify after the replacement
+
+After the bulk replace, do a final check to make sure no numeric values slipped through:
+
+```bash
+grep -rn "fontSize: [0-9]" packages/desktop-client/src packages/component-library/src --include="*.ts" --include="*.tsx"
+```
+
+That should return nothing if the replacement was complete.
+
+## User:
+
+> 10/7/2026 10:28:47
+
+Do I run grep from the terminal?
+
+## Assistant:
+
+> 10/7/2026 10:28:53
+
+Yes, you run it from the terminal inside VSCode. Open the terminal with **Ctrl + `** (backtick) and make sure you're in the root of the project first:
+
+```bash
+cd C:/Users/sarag/actual-budget
+```
+
+Then run the grep command:
+
+```bash
+grep -rn "fontSize: [0-9]" packages/desktop-client/src packages/component-library/src --include="*.ts" --include="*.tsx"
+```
+
+On Windows however, `grep` may not be available by default in the terminal. If you get a "command not found" error, you have a couple of options:
+
+**If you're using Git Bash as your terminal in VSCode** — `grep` will work fine since Git Bash includes Unix tools.
+
+**If you're using PowerShell** — use this equivalent instead:
+```powershell
+Get-ChildItem -Recurse -Include "*.ts","*.tsx" packages/desktop-client/src, packages/component-library/src | Select-String -Pattern "fontSize: [0-9]"
+```
+
+**If you're using Command Prompt** — switch to Git Bash or PowerShell instead, as Command Prompt has no easy equivalent.
+
+The easiest option is to check which terminal VSCode is currently using in the dropdown at the top right of the terminal panel, and switch to Git Bash if grep isn't available.
+
+## User:
+
+> 10/7/2026 10:31:53
+
+Is yarn "jest" supposed to be yarn "test" from the unit test segment?
+
+## Assistant:
+
+> 10/7/2026 10:32:01
+
+Yes, most likely. Let me check the scripts defined in the loot-core package:
+
+> Ran command
+>
+> - Check the scripts in loot-core package.json
+> - **Done**
+
+Yes, the correct command is `yarn test`, not `yarn jest`. The project uses **Vitest** (not Jest) as its test runner. To run just the preferences test file, from the root of the project:
+
+```bash
+yarn workspace @actual-app/loot-core test
+```
+
+Or to run only your specific test file:
+
+```bash
+cd packages/loot-core
+yarn test:node --reporter=verbose packages/loot-core/src/server/preferences/app.test.ts
+```
+
+The `test:node` script is the right one since the preferences server code runs in the Node environment, not the browser.
+
+## User:
+
+> 10/7/2026 10:33:28
+
+When staging and committing to git, how can I ensure I include every file I changed?
+
+## Assistant:
+
+> 10/7/2026 10:33:38
+
+The safest way is to use `git status` first to see every changed and new file before you stage anything:
+
+```bash
+git status
+```
+
+This will show you three categories:
+- **Modified** — files you changed that Git already tracks
+- **Untracked** — new files you created that Git doesn't know about yet (like `fontSize.tsx` and `app.test.ts`)
+- **Deleted** — any files removed
+
+Then review the full diff of your changes before staging:
+
+```bash
+git diff
+```
+
+Based on everything you've changed in this feature, you should expect to see these files:
+
+| File | Change |
+|---|---|
+| `packages/loot-core/src/types/prefs.ts` | Added `fontSize` to `GlobalPrefs` and `'font-size'` to `GlobalPrefsJson` |
+| `packages/loot-core/src/server/preferences/app.ts` | Added `fontSize` to `saveGlobalPrefs` and `loadGlobalPrefs` |
+| `packages/component-library/src/styles.ts` | Replaced hardcoded `fontSize` numbers with CSS variables |
+| `packages/desktop-client/src/style/index.ts` | Added `export * from './fontSize'` |
+| `packages/desktop-client/src/style/fontSize.tsx` | **New file** |
+| `packages/desktop-client/src/components/settings/FontSizeSettings.tsx` | **New file** |
+| `packages/desktop-client/src/components/settings/index.tsx` | Registered `FontSizeSettings` |
+| `packages/desktop-client/src/components/App.tsx` | Added `FontSizeStyle` import and JSX |
+| `packages/desktop-client/src/prefs/prefsSlice.ts` | Added font size application on startup |
+| `packages/loot-core/src/server/preferences/app.test.ts` | **New file** |
+| Various `desktop-client` component files | Replaced hardcoded `fontSize` numbers with CSS variables |
+
+Once you're satisfied everything is accounted for, stage all changes at once:
+
+```bash
+git add -A
+```
+
+Or stage file by file if you want more control:
+
+```bash
+git add packages/loot-core/src/types/prefs.ts
+git add packages/desktop-client/src/style/fontSize.tsx
+# etc.
+```
+
+Then do a final check before committing to confirm exactly what is staged:
+
+```bash
+git diff --staged
+```
+
+That shows you precisely what will go into the commit, giving you one last chance to catch anything missing or anything that shouldn't be included.
+
+## User:
+
+> 10/7/2026 10:38:44
+
+These tests failed the test suite:
+src/server/preferences/app.test.ts (4 tests | 3 failed) 437ms
+       ✓ saves font-size to asyncStorage 126ms
+       × loads font-size from asyncStorage 106ms
+       × round-trips font-size through save and load 102ms
+       × falls back to default multiplier when font-size is not set 100ms
+
+## Assistant:
+
+> 10/7/2026 10:39:15
+
+Let me look at how other passing tests handle the load side with asyncStorage mocking:
+
+> Ran 4 commands
+>
+> - Check how asyncStorage mocking is done in existing tests
+> - Find the asyncStorage implementation
+> - Find the asyncStorage mock
+> - See how multiGet is mocked in bank sync tests
+> - **Done**
+
+Found it. The failing tests are using `asyncStorage.getItem` but `loadGlobalPrefs` actually uses `asyncStorage.multiGet`, which returns an object of key/value pairs, not a single value. Here's the corrected test file:
+
+```ts
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { handlers } from '#server/main';
+import { runHandler } from '#server/mutators';
+
+describe('global preferences', () => {
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await runHandler(handlers['save-global-prefs'], {
+        fontSize: '1.1',
+      });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await runHandler(handlers['save-global-prefs'], {
+        fontSize: '1.2',
+      });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+});
+```
+
+The key fix is replacing `asyncStorage.getItem` with `asyncStorage.multiGet` and passing it an object matching the shape `loadGlobalPrefs` expects — since that function calls `multiGet` with all keys at once and destructures the result as an object, not a single string value.
+
+## User:
+
+> 10/7/2026 10:43:10
+
+FAIL  src/server/preferences/app.test.ts > global preferences > font-size > loads font-size from asyncStorage
+ FAIL  src/server/preferences/app.test.ts > global preferences > font-size > round-trips font-size through save and load
+ FAIL  src/server/preferences/app.test.ts > global preferences > font-size > falls back to default multiplier when font-size is not set
+TypeError: The "path" argument must be of type string. Received undefined
+ ❯ Module.join src/platform/server/fs/index.electron.ts:49:8
+     47|
+     48| export const join: typeof T.join = (...args: Parameters<typeof path.jo…
+     49|   path.join(...args);
+       |        ^
+     50|
+     51| export const basename: typeof T.basename = filepath => path.basename(f…
+ ❯ getDefaultDocumentDir src/server/main.ts:155:13
+ ❯ loadGlobalPrefs src/server/preferences/app.ts:187:33
+
+## Assistant:
+
+> 10/7/2026 10:43:32
+
+The error is coming from `loadGlobalPrefs` calling `getDefaultDocumentDir()` which requires a file path that isn't set up in the test environment. Let me check how other tests handle this:
+
+> Ran 3 commands
+>
+> - Check getDefaultDocumentDir in main.ts
+> - Read getDefaultDocumentDir implementation
+> - Check the test mock setup
+> - **Done**
+
+The problem is clear. `loadGlobalPrefs` calls `getDefaultDocumentDir()` which reads `process.env.ACTUAL_DOCUMENT_DIR`, which is `undefined` in the test environment. The fix is to mock `getDefaultDocumentDir` in your test so it never hits the file system. Update `app.test.ts`:
+
+```ts
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { handlers } from '#server/main';
+import { runHandler } from '#server/mutators';
+
+// Mock getDefaultDocumentDir to avoid file system dependency
+vi.mock('#server/main', async () => {
+  const actual = await vi.importActual<typeof import('#server/main')>('#server/main');
+  return {
+    ...actual,
+    getDefaultDocumentDir: () => '/mock/documents',
+  };
+});
+
+describe('global preferences', () => {
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await runHandler(handlers['save-global-prefs'], {
+        fontSize: '1.1',
+      });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await runHandler(handlers['save-global-prefs'], {
+        fontSize: '1.2',
+      });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(handlers['load-global-prefs'], undefined);
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+});
+```
+
+The `vi.mock('#server/main', ...)` block spreads the real module and overrides just `getDefaultDocumentDir` with a safe static string, so the rest of `main.ts` still works normally and only the file system call is bypassed.
+
+## User:
+
+> 10/7/2026 10:44:23
+
+Should I compile the code before running the test?
+
+## Assistant:
+
+> 10/7/2026 10:44:26
+
+No, you don't need to compile first. Vitest handles that automatically — it uses Vite under the hood which transpiles TypeScript on the fly as part of the test run. Just run:
+
+```bash
+cd packages/loot-core
+yarn test:node
+```
+
+Vitest will transpile and run the tests directly from the TypeScript source files without needing a separate build step. This is one of the advantages of Vitest over older test runners like Jest, which often required a compilation step or Babel configuration to handle TypeScript.
+
+## User:
+
+> 10/7/2026 10:49:00
+
+src/server/preferences/app.test.ts (4 tests | 3 failed) 171ms
+       ✓ saves font-size to asyncStorage 49ms
+       × loads font-size from asyncStorage 41ms
+       × round-trips font-size through save and load 41ms
+       × falls back to default multiplier when font-size is not set 38ms
+
+## Assistant:
+
+> 10/7/2026 10:49:48
+
+Let me check what the actual error messages are now:
+
+> Ran 12 commands
+>
+> - Check how handlers are registered in main.ts
+> - Check if load-global-prefs is in main handlers
+> - Find where load-global-prefs handler is registered
+> - Find how preferences app is mounted in main
+> - Check how apps are mounted and handlers exposed
+> - Check how bootstrap test imports and uses handlers
+> - Find the handlers export in main.ts
+> - Check installAPI to understand how handlers are populated
+> - Check if load-global-prefs is in the Handlers type and api.ts
+> - Check how app is used in main.ts
+> - Check how the preferences app exposes its handlers
+> - Check createApp to understand how handlers are stored
+> - **Done**
+
+Now I can see the full picture. The `load-global-prefs` handler lives on `app.handlers` of the preferences app, not on the `handlers` export from `main.ts`. Import and use the preferences `app` directly instead:
+
+```ts
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { runHandler } from '#server/mutators';
+import { app as preferencesApp } from '../preferences/app';
+
+vi.mock('#server/main', async () => {
+  const actual = await vi.importActual<typeof import('#server/main')>('#server/main');
+  return {
+    ...actual,
+    getDefaultDocumentDir: () => '/mock/documents',
+  };
+});
+
+describe('global preferences', () => {
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await runHandler(preferencesApp.handlers['save-global-prefs'], {
+        fontSize: '1.1',
+      });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await runHandler(
+        preferencesApp.handlers['load-global-prefs'],
+        undefined,
+      );
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await runHandler(preferencesApp.handlers['save-global-prefs'], {
+        fontSize: '1.2',
+      });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await runHandler(
+        preferencesApp.handlers['load-global-prefs'],
+        undefined,
+      );
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(
+        preferencesApp.handlers['load-global-prefs'],
+        undefined,
+      );
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+});
+```
+
+The key change is replacing `handlers['load-global-prefs']` and `handlers['save-global-prefs']` with `preferencesApp.handlers['save-global-prefs']` and `preferencesApp.handlers['load-global-prefs']`, importing `app` directly from the preferences module rather than going through the global `handlers` export in `main.ts` which doesn't include them.
+
+## User:
+
+> 10/7/2026 10:51:53
+
+Remind me how I should be running these tests?
+
+## Assistant:
+
+> 10/7/2026 10:51:55
+
+From the root of the project:
+
+```bash
+cd packages/loot-core
+yarn test:node
+```
+
+Or if you want to run only the preferences test file to keep the output focused:
+
+```bash
+cd packages/loot-core
+yarn test:node --reporter=verbose src/server/preferences/app.test.ts
+```
+
+## User:
+
+> 10/7/2026 10:52:35
+
+Error: [vitest] There was an error when mocking a module. If you are using "vi.mock" factory, make sure there are no top level variables inside, since this call is hoisted to top of the file. Read more: https://vitest.dev/api/vi.html#vi-mock
+ ❯ src/server/preferences/app.ts:7:1
+      5| import { PostError } from '#server/errors';
+      6| import { resetFormulaPreferencesCache } from '#server/formulas/bootstrap';
+      7| import { getDefaultDocumentDir } from '#server/main';
+       | ^
+      8| import { mutator } from '#server/mutators';
+      9| import { post } from '#server/post';
+
+Caused by: TypeError: Cannot read properties of undefined (reading 'handlers')
+ ❯ App.combine src/server/app.ts:52:23
+ ❯ src/server/main.ts:130:5
+ ❯ src/server/preferences/app.test.ts:8:18
+
+## Assistant:
+
+> 10/7/2026 10:52:48
+
+The issue is that mocking `#server/main` causes a circular dependency problem since `preferences/app.ts` imports from `#server/main`. Instead, mock `getDefaultDocumentDir` at the point it's used by setting the environment variable it depends on:
+
+> Ran command
+>
+> - Confirm getDefaultDocumentDir uses ACTUAL_DOCUMENT_DIR
+> - **Done**
+
+Since `getDefaultDocumentDir` just reads `process.env.ACTUAL_DOCUMENT_DIR`, the simplest fix is to set that environment variable in your test instead of mocking the module entirely. Remove the `vi.mock` block and add a `beforeAll`:
+
+```ts
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { runHandler } from '#server/mutators';
+import { app as preferencesApp } from '../preferences/app';
+
+describe('global preferences', () => {
+  beforeAll(() => {
+    process.env.ACTUAL_DOCUMENT_DIR = '/mock/documents';
+  });
+
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await runHandler(preferencesApp.handlers['save-global-prefs'], {
+        fontSize: '1.1',
+      });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await runHandler(
+        preferencesApp.handlers['load-global-prefs'],
+        undefined,
+      );
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await runHandler(preferencesApp.handlers['save-global-prefs'], {
+        fontSize: '1.2',
+      });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await runHandler(
+        preferencesApp.handlers['load-global-prefs'],
+        undefined,
+      );
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(
+        preferencesApp.handlers['load-global-prefs'],
+        undefined,
+      );
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+});
+```
+
+This avoids the circular dependency entirely — `process.env.ACTUAL_DOCUMENT_DIR` is set before any module code runs, so `getDefaultDocumentDir` has a valid path to work with without needing to mock `#server/main` at all.
+
+## User:
+
+> 10/7/2026 10:53:11
+
+FAIL  src/server/preferences/app.test.ts [ src/server/preferences/app.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'handlers')
+ ❯ App.combine src/server/app.ts:52:23
+     50|   combine(...apps) {
+     51|     for (const app of apps) {
+     52|       Object.keys(app.handlers).forEach(name => {
+       |                       ^
+     53|         this.method(name as string & keyof Handlers, app.handlers[name]);
+     54|       });
+ ❯ src/server/main.ts:130:5
+ ❯ src/server/preferences/app.ts:7:1
+
+## Assistant:
+
+> 10/7/2026 10:53:23
+
+The problem is that importing `preferencesApp` directly still triggers `main.ts` to load, which tries to combine all apps before they're ready. The solution is to import and call the handler functions directly from the preferences app module, bypassing `main.ts` entirely:
+
+> Ran command
+>
+> - Check what functions are exported from preferences/app.ts
+> - **Done**
+
+The handler functions `saveGlobalPrefs` and `loadGlobalPrefs` are not exported — they're private to the module. You'll need to export them so the test can call them directly without going through `main.ts` at all. Make two changes:
+
+**In `packages/loot-core/src/server/preferences/app.ts`**, add `export` to both functions:
+
+```ts
+export async function saveGlobalPrefs(prefs: GlobalPrefs) {
+  // ...existing code unchanged
+}
+
+export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
+  // ...existing code unchanged
+}
+```
+
+Then update your test to import and call them directly:
+
+```ts
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import {
+  saveGlobalPrefs,
+  loadGlobalPrefs,
+} from '../preferences/app';
+
+describe('global preferences', () => {
+  beforeAll(() => {
+    process.env.ACTUAL_DOCUMENT_DIR = '/mock/documents';
+  });
+
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await saveGlobalPrefs({ fontSize: '1.1' });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await loadGlobalPrefs();
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await saveGlobalPrefs({ fontSize: '1.2' });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await loadGlobalPrefs();
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await loadGlobalPrefs();
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+});
+```
+
+This completely avoids importing `main.ts` and its `combine` call, which was the root cause of every error so far.
+
+## User:
+
+> 10/7/2026 10:55:10
+
+FAIL  src/server/preferences/app.test.ts [ src/server/preferences/app.test.ts ]
+TypeError: Cannot read properties of undefined (reading 'handlers')
+ ❯ App.combine src/server/app.ts:52:23
+     50|   combine(...apps) {
+     51|     for (const app of apps) {
+     52|       Object.keys(app.handlers).forEach(name => {
+       |                       ^
+     53|         this.method(name as string & keyof Handlers, app.handlers[name]);
+     54|       });
+ ❯ src/server/main.ts:130:5
+ ❯ src/server/preferences/app.ts:7:1
+
+## Assistant:
+
+> 10/7/2026 10:55:45
+
+The error is still triggered by `preferences/app.ts` importing `getDefaultDocumentDir` from `#server/main` at line 7, which causes `main.ts` to execute and crash. Let me look at what else in main.ts is causing the combine to fail:
+
+> Ran 6 commands
+>
+> - Check what apps are being combined and which might be undefined
+> - Check all imports in main.ts that might be undefined
+> - Find vitest config files
+> - Read vitest config to understand test setup
+> - Check how schedules app test imports work
+> - Check if schedules app imports from main.ts
+> - **Done**
+
+That's the key difference — `schedules/app.ts` doesn't import from `main.ts`, but `preferences/app.ts` does (for `getDefaultDocumentDir`). Every approach we've tried still triggers `main.ts` to load through that import chain.
+
+The cleanest fix is to move `getDefaultDocumentDir` out of `main.ts` into a separate file that doesn't carry all of `main.ts`'s side effects. Here's what to do:
+
+**1. Create `packages/loot-core/src/server/document-dir.ts`:**
+
+```ts
+import * as fs from '#platform/server/fs';
+
+export function getDefaultDocumentDir() {
+  return fs.join(process.env.ACTUAL_DOCUMENT_DIR, 'Actual');
+}
+```
+
+**2. Update `preferences/app.ts`** to import from the new file instead of `main.ts`:
+
+```ts
+// Remove this:
+import { getDefaultDocumentDir } from '#server/main';
+
+// Add this:
+import { getDefaultDocumentDir } from '#server/document-dir';
+```
+
+**3. Update `main.ts`** to import from the new file too, so nothing breaks:
+
+```ts
+// Remove this:
+export function getDefaultDocumentDir() {
+  return fs.join(process.env.ACTUAL_DOCUMENT_DIR, 'Actual');
+}
+
+// Add this:
+export { getDefaultDocumentDir } from '#server/document-dir';
+```
+
+**4. Update your test** to set the env variable in `beforeAll`:
+
+```ts
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { saveGlobalPrefs, loadGlobalPrefs } from './app';
+
+describe('global preferences', () => {
+  beforeAll(() => {
+    process.env.ACTUAL_DOCUMENT_DIR = '/mock/documents';
+  });
+
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await saveGlobalPrefs({ fontSize: '1.1' });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await loadGlobalPrefs();
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await saveGlobalPrefs({ fontSize: '1.2' });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await loadGlobalPrefs();
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await loadGlobalPrefs();
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+});
+```
+
+Note the test now lives at `src/server/preferences/app.test.ts` and uses a relative import `'./app'` — this avoids any path alias resolution touching `main.ts`. Breaking `getDefaultDocumentDir` into its own file is also a good refactor regardless of testing, since it removes a dependency that doesn't belong in `main.ts`.
+
+## User:
+
+> 10/7/2026 10:56:14
+
+Is there another solution? Like rewriting the tests?
+
+## Assistant:
+
+> 10/7/2026 10:56:51
+
+Yes. Instead of refactoring the production code, you can test `saveGlobalPrefs` and `loadGlobalPrefs` indirectly through the existing `handlers` export in `main.ts` — which is exactly how `bootstrap.test.ts` does it for `save-global-prefs`. The trick is that `bootstrap.test.ts` works because it imports `handlers` from `#server/main` which is already set up by the test environment via `setup.ts`.
+
+Let me verify what `handlers` actually contains at test time:
+
+> Ran 7 commands
+>
+> - Check if load-global-prefs is in the Handlers type or api.ts
+> - Check types for these handlers
+> - Check how bootstrap test calls handlers
+> - Check how $send is set up in main.ts
+> - Check how $send is initialised in tests
+> - Check how api.test.ts sets up its test environment
+> - Read bank sync test setup to understand working pattern
+> - **Done**
+
+Now I can see the exact pattern that works. The `app-bank-sync.test.ts` imports `app` directly from `'./app'` (a relative import within the same package folder) and accesses `app.handlers` directly — and crucially, it does **not** import from `#server/main` at all. That's what keeps `main.ts` from loading.
+
+The issue with our test is that `preferences/app.ts` imports `getDefaultDocumentDir` from `#server/main`, which triggers the whole `main.ts` module to execute including the `combine` call. The rewrite is to mock that specific import using `vi.mock` with a factory **before** any imports resolve:
+
+```ts
+// @ts-strict-ignore
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+// Must be before any import that triggers main.ts
+vi.mock('#server/main', () => ({
+  getDefaultDocumentDir: () => '/mock/documents',
+}));
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { runHandler } from '#server/mutators';
+
+import { app } from './app';
+
+const saveGlobalPrefs = app.handlers['save-global-prefs'];
+const loadGlobalPrefs = app.handlers['load-global-prefs'];
+
+describe('global preferences', () => {
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await runHandler(saveGlobalPrefs, { fontSize: '1.1' });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await runHandler(saveGlobalPrefs, { fontSize: '1.2' });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+});
+```
+
+The key differences from previous attempts:
+
+- `vi.mock('#server/main', () => ({ ... }))` uses a **factory function** (the second argument) which Vitest hoists to the very top of the file before any imports resolve — so `main.ts` never actually executes
+- It only stubs `getDefaultDocumentDir` and nothing else, so the rest of the module isn't needed
+- `app.handlers` is accessed directly from the local `./app` import, following the same pattern as `app-bank-sync.test.ts`
+- No `vi.importActual` which was causing the circular dependency issue in earlier attempts
+
+## User:
+
+> 10/7/2026 10:57:30
+
+That worked! Remind me how to commit all of the git files I have changed?
+
+## Assistant:
+
+> 10/7/2026 10:57:34
+
+Here's the full sequence:
+
+**1. Check everything that changed:**
+```bash
+git status
+```
+
+**2. Review the actual changes if you want to double check:**
+```bash
+git diff
+```
+
+**3. Stage all changed and new files:**
+```bash
+git add -A
+```
+
+**4. Verify what's staged before committing:**
+```bash
+git diff --staged
+```
+
+**5. Commit with a descriptive message:**
+```bash
+git commit -m "Add font size setting with CSS variable scaling and unit tests"
+```
+
+The `-A` flag in `git add -A` handles everything at once — modified files, new files like `fontSize.tsx` and `app.test.ts`, and any deletions. If `git status` shows anything unexpected in the staged list you don't want to include, you can unstage it with:
+
+```bash
+git restore --staged <file>
+```
+
+## User:
+
+> 10/7/2026 11:05:29
+
+How can I check which files are staged?
+
+## Assistant:
+
+> 10/7/2026 11:05:31
+
+Run:
+
+```bash
+git status
+```
+
+Files listed under **"Changes to be committed"** are staged and will be included in your next commit. Files under **"Changes not staged for commit"** or **"Untracked files"** are not staged yet.
+
+Alternatively, for a more detailed view showing exactly what changed within each staged file:
+
+```bash
+git diff --staged
+```
+
+## User:
+
+> 10/7/2026 11:08:50
+
+After running git commit and git push  origin feat/issue-52-font-size I receive this message:To https://github.com/CSCI-435-SE/actual-budget.git
+ ! [remote rejected]     feat/issue-52-font-size -> feat/issue-52-font-size (Internal Server Error)
+error: failed to push some refs to 'https://github.com/CSCI-435-SE/actual-budget.git'
+
+## Assistant:
+
+> 10/7/2026 11:08:56
+
+This is a GitHub server-side error, not a problem with your local code. A few things to try:
+
+**1. Wait a moment and retry** — GitHub occasionally has brief outages causing 500 errors:
+```bash
+git push origin feat/issue-52-font-size
+```
+
+**2. Check GitHub's status** — visit [githubstatus.com](https://www.githubstatus.com) to see if there's an ongoing incident.
+
+**3. Verify you have permission** — make sure you have write access to the repository. If it's a fork-based workflow you may need to push to your own fork first:
+```bash
+git remote -v
+```
+This shows where your `origin` is pointing. If it should be your personal fork rather than the team repo, update it:
+```bash
+git remote set-url origin https://github.com/YOUR_USERNAME/actual-budget.git
+git push origin feat/issue-52-font-size
+```
+
+**4. Check your authentication** — an expired token can sometimes surface as a server error:
+```bash
+git push origin feat/issue-52-font-size --verbose
+```
+The `--verbose` flag gives more detail about where the failure is happening.
+
+If your teammates can push successfully to the same repo, the issue is likely on your end with authentication or permissions rather than GitHub itself.
+
+Powered by Claude Exporter (https://www.ai-chat-exporter.net)
