@@ -84,6 +84,13 @@ export function GoalProgress({
 }
 
 /**
+ * A goal can only be saved with a positive target amount.
+ */
+export function isValidGoalTarget(targetAmount: number) {
+  return targetAmount > 0;
+}
+
+/**
  * Whole-number percent toward the goal. `percent` keeps counting past 100 once
  * the goal is exceeded, while `barPercent` is the bar width, capped at 100.
  * The goal only counts as complete once the target is actually reached, so an

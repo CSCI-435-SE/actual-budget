@@ -19,7 +19,10 @@ import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
 import { PrivacyFilter } from '#components/PrivacyFilter';
 import { DateRange } from '#components/reports/DateRange';
-import { GoalProgress } from '#components/reports/GoalProgress';
+import {
+  GoalProgress,
+  isValidGoalTarget,
+} from '#components/reports/GoalProgress';
 import { GoalTagSelect } from '#components/reports/GoalTagSelect';
 import { GoalTransactions } from '#components/reports/GoalTransactions';
 import { Header } from '#components/reports/Header';
@@ -191,6 +194,18 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
   function onSaveWidget() {
     if (!widget) {
       notifyMissingWidget();
+      return;
+    }
+
+    if (!isValidGoalTarget(targetAmount)) {
+      dispatch(
+        addNotification({
+          notification: {
+            type: 'error',
+            message: t('Goal amount must be greater than zero.'),
+          },
+        }),
+      );
       return;
     }
 
