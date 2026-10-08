@@ -11,6 +11,8 @@ import type { Locale } from 'date-fns';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 import { aqlQuery } from '#queries/aqlQuery';
 
+import { includeSubcategoriesInConditions } from './subcategories';
+
 export function summarySpreadsheet(
   start: string,
   end: string,
@@ -32,8 +34,10 @@ export function summarySpreadsheet(
   ) => {
     let filters: unknown[] = [];
     try {
+      const reportConditions =
+        await includeSubcategoriesInConditions(conditions);
       const response = await send('make-filters-from-conditions', {
-        conditions: conditions.filter(cond => !cond.customName),
+        conditions: reportConditions.filter(cond => !cond.customName),
       });
       filters = response.filters;
     } catch (error) {
@@ -296,10 +300,11 @@ async function calculatePercentage(
     summaryContent.divisorConditionsOp === 'or' ? '$or' : '$and';
   let filters = [];
   try {
+    const divisorConditions = await includeSubcategoriesInConditions(
+      summaryContent.divisorConditions ?? [],
+    );
     const response = await send('make-filters-from-conditions', {
-      conditions: summaryContent?.divisorConditions?.filter(
-        cond => !cond.customName,
-      ),
+      conditions: divisorConditions.filter(cond => !cond.customName),
     });
     filters = response.filters;
   } catch (error) {

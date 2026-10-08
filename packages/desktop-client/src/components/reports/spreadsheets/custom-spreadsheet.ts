@@ -33,6 +33,12 @@ import { filterHiddenItems } from './filterHiddenItems';
 import { recalculate } from './recalculate';
 import { sortData } from './sortData';
 import {
+  expandSubcategoryConditions,
+  getNestedSubcategoryIds,
+  getRolledUpCategoryIds,
+  getSubcategoryIdsByParent,
+} from './subcategories';
+import {
   determineIntervalRange,
   trimIntervalDataToRange,
   trimIntervalsToRange,
@@ -88,6 +94,19 @@ export function createCustomSpreadsheet({
     groupByLabel: 'category' | 'categoryGroup' | 'payee' | 'account',
   ] = groupBySelections(groupBy, categoryList, categoryGroup, payees, accounts);
 
+  // By category, a parent's row includes its subcategories, which then get
+  // no row of their own. Every amount lands in exactly one row, so the
+  // graphs and totals built from these rows never count a subcategory
+  // twice.
+  const subcategoryIdsByParent =
+    groupByLabel === 'category'
+      ? getSubcategoryIdsByParent(categories.grouped)
+      : new Map<string, string[]>();
+  const nestedSubcategoryIds = getNestedSubcategoryIds(subcategoryIdsByParent);
+  const rowItems = groupByList.filter(
+    item => !nestedSubcategoryIds.has(item.id),
+  );
+
   return async (
     spreadsheet: ReturnType<typeof useSpreadsheet>,
     setData: (data: DataEntity) => void,
@@ -109,8 +128,12 @@ export function createCustomSpreadsheet({
       return;
     }
 
+    const reportConditions = expandSubcategoryConditions(
+      conditions,
+      categories.grouped,
+    );
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 
@@ -124,7 +147,7 @@ export function createCustomSpreadsheet({
       interval,
       categories: categories.list,
       categoryGroups: categories.grouped,
-      conditions,
+      conditions: reportConditions,
       conditionsOp,
       conditionsOpKey,
       filters,
@@ -170,8 +193,17 @@ export function createCustomSpreadsheet({
         let perIntervalTotals = 0;
         const stacked: Record<string, number> = {};
 
-        groupByList.map(item => {
+        rowItems.map(item => {
           let stackAmounts = 0;
+          const categoryIds = getRolledUpCategoryIds(
+            item.id,
+            subcategoryIdsByParent,
+          );
+          const matchesItem = (row: QueryDataEntity) =>
+            categoryIds
+              ? categoryIds.includes(row.category)
+              : row[groupByLabel] === (item.id ?? null) ||
+                (item.uncategorized_id && groupsByCategory);
 
           const intervalAssets = filterHiddenItems(
             item,
@@ -181,12 +213,7 @@ export function createCustomSpreadsheet({
             showUncategorized,
             groupsByCategory,
           )
-            .filter(
-              asset =>
-                asset.date === intervalItem &&
-                (asset[groupByLabel] === (item.id ?? null) ||
-                  (item.uncategorized_id && groupsByCategory)),
-            )
+            .filter(asset => asset.date === intervalItem && matchesItem(asset))
             .reduce((a, v) => a + v.amount, 0);
           perIntervalAssets += intervalAssets;
 
@@ -198,12 +225,7 @@ export function createCustomSpreadsheet({
             showUncategorized,
             groupsByCategory,
           )
-            .filter(
-              debt =>
-                debt.date === intervalItem &&
-                (debt[groupByLabel] === (item.id ?? null) ||
-                  (item.uncategorized_id && groupsByCategory)),
-            )
+            .filter(debt => debt.date === intervalItem && matchesItem(debt))
             .reduce((a, v) => a + v.amount, 0);
           perIntervalDebts += intervalDebts;
 
@@ -268,7 +290,7 @@ export function createCustomSpreadsheet({
       [],
     );
 
-    const calcData: GroupedEntity[] = groupByList.map(item => {
+    const calcData: GroupedEntity[] = rowItems.map(item => {
       const calc = recalculate({
         item,
         intervals,
@@ -280,9 +302,27 @@ export function createCustomSpreadsheet({
         showUncategorized,
         startDate,
         endDate,
+        categoryIds: getRolledUpCategoryIds(item.id, subcategoryIdsByParent),
       });
       return { ...calc };
     });
+
+    // Budgeted reports also compare with what was spent. It's added up
+    // from the rows above, which are top-level only, so each category's
+    // spending is counted once.
+    const isBudgeted = balanceTypeOp === 'totalBudgeted';
+    if (isBudgeted) {
+      intervalData.forEach((intervalItem, index) => {
+        intervalItem.totalSpent = calcData.reduce(
+          (sum, row) => sum + (row.intervalData[index]?.totalSpent ?? 0),
+          0,
+        );
+      });
+    }
+    const totalSpent = calcData.reduce(
+      (sum, row) => sum + (row.totalSpent ?? 0),
+      0,
+    );
 
     // First, filter rows so trimming reflects the visible dataset
     const calcDataFiltered = calcData.filter(i =>
@@ -333,6 +373,7 @@ export function createCustomSpreadsheet({
       // the underlying dataset when `balanceTypeOp === 'totalBudgeted'`.
       totalTotals: totalAssets + totalDebts,
       totalBudgeted: totalAssets + totalDebts,
+      ...(isBudgeted && { totalSpent }),
     });
   };
 }

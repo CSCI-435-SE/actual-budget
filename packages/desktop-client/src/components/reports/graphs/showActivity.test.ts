@@ -135,4 +135,94 @@ describe('showActivity', () => {
       type: 'id',
     });
   });
+
+  describe('with subcategories', () => {
+    const food = { id: 'food', name: 'Food', group: 'g-food' };
+    const restaurants = {
+      id: 'restaurants',
+      name: 'Restaurants',
+      group: 'g-food',
+      parent_id: 'food',
+    };
+    const grouped = [
+      { id: 'g-food', name: 'Food', categories: [food, restaurants] },
+    ] satisfies CategoryGroupEntity[];
+    const withSubcategories = { grouped, list: [food, restaurants] };
+
+    function categoryFilter(
+      overrides: Partial<Parameters<typeof showActivity>[0]>,
+    ) {
+      const navigate = vi.fn();
+      showActivity({
+        navigate,
+        categories: withSubcategories,
+        accounts,
+        balanceTypeOp: 'totalDebts',
+        filters: [],
+        showHiddenCategories: false,
+        showOffBudget: true,
+        type: 'totals',
+        startDate: '2026-09-01',
+        endDate: '2026-09-30',
+        field: 'category',
+        id: 'food',
+        ...overrides,
+      });
+      const [, options] = navigate.mock.calls[0];
+      return options.state.filterConditions.filter(
+        (f: { field: string }) => f.field === 'category',
+      );
+    }
+
+    it("includes a parent's subcategories, since its row includes them", () => {
+      expect(categoryFilter({})).toEqual([
+        {
+          field: 'category',
+          op: 'oneOf',
+          value: ['food', 'restaurants'],
+          type: 'id',
+        },
+      ]);
+    });
+
+    it("shows only the parent's own activity for its unallocated row", () => {
+      expect(categoryFilter({ includeSubcategories: false })).toEqual([
+        { field: 'category', op: 'is', value: 'food', type: 'id' },
+      ]);
+    });
+
+    it('keeps a report filter on the parent covering its subcategories', () => {
+      const filters = categoryFilter({
+        filters: [{ field: 'category', op: 'is', value: 'food', type: 'id' }],
+      });
+
+      expect(filters).toContainEqual({
+        field: 'category',
+        op: 'oneOf',
+        value: ['food', 'restaurants'],
+        type: 'id',
+      });
+      expect(filters).not.toContainEqual(
+        expect.objectContaining({ op: 'is', value: 'food' }),
+      );
+    });
+
+    it('treats subcategories of a hidden parent as hidden', () => {
+      const hiddenFood = { ...food, hidden: true };
+      const filters = categoryFilter({
+        categories: {
+          grouped: [{ ...grouped[0], categories: [hiddenFood, restaurants] }],
+          list: [hiddenFood, restaurants],
+        },
+        id: 'rent',
+      });
+
+      expect(filters).toContainEqual({
+        field: 'category',
+        op: 'notOneOf',
+        value: ['food', 'restaurants'],
+        type: 'id',
+      });
+    });
+  });
 });

@@ -11,20 +11,9 @@ import { aqlQuery } from '#queries/aqlQuery';
 
 import { fetchBudgetData } from './budgetDataQuery';
 import { makeQuery } from './makeQuery';
+import { hideSubcategoriesOfHiddenParents } from './subcategories';
 
-export async function fetchSpreadsheetQueryData({
-  balanceTypeOp,
-  startDate,
-  endDate,
-  interval,
-  categories,
-  categoryGroups,
-  conditions,
-  conditionsOp,
-  conditionsOpKey,
-  filters,
-  budgetType,
-}: {
+type FetchSpreadsheetQueryDataProps = {
   balanceTypeOp: balanceTypeOpType | undefined;
   startDate: string;
   endDate: string;
@@ -36,7 +25,34 @@ export async function fetchSpreadsheetQueryData({
   conditionsOpKey: string;
   filters: unknown[];
   budgetType?: SyncedPrefs['budgetType'];
-}): Promise<{ assets: QueryDataEntity[]; debts: QueryDataEntity[] }> {
+};
+
+type QueryData = { assets: QueryDataEntity[]; debts: QueryDataEntity[] };
+
+export async function fetchSpreadsheetQueryData(
+  props: FetchSpreadsheetQueryDataProps,
+): Promise<QueryData> {
+  const { assets, debts } = await fetchRows(props);
+
+  return {
+    assets: hideSubcategoriesOfHiddenParents(assets, props.categoryGroups),
+    debts: hideSubcategoriesOfHiddenParents(debts, props.categoryGroups),
+  };
+}
+
+async function fetchRows({
+  balanceTypeOp,
+  startDate,
+  endDate,
+  interval,
+  categories,
+  categoryGroups,
+  conditions,
+  conditionsOp,
+  conditionsOpKey,
+  filters,
+  budgetType,
+}: FetchSpreadsheetQueryDataProps): Promise<QueryData> {
   if (balanceTypeOp === 'totalBudgeted') {
     return fetchBudgetData({
       startDate,

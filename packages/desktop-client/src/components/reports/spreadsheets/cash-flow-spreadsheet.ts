@@ -7,6 +7,8 @@ import * as d from 'date-fns';
 import { indexCashFlow, runAll } from '#components/reports/util';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 
+import { includeSubcategoriesInConditions } from './subcategories';
+
 export function simpleCashFlow(
   startMonth: string,
   endMonth: string,
@@ -20,8 +22,9 @@ export function simpleCashFlow(
     spreadsheet: ReturnType<typeof useSpreadsheet>,
     setData: (data: { graphData: { income: number; expense: number } }) => void,
   ) => {
+    const reportConditions = await includeSubcategoriesInConditions(conditions);
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 
@@ -79,8 +82,9 @@ export function cashFlowByDate(
     spreadsheet: ReturnType<typeof useSpreadsheet>,
     setData: (data: ReturnType<typeof recalculate>) => void,
   ) => {
+    const reportConditions = await includeSubcategoriesInConditions(conditions);
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 

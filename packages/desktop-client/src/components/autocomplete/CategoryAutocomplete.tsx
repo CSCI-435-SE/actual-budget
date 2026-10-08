@@ -36,6 +36,8 @@ import { Autocomplete } from './Autocomplete';
 import { filterCategorySuggestions } from './filterCategorySuggestions';
 import { ItemHeader } from './ItemHeader';
 
+const SUBCATEGORY_INDENT = 16;
+
 type CategoryAutocompleteItem = Omit<CategoryEntity, 'group'> & {
   group?: CategoryGroupEntity;
 };
@@ -424,7 +426,9 @@ function CategoryItem({
             ? theme.menuAutoCompleteItemTextHover
             : theme.menuAutoCompleteItemText,
           padding: 4,
-          paddingLeft: 20,
+          // Subcategories are indented under their parent, as on the
+          // budget page
+          paddingLeft: item.parent_id ? 20 + SUBCATEGORY_INDENT : 20,
           borderRadius: embedded ? 4 : 0,
           border: 'none',
           font: 'inherit',

@@ -38,7 +38,11 @@ type ReportTableRowProps = {
   handleScroll?: UIEventHandler<HTMLDivElement>;
   height?: number;
   colorized?: boolean;
+  isSubcategory?: boolean;
 };
+
+// Matches the subcategory indent on the budget page.
+const SUBCATEGORY_INDENT = 16;
 
 const getAmountColor = (amount: number) => {
   if (amount === 0) return theme.reportsNumberNeutral;
@@ -66,8 +70,13 @@ export const ReportTableRow = memo(
     height,
     interval,
     colorized,
+    isSubcategory = false,
   }: ReportTableRowProps) => {
     const average = Math.round(item[balanceTypeOp] / intervalsCount);
+    // Budgeted totals also show what was spent and what's left of it.
+    const showsSpending = balanceTypeOp === 'totalBudgeted' && mode === 'total';
+    const spent = item.totalSpent ?? 0;
+    const remaining = item.totalBudgeted + spent;
     const groupByItem = groupBy === 'Interval' ? 'date' : 'name';
     const format = useFormat();
 
@@ -124,7 +133,10 @@ export const ReportTableRow = memo(
               flexGrow: 1,
               backgroundColor: style?.backgroundColor,
             }}
-            valueStyle={compactStyle}
+            valueStyle={{
+              ...compactStyle,
+              ...(isSubcategory && { paddingLeft: 5 + SUBCATEGORY_INDENT }),
+            }}
           />
           {item.intervalData && mode === 'time'
             ? item.intervalData.map((intervalItem, index) => {
@@ -173,6 +185,7 @@ export const ReportTableRow = memo(
                         field: drilldownField,
                         id: item.id,
                         uncategorizedId: item.uncategorizedId,
+                        includeSubcategories: !item.isUnallocated,
                         interval,
                       })
                     }
@@ -181,7 +194,7 @@ export const ReportTableRow = memo(
                   />
                 );
               })
-            : ['totalTotals', 'totalBudgeted'].includes(balanceTypeOp) && (
+            : balanceTypeOp === 'totalTotals' && (
                 <>
                   <Cell
                     value={format(item.totalAssets, 'financial')}
@@ -228,6 +241,7 @@ export const ReportTableRow = memo(
                         field: drilldownField,
                         id: item.id,
                         uncategorizedId: item.uncategorizedId,
+                        includeSubcategories: !item.isUnallocated,
                       })
                     }
                   />
@@ -276,6 +290,7 @@ export const ReportTableRow = memo(
                         field: drilldownField,
                         id: item.id,
                         uncategorizedId: item.uncategorizedId,
+                        includeSubcategories: !item.isUnallocated,
                       })
                     }
                   />
@@ -323,11 +338,87 @@ export const ReportTableRow = memo(
                 field: drilldownField,
                 id: item.id,
                 uncategorizedId: item.uncategorizedId,
+                includeSubcategories: !item.isUnallocated,
               })
             }
             width="flex"
             privacyFilter
           />
+          {showsSpending && (
+            <>
+              <Cell
+                value={format(spent, 'financial')}
+                title={
+                  Math.abs(spent) > 100000
+                    ? format(spent, 'financial')
+                    : undefined
+                }
+                textAlign="right"
+                style={{
+                  minWidth: compact ? 50 : 85,
+                  backgroundColor: style?.backgroundColor,
+                  ...(colorized && { color: getAmountColor(spent) }),
+                }}
+                unexposedContent={({ value }) => (
+                  <FinancialText
+                    style={{
+                      ...hoverUnderline,
+                      textAlign: 'right',
+                      flexGrow: 1,
+                    }}
+                  >
+                    {value}
+                  </FinancialText>
+                )}
+                valueStyle={compactStyle}
+                onClick={() =>
+                  canShowActivity &&
+                  showActivity({
+                    navigate,
+                    categories,
+                    accounts,
+                    // The transactions behind the spending, not the budget
+                    balanceTypeOp: 'totalTotals',
+                    filters,
+                    showHiddenCategories,
+                    showOffBudget,
+                    type: 'totals',
+                    startDate,
+                    endDate,
+                    field: drilldownField,
+                    id: item.id,
+                    uncategorizedId: item.uncategorizedId,
+                    includeSubcategories: !item.isUnallocated,
+                  })
+                }
+                width="flex"
+                privacyFilter
+              />
+              <Cell
+                value={format(remaining, 'financial')}
+                title={
+                  Math.abs(remaining) > 100000
+                    ? format(remaining, 'financial')
+                    : undefined
+                }
+                textAlign="right"
+                style={{
+                  fontWeight: 600,
+                  minWidth: compact ? 50 : 85,
+                  backgroundColor: style?.backgroundColor,
+                  ...(colorized && { color: getAmountColor(remaining) }),
+                }}
+                unexposedContent={({ value }) => (
+                  <FinancialText style={{ textAlign: 'right', flexGrow: 1 }}>
+                    {value}
+                  </FinancialText>
+                )}
+                valueStyle={compactStyle}
+                width="flex"
+                privacyFilter
+              />
+            </>
+          )}
           <Cell
             value={format(average, 'financial')}
             title={

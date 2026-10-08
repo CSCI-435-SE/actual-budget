@@ -22,6 +22,7 @@ import {
   isSupportedCategoryCondition,
 } from './budgetDataQuery';
 import { makeQuery } from './makeQuery';
+import { includeSubcategoriesInConditions } from './subcategories';
 
 type createSpendingSpreadsheetProps = {
   conditions?: RuleConditionEntity[];
@@ -105,8 +106,9 @@ export function createSpendingSpreadsheet({
     const averageMonths = new Set(resolvedAverageRange.months);
     const startDate = (resolvedAverageRange.startMonth ?? compareMonth) + '-01';
 
+    const reportConditions = await includeSubcategoriesInConditions(conditions);
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
 
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
@@ -194,7 +196,7 @@ export function createSpendingSpreadsheet({
     const budgetMonth = parseInt(compareMonth.replace('-', ''));
     const budgetTable =
       budgetType === 'tracking' ? 'reflect_budgets' : 'zero_budgets';
-    const hasBudgetConditions = conditions.some(
+    const hasBudgetConditions = reportConditions.some(
       cond =>
         !cond.customName &&
         (cond.field === 'category' || cond.field === 'category_group'),
@@ -204,7 +206,7 @@ export function createSpendingSpreadsheet({
           getSpendingBudgetFilters({
             categories: list,
             categoryGroups: grouped,
-            conditions,
+            conditions: reportConditions,
             conditionsOp,
           }),
         )

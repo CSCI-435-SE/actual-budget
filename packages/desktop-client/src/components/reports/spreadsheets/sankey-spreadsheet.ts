@@ -12,6 +12,12 @@ import { getColorScale } from '#components/reports/chart-theme';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 import { aqlQuery } from '#queries/aqlQuery';
 
+import {
+  expandSubcategoryConditions,
+  getSubcategoryIdsByParent,
+  includeSubcategoriesInConditions,
+} from './subcategories';
+
 type BudgetMonthCategory = {
   id: string;
   name: string;
@@ -199,10 +205,61 @@ async function createBaseGraph(
       groupAccounts,
     )();
   }
+  data = labelSubcategories(data, categories);
 
   return aggregated
     ? createBudgetGraph(data, aggregated)
     : createTransactionsGraph(data);
+}
+
+// Names each subcategory after its parent too, e.g. "Food › Restaurants",
+// so it's clear where it belongs wherever the chart places it.
+export function labelSubcategories(
+  data: CategoryEntry[],
+  categories: CategoryGroupEntity[],
+): CategoryEntry[] {
+  const parentNameById = new Map<string, string>();
+  for (const [parentId, subcategoryIds] of getSubcategoryIdsByParent(
+    categories,
+  )) {
+    const parent = categories
+      .flatMap(group => group.categories ?? [])
+      .find(cat => cat.id === parentId);
+    if (parent) {
+      subcategoryIds.forEach(id => parentNameById.set(id, parent.name));
+    }
+  }
+  return data.map(entry => {
+    const parentName = parentNameById.get(entry.categoryId);
+    return parentName
+      ? { ...entry, category: `${parentName} › ${entry.category}` }
+      : entry;
+  });
+}
+
+// Moves each subcategory right after its parent, keeping the order the
+// sort gave the subcategories themselves. One whose parent isn't in the
+// chart stays where it is.
+export function keepSubcategoriesAfterParent(
+  entries: Array<[NodeKey, NodeData]>,
+  categories: CategoryGroupEntity[],
+): Array<[NodeKey, NodeData]> {
+  let result = entries;
+  for (const [parentId, subcategoryIds] of getSubcategoryIdsByParent(
+    categories,
+  )) {
+    if (!result.some(([key]) => key === parentId)) {
+      continue;
+    }
+    const isSubcategory = ([key]: [NodeKey, NodeData]) =>
+      subcategoryIds.includes(key);
+    const subcategories = result.filter(isSubcategory);
+    const rest = result.filter(entry => !isSubcategory(entry));
+    const parentIndex = rest.findIndex(([key]) => key === parentId);
+    rest.splice(parentIndex + 1, 0, ...subcategories);
+    result = rest;
+  }
+  return result;
 }
 
 export function buildSankeyData(
@@ -303,7 +360,7 @@ export function createBudgetSpreadsheet(
 
     const filteredCategoryGroups = filterCategoryGroups(
       categoryGroups,
-      conditions,
+      await includeSubcategoriesInConditions(conditions),
       conditionsOp,
     );
 
@@ -355,8 +412,12 @@ export function createTransactionsSpreadsheet(
 ) {
   return async () => {
     // gather filters user has set
+    const reportConditions = expandSubcategoryConditions(
+      conditions,
+      categories,
+    );
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 
@@ -1202,6 +1263,8 @@ export function sortGraph(
       }
     }
   }
+
+  sortedEntries = keepSubcategoriesAfterParent(sortedEntries, categories);
 
   // We always want certain nodes to be shown at the start/end of their layers
   sortedEntries
