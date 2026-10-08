@@ -133,7 +133,7 @@ function CheckboxOptionWithHelp({
       {showHelp && (
         <Text
           style={{
-            fontSize: 13,
+            fontSize: 'var(--font-size-13)',
             color: theme.pageTextSubdued,
           }}
         >

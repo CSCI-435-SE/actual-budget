@@ -28,7 +28,7 @@ export function BudgetAutomationMigrationWarning({
     <Warning
       style={{
         padding: '8px 12px',
-        fontSize: 12,
+        fontSize: 'var(--font-size-12)',
         ...style,
       }}
     >
@@ -40,14 +40,14 @@ export function BudgetAutomationMigrationWarning({
           </Trans>
         </Text>
         <details>
-          <summary style={{ cursor: 'pointer', fontSize: 11, opacity: 0.85 }}>
+          <summary style={{ cursor: 'pointer', fontSize: 'var(--font-size-11)', opacity: 0.85 }}>
             <Trans>Show original templates</Trans>
           </summary>
           <View
             style={{
               whiteSpace: 'pre-wrap',
               fontFamily: 'monospace',
-              fontSize: 11,
+              fontSize: 'var(--font-size-11)',
               marginTop: 6,
               padding: 8,
               borderRadius: 4,

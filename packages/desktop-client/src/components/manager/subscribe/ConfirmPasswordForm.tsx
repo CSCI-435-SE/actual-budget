@@ -74,7 +74,7 @@ export function ConfirmPasswordForm({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          fontSize: 15,
+          fontSize: 'var(--font-size-15)',
           marginTop: 20,
         }}
       >
@@ -151,7 +151,7 @@ export function ConfirmOldPasswordForm({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          fontSize: 15,
+          fontSize: 'var(--font-size-15)',
           marginTop: 20,
         }}
       >

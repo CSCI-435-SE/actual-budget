@@ -15,6 +15,7 @@ const ALL_WIDGET_TYPES = allWidgetTypes(
   'net-worth-card',
   'cash-flow-card',
   'spending-card',
+  'goal-card',
   'crossover-card',
   'budget-analysis-card',
   'markdown-card',

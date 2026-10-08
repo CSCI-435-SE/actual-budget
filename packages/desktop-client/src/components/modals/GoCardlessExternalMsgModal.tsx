@@ -248,7 +248,7 @@ export function GoCardlessExternalMsgModal({
             autoFocus
             style={{
               padding: '10px 0',
-              fontSize: 15,
+              fontSize: 'var(--font-size-15)',
               fontWeight: 600,
               flexGrow: 1,
             }}
@@ -275,7 +275,7 @@ export function GoCardlessExternalMsgModal({
             rightContent={<ModalCloseButton onPress={() => state.close()} />}
           />
           <View>
-            <Paragraph style={{ fontSize: 15 }}>
+            <Paragraph style={{ fontSize: 'var(--font-size-15)' }}>
               <Trans>
                 To link your bank account, you will be redirected to a new page
                 where GoCardless will ask to connect to your bank. GoCardless
@@ -321,7 +321,7 @@ export function GoCardlessExternalMsgModal({
                 autoFocus
                 style={{
                   padding: '10px 0',
-                  fontSize: 15,
+                  fontSize: 'var(--font-size-15)',
                   fontWeight: 600,
                   marginTop: 10,
                 }}

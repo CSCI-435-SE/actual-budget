@@ -63,7 +63,7 @@ export function CreateAccountModal({
             {upgradingAccountId != null ? (
               <>
                 <Paragraph
-                  style={{ fontSize: 15, color: theme.pageTextSubdued }}
+                  style={{ fontSize: 'var(--font-size-15)', color: theme.pageTextSubdued }}
                 >
                   <Trans>
                     Choose a bank sync provider to connect this account.
@@ -84,7 +84,7 @@ export function CreateAccountModal({
                       variant="primary"
                       style={{
                         padding: '10px 0',
-                        fontSize: 15,
+                        fontSize: 'var(--font-size-15)',
                         fontWeight: 600,
                       }}
                       onPress={onCreateLocalAccount}
@@ -92,7 +92,7 @@ export function CreateAccountModal({
                       <Trans>Create a local account</Trans>
                     </Button>
                   </InitialFocus>
-                  <View style={{ lineHeight: '1.4em', fontSize: 15 }}>
+                  <View style={{ lineHeight: '1.4em', fontSize: 'var(--font-size-15)' }}>
                     <Text>
                       <Trans>
                         <strong>Create a local account</strong> if you want to
@@ -118,14 +118,14 @@ export function CreateAccountModal({
                     }}
                     style={{
                       padding: '10px 0',
-                      fontSize: 15,
+                      fontSize: 'var(--font-size-15)',
                       fontWeight: 600,
                     }}
                   >
                     <Trans>Set up bank sync</Trans>
                   </Button>
                   <Paragraph
-                    style={{ fontSize: 15, color: theme.pageTextSubdued }}
+                    style={{ fontSize: 'var(--font-size-15)', color: theme.pageTextSubdued }}
                   >
                     <Trans>
                       Configure providers and link accounts from the Bank Sync

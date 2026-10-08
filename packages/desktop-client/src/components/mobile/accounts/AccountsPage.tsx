@@ -89,7 +89,7 @@ function AccountHeader<SheetFieldName extends SheetFields<'account'>>({
         <Text
           style={{
             ...styles.text,
-            fontSize: 17,
+            fontSize: 'var(--font-size-17)',
           }}
           data-testid="name"
         >
@@ -195,7 +195,7 @@ function AccountListItem({
             <TextOneLine
               style={{
                 ...styles.text,
-                fontSize: 17,
+                fontSize: 'var(--font-size-17)',
                 fontWeight: 600,
                 color: isUpdated ? theme.mobileAccountText : theme.pillText,
               }}
@@ -209,7 +209,7 @@ function AccountListItem({
               <CellValueText<'account', 'balance'>
                 {...props}
                 style={{
-                  fontSize: 16,
+                  fontSize: 'var(--font-size-16)',
                   ...makeAmountFullStyle(props.value, {
                     positiveColor: theme.numberPositive,
                     negativeColor: theme.numberNegative,

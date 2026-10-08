@@ -22,6 +22,7 @@ import {
   normalizeQueryTimeFrameStart,
 } from '#components/formula/queryTimeFrame';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { includeSubcategoriesInConditions } from '#components/reports/spreadsheets/subcategories';
 import { bootstrapHyperFormula } from '#util/bootstrapHyperFormula';
 
 import { useFormat } from './useFormat';
@@ -331,7 +332,9 @@ async function prefetchBudgetQueries(
 export async function buildFilteredTransactionsQuery(
   config: QueryConfig,
 ): Promise<Query> {
-  const conditions = config.conditions || [];
+  const conditions = await includeSubcategoriesInConditions(
+    config.conditions || [],
+  );
   const conditionsOp = config.conditionsOp || 'and';
   const timeFrame = config.timeFrame;
 
@@ -519,7 +522,7 @@ async function extractQueryCategories(
   }
 
   const categoryConditions = extractCategoryConditions(
-    queryConfig.conditions || [],
+    await includeSubcategoriesInConditions(queryConfig.conditions || []),
   );
   const { list: allCategories } = await send('get-categories');
   return getCategoriesFromConditions(

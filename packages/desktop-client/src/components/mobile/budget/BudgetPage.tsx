@@ -1028,7 +1028,7 @@ function MonthSelector({
         variant="bare"
         style={{
           textAlign: 'center',
-          fontSize: 16,
+          fontSize: 'var(--font-size-16)',
           fontWeight: 500,
         }}
         onPress={() => {

@@ -125,7 +125,7 @@ export function QueryManager({ queries, onQueriesChange }: QueryManagerProps) {
           marginBottom: 16,
         }}
       >
-        <Text style={{ fontSize: 18, fontWeight: 600 }}>
+        <Text style={{ fontSize: 'var(--font-size-18)', fontWeight: 600 }}>
           <Trans>Query Definitions</Trans>
         </Text>
         <Button
@@ -181,7 +181,7 @@ export function QueryManager({ queries, onQueriesChange }: QueryManagerProps) {
               No queries defined. Click 'Add Query' to create your first query.
             </Trans>
           </Text>
-          <Text style={{ fontSize: 12, marginTop: 8 }}>
+          <Text style={{ fontSize: 'var(--font-size-12)', marginTop: 8 }}>
             <Trans>
               Queries allow you to reference filtered transaction data in your
               formulas using QUERY("queryName") or QUERY_COUNT("queryName")
@@ -576,7 +576,7 @@ function QueryItem({
                   <View style={{ padding: 16, minWidth: 400 }}>
                     <Text
                       style={{
-                        fontSize: 14,
+                        fontSize: 'var(--font-size-14)',
                         fontWeight: 600,
                         marginBottom: 12,
                       }}
@@ -585,7 +585,7 @@ function QueryItem({
                     </Text>
                     <Text
                       style={{
-                        fontSize: 12,
+                        fontSize: 'var(--font-size-12)',
                         color: theme.pageTextSubdued,
                         marginBottom: 8,
                       }}
@@ -617,7 +617,7 @@ function QueryItem({
                         backgroundColor: theme.tableBackground,
                         color: theme.formInputText,
                         fontFamily: 'monospace',
-                        fontSize: 12,
+                        fontSize: 'var(--font-size-12)',
                         resize: 'vertical',
                         outline: 'none',
                       }}
@@ -869,7 +869,7 @@ function QueryItem({
               options={allMonths.map(({ name, pretty }) => [name, pretty])}
               style={{ flex: 1 }}
             />
-            <Text style={{ fontSize: 12, color: theme.pageTextSubdued }}>
+            <Text style={{ fontSize: 'var(--font-size-12)', color: theme.pageTextSubdued }}>
               <Trans>to</Trans>
             </Text>
             <Select
@@ -899,7 +899,7 @@ function QueryItem({
       <View style={{ marginBottom: 8, flex: 1 }}>
         <Text
           style={{
-            fontSize: 12,
+            fontSize: 'var(--font-size-12)',
             fontWeight: 500,
             marginBottom: 6,
             color: theme.pageTextSubdued,

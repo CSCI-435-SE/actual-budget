@@ -102,7 +102,7 @@ export function CoverMenu({
             type="submit"
             variant="primary"
             style={{
-              fontSize: 12,
+              fontSize: 'var(--font-size-12)',
               paddingTop: 3,
             }}
           >

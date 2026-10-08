@@ -324,7 +324,7 @@ function PayeeList({
         {showSearchForMore && (
           <div
             style={{
-              fontSize: 11,
+              fontSize: 'var(--font-size-11)',
               padding: 5,
               color: theme.pageTextLight,
               textAlign: 'center',
@@ -659,7 +659,7 @@ export function CreatePayeeButton({
           ? theme.menuAutoCompleteTextHover
           : theme.noticeTextMenu,
         borderRadius: embedded ? 4 : 0,
-        fontSize: 11,
+        fontSize: 'var(--font-size-11)',
         fontWeight: 500,
         padding: '6px 9px',
         backgroundColor: highlighted

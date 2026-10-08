@@ -108,7 +108,7 @@ export function Title({ text }: TitleProps) {
   return (
     <h1
       style={{
-        fontSize: 40,
+        fontSize: 'var(--font-size-40)',
         fontWeight: 700,
         color: theme.pageTextPositive,
         marginBottom: 20,

@@ -123,6 +123,8 @@ describe('formula query timeframes', () => {
         currencySymbolPosition: 'before',
         currencySpaceBetweenAmountAndSymbol: false,
       }),
+      // Category filters are checked for subcategories first
+      'get-categories': async () => ({ grouped: [], list: [] }),
       'make-filters-from-conditions': async ({ conditions }) => {
         const ruleConditions = Array.isArray(conditions) ? conditions : [];
 

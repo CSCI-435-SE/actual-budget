@@ -76,7 +76,7 @@ export const RuleRow = memo(
         ref={triggerRef}
         height="auto"
         style={{
-          fontSize: 13,
+          fontSize: 'var(--font-size-13)',
           zIndex: selected ? 101 : 'auto',
           borderColor,
           backgroundColor: selected

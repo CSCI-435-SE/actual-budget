@@ -140,7 +140,7 @@ export function AgeOfMoneyCard({
               {data.currentAge !== null && (
                 <Block
                   style={{
-                    fontSize: 12,
+                    fontSize: 'var(--font-size-12)',
                     color: theme.pageTextSubdued,
                   }}
                 >
@@ -155,7 +155,7 @@ export function AgeOfMoneyCard({
               {data.insufficientData && (
                 <Block
                   style={{
-                    fontSize: 10,
+                    fontSize: 'var(--font-size-10)',
                     color: theme.warningText,
                     marginTop: 2,
                   }}

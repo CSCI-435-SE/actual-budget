@@ -178,7 +178,7 @@ export const WithHeaderAndFooter: Story = {
     ),
     footer: (
       <View style={{ padding: 10, borderTop: '1px solid #ccc' }}>
-        <Text style={{ fontSize: 11, color: '#666' }}>3 items</Text>
+        <Text style={{ fontSize: 'var(--font-size-11)', color: '#666' }}>3 items</Text>
       </View>
     ),
     items: basicItems,

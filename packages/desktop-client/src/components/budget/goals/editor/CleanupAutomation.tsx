@@ -72,7 +72,7 @@ export function CleanupAutomation({
 
   return (
     <View style={{ gap: 14 }}>
-      <Text style={{ fontSize: 12, color: theme.pageTextLight }}>
+      <Text style={{ fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}>
         <Trans>
           End of month cleanup is a one-click reallocation of funds. Categories
           you choose to <strong>send leftover</strong> return their surplus to a
@@ -213,7 +213,7 @@ function ScopeCard({
       >
         <Text
           style={{
-            fontSize: 11,
+            fontSize: 'var(--font-size-11)',
             textTransform: 'uppercase',
             color: theme.pageTextLight,
             fontWeight: 600,
@@ -239,7 +239,7 @@ function ScopeCard({
         checked={send}
         onChange={e => onChangeSend(e.target.checked)}
       >
-        <span style={{ marginLeft: 6, fontSize: 12 }}>{sendLabel}</span>
+        <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)' }}>{sendLabel}</span>
       </LabeledCheckbox>
 
       <LabeledCheckbox
@@ -247,7 +247,7 @@ function ScopeCard({
         checked={take}
         onChange={e => onChangeTake(e.target.checked)}
       >
-        <span style={{ marginLeft: 6, fontSize: 12 }}>{takeLabel}</span>
+        <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)' }}>{takeLabel}</span>
       </LabeledCheckbox>
 
       {take && (
@@ -258,7 +258,7 @@ function ScopeCard({
               checked={overspendOnly}
               onChange={e => onChangeOverspendOnly(e.target.checked)}
             >
-              <span style={{ marginLeft: 6, fontSize: 12 }}>
+              <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)' }}>
                 <Trans>Only enough to cover any overspending</Trans>
               </span>
             </LabeledCheckbox>

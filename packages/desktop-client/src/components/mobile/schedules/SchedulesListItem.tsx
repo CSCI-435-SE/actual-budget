@@ -78,7 +78,7 @@ export function SchedulesListItem({
           {/* Schedule name */}
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 'var(--font-size-15)',
               fontWeight: 600,
               color: schedule.name
                 ? theme.pageText

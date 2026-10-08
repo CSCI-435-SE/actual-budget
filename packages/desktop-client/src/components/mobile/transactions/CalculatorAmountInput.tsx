@@ -36,7 +36,7 @@ export const calculatorAmountLargeStyle = {
 
 export const calculatorAmountNormalStyle = {
   boxShadow: 'none',
-  fontSize: 14,
+  fontSize: 'var(--font-size-14)',
   outline: 0,
   height: styles.mobileMinHeight,
 };

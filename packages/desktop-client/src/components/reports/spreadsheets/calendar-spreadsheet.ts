@@ -8,6 +8,8 @@ import * as d from 'date-fns';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 import { aqlQuery } from '#queries/aqlQuery';
 
+import { includeSubcategoriesInConditions } from './subcategories';
+
 export type CalendarDataType = {
   date: Date;
   incomeValue: number;
@@ -37,10 +39,12 @@ export function calendarSpreadsheet(
     let filters: unknown[];
 
     try {
+      const reportConditions =
+        await includeSubcategoriesInConditions(conditions);
       const { filters: filtersLocal } = await send(
         'make-filters-from-conditions',
         {
-          conditions: conditions.filter(cond => !cond.customName),
+          conditions: reportConditions.filter(cond => !cond.customName),
         },
       );
       filters = filtersLocal;

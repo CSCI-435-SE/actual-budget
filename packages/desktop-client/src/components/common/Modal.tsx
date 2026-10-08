@@ -89,7 +89,7 @@ export const Modal = ({
           position: 'fixed',
           inset: 0,
           zIndex: MODAL_Z_INDEX,
-          fontSize: 14,
+          fontSize: 'var(--font-size-14)',
           // on mobile, we disable the blurred background for performance reasons
           ...(isNarrowWidth
             ? {
@@ -432,7 +432,7 @@ export function ModalTitle({
       <Input
         ref={inputRef}
         style={{
-          fontSize: 25,
+          fontSize: 'var(--font-size-25)',
           fontWeight: 700,
           textAlign: 'center',
           ...style,
@@ -465,7 +465,7 @@ export function ModalTitle({
           maxFontSizePx={25}
           onClick={onTitleClick}
           style={{
-            fontSize: 25,
+            fontSize: 'var(--font-size-25)',
             fontWeight: 700,
             textAlign: 'center',
             ...(isEditable && styles.underlinedText),
@@ -478,7 +478,7 @@ export function ModalTitle({
         <TextOneLine
           onClick={onTitleClick}
           style={{
-            fontSize: 25,
+            fontSize: 'var(--font-size-25)',
             fontWeight: 700,
             textAlign: 'center',
             ...(isEditable && styles.underlinedText),

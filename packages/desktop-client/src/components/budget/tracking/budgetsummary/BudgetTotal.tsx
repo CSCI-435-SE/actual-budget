@@ -37,7 +37,7 @@ export function BudgetTotal<
         lineHeight: 1.5,
         flexDirection: 'row',
         alignItems: 'center',
-        fontSize: 14,
+        fontSize: 'var(--font-size-14)',
         ...style,
       }}
     >

@@ -332,7 +332,7 @@ function Notification({
                   style={{
                     whiteSpace: 'pre-wrap',
                     fontFamily: 'monospace',
-                    fontSize: 12,
+                    fontSize: 'var(--font-size-12)',
                     backgroundColor: 'rgba(0, 0, 0, .05)',
                     padding: 10,
                     borderRadius: 4,

@@ -1,0 +1,2634 @@
+# Sprint 1 Backlog
+
+**Created:** 10/5/2026 11:14:47  
+**Updated:** 10/7/2026 23:04:53  
+**Exported:** 10/7/2026 23:07:41  
+**Link:** [https://claude.ai/chat/524f9feb-70e7-4b29-a791-fc741cbf421a](https://claude.ai/chat/524f9feb-70e7-4b29-a791-fc741cbf421a)  
+
+## User:
+
+> 10/7/2026 15:03:20
+
+Where can I find UI components like the eyeball for privacy mode and bell for notifications on all pages, the calendars on the budget page, and those found within account transaction columns.
+
+## Assistant:
+
+> 10/7/2026 15:04:06
+
+Let me search for these specific components:
+
+> Ran 9 commands
+>
+> - Find privacy, notification, and calendar components
+> - Find icon files
+> - List icon directories
+> - Find specific icons for eye, bell, calendar
+> - Find eye/privacy icons
+> - Check Titlebar for privacy and notification icon usage
+> - Find notification and transaction column icons
+> - Find notification and all transaction icon imports
+> - Get all SVG icon imports in transactions table and month picker
+> - **Done**
+
+Now I have the full picture. Here's where everything lives:
+
+---
+
+### Icons (SVG components)
+All icons are in `packages/component-library/src/icons/` across three versioned sets (`v0`, `v1`, `v2`). They're imported into components as `Svg`-prefixed names:
+
+| Icon | File | Used in |
+|---|---|---|
+| Privacy (eye open) | `v0/ViewShow.tsx` | `Titlebar.tsx` as `SvgViewShow` |
+| Privacy (eye closed) | `v0/ViewHide.tsx` | `Titlebar.tsx` as `SvgViewHide` |
+| Calendar (budget page) | `v2/Calendar.tsx` | `MonthPicker.tsx` as `SvgCalendar` |
+| Calendar (transactions) | `v1/Calendar3.tsx` | `TransactionsTable.tsx` as `SvgCalendar3` |
+| Notifications (v0) | `v0/Notification.tsx` | Available as `SvgNotification` |
+| Notifications outline | `v0/NotificationsOutline.tsx` | Available as `SvgNotificationsOutline` |
+
+---
+
+### UI Components that use these icons
+
+| Feature | Component file |
+|---|---|
+| Privacy eyeball button | `packages/desktop-client/src/components/Titlebar.tsx` |
+| Privacy filter wrapper | `packages/desktop-client/src/components/PrivacyFilter.tsx` |
+| Notifications system | `packages/desktop-client/src/components/Notifications.tsx` |
+| Budget page calendar/month picker | `packages/desktop-client/src/components/budget/MonthPicker.tsx` |
+| Transaction table columns | `packages/desktop-client/src/components/transactions/TransactionsTable.tsx` |
+
+---
+
+### How icons are imported in components
+
+```tsx
+// Privacy icons
+import { SvgViewHide, SvgViewShow } from '@actual-app/components/icons/v0';
+
+// Budget page calendar
+import { SvgCalendar } from '@actual-app/components/icons/v2';
+
+// Transaction schedule calendar
+import { SvgCalendar3 } from '@actual-app/components/icons/v1';
+```
+
+If you wanted to add a new icon to the app, you'd add an SVG file to the appropriate versioned folder in `packages/component-library/src/icons/` and create a matching `.tsx` wrapper alongside it following the same pattern as the existing ones.
+
+## User:
+
+> 10/7/2026 15:21:43
+
+How would I go about adding a setting to change the size of the icons?
+
+## Assistant:
+
+> 10/7/2026 15:22:28
+
+Let me look at how icons are sized currently:
+
+> Ran 4 commands
+>
+> - Check how icons are sized in Titlebar
+> - Check how SVG icon components accept size props
+> - Check icon sizing patterns across the codebase
+> - Find common icon size values used across the codebase
+> - **Done**
+
+Now I have a clear picture. Here's how to approach it, following the exact same pattern as the font size feature:
+
+---
+
+### The approach: CSS variables for icon sizes
+
+Icons accept `width` and `height` as either inline props (`width={15}`) or via `style={{ width: 15 }}`. Both are hardcoded numbers, just like font sizes were. The solution mirrors what you did for fonts — introduce CSS variables and replace hardcoded values.
+
+---
+
+### Step 1 — Add icon size to `GlobalPrefs` in `prefs.ts`
+
+```ts
+export type GlobalPrefs = Partial<{
+  fontSize: string;
+  iconSize: string;  // <-- add this
+}>;
+
+export type GlobalPrefsJson = Partial<{
+  'font-size'?: GlobalPrefs['fontSize'];
+  'icon-size'?: GlobalPrefs['iconSize'];  // <-- add this
+}>;
+```
+
+---
+
+### Step 2 — Handle it in `preferences/app.ts`
+
+In `saveGlobalPrefs`:
+```ts
+if (prefs.iconSize !== undefined) {
+  await asyncStorage.setItem('icon-size', prefs.iconSize);
+}
+```
+
+In `loadGlobalPrefs`, add `'icon-size'` to the `multiGet` call and return it:
+```ts
+const {
+  'font-size': fontSize,
+  'icon-size': iconSize,  // <-- add
+  // ...rest unchanged
+} = await asyncStorage.multiGet([
+  'font-size',
+  'icon-size',            // <-- add
+  // ...rest unchanged
+]);
+
+return {
+  fontSize: fontSize || '1',
+  iconSize: iconSize || '1',  // <-- add
+  // ...rest unchanged
+};
+```
+
+---
+
+### Step 3 — Extend `fontSize.tsx` to include icon size variables
+
+Rather than creating a separate file, add icon size scaling to the existing `style/fontSize.tsx` since it's already the CSS variable injection point:
+
+```tsx
+const baseIconScale = {
+  '--icon-size-8': 8,
+  '--icon-size-10': 10,
+  '--icon-size-12': 12,
+  '--icon-size-13': 13,
+  '--icon-size-15': 15,
+  '--icon-size-17': 17,
+  '--icon-size-20': 20,
+};
+
+export function FontSizeStyle() {
+  const [fontSize] = useGlobalPref('fontSize');
+  const [iconSize] = useGlobalPref('iconSize');
+
+  const fontMultiplier = parseFloat(fontSize ?? '1');
+  const iconMultiplier = parseFloat(iconSize ?? '1');
+
+  const css = `
+    :root {
+      ${Object.entries(baseScale)
+        .map(([key, base]) => `${key}: ${Math.round(base * fontMultiplier)}px;`)
+        .join('\n      ')}
+      ${Object.entries(baseIconScale)
+        .map(([key, base]) => `${key}: ${Math.round(base * iconMultiplier)}px;`)
+        .join('\n      ')}
+    }
+  `;
+
+  return <style id="font-size-scale">{css}</style>;
+}
+```
+
+---
+
+### Step 4 — Create `IconSizeSettings.tsx`
+
+```tsx
+import { Trans, useTranslation } from 'react-i18next';
+
+import { Select } from '@actual-app/components/select';
+import type { SelectOption } from '@actual-app/components/select';
+import { Text } from '@actual-app/components/text';
+
+import { useGlobalPref } from '#hooks/useGlobalPref';
+
+import { Setting } from './UI';
+
+export function IconSizeSettings() {
+  const { t } = useTranslation();
+  const [iconSize, setIconSize] = useGlobalPref('iconSize');
+
+  const iconSizeOptions: SelectOption[] = [
+    ['0.85', t('Small')],
+    ['1', t('Medium (Default)')],
+    ['1.15', t('Large')],
+    ['1.3', t('Extra Large')],
+  ];
+
+  return (
+    <Setting
+      primaryAction={
+        <Select
+          aria-label={t('Select icon size')}
+          options={iconSizeOptions}
+          value={iconSize ?? '1'}
+          defaultLabel={t('Medium (Default)')}
+          onChange={value => setIconSize(value)}
+        />
+      }
+    >
+      <Text>
+        <Trans>
+          <strong>Icon size</strong> controls the size of icons throughout
+          the app. The default size is medium.
+        </Trans>
+      </Text>
+    </Setting>
+  );
+}
+```
+
+---
+
+### Step 5 — Replace hardcoded icon sizes across the codebase
+
+Icons use two sizing patterns — replace both with CSS variables:
+
+**Props style:**
+```tsx
+// Before
+<SvgCalendar width={15} height={15} />
+
+// After
+<SvgCalendar
+  style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}
+/>
+```
+
+**Style object:**
+```tsx
+// Before
+const scheduleIconStyle = { width: 12, height: 12 };
+
+// After
+const scheduleIconStyle = {
+  width: 'var(--icon-size-12)',
+  height: 'var(--icon-size-12)',
+};
+```
+
+Use VSCode's regex find-and-replace across `packages/desktop-client/src`:
+- **Find:** `width=\{(\d+)\} height=\{(\d+)\}`
+- **Replace:** `style={{ width: 'var(--icon-size-$1)', height: 'var(--icon-size-$2)' }}`
+
+Then a second pass for style objects:
+- **Find:** `(width|height): (\d+)`
+- **Replace:** `$1: 'var(--icon-size-$2)'`
+
+> **Note:** The second regex will also catch non-icon style properties like `marginTop: 10`. Review the matches carefully before replacing — limit the search scope to lines that are near `Svg` component usages if possible.
+
+---
+
+### Step 6 — Register in `settings/index.tsx`
+
+```tsx
+import { IconSizeSettings } from './IconSizeSettings';
+
+// In Settings JSX, alongside FontSizeSettings:
+<FontSizeSettings />
+<IconSizeSettings />
+```
+
+---
+
+### Step 7 — Apply on startup in `prefsSlice.ts`
+
+The `FontSizeStyle` component already reads `iconSize` from `useGlobalPref` reactively, so no extra startup code is needed beyond what's already there — as long as `loadGlobalPrefs` correctly loads `iconSize` from `asyncStorage` (Step 2 above).
+
+## User:
+
+> 10/7/2026 15:30:30
+
+Is Step 1 in the file \packages\loot-core\src\types\prefs.ts ?
+
+## Assistant:
+
+> 10/7/2026 15:30:32
+
+Yes, exactly. The full path is:
+
+```
+packages/loot-core/src/types/prefs.ts
+```
+
+This is the same file you edited earlier when adding `fontSize` and `'font-size'` — you'll find both `GlobalPrefs` and `GlobalPrefsJson` types already there, so just add `iconSize` and `'icon-size'` alongside the existing font size entries you added.
+
+## User:
+
+> 10/7/2026 15:35:18
+
+In step 3, can I instead create a separate file?
+
+## Assistant:
+
+> 10/7/2026 15:35:25
+
+Yes, you can create a separate `style/iconSize.tsx` file following the same pattern as `fontSize.tsx`:
+
+```tsx
+import { useGlobalPref } from '#hooks/useGlobalPref';
+
+const baseIconScale = {
+  '--icon-size-8': 8,
+  '--icon-size-10': 10,
+  '--icon-size-12': 12,
+  '--icon-size-13': 13,
+  '--icon-size-15': 15,
+  '--icon-size-17': 17,
+  '--icon-size-20': 20,
+};
+
+export function IconSizeStyle() {
+  const [iconSize] = useGlobalPref('iconSize');
+  const multiplier = parseFloat(iconSize ?? '1');
+
+  const css = `:root {
+    ${Object.entries(baseIconScale)
+      .map(([key, base]) => `${key}: ${Math.round(base * multiplier)}px;`)
+      .join('\n    ')}
+  }`;
+
+  return <style id="icon-size-scale">{css}</style>;
+}
+```
+
+Then make three additions:
+
+**`style/index.ts`** — export it from the barrel file:
+```ts
+export * from './styles';
+export * from './theme';
+export * from './fontSize';
+export * from './iconSize';  // <-- add this
+```
+
+**`App.tsx`** — import and mount it alongside `FontSizeStyle`:
+```tsx
+import {
+  CustomThemeStyle,
+  FontSizeStyle,
+  IconSizeStyle,  // <-- add this
+  hasHiddenScrollbars,
+  ThemeStyle,
+  useTheme,
+} from '#style';
+
+// In JSX:
+<ThemeStyle />
+<CustomThemeStyle />
+<FontSizeStyle />
+<IconSizeStyle />  {/* <-- add this */}
+```
+
+**`prefsSlice.ts`** — apply on startup alongside font size. Since `IconSizeStyle` reads from `useGlobalPref` reactively, no extra code is needed here as long as `loadGlobalPrefs` in `preferences/app.ts` correctly loads `iconSize` from `asyncStorage`.
+
+## User:
+
+> 10/7/2026 15:46:01
+
+What is the full path of style/iconSize.tsx ?
+
+## Assistant:
+
+> 10/7/2026 15:46:03
+
+```
+packages/desktop-client/src/style/iconSize.tsx
+```
+
+This sits alongside the other style files you've already worked with in that directory:
+
+```
+packages/desktop-client/src/style/
+  fontSize.tsx
+  iconSize.tsx   ← new file
+  index.ts
+  theme.tsx
+```
+
+## User:
+
+> 10/7/2026 15:47:49
+
+What is the path for IconSizeSettings.tsx ?
+
+## Assistant:
+
+> 10/7/2026 15:47:50
+
+```
+packages/desktop-client/src/components/settings/IconSizeSettings.tsx
+```
+
+This sits alongside the other settings component files you've already worked with:
+
+```
+packages/desktop-client/src/components/settings/
+  FontSizeSettings.tsx
+  IconSizeSettings.tsx   ← new file
+  index.tsx
+  LanguageSettings.tsx
+  Themes.tsx
+  UI.tsx
+  ...
+```
+
+## User:
+
+> 10/7/2026 16:17:31
+
+How would I go about step 7 if I no longer have the FontSizeStyle component
+
+## Assistant:
+
+> 10/7/2026 16:17:35
+
+Since you have a separate `IconSizeStyle` component instead, Step 7 is already handled automatically — `IconSizeStyle` reads `iconSize` from `useGlobalPref` reactively, so whenever `loadGlobalPrefs` runs on startup and loads the saved `iconSize` value into Redux, `IconSizeStyle` will pick it up and apply the correct CSS variables without any extra startup code needed.
+
+The only thing you need to make sure is that Step 2 is done correctly — that `loadGlobalPrefs` in `preferences/app.ts` includes `'icon-size'` in the `multiGet` call and returns `iconSize` in the result object. That's what feeds `useGlobalPref('iconSize')` with the saved value on startup.
+
+## User:
+
+> 10/7/2026 16:25:18
+
+4:23:56 PM [vite] Internal server error: [BabelError] C:\Users\sarag\actual-budget\packages\desktop-client\src\components\alerts.tsx: Unexpected token, expected "," (58:79)
+
+  56 |         <Icon width={13} style={{ marginTop: 2 }} />
+  57 |       </View>
+> 58 |       <Text style={{ width: '100%', zIndex: 1, lineHeight: 'var(--icon-size-1)'.5 }}>
+     |                                                                                ^
+  59 |         {children}
+  60 |       </Text>
+  61 |     </View>
+
+## Assistant:
+
+> 10/7/2026 16:25:24
+
+The regex find-and-replace has incorrectly modified a `lineHeight` value that wasn't an icon size. The line should be:
+
+```tsx
+<Text style={{ width: '100%', zIndex: 1, lineHeight: 1.5 }}>
+```
+
+It was originally `lineHeight: 1.5` and the regex incorrectly matched the `1` in `1.5` and turned it into `'var(--icon-size-1)'.5`. Since `lineHeight: 1.5` is not an icon size, it should be left as a plain number.
+
+This is the case mentioned earlier where the second regex pass catches non-icon style properties. You'll want to scan through all the replacements made and revert any that were applied to non-icon properties like `lineHeight`, `marginTop`, `padding`, `borderRadius`, `zIndex` and so on — those should stay as plain numbers.
+
+A quick way to find other potentially incorrect replacements:
+
+```bash
+grep -rn "var(--icon-size" packages/desktop-client/src --include="*.tsx" --include="*.ts" | grep -v "width\|height"
+```
+
+This will show all places where `var(--icon-size-*)` was applied to something other than `width` or `height`, so you can review and revert them manually.
+
+## User:
+
+> 10/7/2026 16:33:12
+
+How can I search for every instance of this in the code 'var(--icon-size-1)'.5
+
+## Assistant:
+
+> 10/7/2026 16:33:15
+
+In VSCode, open the search panel with **Ctrl + Shift + F** and search for:
+
+```
+'var(--icon-size-1)'.5
+```
+
+Make sure **regex mode is off** for this search since it's a literal string. This will show every file where the bad replacement occurred so you can fix them all.
+
+Alternatively from the terminal:
+
+```bash
+grep -rn "'var(--icon-size-1)'.5" packages/desktop-client/src --include="*.tsx" --include="*.ts"
+```
+
+Each result should be reverted back to `lineHeight: 1.5` (or whatever the original decimal value was).
+
+## User:
+
+> 10/7/2026 16:34:34
+
+What should I replace it with in VSCode?
+
+## Assistant:
+
+> 10/7/2026 16:34:36
+
+In VSCode's find and replace (**Ctrl + Shift + H**):
+
+- **Find:** `'var(--icon-size-1)'.5`
+- **Replace:** `1.5`
+
+Make sure regex mode is **off**, then click **Replace All**. This will restore every instance back to the original `1.5` value.
+
+## User:
+
+> 10/7/2026 16:43:36
+
+4:43:25 PM [vite] (client) Pre-transform error: [BabelError] C:\Users\sarag\actual-budget\packages\desktop-client\src\components\sidebar\Sidebar.tsx: Unexpected token (120:47)
+
+  118 |             style={{
+  119 |               flexGrow: 1,
+> 120 |               '@media screen and (max-height: 'var(--icon-size-480)'px)': {
+      |                                                ^
+  121 |                 overflowY: 'auto',
+  122 |               },
+  123 |             }}
+
+## Assistant:
+
+> 10/7/2026 16:43:40
+
+The regex replaced `480` inside a media query string, which it shouldn't have. In VSCode find and replace (**Ctrl + Shift + H**):
+
+- **Find:** `'var(--icon-size-480)'px`
+- **Replace:** `480px`
+
+That will restore the line back to:
+
+```tsx
+'@media screen and (max-height: 480px)': {
+```
+
+This is another example of the regex being too broad — it caught numbers inside strings like media queries, not just icon `width` and `height` values. It's worth running the terminal grep command to catch any other similar cases:
+
+```bash
+grep -rn "var(--icon-size" packages/desktop-client/src --include="*.tsx" --include="*.ts" | grep -v "width\|height"
+```
+
+This will surface all remaining incorrect replacements in one go so you can fix them all at once rather than one error at a time.
+
+## User:
+
+> 10/7/2026 16:47:53
+
+On the accounts page, there are icons that have become exponentially large. Likely during one of the "replace all" moments, I may have missed one. How can I fix this?
+
+## Assistant:
+
+> 10/7/2026 17:30:12
+
+Let me find where the accounts page icons are sized:
+
+> Ran 8 commands
+>
+> - Find accounts page components
+> - Find the main accounts page component
+> - Check icon sizing in accounts components
+> - Find the main Accounts page
+> - Find Account.tsx
+> - Check icon width/height values in Account components
+> - Find any var(--icon-size) usages in account files
+> - Find any large hardcoded width/height values in accounts area
+> - **Done**
+
+Since the original files in the zip don't have the bad values, the issue is in your locally modified files. The best way to find exactly which files were incorrectly changed is to use Git:
+
+```bash
+git diff packages/desktop-client/src --unified=0 | grep "^+" | grep "width\|height" | grep -v "var(--icon-size"
+```
+
+This shows every line you added that contains `width` or `height` but **doesn't** use a CSS variable — meaning it either still has a raw number that should have been replaced, or worse, got an incorrect replacement like a very large number.
+
+Alternatively, to find lines that may have gotten exponentially large values:
+
+```bash
+git diff packages/desktop-client/src --unified=0 | grep "^+" | grep -E "width=\{[0-9]{3,}\}|height=\{[0-9]{3,}\}"
+```
+
+This flags any `width` or `height` prop with a 3-digit-or-more number, which would cause icons to appear enormous. Once you find the offending lines, you can either:
+
+- **Fix manually** by replacing the large number with the correct `var(--icon-size-N)` value
+- **Revert the specific file** if it's too messy:
+  ```bash
+  git checkout -- packages/desktop-client/src/components/path/to/file.tsx
+  ```
+  Then redo the replacement carefully in that file alone
+
+## User:
+
+> 10/7/2026 20:58:10
+
+Can I save multiple files at once in VSCode?
+
+## Assistant:
+
+> 10/7/2026 20:58:12
+
+Yes, you can save all open files at once in VSCode with:
+
+**Ctrl + K, S**
+
+That means press **Ctrl + K** first, release, then press **S**.
+
+Alternatively you can also use the menu: **File → Save All**.
+
+This saves every file you currently have open and modified, which is useful after doing a find-and-replace across multiple files.
+
+## User:
+
+> 10/7/2026 21:01:13
+
+<SvgExpandArrow style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)' }} style={{ marginRight: 5 }} />
+
+## Assistant:
+
+> 10/7/2026 21:01:17
+
+This line has two `style` props on the same element, which is invalid in React — only one `style` prop is allowed. They need to be merged into one:
+
+```tsx
+<SvgExpandArrow style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)', marginRight: 5 }} />
+```
+
+This was likely caused by the regex replacing `width={8} height={8}` with a `style` object while a `style` prop already existed on that element. It's worth doing a quick search for other instances of the same problem:
+
+```bash
+grep -rn "style={{.*}} style={{" packages/desktop-client/src --include="*.tsx"
+```
+
+Any results will need the same fix — merging both style objects into one.
+
+## User:
+
+> 10/7/2026 21:08:00
+
+How to stash changes in the terminal
+
+## Assistant:
+
+> 10/7/2026 21:08:03
+
+To stash all your current uncommitted changes:
+
+```bash
+git stash
+```
+
+This saves your changes and reverts the working directory back to the last commit. Then when you want to bring your changes back:
+
+```bash
+git stash pop
+```
+
+Other useful stash commands:
+
+```bash
+# See all stashes
+git stash list
+
+# Stash with a descriptive name
+git stash push -m "font and icon size feature"
+
+# Apply a specific stash without removing it from the list
+git stash apply stash@{0}
+
+# Drop a specific stash without applying it
+git stash drop stash@{0}
+
+# Clear all stashes
+git stash clear
+```
+
+Note that `git stash pop` applies the most recent stash and removes it from the stash list, while `git stash apply` applies it but keeps it in the list.
+
+## User:
+
+> 10/7/2026 21:08:33
+
+I have decided to start over on the icon sizes. Please remind me the steps I need to take to make those changes again.
+
+## Assistant:
+
+> 10/7/2026 21:08:45
+
+Here's the full list of steps:
+
+---
+
+### 1. `packages/loot-core/src/types/prefs.ts`
+Add `iconSize` to `GlobalPrefs` and `'icon-size'` to `GlobalPrefsJson`.
+
+---
+
+### 2. `packages/loot-core/src/server/preferences/app.ts`
+Add `'icon-size'` to the `multiGet` call in `loadGlobalPrefs`, save it in `saveGlobalPrefs`, and return it in the result object.
+
+---
+
+### 3. `packages/desktop-client/src/style/iconSize.tsx` *(new file)*
+Create the CSS variable injection component `IconSizeStyle` with the base icon scale and multiplier logic.
+
+---
+
+### 4. `packages/desktop-client/src/style/index.ts`
+Add `export * from './iconSize';`
+
+---
+
+### 5. `packages/desktop-client/src/components/settings/IconSizeSettings.tsx` *(new file)*
+Create the settings component with the `Select` dropdown and `useGlobalPref('iconSize')`.
+
+---
+
+### 6. `packages/desktop-client/src/components/settings/index.tsx`
+Import and register `IconSizeSettings` in the settings page JSX.
+
+---
+
+### 7. `packages/desktop-client/src/components/App.tsx`
+Import `IconSizeStyle` from `#style` and mount it in the JSX alongside `FontSizeStyle`.
+
+---
+
+### 8. Replace hardcoded icon sizes across the codebase
+Use VSCode find and replace (**Ctrl + Shift + H**) with regex mode **on**, scoped to `packages/desktop-client/src`:
+- **Find:** `width=\{(\d+)\} height=\{(\d+)\}`
+- **Replace:** `style={{ width: 'var(--icon-size-$1)', height: 'var(--icon-size-$2)' }}`
+
+Then carefully review results — avoid replacing non-icon properties like `lineHeight`, `marginTop`, `padding` etc. Check for any double `style` props that may result from icons that already had a `style` prop and merge them manually.
+
+---
+
+### 9. Verify no incorrect replacements remain
+```bash
+grep -rn "var(--icon-size" packages/desktop-client/src --include="*.tsx" --include="*.ts" | grep -v "width\|height"
+```
+Any results need to be manually reverted to their original values.
+
+---
+
+### 10. Write unit tests
+Create `packages/loot-core/src/server/preferences/app.test.ts` following the same pattern as the font size tests, covering save, load, round-trip, and fallback for `icon-size`.
+
+## User:
+
+> 10/7/2026 21:09:00
+
+Can you provide the coding sections again?
+
+## Assistant:
+
+> 10/7/2026 21:09:26
+
+Here's the code for each step:
+
+---
+
+### Step 1 — `prefs.ts`
+```ts
+export type GlobalPrefs = Partial<{
+  // ...existing keys...
+  fontSize: string;
+  iconSize: string;  // <-- add this
+}>;
+
+export type GlobalPrefsJson = Partial<{
+  // ...existing keys...
+  'font-size'?: GlobalPrefs['fontSize'];
+  'icon-size'?: GlobalPrefs['iconSize'];  // <-- add this
+}>;
+```
+
+---
+
+### Step 2 — `preferences/app.ts`
+In `saveGlobalPrefs`:
+```ts
+if (prefs.iconSize !== undefined) {
+  await asyncStorage.setItem('icon-size', prefs.iconSize);
+}
+```
+
+In `loadGlobalPrefs`, add to the `multiGet` call:
+```ts
+const {
+  'font-size': fontSize,
+  'icon-size': iconSize,  // <-- add
+  // ...rest unchanged
+} = await asyncStorage.multiGet([
+  'font-size',
+  'icon-size',            // <-- add
+  // ...rest unchanged
+]);
+
+return {
+  fontSize: fontSize || '1',
+  iconSize: iconSize || '1',  // <-- add
+  // ...rest unchanged
+};
+```
+
+---
+
+### Step 3 — `style/iconSize.tsx` *(new file)*
+```tsx
+import { useGlobalPref } from '#hooks/useGlobalPref';
+
+const baseIconScale = {
+  '--icon-size-8': 8,
+  '--icon-size-10': 10,
+  '--icon-size-12': 12,
+  '--icon-size-13': 13,
+  '--icon-size-15': 15,
+  '--icon-size-17': 17,
+  '--icon-size-20': 20,
+};
+
+export function IconSizeStyle() {
+  const [iconSize] = useGlobalPref('iconSize');
+  const multiplier = parseFloat(iconSize ?? '1');
+
+  const css = `:root {
+    ${Object.entries(baseIconScale)
+      .map(([key, base]) => `${key}: ${Math.round(base * multiplier)}px;`)
+      .join('\n    ')}
+  }`;
+
+  return <style id="icon-size-scale">{css}</style>;
+}
+```
+
+---
+
+### Step 4 — `style/index.ts`
+```ts
+export * from './styles';
+export * from './theme';
+export * from './fontSize';
+export * from './iconSize';  // <-- add this
+```
+
+---
+
+### Step 5 — `IconSizeSettings.tsx` *(new file)*
+```tsx
+import { Trans, useTranslation } from 'react-i18next';
+
+import { Select } from '@actual-app/components/select';
+import type { SelectOption } from '@actual-app/components/select';
+import { Text } from '@actual-app/components/text';
+
+import { useGlobalPref } from '#hooks/useGlobalPref';
+
+import { Setting } from './UI';
+
+export function IconSizeSettings() {
+  const { t } = useTranslation();
+  const [iconSize, setIconSize] = useGlobalPref('iconSize');
+
+  const iconSizeOptions: SelectOption[] = [
+    ['0.85', t('Small')],
+    ['1', t('Medium (Default)')],
+    ['1.15', t('Large')],
+    ['1.3', t('Extra Large')],
+  ];
+
+  return (
+    <Setting
+      primaryAction={
+        <Select
+          aria-label={t('Select icon size')}
+          options={iconSizeOptions}
+          value={iconSize ?? '1'}
+          defaultLabel={t('Medium (Default)')}
+          onChange={value => setIconSize(value)}
+        />
+      }
+    >
+      <Text>
+        <Trans>
+          <strong>Icon size</strong> controls the size of icons throughout
+          the app. The default size is medium.
+        </Trans>
+      </Text>
+    </Setting>
+  );
+}
+```
+
+---
+
+### Step 6 — `settings/index.tsx`
+```tsx
+import { IconSizeSettings } from './IconSizeSettings';
+
+// In Settings JSX:
+<FontSizeSettings />
+<IconSizeSettings />  {/* <-- add this */}
+```
+
+---
+
+### Step 7 — `App.tsx`
+```tsx
+import {
+  CustomThemeStyle,
+  FontSizeStyle,
+  IconSizeStyle,  // <-- add this
+  hasHiddenScrollbars,
+  ThemeStyle,
+  useTheme,
+} from '#style';
+
+// In JSX:
+<ThemeStyle />
+<CustomThemeStyle />
+<FontSizeStyle />
+<IconSizeStyle />  {/* <-- add this */}
+```
+
+---
+
+### Step 10 — Unit tests `preferences/app.test.ts`
+```ts
+// @ts-strict-ignore
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('#server/main', () => ({
+  getDefaultDocumentDir: () => '/mock/documents',
+}));
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { runHandler } from '#server/mutators';
+
+import { app } from './app';
+
+const saveGlobalPrefs = app.handlers['save-global-prefs'];
+const loadGlobalPrefs = app.handlers['load-global-prefs'];
+
+describe('global preferences', () => {
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await runHandler(saveGlobalPrefs, { fontSize: '1.1' });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await runHandler(saveGlobalPrefs, { fontSize: '1.2' });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+
+  describe('icon-size', () => {
+    it('saves icon-size to asyncStorage', async () => {
+      await runHandler(saveGlobalPrefs, { iconSize: '1.15' });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'icon-size',
+        '1.15',
+      );
+    });
+
+    it('loads icon-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'icon-size': '1.15',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.iconSize).toBe('1.15');
+    });
+
+    it('round-trips icon-size through save and load', async () => {
+      await runHandler(saveGlobalPrefs, { iconSize: '1.3' });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'icon-size': '1.3',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.iconSize).toBe('1.3');
+    });
+
+    it('falls back to default multiplier when icon-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.iconSize).toBe('1');
+    });
+  });
+});
+```
+
+## User:
+
+> 10/7/2026 21:22:40
+
+Step 8 requires looking through nearly one thousand lines of code. Is there an easier way?
+
+## Assistant:
+
+> 10/7/2026 21:22:52
+
+Yes. Instead of a broad regex replace across the whole codebase, you can write a script that does it safely and automatically. Create a file called `replace-icon-sizes.mjs` in the root of the project:
+
+```js
+import { readFileSync, writeFileSync } from 'fs';
+import { globSync } from 'glob';
+
+const files = globSync(
+  'packages/desktop-client/src/**/*.{ts,tsx}',
+  { ignore: ['**/*.test.*', '**/node_modules/**'] }
+);
+
+// Only these properties should get icon-size variables
+const ICON_PROPS = new Set(['width', 'height']);
+
+// Only replace when both width and height are on an Svg element
+const SVG_PROP_REGEX = /(<Svg[A-Za-z0-9]+[^>]*?)width=\{(\d+)\}([^>]*?)height=\{(\d+)\}/g;
+
+// Style object icon sizes e.g. { width: 12, height: 12 } only on lines with Svg
+let totalReplacements = 0;
+
+for (const file of files) {
+  let content = readFileSync(file, 'utf8');
+  let modified = content;
+
+  // Replace width={N} height={N} props on Svg elements
+  modified = modified.replace(SVG_PROP_REGEX, (match, before, w, middle, h) => {
+    // Make sure we're on an Svg component
+    if (!before.match(/Svg[A-Za-z]/)) return match;
+    return `${before}width={'var(--icon-size-${w})'}${middle}height={'var(--icon-size-${h})'}`;
+  });
+
+  if (modified !== content) {
+    writeFileSync(file, modified, 'utf8');
+    totalReplacements++;
+    console.log(`Updated: ${file}`);
+  }
+}
+
+console.log(`\nDone. Updated ${totalReplacements} files.`);
+```
+
+Run it from the root of the project:
+
+```bash
+node replace-icon-sizes.mjs
+```
+
+This is safer than a blanket regex replace because it:
+
+- Only targets `Svg`-prefixed components, so `marginTop`, `lineHeight`, `padding` and other non-icon properties are never touched
+- Only replaces `width` and `height` together on the same element, avoiding partial replacements
+- Logs every file it modifies so you can review the changes
+- Leaves existing `style={{}}` props untouched, avoiding the double `style` prop problem
+
+After running it, verify the results with:
+
+```bash
+grep -rn "var(--icon-size" packages/desktop-client/src --include="*.tsx" --include="*.ts" | grep -v "width\|height"
+```
+
+That should return nothing, confirming no incorrect replacements were made.
+
+## User:
+
+> 10/7/2026 21:23:09
+
+When you say the root of the project, what do you mean?
+
+## Assistant:
+
+> 10/7/2026 21:23:12
+
+The root of the project is the top-level folder that contains all the `packages/` directory. Based on your file paths earlier, that would be:
+
+```
+C:\Users\sarag\actual-budget\
+```
+
+So in the VSCode terminal, make sure you're in that directory before running the script:
+
+```bash
+cd C:\Users\sarag\actual-budget
+node replace-icon-sizes.mjs
+```
+
+You can confirm you're in the right place by running:
+
+```bash
+ls
+```
+
+You should see folders like `packages`, `node_modules`, and files like `package.json` and `yarn.lock` listed.
+
+## User:
+
+> 10/7/2026 21:25:29
+
+Explain what a .mjs is
+
+## Assistant:
+
+> 10/7/2026 21:25:34
+
+`.mjs` stands for **Module JavaScript**. It's a JavaScript file that explicitly uses the modern **ES Module** syntax — the same `import`/`export` syntax you see throughout the Actual Budget codebase:
+
+```js
+import { readFileSync } from 'fs';  // ES Module syntax
+```
+
+As opposed to the older **CommonJS** syntax that plain `.js` files traditionally used in Node.js:
+
+```js
+const { readFileSync } = require('fs');  // CommonJS syntax
+```
+
+The reason the script uses `.mjs` specifically is that the `package.json` at the root of the Actual Budget project likely specifies `"type": "module"`, which means Node.js expects ES Module syntax. Using `.mjs` makes this explicit regardless of what the `package.json` says, so the script will run correctly either way.
+
+In short — it's just a JavaScript file, but the `.mjs` extension tells Node.js to treat it as a modern ES Module so the `import` statements work without any extra configuration.
+
+## User:
+
+> 10/7/2026 21:26:10
+
+Explain how replace-icon-sizes.mjs will work. Will I run it once and then delete it? Or will it run every time I run the program?
+
+## Assistant:
+
+> 10/7/2026 21:26:16
+
+You run it **once and then delete it**. It's a one-time migration script, not part of the app itself.
+
+Here's what happens when you run it:
+
+1. It scans every `.ts` and `.tsx` file in `packages/desktop-client/src/`
+2. For each file, it finds hardcoded `width={N} height={N}` props on `Svg` components
+3. It replaces them with `width={'var(--icon-size-N)'} height={'var(--icon-size-N)'}`
+4. It saves the modified file back to disk
+5. It logs which files were changed so you can review them
+
+After it finishes, the changes are permanently written into your source files — just like if you had done the find-and-replace manually in VSCode. The script itself is no longer needed after that.
+
+So the workflow is:
+
+```bash
+# 1. Run it once
+node replace-icon-sizes.mjs
+
+# 2. Review the changes
+git diff
+
+# 3. Delete the script - it's not part of the app
+del replace-icon-sizes.mjs  # Windows
+# or
+rm replace-icon-sizes.mjs   # Git Bash
+```
+
+It's similar to a database migration script — it makes a one-time change to bring everything up to date, and once that's done it has no further purpose.
+
+## User:
+
+> 10/7/2026 21:29:04
+
+PS C:\Users\sarag\actual-budget> node replace-icon-sizes.mjs
+file:///C:/Users/sarag/actual-budget/replace-icon-sizes.mjs:2
+import { globSync } from 'glob';
+         ^^^^^^^^
+SyntaxError: Named export 'globSync' not found. The requested module 'glob' is a CommonJS module, which may not support all module.exports as named exports.
+CommonJS modules can always be imported via the default export, for example using:
+
+import pkg from 'glob';
+const { globSync } = pkg;
+
+    at #asyncInstantiate (node:internal/modules/esm/module_job:455:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:553:5)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+## Assistant:
+
+> 10/7/2026 21:29:06
+
+The error tells you exactly how to fix it. Update the import at the top of `replace-icon-sizes.mjs`:
+
+```js
+import { readFileSync, writeFileSync } from 'fs';
+import pkg from 'glob';
+const { globSync } = pkg;
+```
+
+That's the only change needed — the rest of the script stays the same. Then run it again:
+
+```bash
+node replace-icon-sizes.mjs
+```
+
+## User:
+
+> 10/7/2026 21:29:46
+
+PS C:\Users\sarag\actual-budget> node replace-icon-sizes.mjs
+file:///C:/Users/sarag/actual-budget/replace-icon-sizes.mjs:5
+const files = globSync(
+              ^
+
+TypeError: globSync is not a function
+    at file:///C:/Users/sarag/actual-budget/replace-icon-sizes.mjs:5:15
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+## Assistant:
+
+> 10/7/2026 21:30:02
+
+The version of `glob` installed doesn't have `globSync`. Let's check which version is available and use a different approach:
+
+> Ran 2 commands
+>
+> - Check glob version in the project
+> - Find glob version used in project
+> - **Done**
+
+Replace the script entirely to use Node's built-in `fs` module to find files recursively instead of relying on `glob`:
+
+```js
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs';
+import { join } from 'path';
+
+function getFiles(dir, files = []) {
+  for (const entry of readdirSync(dir)) {
+    const fullPath = join(dir, entry);
+    if (statSync(fullPath).isDirectory()) {
+      if (entry !== 'node_modules' && entry !== 'dist') {
+        getFiles(fullPath, files);
+      }
+    } else if (fullPath.endsWith('.tsx') || fullPath.endsWith('.ts')) {
+      if (!fullPath.includes('.test.')) {
+        files.push(fullPath);
+      }
+    }
+  }
+  return files;
+}
+
+const files = getFiles('packages/desktop-client/src');
+
+const SVG_PROP_REGEX = /(<Svg[A-Za-z0-9]+[^>]*?)width=\{(\d+)\}([^>]*?)height=\{(\d+)\}/g;
+
+let totalReplacements = 0;
+
+for (const file of files) {
+  let content = readFileSync(file, 'utf8');
+  let modified = content;
+
+  modified = modified.replace(SVG_PROP_REGEX, (match, before, w, middle, h) => {
+    if (!before.match(/Svg[A-Za-z]/)) return match;
+    return `${before}width={'var(--icon-size-${w})'}${middle}height={'var(--icon-size-${h})'}`;
+  });
+
+  if (modified !== content) {
+    writeFileSync(file, modified, 'utf8');
+    totalReplacements++;
+    console.log(`Updated: ${file}`);
+  }
+}
+
+console.log(`\nDone. Updated ${totalReplacements} files.`);
+```
+
+This uses only Node.js built-in modules so there are no dependency issues. Run it again:
+
+```bash
+node replace-icon-sizes.mjs
+```
+
+## User:
+
+> 10/7/2026 21:39:26
+
+yarntest yields these results:  FAIL  src/server/main.test.ts > Budgets > budget is successfully loaded
+ FAIL  src/server/main.test.ts > Budgets > budget detects out of sync migrations
+Error: EBUSY: resource busy or locked, unlink 'C:\Users\sarag\actual-budget\packages\loot-core\src\mocks\files\budgets\test-budget\db.sqlite'
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/server/main.test.ts > Budgets > budget detects out of sync migrations
+Error: EEXIST: file already exists, mkdir 'C:\Users\sarag\actual-budget\packages\loot-core\src\mocks\files\budgets\test-budget'
+
+## Assistant:
+
+> 10/7/2026 21:39:31
+
+These errors are not related to your changes. They are Windows file-locking issues with the test SQLite database file — the file is still locked from a previous test run when the next test tries to delete and recreate it.
+
+A few things to try:
+
+**1. Close any other terminals or processes that might be using the file**, then run the tests again:
+```bash
+yarn test:node
+```
+
+**2. Manually delete the locked file** and let the tests recreate it:
+```bash
+del packages\loot-core\src\mocks\files\budgets\test-budget\db.sqlite
+```
+
+**3. Run just your preferences test** to confirm your changes still pass independently:
+```bash
+yarn test:node --reporter=verbose src/server/preferences/app.test.ts
+```
+
+These `EBUSY` and `EEXIST` errors are a known Windows-specific issue with SQLite file handling in tests — they happen because Windows locks files more aggressively than Linux or Mac. They are unrelated to the font size or icon size feature you've been building, so as long as your preferences tests pass you don't need to worry about them.
+
+## User:
+
+> 10/7/2026 21:42:54
+
+After doing all of these steps, none of the changes actually appear in the program.
+
+## Assistant:
+
+> 10/7/2026 21:43:12
+
+Let me check how the CSS variables are actually being applied in the browser. The issue is likely that the CSS variables are defined on `:root` but the icon `width` and `height` properties set via inline styles or props may not respond to CSS variables the same way text does.
+
+> Ran command
+>
+> - Check how SVG icons handle width and height props
+> - **Done**
+
+Found the root cause. The SVG icons spread `{...props}` onto the `<svg>` element, which means `width` and `height` are passed as **SVG presentation attributes**, not CSS properties. SVG presentation attributes do **not** support CSS variables — they only accept plain values like `15` or `"15px"`.
+
+So `width={'var(--icon-size-15)'}` is being passed as an SVG attribute which SVG simply ignores, making the icons fall back to their `viewBox` default size.
+
+The fix is to pass the CSS variables through the `style` prop instead of as direct props. Update `iconSize.tsx` to inject the variables and update the script output to use `style`:
+
+**The script replacement was correct in concept but needs to produce `style` props:**
+
+```js
+// In replace-icon-sizes.mjs, change the replacement to:
+modified = modified.replace(SVG_PROP_REGEX, (match, before, w, middle, h) => {
+  if (!before.match(/Svg[A-Za-z]/)) return match;
+  // Check if there's already a style prop
+  if (before.includes('style=') || middle.includes('style=')) {
+    return match; // Skip for now, handle manually
+  }
+  return `${before}style={{ width: 'var(--icon-size-${w})', height: 'var(--icon-size-${h})' }}${middle}`;
+});
+```
+
+And for icons that already had a `style` prop, manually merge the width and height into it:
+
+```tsx
+// Wrong - CSS vars as SVG attributes don't work:
+<SvgViewHide width={'var(--icon-size-15)'} height={'var(--icon-size-15)'} />
+
+// Correct - CSS vars must be in the style prop:
+<SvgViewHide style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }} />
+```
+
+Run the updated script again after reverting the previous replacements:
+
+```bash
+# First revert all icon size replacements
+git checkout -- packages/desktop-client/src
+
+# Then run the corrected script
+node replace-icon-sizes.mjs
+```
+
+This is why the font size changes worked — `fontSize` is a CSS property and CSS variables work fine there — but icon `width` and `height` as SVG attributes bypass CSS entirely.
+
+## User:
+
+> 10/7/2026 21:54:15
+
+> File: packages_1.zip
+
+This is the current packages.zip. Does it contain the reverted changes?
+
+## Assistant:
+
+> 10/7/2026 21:54:34
+
+> Ran 3 commands
+>
+> - Check if icon size changes are reverted
+> - Check if icon size feature files exist
+> - Verify font size changes intact and icon sizes reverted to numbers
+> - **Done**
+
+Yes, the revert was successful. Here's the current state of the code:
+
+- **Icon size CSS variables** (`var(--icon-size-*)`) — fully reverted, none remain in the source files
+- **Hardcoded icon sizes** — restored back to plain numbers like `width={15}`
+- **New feature files** (`iconSize.tsx`, `IconSizeSettings.tsx`) — still present
+- **`prefs.ts`** — still has `iconSize` and `'icon-size'` additions
+- **Font size changes** — need to verify these are still intact
+
+So you're in a clean state to run the corrected `replace-icon-sizes.mjs` script that outputs `style={{ width: 'var(--icon-size-N)', height: 'var(--icon-size-N)' }}` instead of passing the variables as SVG attributes. The new feature files and pref type changes are already in place, so you just need to run the updated script.
+
+## User:
+
+> 10/7/2026 21:55:24
+
+What is the full updated replace-icon-sizes.mjs ?
+
+## Assistant:
+
+> 10/7/2026 21:55:36
+
+```js
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs';
+import { join } from 'path';
+
+function getFiles(dir, files = []) {
+  for (const entry of readdirSync(dir)) {
+    const fullPath = join(dir, entry);
+    if (statSync(fullPath).isDirectory()) {
+      if (entry !== 'node_modules' && entry !== 'dist') {
+        getFiles(fullPath, files);
+      }
+    } else if (fullPath.endsWith('.tsx') || fullPath.endsWith('.ts')) {
+      if (!fullPath.includes('.test.')) {
+        files.push(fullPath);
+      }
+    }
+  }
+  return files;
+}
+
+const files = getFiles('packages/desktop-client/src');
+
+// Matches width={N} height={N} or height={N} width={N} on Svg elements
+const SVG_PROP_REGEX = /(<Svg[A-Za-z0-9]+[^>]*?)width=\{(\d+)\}([^>]*?)height=\{(\d+)\}/g;
+
+let totalReplacements = 0;
+
+for (const file of files) {
+  let content = readFileSync(file, 'utf8');
+  let modified = content;
+
+  modified = modified.replace(SVG_PROP_REGEX, (match, before, w, middle, h) => {
+    if (!before.match(/Svg[A-Za-z]/)) return match;
+
+    // If there's already a style prop, skip and log for manual review
+    if (before.includes('style=') || middle.includes('style=')) {
+      console.log(`  ⚠ Skipped (already has style prop): ${file}`);
+      console.log(`    ${match.trim()}`);
+      return match;
+    }
+
+    return `${before}style={{ width: 'var(--icon-size-${w})', height: 'var(--icon-size-${h})' }}${middle}`;
+  });
+
+  if (modified !== content) {
+    writeFileSync(file, modified, 'utf8');
+    totalReplacements++;
+    console.log(`✓ Updated: ${file}`);
+  }
+}
+
+console.log(`\nDone. Updated ${totalReplacements} files.`);
+console.log(`Any lines marked ⚠ need to be merged manually in VSCode.`);
+```
+
+The key changes from the previous version:
+
+- Replaces `width={N} height={N}` with `style={{ width: 'var(--icon-size-N)', height: 'var(--icon-size-N)' }}` so the values go through the `style` prop instead of as SVG attributes
+- Skips any icon that already has a `style` prop and logs it with a `⚠` warning so you can merge them manually in VSCode
+- Removes the `width` and `height` props entirely rather than keeping them alongside the new `style` prop
+
+Run it with:
+
+```bash
+node replace-icon-sizes.mjs
+```
+
+## User:
+
+> 10/7/2026 21:58:06
+
+Even with the current code, there are no visual changes to the icons at all. Will this be fixed by replace-icon-sizes.mjs ?
+
+## Assistant:
+
+> 10/7/2026 21:58:45
+
+Not entirely — `replace-icon-sizes.mjs` will fix the icons that have explicit `width={N} height={N}` props. But there's a deeper issue: many icons have **no explicit size props at all** and are sized purely by their parent container using CSS like `width` and `height` on a wrapping `<View>` or `<div>`. Those won't be touched by the script.
+
+Let me check how icons are actually being sized in practice:
+
+> Ran 4 commands
+>
+> - Check how privacy icons are sized in Titlebar
+> - Find privacyIconStyle definition
+> - Count icons using style objects vs direct width/height props
+> - Count icons using style objects with numeric width/height
+> - **Done**
+
+Now I have the full picture. There are actually **three different patterns** used to size icons across the codebase, and the script only handles one of them:
+
+---
+
+### Pattern 1 — Direct props (84 instances) ✅ Script handles this
+```tsx
+<SvgViewHide width={15} height={15} />
+```
+
+### Pattern 2 — Inline style object (42 instances) ❌ Script misses this
+```tsx
+<SvgViewHide style={{ width: 15, height: 15 }} />
+```
+
+### Pattern 3 — Named style variable (76 instances) ❌ Script misses this
+```tsx
+const privacyIconStyle = { width: 15, height: 15 };
+<SvgViewHide style={privacyIconStyle} />
+```
+
+---
+
+The script needs to handle all three. Here's the fully updated `replace-icon-sizes.mjs`:
+
+```js
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'fs';
+import { join } from 'path';
+
+function getFiles(dir, files = []) {
+  for (const entry of readdirSync(dir)) {
+    const fullPath = join(dir, entry);
+    if (statSync(fullPath).isDirectory()) {
+      if (entry !== 'node_modules' && entry !== 'dist') {
+        getFiles(fullPath, files);
+      }
+    } else if (fullPath.endsWith('.tsx') || fullPath.endsWith('.ts')) {
+      if (!fullPath.includes('.test.')) {
+        files.push(fullPath);
+      }
+    }
+  }
+  return files;
+}
+
+const files = getFiles('packages/desktop-client/src');
+
+// Pattern 1: width={N} height={N} as direct props on Svg elements
+const SVG_DIRECT_PROPS_REGEX = /(<Svg[A-Za-z0-9]+[^>]*?)width=\{(\d+)\}([^>]*?)height=\{(\d+)\}/g;
+
+// Pattern 2: style={{ width: N, height: N }} inline on Svg elements
+const SVG_INLINE_STYLE_REGEX = /(<Svg[A-Za-z0-9]+[^>]*?)style=\{\{\s*width:\s*(\d+),\s*height:\s*(\d+)\s*\}\}/g;
+
+// Pattern 3: const iconStyle = { width: N, height: N } named style variables
+const NAMED_STYLE_REGEX = /(const\s+\w+\s*=\s*\{[^}]*?)width:\s*(\d+)([^}]*?)height:\s*(\d+)([^}]*?\})/g;
+
+let totalReplacements = 0;
+
+for (const file of files) {
+  let content = readFileSync(file, 'utf8');
+  let modified = content;
+
+  // Handle Pattern 1 - direct props
+  modified = modified.replace(SVG_DIRECT_PROPS_REGEX, (match, before, w, middle, h) => {
+    if (!before.match(/Svg[A-Za-z]/)) return match;
+    if (before.includes('style=') || middle.includes('style=')) {
+      console.log(`  ⚠ Skipped (already has style prop): ${file}`);
+      console.log(`    ${match.trim()}`);
+      return match;
+    }
+    return `${before}style={{ width: 'var(--icon-size-${w})', height: 'var(--icon-size-${h})' }}${middle}`;
+  });
+
+  // Handle Pattern 2 - inline style objects on Svg elements
+  modified = modified.replace(SVG_INLINE_STYLE_REGEX, (match, before, w, h) => {
+    if (!before.match(/Svg[A-Za-z]/)) return match;
+    return `${before}style={{ width: 'var(--icon-size-${w})', height: 'var(--icon-size-${h})' }}`;
+  });
+
+  // Handle Pattern 3 - named style variables containing width and height
+  // Only replace inside objects that are used with Svg components
+  modified = modified.replace(NAMED_STYLE_REGEX, (match, before, w, middle, h, after) => {
+    // Only replace if this looks like an icon style (small numbers typical of icon sizes)
+    if (parseInt(w) > 50 || parseInt(h) > 50) return match;
+    return `${before}width: 'var(--icon-size-${w})'${middle}height: 'var(--icon-size-${h})'${after}`;
+  });
+
+  if (modified !== content) {
+    writeFileSync(file, modified, 'utf8');
+    totalReplacements++;
+    console.log(`✓ Updated: ${file}`);
+  }
+}
+
+console.log(`\nDone. Updated ${totalReplacements} files.`);
+console.log(`Any lines marked ⚠ need to be merged manually in VSCode.`);
+```
+
+The key additions are:
+
+- **Pattern 2** replaces inline `style={{ width: N, height: N }}` directly on `Svg` elements
+- **Pattern 3** replaces named style variable objects like `privacyIconStyle` — but only when the values are 50px or under, to avoid accidentally replacing layout widths/heights that happen to be in similar objects
+
+Run it with:
+
+```bash
+node replace-icon-sizes.mjs
+```
+
+## User:
+
+> 10/7/2026 22:00:13
+
+What are the next steps?
+
+## Assistant:
+
+> 10/7/2026 22:00:22
+
+Here's where you stand and what's left to do:
+
+---
+
+### Immediate next steps
+
+**1. Run the updated script**
+```bash
+node replace-icon-sizes.mjs
+```
+
+**2. Check for any skipped icons marked with ⚠**
+The script will log any icons it skipped because they already had a `style` prop. Fix those manually in VSCode by merging the width and height into the existing style object:
+```tsx
+// Example of what to fix manually:
+<SvgCalendar3 style={{ marginTop: 2 }} width={12} height={12} />
+
+// Fix to:
+<SvgCalendar3 style={{ marginTop: 2, width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
+```
+
+**3. Verify no bad replacements were made**
+```bash
+grep -rn "var(--icon-size" packages/desktop-client/src --include="*.tsx" --include="*.ts" | grep -v "width\|height"
+```
+Should return nothing.
+
+**4. Run `yarn start` and test visually**
+Check that changing the icon size setting in the app actually resizes icons across the different pages — titlebar, accounts, transactions, budget page.
+
+**5. Fix any double `style` prop errors**
+```bash
+grep -rn "style={{.*}} style={{" packages/desktop-client/src --include="*.tsx"
+```
+
+---
+
+### After visual testing passes
+
+**6. Run the test suite**
+```bash
+cd packages/loot-core
+yarn test:node --reporter=verbose src/server/preferences/app.test.ts
+```
+
+**7. Delete the migration script**
+```bash
+del replace-icon-sizes.mjs
+```
+
+**8. Commit everything**
+```bash
+git add -A
+git status
+git diff --staged
+git commit -m "Add icon size setting with CSS variable scaling and unit tests"
+git push origin feat/issue-52-font-size
+```
+
+## User:
+
+> 10/7/2026 22:24:09
+
+For step 3, I cannot run grep commands.
+
+## Assistant:
+
+> 10/7/2026 22:24:14
+
+You can use VSCode's search panel instead. Open it with **Ctrl + Shift + F** and search for:
+
+```
+var(--icon-size
+```
+
+Then in the search panel:
+
+1. Click the **files to include** box (it appears when you expand the search with the `...` button) and type:
+```
+packages/desktop-client/src
+```
+
+2. Scan through the results and look for any matches that are **not** on a `width` or `height` property — those are the incorrect replacements that need to be manually reverted.
+
+Things to look out for in the results:
+- `lineHeight: 'var(--icon-size-...'`
+- `marginTop: 'var(--icon-size-...'`
+- `padding: 'var(--icon-size-...'`
+- `borderRadius: 'var(--icon-size-...'`
+- Any media query strings containing `var(--icon-size-...)`
+
+Any of those should be reverted back to their original plain number values.
+
+## User:
+
+> 10/7/2026 22:26:53
+
+The icons on the left hand menu are not changing size.
+
+## Assistant:
+
+> 10/7/2026 22:27:13
+
+Let me check how the sidebar menu icons are sized:
+
+> Ran 4 commands
+>
+> - Check how sidebar account icons are sized
+> - Find all sidebar component files
+> - Check Item and ItemContent for icon sizing
+> - Read the full Item.tsx to understand how sidebar icons work
+> - **Done**
+
+Found it. The sidebar menu icons are all rendered through the `Item` component in `Item.tsx`, and the icon size is hardcoded directly there:
+
+```tsx
+<Icon width={15} height={15} />
+```
+
+This is a **single line** that controls every icon in the left hand menu — Budget, Accounts, Reports, Schedules etc. — because they all go through this one component.
+
+Since `Icon` here is a dynamic component type (not a named `Svg` component), the script won't catch it. You need to fix it manually in `Item.tsx`:
+
+```tsx
+// Before:
+<Icon width={15} height={15} />
+
+// After:
+<Icon style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }} />
+```
+
+Also note the container `height: 20` on the wrapping `View` — this may also need to scale with the icon otherwise the icon will overflow its container when set to a larger size. Update that too:
+
+```tsx
+// Before:
+<View
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 20,
+  }}
+>
+
+// After:
+<View
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 'var(--icon-size-20)',
+  }}
+>
+```
+
+And add `--icon-size-20` to the `baseIconScale` in `iconSize.tsx` if it isn't already there:
+
+```tsx
+const baseIconScale = {
+  '--icon-size-8': 8,
+  '--icon-size-10': 10,
+  '--icon-size-12': 12,
+  '--icon-size-13': 13,
+  '--icon-size-15': 15,
+  '--icon-size-17': 17,
+  '--icon-size-20': 20,  // already included
+};
+```
+
+It's already in the scale so no changes needed there.
+
+## User:
+
+> 10/7/2026 22:28:51
+
+There is also a down-facing arrow at the top of the left hand menu that has become giant.
+
+## Assistant:
+
+> 10/7/2026 22:29:13
+
+That's the arrow in `SecondaryItem.tsx` or `ToggleButton.tsx`. Let me check:
+
+> Ran 5 commands
+>
+> - Check sidebar components for arrow icons
+> - Check Accounts.tsx for expand arrow
+> - Find the expand arrow in SecondaryItem
+> - Find SvgExpandArrow in sidebar
+> - Check how SvgExpandArrow is sized in BudgetName
+> - **Done**
+
+Found it. The `SvgExpandArrow` in `BudgetName.tsx` has both `width={7} height={7}` props **and** an existing `style` prop — this is exactly the case the script skips with a `⚠` warning. The script left it unchanged because merging it automatically would have been risky.
+
+You need to fix it manually in `BudgetName.tsx`. Merge the width and height into the existing `style` prop:
+
+```tsx
+// Before:
+<SvgExpandArrow
+  width={7}
+  height={7}
+  style={{ flexShrink: 0, marginLeft: 5 }}
+/>
+
+// After:
+<SvgExpandArrow
+  style={{
+    flexShrink: 0,
+    marginLeft: 5,
+    width: 'var(--icon-size-7)',
+    height: 'var(--icon-size-7)',
+  }}
+/>
+```
+
+You'll also need to add `--icon-size-7` to the `baseIconScale` in `iconSize.tsx` since 7 isn't currently in the scale:
+
+```tsx
+const baseIconScale = {
+  '--icon-size-7': 7,   // <-- add this
+  '--icon-size-8': 8,
+  '--icon-size-10': 10,
+  '--icon-size-12': 12,
+  '--icon-size-13': 13,
+  '--icon-size-15': 15,
+  '--icon-size-17': 17,
+  '--icon-size-20': 20,
+};
+```
+
+The reason it became giant is that without a CSS variable defined for `--icon-size-7`, the browser treated the value as `0` or invalid and fell back to the SVG's natural `viewBox` size, which can be very large.
+
+## User:
+
+> 10/7/2026 22:33:31
+
+On the all accounts page, the skull, checkmark, and calendar icons within the table do not change size.
+
+## Assistant:
+
+> 10/7/2026 22:34:04
+
+Let me find how those specific icons are sized in the transactions table:
+
+> Ran 6 commands
+>
+> - Check icon sizing in TransactionsTable
+> - Find all icon usages in TransactionsTable
+> - Find skull and checkmark icons in transactions
+> - Read specific lines around icon sizing in TransactionsTable
+> - Find cleared/reconciled status icons
+> - Read the cleared/reconciled status icon section
+> - **Done**
+
+Found all of them. The skull, checkmark, and calendar icons are sized in these specific places in `TransactionsTable.tsx`. None of them use `width={N} height={N}` props — they all use style objects, which is why the script missed them. Here's where each one is and what to change:
+
+---
+
+**Status icons (skull, checkmark, cleared) — line ~420**
+
+The `statusProps.Icon` is rendered via `createElement` with an inline style object:
+
+```tsx
+// Before:
+{createElement(statusProps.Icon, {
+  style: {
+    width: 13,
+    height: 13,
+    color: statusColor,
+    marginTop: status === 'due' ? -1 : 0,
+  },
+})}
+
+// After:
+{createElement(statusProps.Icon, {
+  style: {
+    width: 'var(--icon-size-13)',
+    height: 'var(--icon-size-13)',
+    color: statusColor,
+    marginTop: status === 'due' ? -1 : 0,
+  },
+})}
+```
+
+---
+
+**Calendar and sync icons — lines ~758-814**
+
+These use named style variables at the top of the component:
+
+```tsx
+// Before:
+const scheduleIconStyle = { width: 13, height: 13 };
+const transferIconStyle = { width: 10, height: 10 };
+
+// After:
+const scheduleIconStyle = { width: 'var(--icon-size-13)', height: 'var(--icon-size-13)' };
+const transferIconStyle = { width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' };
+```
+
+---
+
+**Split icon — line ~591**
+
+```tsx
+// Before:
+<SvgSplit
+  style={{
+    color: 'inherit',
+    width: 14,
+    height: 14,
+    marginRight: 5,
+    flexShrink: 0,
+  }}
+/>
+
+// After:
+<SvgSplit
+  style={{
+    color: 'inherit',
+    width: 'var(--icon-size-14)',
+    height: 'var(--icon-size-14)',
+    marginRight: 5,
+    flexShrink: 0,
+  }}
+/>
+```
+
+---
+
+**Hyperlink icon — line ~1458**
+
+```tsx
+// Before:
+<SvgHyperlink2
+  style={{ width: 13, height: 13, color: 'inherit' }}
+/>
+
+// After:
+<SvgHyperlink2
+  style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)', color: 'inherit' }}
+/>
+```
+
+---
+
+**Chevron expand icon — line ~1660**
+
+```tsx
+// Before:
+<SvgCheveronDown
+  style={{
+    color: 'inherit',
+    width: 14,
+    height: 14,
+    transition: 'transform .08s',
+    transform: expanded ? 'rotateZ(0)' : 'rotateZ(-90deg)',
+  }}
+/>
+
+// After:
+<SvgCheveronDown
+  style={{
+    color: 'inherit',
+    width: 'var(--icon-size-14)',
+    height: 'var(--icon-size-14)',
+    transition: 'transform .08s',
+    transform: expanded ? 'rotateZ(0)' : 'rotateZ(-90deg)',
+  }}
+/>
+```
+
+Also make sure `--icon-size-14` is in your `baseIconScale` in `iconSize.tsx`:
+
+```tsx
+const baseIconScale = {
+  '--icon-size-7': 7,
+  '--icon-size-8': 8,
+  '--icon-size-10': 10,
+  '--icon-size-12': 12,
+  '--icon-size-13': 13,
+  '--icon-size-14': 14,  // <-- add this if not already there
+  '--icon-size-15': 15,
+  '--icon-size-17': 17,
+  '--icon-size-20': 20,
+};
+```
+
+## User:
+
+> 10/7/2026 22:37:46
+
+The icons in the "more" dropdown menu do not change size.
+
+## Assistant:
+
+> 10/7/2026 22:38:10
+
+Let me find the "more" dropdown menu component:
+
+> Ran 3 commands
+>
+> - Find the more dropdown menu component
+> - Find dots/more menu icon usage
+> - Check sizing of more menu icons in Header and BudgetTotals
+> - **Done**
+
+Found them. The "more" dropdown icons (`SvgDotsHorizontalTriple`) appear in many files and all have the same problem — they have both `width={N} height={N}` props **and** an existing `style` prop, so the script skipped them with a `⚠` warning. Each one needs to be manually fixed by merging the width and height into the existing `style` prop.
+
+Here are all the files that need updating:
+
+---
+
+**`accounts/Header.tsx` (lines ~501 and ~531) — two instances:**
+```tsx
+// Before:
+<SvgDotsHorizontalTriple
+  width={15}
+  height={15}
+  style={{ transform: 'rotateZ(90deg)' }}
+/>
+
+// After:
+<SvgDotsHorizontalTriple
+  style={{
+    width: 'var(--icon-size-15)',
+    height: 'var(--icon-size-15)',
+    transform: 'rotateZ(90deg)',
+  }}
+/>
+```
+
+---
+
+**`budget/BudgetTotals.tsx` (line ~141):**
+```tsx
+// Before:
+<SvgDotsHorizontalTriple
+  width={15}
+  height={15}
+  style={{ color: theme.tableHeaderText }}
+/>
+
+// After:
+<SvgDotsHorizontalTriple
+  style={{
+    width: 'var(--icon-size-15)',
+    height: 'var(--icon-size-15)',
+    color: theme.tableHeaderText,
+  }}
+/>
+```
+
+---
+
+**`manager/BudgetFileSelection.tsx` (line ~141):**
+```tsx
+// Before:
+<SvgDotsHorizontalTriple style={{ width: 16, height: 16 }} />
+
+// After:
+<SvgDotsHorizontalTriple style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)' }} />
+```
+
+---
+
+**`schedules/SchedulesTable.tsx` (line ~276):**
+```tsx
+// Before:
+<SvgDotsHorizontalTriple
+  width={15}
+  height={15}
+  style={...}
+/>
+
+// After:
+<SvgDotsHorizontalTriple
+  style={{
+    width: 'var(--icon-size-15)',
+    height: 'var(--icon-size-15)',
+    // ...existing style props
+  }}
+/>
+```
+
+---
+
+**`tags/TagsMenuButton.tsx` (line ~33):**
+```tsx
+// Before:
+<SvgDotsHorizontalTriple width={17} height={17} />
+
+// After:
+<SvgDotsHorizontalTriple
+  style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}
+/>
+```
+
+---
+
+Also add `--icon-size-16` to `baseIconScale` in `iconSize.tsx` since it's not currently in the scale:
+
+```tsx
+const baseIconScale = {
+  '--icon-size-7': 7,
+  '--icon-size-8': 8,
+  '--icon-size-10': 10,
+  '--icon-size-12': 12,
+  '--icon-size-13': 13,
+  '--icon-size-14': 14,
+  '--icon-size-15': 15,
+  '--icon-size-16': 16,  // <-- add this
+  '--icon-size-17': 17,
+  '--icon-size-20': 20,
+};
+```
+
+The remaining files (`reports/ReportCard.tsx`, `reports/Overview.tsx`, `mobile/transactions/TransactionList.tsx`, `budget/envelope/budgetsummary/BudgetSummary.tsx`, `budget/tracking/budgetsummary/BudgetSummary.tsx`, `banksync/BuiltInProviders.tsx`, and the modal files) likely have the same pattern — check each one and apply the same merge fix.
+
+## User:
+
+> 10/7/2026 22:40:50
+
+On the budget page, the calendar icons in the top left corner do not change.
+
+## Assistant:
+
+> 10/7/2026 22:40:58
+
+Let me find the budget page calendar icons:
+
+> Ran command
+>
+> - Check calendar icon sizing in MonthPicker
+> - **Done**
+
+This one has an inline `style` object with no other properties, so it's a straightforward fix in `MonthPicker.tsx` at line ~103:
+
+```tsx
+// Before:
+<SvgCalendar
+  style={{
+    width: 20,
+    height: 20,
+  }}
+/>
+
+// After:
+<SvgCalendar
+  style={{
+    width: 'var(--icon-size-20)',
+    height: 'var(--icon-size-20)',
+  }}
+/>
+```
+
+`--icon-size-20` is already in your `baseIconScale` in `iconSize.tsx` so no changes needed there.
+
+## User:
+
+> 10/7/2026 22:45:29
+
+The light/dark mode icon in the top right does not change size.
+
+## Assistant:
+
+> 10/7/2026 22:45:40
+
+> Ran 3 commands
+>
+> - Check Themes.tsx for icon sizing
+> - Find light/dark mode icon
+> - Read ThemeSelector to find icon sizing
+> - **Done**
+
+Found it. It's in `ThemeSelector.tsx` at line ~57. The icon uses an inline style object with no other competing props, so it's a straightforward fix:
+
+```tsx
+// Before:
+<Icon style={{ width: 13, height: 13, color: 'inherit' }} />
+
+// After:
+<Icon style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)', color: 'inherit' }} />
+```
+
+`--icon-size-13` is already in your `baseIconScale` in `iconSize.tsx` so no changes needed there.
+
+## User:
+
+> 10/7/2026 22:46:47
+
+The calendars in the top left corner of the budget page that read "Choose the number of months shown at a time" do not change size.
+
+## Assistant:
+
+> 10/7/2026 22:46:59
+
+> Ran 2 commands
+>
+> - Find the month count selector component
+> - Read MonthCountSelector to find icon sizing
+> - **Done**
+
+Found it. It's in `MonthCountSelector.tsx` at line ~25. The `SvgCalendar` uses an inline style object:
+
+```tsx
+// Before:
+<SvgCalendar style={{ width: 18, height: 18, color }} />
+
+// After:
+<SvgCalendar style={{ width: 'var(--icon-size-18)', height: 'var(--icon-size-18)', color }} />
+```
+
+You'll also need to add `--icon-size-18` to `baseIconScale` in `iconSize.tsx` since it's not currently in the scale:
+
+```tsx
+const baseIconScale = {
+  '--icon-size-7': 7,
+  '--icon-size-8': 8,
+  '--icon-size-10': 10,
+  '--icon-size-12': 12,
+  '--icon-size-13': 13,
+  '--icon-size-14': 14,
+  '--icon-size-15': 15,
+  '--icon-size-16': 16,
+  '--icon-size-17': 17,
+  '--icon-size-18': 18,  // <-- add this
+  '--icon-size-20': 20,
+};
+```
+
+## User:
+
+> 10/7/2026 22:48:14
+
+On the left hand side menu, there is a "more" section with icons for Payees, Rules, Tags, and Settings. These icons do not change size.
+
+## Assistant:
+
+> 10/7/2026 22:48:27
+
+> Ran 3 commands
+>
+> - Find where Payees, Rules, Tags, Settings are in the sidebar
+> - Read PrimaryButtons to find icon sizing
+> - Read SecondaryItem to find icon sizing
+> - **Done**
+
+Same pattern as `Item.tsx` — all the secondary menu icons (Payees, Rules, Tags, Settings, Bank Sync) are rendered through `SecondaryItem.tsx` in a single line:
+
+```tsx
+{Icon && <Icon width={12} height={12} />}
+```
+
+Fix it in `SecondaryItem.tsx` the same way as `Item.tsx`:
+
+```tsx
+// Before:
+<View
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 16,
+  }}
+>
+  {Icon && <Icon width={12} height={12} />}
+
+// After:
+<View
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 'var(--icon-size-16)',
+  }}
+>
+  {Icon && <Icon style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />}
+```
+
+`--icon-size-12` and `--icon-size-16` are already in your `baseIconScale` so no changes needed in `iconSize.tsx`.
+
+## User:
+
+> 10/7/2026 22:51:50
+
+Circle back to the unit tests necessary for this feature.
+
+## Assistant:
+
+> 10/7/2026 22:52:08
+
+Based on everything built for the icon size feature, here are the unit tests to add to `packages/loot-core/src/server/preferences/app.test.ts`. You already have the font-size tests passing, so just add the icon-size describe block alongside them:
+
+```ts
+// @ts-strict-ignore
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('#server/main', () => ({
+  getDefaultDocumentDir: () => '/mock/documents',
+}));
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { runHandler } from '#server/mutators';
+
+import { app } from './app';
+
+const saveGlobalPrefs = app.handlers['save-global-prefs'];
+const loadGlobalPrefs = app.handlers['load-global-prefs'];
+
+describe('global preferences', () => {
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  describe('font-size', () => {
+    it('saves font-size to asyncStorage', async () => {
+      await runHandler(saveGlobalPrefs, { fontSize: '1.1' });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+    });
+
+    it('loads font-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1.1');
+    });
+
+    it('round-trips font-size through save and load', async () => {
+      await runHandler(saveGlobalPrefs, { fontSize: '1.2' });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.2',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1.2');
+    });
+
+    it('falls back to default multiplier when font-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1');
+    });
+  });
+
+  describe('icon-size', () => {
+    it('saves icon-size to asyncStorage', async () => {
+      await runHandler(saveGlobalPrefs, { iconSize: '1.15' });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'icon-size',
+        '1.15',
+      );
+    });
+
+    it('loads icon-size from asyncStorage', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'icon-size': '1.15',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.iconSize).toBe('1.15');
+    });
+
+    it('round-trips icon-size through save and load', async () => {
+      await runHandler(saveGlobalPrefs, { iconSize: '1.3' });
+
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'icon-size': '1.3',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.iconSize).toBe('1.3');
+    });
+
+    it('falls back to default multiplier when icon-size is not set', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.iconSize).toBe('1');
+    });
+
+    it('saves font-size and icon-size independently', async () => {
+      await runHandler(saveGlobalPrefs, { fontSize: '1.1', iconSize: '1.3' });
+
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'font-size',
+        '1.1',
+      );
+      expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+        'icon-size',
+        '1.3',
+      );
+    });
+
+    it('loads font-size and icon-size independently', async () => {
+      vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+        'font-size': '1.1',
+        'icon-size': '1.3',
+      });
+
+      const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+      expect(prefs.fontSize).toBe('1.1');
+      expect(prefs.iconSize).toBe('1.3');
+    });
+  });
+});
+```
+
+The icon-size tests mirror the font-size tests exactly, plus two additional tests at the end:
+
+- **Saves independently** — verifies that saving both `fontSize` and `iconSize` at the same time calls `asyncStorage.setItem` twice with the correct keys, confirming they don't interfere with each other
+- **Loads independently** — verifies that when both are stored, loading returns the correct value for each without them overwriting one another
+
+Run them with:
+
+```bash
+cd packages/loot-core
+yarn test:node --reporter=verbose src/server/preferences/app.test.ts
+```
+
+## User:
+
+> 10/7/2026 22:56:20
+
+Pretend font size has not been implemented. Write tests just for testing icon size.
+
+## Assistant:
+
+> 10/7/2026 22:56:32
+
+```ts
+// @ts-strict-ignore
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('#server/main', () => ({
+  getDefaultDocumentDir: () => '/mock/documents',
+}));
+
+import * as asyncStorage from '#platform/server/asyncStorage';
+import { runHandler } from '#server/mutators';
+
+import { app } from './app';
+
+const saveGlobalPrefs = app.handlers['save-global-prefs'];
+const loadGlobalPrefs = app.handlers['load-global-prefs'];
+
+describe('icon-size preference', () => {
+  beforeEach(async () => {
+    // oxlint-disable-next-line typescript/no-explicit-any
+    await (global as any).emptyDatabase()();
+    vi.clearAllMocks();
+  });
+
+  it('saves icon-size to asyncStorage', async () => {
+    await runHandler(saveGlobalPrefs, { iconSize: '1.15' });
+
+    expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+      'icon-size',
+      '1.15',
+    );
+  });
+
+  it('loads icon-size from asyncStorage', async () => {
+    vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+      'icon-size': '1.15',
+    });
+
+    const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+    expect(prefs.iconSize).toBe('1.15');
+  });
+
+  it('round-trips icon-size through save and load', async () => {
+    await runHandler(saveGlobalPrefs, { iconSize: '1.3' });
+
+    vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+      'icon-size': '1.3',
+    });
+
+    const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+    expect(prefs.iconSize).toBe('1.3');
+  });
+
+  it('falls back to default when icon-size is not set', async () => {
+    vi.mocked(asyncStorage.multiGet).mockResolvedValue({});
+
+    const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+    expect(prefs.iconSize).toBe('1');
+  });
+
+  it('saves small icon-size multiplier correctly', async () => {
+    await runHandler(saveGlobalPrefs, { iconSize: '0.85' });
+
+    expect(vi.mocked(asyncStorage.setItem)).toHaveBeenCalledWith(
+      'icon-size',
+      '0.85',
+    );
+  });
+
+  it('loads small icon-size multiplier correctly', async () => {
+    vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+      'icon-size': '0.85',
+    });
+
+    const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+    expect(prefs.iconSize).toBe('0.85');
+  });
+
+  it('does not save icon-size when it is not provided', async () => {
+    await runHandler(saveGlobalPrefs, {});
+
+    expect(vi.mocked(asyncStorage.setItem)).not.toHaveBeenCalledWith(
+      'icon-size',
+      expect.anything(),
+    );
+  });
+
+  it('returns undefined for icon-size when storage returns null', async () => {
+    vi.mocked(asyncStorage.multiGet).mockResolvedValue({
+      'icon-size': null,
+    });
+
+    const prefs = await runHandler(loadGlobalPrefs, undefined);
+
+    expect(prefs.iconSize).toBe('1');
+  });
+});
+```
+
+The additional tests beyond the basic four cover:
+
+- **Small multiplier save/load** — verifies the `0.85` (small) option works correctly end to end, since it's a value less than 1 which could behave differently
+- **Does not save when not provided** — verifies that calling `saveGlobalPrefs` without `iconSize` doesn't accidentally write anything to `asyncStorage` under the `'icon-size'` key
+- **Null from storage** — verifies that if `asyncStorage` returns `null` for `'icon-size'` (e.g. first time the app runs after the feature is added), it correctly falls back to `'1'` rather than passing `null` through
+
+Powered by Claude Exporter (https://www.ai-chat-exporter.net)

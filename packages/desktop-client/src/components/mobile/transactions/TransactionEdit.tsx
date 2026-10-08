@@ -211,7 +211,7 @@ export function Status({
   return (
     <Text
       style={{
-        fontSize: 11,
+        fontSize: 'var(--font-size-11)',
         color,
         fontStyle: 'italic',
         textAlign: 'left',
@@ -2030,7 +2030,7 @@ function TransactionEditUnconnected({
         >
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 'var(--font-size-15)',
               textAlign: 'center',
               marginBottom: 20,
               lineHeight: '1.5em',
@@ -2081,7 +2081,7 @@ function TransactionEditUnconnected({
         >
           <Text
             style={{
-              fontSize: 15,
+              fontSize: 'var(--font-size-15)',
               textAlign: 'center',
               marginBottom: 20,
               lineHeight: '1.5em',

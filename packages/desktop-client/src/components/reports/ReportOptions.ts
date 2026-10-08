@@ -289,6 +289,8 @@ export type QueryDataEntity = {
   payee: string;
   transferAccount: string;
   amount: number;
+  // Budget rows only: what the category spent that month.
+  spent?: number;
 };
 
 type UncategorizedId = 'off_budget' | 'transfer' | 'other' | 'all';

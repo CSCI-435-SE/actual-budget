@@ -25,7 +25,7 @@ type KeybindingProps = {
 
 function Keybinding({ keyName }: KeybindingProps) {
   return (
-    <Text style={{ fontSize: 10, color: theme.menuKeybindingText }}>
+    <Text style={{ fontSize: 'var(--font-size-10)', color: theme.menuKeybindingText }}>
       {keyName}
     </Text>
   );
@@ -169,7 +169,7 @@ export function Menu<const NameType = string>({
               key={idx}
               style={{
                 color: theme.menuItemTextHeader,
-                fontSize: 11,
+                fontSize: 'var(--font-size-11)',
                 lineHeight: '1em',
                 textTransform: 'uppercase',
                 margin: '3px 9px',

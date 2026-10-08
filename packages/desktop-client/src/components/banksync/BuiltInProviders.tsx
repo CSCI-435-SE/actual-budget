@@ -33,10 +33,10 @@ export function BuiltInProviders({
   return (
     <View style={{ gap: 12 }}>
       <View style={{ gap: 4 }}>
-        <Text style={{ fontSize: 20, fontWeight: 600 }}>
+        <Text style={{ fontSize: 'var(--font-size-20)', fontWeight: 600 }}>
           <Trans>Providers</Trans>
         </Text>
-        <Paragraph style={{ fontSize: 15, color: theme.pageTextSubdued }}>
+        <Paragraph style={{ fontSize: 'var(--font-size-15)', color: theme.pageTextSubdued }}>
           <Trans>
             Set up a bank sync provider, then link new accounts or connect an
             existing Actual account.
@@ -53,10 +53,10 @@ export function BuiltInProviders({
             backgroundColor: theme.tableBackground,
           }}
         >
-          <Button isDisabled style={{ padding: '10px 0', fontSize: 15 }}>
+          <Button isDisabled style={{ padding: '10px 0', fontSize: 'var(--font-size-15)' }}>
             <Trans>Set up bank sync</Trans>
           </Button>
-          <Paragraph style={{ fontSize: 15, marginTop: 10 }}>
+          <Paragraph style={{ fontSize: 'var(--font-size-15)', marginTop: 10 }}>
             <Trans>
               Connect to an Actual server to set up{' '}
               <Link
@@ -104,7 +104,7 @@ export function BuiltInProviders({
                     flex: 1,
                   }}
                 >
-                  <Text style={{ fontSize: 17, fontWeight: 600 }}>
+                  <Text style={{ fontSize: 'var(--font-size-17)', fontWeight: 600 }}>
                     {provider.displayName}
                   </Text>
                   <Text
@@ -112,7 +112,7 @@ export function BuiltInProviders({
                       color: provider.isConfigured
                         ? theme.noticeTextDark
                         : theme.pageTextSubdued,
-                      fontSize: 13,
+                      fontSize: 'var(--font-size-13)',
                       fontWeight: 500,
                     }}
                   >

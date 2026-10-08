@@ -36,6 +36,8 @@ import { Autocomplete } from './Autocomplete';
 import { filterCategorySuggestions } from './filterCategorySuggestions';
 import { ItemHeader } from './ItemHeader';
 
+const SUBCATEGORY_INDENT = 16;
+
 type CategoryAutocompleteItem = Omit<CategoryEntity, 'group'> & {
   group?: CategoryGroupEntity;
 };
@@ -337,7 +339,7 @@ function SplitTransactionButton({
         flexShrink: 0,
         flexDirection: 'row',
         alignItems: 'center',
-        fontSize: 11,
+        fontSize: 'var(--font-size-11)',
         fontWeight: 500,
         color: theme.noticeTextMenu,
         padding: '6px 8px',
@@ -424,7 +426,9 @@ function CategoryItem({
             ? theme.menuAutoCompleteItemTextHover
             : theme.menuAutoCompleteItemText,
           padding: 4,
-          paddingLeft: 20,
+          // Subcategories are indented under their parent, as on the
+          // budget page
+          paddingLeft: item.parent_id ? 20 + SUBCATEGORY_INDENT : 20,
           borderRadius: embedded ? 4 : 0,
           border: 'none',
           font: 'inherit',

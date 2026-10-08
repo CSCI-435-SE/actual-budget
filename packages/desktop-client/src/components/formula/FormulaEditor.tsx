@@ -475,7 +475,7 @@ const pickerActionButtonStyle = {
   padding: '5px 8px',
   background: theme.buttonNormalBackground,
   color: theme.buttonNormalText,
-  fontSize: 12,
+  fontSize: 'var(--font-size-12)',
   cursor: 'pointer',
 };
 
@@ -539,7 +539,7 @@ function BadgeMenuButton({
         background: selected ? theme.menuItemBackgroundHover : 'transparent',
         color: theme.pageText,
         textAlign: 'left',
-        fontSize: 13,
+        fontSize: 'var(--font-size-13)',
         cursor: 'pointer',
       }}
     >

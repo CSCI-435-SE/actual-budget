@@ -93,7 +93,7 @@ function EditableBudgetName() {
         <Input
           style={{
             maxWidth: 'calc(100% - 23px)',
-            fontSize: 16,
+            fontSize: 'var(--font-size-16)',
             fontWeight: 500,
           }}
           defaultValue={budgetName}
@@ -116,7 +116,7 @@ function EditableBudgetName() {
       variant="bare"
       style={{
         color: theme.sidebarBudgetName,
-        fontSize: 16,
+        fontSize: 'var(--font-size-16)',
         fontWeight: 500,
         marginLeft: -5,
         flex: '0 auto',

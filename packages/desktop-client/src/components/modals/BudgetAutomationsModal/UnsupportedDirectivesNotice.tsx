@@ -27,7 +27,7 @@ export function UnsupportedDirectivesNotice({
       />
       <Text
         style={{
-          fontSize: 18,
+          fontSize: 'var(--font-size-18)',
           fontWeight: 600,
           color: theme.pageText,
         }}
@@ -36,7 +36,7 @@ export function UnsupportedDirectivesNotice({
       </Text>
       <Text
         style={{
-          fontSize: 13,
+          fontSize: 'var(--font-size-13)',
           color: theme.pageTextLight,
           maxWidth: 480,
           lineHeight: 1.5,

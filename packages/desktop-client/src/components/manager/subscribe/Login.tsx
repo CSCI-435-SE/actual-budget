@@ -76,7 +76,7 @@ function PasswordLogin({ setError, dispatch }) {
         variant="primary"
         isLoading={loading}
         style={{
-          fontSize: 15,
+          fontSize: 'var(--font-size-15)',
           width: isNarrowWidth ? '100%' : 170,
           ...(isNarrowWidth ? { padding: 10 } : null),
         }}
@@ -171,7 +171,7 @@ function OpenIdLogin({ setError }) {
               onPress={onSubmitOpenId}
               style={{
                 padding: 6,
-                fontSize: 14,
+                fontSize: 'var(--font-size-14)',
                 width: 170,
               }}
               isDisabled={
@@ -280,7 +280,7 @@ function HeaderLogin({ error }) {
         <Link
           variant="button"
           type="button"
-          style={{ fontSize: 15 }}
+          style={{ fontSize: 'var(--font-size-15)' }}
           to={'/login/password?error=' + error}
         >
           <Trans>Log in with password</Trans>
@@ -361,7 +361,7 @@ export function Login() {
       {loginMethods?.length > 1 && (
         <Text
           style={{
-            fontSize: 16,
+            fontSize: 'var(--font-size-16)',
             color: theme.pageTextDark,
             lineHeight: 1.4,
             marginBottom: 10,
@@ -437,7 +437,7 @@ export function Login() {
             marginTop: 20,
             color: theme.errorText,
             borderRadius: 4,
-            fontSize: 15,
+            fontSize: 'var(--font-size-15)',
           }}
         >
           {getErrorMessage(error)}

@@ -25,7 +25,7 @@ export function AccountEmptyMessage({ onAdd }: AccountEmptyMessageProps) {
         style={{
           width: 550,
           marginTop: 75,
-          fontSize: 15,
+          fontSize: 'var(--font-size-15)',
           alignItems: 'center',
         }}
       >
@@ -47,7 +47,7 @@ export function AccountEmptyMessage({ onAdd }: AccountEmptyMessageProps) {
         </Button>
 
         <View
-          style={{ marginTop: 20, fontSize: 13, color: theme.tableTextLight }}
+          style={{ marginTop: 20, fontSize: 'var(--font-size-13)', color: theme.tableTextLight }}
         >
           <Trans>In the future, you can add accounts from the sidebar.</Trans>
         </View>

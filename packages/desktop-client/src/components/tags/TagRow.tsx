@@ -159,7 +159,7 @@ export const TagRow = memo(
               backgroundColor: theme.noticeBackground,
               border: '1px solid ' + theme.noticeBackground,
               color: theme.noticeTextDark,
-              fontSize: 12,
+              fontSize: 'var(--font-size-12)',
               cursor: 'pointer',
               opacity: tag.hidden ? 0.5 : undefined,
               ':hover': { backgroundColor: theme.noticeBackgroundLight },

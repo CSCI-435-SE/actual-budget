@@ -37,7 +37,7 @@ const CONFIG_PANEL_CLASS = css({
     marginTop: 0,
   },
   '& span > label': {
-    fontSize: 11,
+    fontSize: 'var(--font-size-11)',
     fontWeight: 600,
     color: theme.pageTextLight,
     letterSpacing: '0.04em',
@@ -214,7 +214,7 @@ export function AutomationEditorPane({
               backgroundColor: theme.errorBackground,
               border: `1px solid ${theme.errorBorder}`,
               color: theme.errorText,
-              fontSize: 13,
+              fontSize: 'var(--font-size-13)',
               flexDirection: 'row',
               gap: 10,
               alignItems: 'flex-start',
@@ -229,7 +229,7 @@ export function AutomationEditorPane({
               </Text>
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                   marginTop: 2,
                   color: 'inherit',
                   display: 'block',
@@ -245,7 +245,7 @@ export function AutomationEditorPane({
           <>
             <Text
               style={{
-                fontSize: 11,
+                fontSize: 'var(--font-size-11)',
                 textTransform: 'uppercase',
                 color: theme.pageTextLight,
                 fontWeight: 600,
@@ -266,7 +266,7 @@ export function AutomationEditorPane({
           <>
             <Text
               style={{
-                fontSize: 11,
+                fontSize: 'var(--font-size-11)',
                 textTransform: 'uppercase',
                 color: theme.pageTextLight,
                 fontWeight: 600,
@@ -287,7 +287,7 @@ export function AutomationEditorPane({
               {NON_CONTRIBUTION_TYPES.has(state.displayType) && (
                 <Text
                   style={{
-                    fontSize: 12,
+                    fontSize: 'var(--font-size-12)',
                     color: theme.pageTextLight,
                     display: 'block',
                     marginBottom: 4,
@@ -335,7 +335,7 @@ export function AutomationEditorPane({
               >
                 <Text
                   style={{
-                    fontSize: 11,
+                    fontSize: 'var(--font-size-11)',
                     fontWeight: 600,
                     color: theme.pageTextLight,
                     letterSpacing: '0.04em',
@@ -374,7 +374,7 @@ export function AutomationEditorPane({
 
         <Text
           style={{
-            fontSize: 11,
+            fontSize: 'var(--font-size-11)',
             textTransform: 'uppercase',
             color: theme.pageTextLight,
             fontWeight: 600,
@@ -390,7 +390,7 @@ export function AutomationEditorPane({
             minHeight: 60,
             resize: 'vertical',
             fontFamily: 'inherit',
-            fontSize: 13,
+            fontSize: 'var(--font-size-13)',
             lineHeight: 1.4,
             padding: '8px 10px',
             borderRadius: 6,

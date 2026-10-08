@@ -102,7 +102,7 @@ export function PayeeMenu({
         <View
           style={{
             padding: 3,
-            fontSize: 11,
+            fontSize: 'var(--font-size-11)',
             fontStyle: 'italic',
             color: theme.pageTextSubdued,
           }}

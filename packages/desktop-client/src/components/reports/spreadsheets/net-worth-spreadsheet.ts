@@ -13,6 +13,8 @@ import { ReportOptions } from '#components/reports/ReportOptions';
 import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 import { aqlQuery } from '#queries/aqlQuery';
 
+import { includeSubcategoriesInConditions } from './subcategories';
+
 type Balance = {
   date: string;
   amount: number;
@@ -32,8 +34,9 @@ export function createSpreadsheet(
     spreadsheet: ReturnType<typeof useSpreadsheet>,
     setData: (data: ReturnType<typeof recalculate>) => void,
   ) => {
+    const reportConditions = await includeSubcategoriesInConditions(conditions);
     const { filters } = await send('make-filters-from-conditions', {
-      conditions: conditions.filter(cond => !cond.customName),
+      conditions: reportConditions.filter(cond => !cond.customName),
     });
     const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 

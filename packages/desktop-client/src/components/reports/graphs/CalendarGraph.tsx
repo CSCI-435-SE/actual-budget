@@ -81,7 +81,7 @@ export function CalendarGraph({
             key={index}
             style={{
               textAlign: 'center',
-              fontSize: 14,
+              fontSize: 'var(--font-size-14)',
               fontWeight: 500,
               padding: '3px 0',
               height: '100%',

@@ -63,7 +63,7 @@ export function DashboardHeader({ dashboard }: DashboardHeaderProps) {
     >
       <View
         style={{
-          fontSize: 25,
+          fontSize: 'var(--font-size-25)',
           fontWeight: 500,
           flexGrow: 0,
           flexShrink: 0,
@@ -80,7 +80,7 @@ export function DashboardHeader({ dashboard }: DashboardHeaderProps) {
             onUpdate={handleSaveName}
             onEscape={() => setEditingName(false)}
             style={{
-              fontSize: 25,
+              fontSize: 'var(--font-size-25)',
               fontWeight: 500,
               marginTop: -3,
               marginBottom: -4,
@@ -93,7 +93,7 @@ export function DashboardHeader({ dashboard }: DashboardHeaderProps) {
         <>
           <View
             style={{
-              fontSize: 25,
+              fontSize: 'var(--font-size-25)',
               fontWeight: 500,
               marginRight: 5,
               flexGrow: 0,

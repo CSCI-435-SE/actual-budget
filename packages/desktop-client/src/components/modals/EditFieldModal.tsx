@@ -19,7 +19,7 @@ import { useFormat } from '#hooks/useFormat';
 import type { Modal as ModalType } from '#modals/modalsSlice';
 
 const itemStyle: CSSProperties = {
-  fontSize: 17,
+  fontSize: 'var(--font-size-17)',
   fontWeight: 400,
   paddingTop: 8,
   paddingBottom: 8,

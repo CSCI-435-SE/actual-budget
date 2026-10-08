@@ -223,7 +223,7 @@ export const MonthPicker = ({
                       position: 'absolute',
                       top: -16,
                       left: 0,
-                      fontSize: 10,
+                      fontSize: 'var(--font-size-10)',
                       fontWeight: 'bold',
                       color: isMonthBudgeted
                         ? theme.pageText

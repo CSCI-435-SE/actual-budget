@@ -95,7 +95,7 @@ function RenderSimple({ error }: RenderSimpleProps) {
       style={{
         paddingBottom: 15,
         lineHeight: '1.5em',
-        fontSize: 15,
+        fontSize: 'var(--font-size-15)',
       }}
     >
       <Text>{msg}</Text>
@@ -110,7 +110,7 @@ function RenderLazyLoadError() {
       style={{
         paddingBottom: 15,
         lineHeight: '1.5em',
-        fontSize: 15,
+        fontSize: 'var(--font-size-15)',
       }}
     >
       <Text>
@@ -231,7 +231,7 @@ export function FatalError({ error: rawError }: FatalErrorProps) {
             <Trans>Restart app</Trans>
           </Button>
         </Paragraph>
-        <Paragraph isLast style={{ fontSize: 11 }}>
+        <Paragraph isLast style={{ fontSize: 'var(--font-size-11)' }}>
           <Link variant="text" onClick={() => setShowError(state => !state)}>
             <Trans>Show Error</Trans>
           </Link>

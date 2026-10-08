@@ -49,7 +49,7 @@ function RuleButton({ ruleCount, focused, onEdit, onClick }: RuleButtonProps) {
           backgroundColor: theme.noticeBackground,
           border: '1px solid ' + theme.noticeBackground,
           color: theme.noticeTextDark,
-          fontSize: 12,
+          fontSize: 'var(--font-size-12)',
           cursor: 'pointer',
           ':hover': { backgroundColor: theme.noticeBackgroundLight },
         }}

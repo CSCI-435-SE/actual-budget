@@ -38,6 +38,8 @@ export function ReportTableHeader({
   mode,
 }: ReportTableHeaderProps) {
   const { t } = useTranslation();
+  const showsSpending = balanceTypeOp === 'totalBudgeted' && mode === 'total';
+  const amountCellStyle = { minWidth: compact ? 50 : 85 };
   return (
     <Row
       collapsed
@@ -91,7 +93,7 @@ export function ReportTableHeader({
                 />
               );
             })
-          : ['totalTotals', 'totalBudgeted'].includes(balanceTypeOp) && (
+          : balanceTypeOp === 'totalTotals' && (
               <>
                 <Cell
                   style={{
@@ -118,10 +120,28 @@ export function ReportTableHeader({
             minWidth: compact ? 50 : 85,
           }}
           valueStyle={compactStyle}
-          value={t('Totals')}
+          value={showsSpending ? t('Budgeted') : t('Totals')}
           textAlign="right"
           width="flex"
         />
+        {showsSpending && (
+          <>
+            <Cell
+              style={amountCellStyle}
+              valueStyle={compactStyle}
+              value={t('Spent')}
+              textAlign="right"
+              width="flex"
+            />
+            <Cell
+              style={amountCellStyle}
+              valueStyle={compactStyle}
+              value={t('Remaining')}
+              textAlign="right"
+              width="flex"
+            />
+          </>
+        )}
         <Cell
           style={{
             minWidth: compact ? 50 : 85,

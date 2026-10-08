@@ -32,6 +32,7 @@ import { EncryptionSettings } from './Encryption';
 import { ExperimentalFeatures } from './Experimental';
 import { ExportBudget } from './Export';
 import { FormatSettings } from './Format';
+import { FontSizeSettings } from './FontSizeSettings';
 import { LanguageSettings } from './LanguageSettings';
 import { RepairTransactions } from './RepairTransactions';
 import { ResetCache, ResetSync } from './Reset';
@@ -229,6 +230,7 @@ export function Settings() {
         <About />
         <ThemeSettings />
         <IconSizeSettings />
+        <FontSizeSettings />
         <FormatSettings />
         <LanguageSettings />
         <AuthSettings />

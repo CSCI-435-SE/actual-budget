@@ -647,7 +647,7 @@ function AccountNameField({
               onUpdate={handleSave}
               onEscape={() => setEditingName(false)}
               style={{
-                fontSize: 25,
+                fontSize: 'var(--font-size-25)',
                 fontWeight: 500,
                 marginTop: -3,
                 marginBottom: -4,
@@ -684,7 +684,7 @@ function AccountNameField({
         >
           <View
             style={{
-              fontSize: 25,
+              fontSize: 'var(--font-size-25)',
               fontWeight: 500,
               marginRight: 5,
               marginBottom: -1,

@@ -51,7 +51,7 @@ export function ChangePassword() {
       <Title text={t('Change server password')} />
       <Text
         style={{
-          fontSize: 16,
+          fontSize: 'var(--font-size-16)',
           color: theme.pageTextDark,
           lineHeight: 1.4,
         }}
@@ -68,7 +68,7 @@ export function ChangePassword() {
             marginTop: 20,
             color: theme.errorText,
             borderRadius: 4,
-            fontSize: 15,
+            fontSize: 'var(--font-size-15)',
           }}
         >
           {getErrorMessage(error)}
@@ -81,7 +81,7 @@ export function ChangePassword() {
             marginTop: 20,
             color: theme.noticeTextLight,
             borderRadius: 4,
-            fontSize: 15,
+            fontSize: 'var(--font-size-15)',
           }}
         >
           {msg}
@@ -92,7 +92,7 @@ export function ChangePassword() {
         buttons={
           <Button
             variant="bare"
-            style={{ fontSize: 15, marginRight: 10 }}
+            style={{ fontSize: 'var(--font-size-15)', marginRight: 10 }}
             onPress={() => navigate('/')}
           >
             <Trans>Cancel</Trans>

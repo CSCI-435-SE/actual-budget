@@ -16,9 +16,13 @@ import type {
   CategoryGroupEntity,
 } from '@actual-app/core/types/models';
 
+import { getCategoryRows } from '#components/budget/util';
 import { Checkbox } from '#components/forms';
 
 import { GraphButton } from './GraphButton';
+
+// Matches the subcategory indent on the budget page.
+const SUBCATEGORY_INDENT = 16;
 
 type CategorySelectorProps = {
   categoryGroups: Array<CategoryGroupEntity>;
@@ -35,11 +39,12 @@ export function CategorySelector({
 }: CategorySelectorProps) {
   const { t } = useTranslation();
   const [uncheckedHidden, setUncheckedHidden] = useState(false);
-  const filteredGroup = (categoryGroup: CategoryGroupEntity) => {
-    return categoryGroup.categories.filter(f => {
-      return showHiddenCategories || !f.hidden ? true : false;
-    });
-  };
+  // Listed like the budget page: each subcategory under its parent, and a
+  // hidden parent hides its subcategories too.
+  const categoryRows = (categoryGroup: CategoryGroupEntity) =>
+    getCategoryRows(categoryGroup.categories, showHiddenCategories);
+  const filteredGroup = (categoryGroup: CategoryGroupEntity) =>
+    categoryRows(categoryGroup).map(row => row.category);
 
   const selectAll: CategoryEntity[] = [];
   categoryGroups.map(categoryGroup =>
@@ -213,48 +218,60 @@ export function CategorySelector({
                       paddingLeft: 10,
                     }}
                   >
-                    {filteredGroup(categoryGroup).map(category => {
-                      const isChecked = selectedCategories.some(
-                        selectedCategory => selectedCategory.id === category.id,
-                      );
-                      return (
-                        <li
-                          key={category.id}
-                          style={{
-                            display:
-                              !isChecked && uncheckedHidden ? 'none' : 'flex',
-                            flexDirection: 'row',
-                            marginBottom: 4,
-                          }}
-                        >
-                          <Checkbox
-                            id={`form_${category.id}`}
-                            checked={isChecked}
-                            onChange={() => {
-                              if (isChecked) {
-                                setSelectedCategories(
-                                  selectedCategories.filter(
-                                    selectedCategory =>
-                                      selectedCategory.id !== category.id,
-                                  ),
-                                );
-                              } else {
-                                setSelectedCategories([
-                                  ...selectedCategories,
-                                  category,
-                                ]);
-                              }
+                    {categoryRows(categoryGroup).map(
+                      ({ category, isSubcategory }, _, rows) => {
+                        const isChecked = selectedCategories.some(
+                          selectedCategory =>
+                            selectedCategory.id === category.id,
+                        );
+                        // Ticking a parent ticks its subcategories too
+                        const family = [
+                          category,
+                          ...rows
+                            .filter(
+                              row =>
+                                row.isSubcategory &&
+                                row.category.parent_id === category.id,
+                            )
+                            .map(row => row.category),
+                        ];
+                        const familyIds = new Set(family.map(cat => cat.id));
+                        return (
+                          <li
+                            key={category.id}
+                            style={{
+                              display:
+                                !isChecked && uncheckedHidden ? 'none' : 'flex',
+                              flexDirection: 'row',
+                              marginBottom: 4,
+                              paddingLeft: isSubcategory
+                                ? SUBCATEGORY_INDENT
+                                : 0,
                             }}
-                          />
-                          <label
-                            htmlFor={`form_${category.id}`}
-                            style={{ userSelect: 'none' }}
                           >
-                            {category.name}
-                          </label>
-                        </li>
-                      );
-                    })}
+                            <Checkbox
+                              id={`form_${category.id}`}
+                              checked={isChecked}
+                              onChange={() => {
+                                const others = selectedCategories.filter(
+                                  selectedCategory =>
+                                    !familyIds.has(selectedCategory.id),
+                                );
+                                setSelectedCategories(
+                                  isChecked ? others : [...others, ...family],
+                                );
+                              }}
+                            />
+                            <label
+                              htmlFor={`form_${category.id}`}
+                              style={{ userSelect: 'none' }}
+                            >
+                              {category.name}
+                            </label>
+                          </li>
+                        );
+                      },
+                    )}
                   </ul>
                 </li>
               </Fragment>

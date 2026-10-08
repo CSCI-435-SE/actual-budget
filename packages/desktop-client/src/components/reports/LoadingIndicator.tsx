@@ -22,7 +22,7 @@ export const LoadingIndicator = ({ message }: LoadingIndicatorProps) => {
       }}
     >
       {message && (
-        <Block style={{ marginBottom: 20, fontSize: 18 }}>{message}</Block>
+        <Block style={{ marginBottom: 20, fontSize: 'var(--font-size-18)' }}>{message}</Block>
       )}
       <AnimatedLoading
         style={{ width: 25, height: 25, color: theme.pageTextDark }}

@@ -219,7 +219,7 @@ function AccountHeader({ account }: { readonly account: AccountEntity }) {
       <Button variant="bare" onPress={onClick}>
         <Text
           style={{
-            fontSize: 17,
+            fontSize: 'var(--font-size-17)',
             fontWeight: 500,
             ...styles.underlinedText,
             ...(styles.lineClamp(2) as CSSProperties),

@@ -299,7 +299,7 @@ export const ManagePayees = ({
                 textAlign: 'center',
                 color: theme.pageTextSubdued,
                 fontStyle: 'italic',
-                fontSize: 13,
+                fontSize: 'var(--font-size-13)',
                 marginTop: 5,
               }}
             >

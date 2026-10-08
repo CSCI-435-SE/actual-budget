@@ -80,7 +80,7 @@ export function SpentCell({
                   ...makeAmountGrey(value),
                   maxWidth: columnWidth,
                   textAlign: 'right',
-                  fontSize: 12,
+                  fontSize: 'var(--font-size-12)',
                 }}
               >
                 {format(value, type)}

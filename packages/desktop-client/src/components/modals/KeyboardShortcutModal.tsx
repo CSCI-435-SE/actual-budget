@@ -523,7 +523,7 @@ export function KeyboardShortcutModal() {
           <View
             style={{
               flexDirection: 'column',
-              fontSize: 13,
+              fontSize: 'var(--font-size-13)',
               padding: '0 16px 16px 16px',
             }}
           >
@@ -566,7 +566,7 @@ export function KeyboardShortcutModal() {
                     padding: 20,
                   }}
                 >
-                  <Text style={{ fontSize: 15 }}>
+                  <Text style={{ fontSize: 'var(--font-size-15)' }}>
                     <Trans>
                       {isSearching
                         ? 'No matching shortcuts'
