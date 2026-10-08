@@ -12,7 +12,11 @@ import type { TransObjectLiteral } from '@actual-app/core/types/util';
 
 import { FinancialText } from '#components/FinancialText';
 import { PrivacyFilter } from '#components/PrivacyFilter';
-import { GoalProgress } from '#components/reports/GoalProgress';
+import { DateRange } from '#components/reports/DateRange';
+import {
+  GoalProgress,
+  isValidGoalTarget,
+} from '#components/reports/GoalProgress';
 import { GoalSettingsEditor } from '#components/reports/GoalSettingsEditor';
 import { ReportCard } from '#components/reports/ReportCard';
 import { ReportCardName } from '#components/reports/ReportCardName';
@@ -21,6 +25,8 @@ import { useGoalTotal } from '#components/reports/useGoalTotal';
 import { useContextMenu } from '#hooks/useContextMenu';
 import { useFormat } from '#hooks/useFormat';
 import { useTagCSS } from '#hooks/useTagCSS';
+import { addNotification } from '#notifications/notificationsSlice';
+import { useDispatch } from '#redux';
 
 type GoalCardProps = {
   widgetId: string;
@@ -36,6 +42,7 @@ export function GoalCard({
   onMetaChange,
 }: GoalCardProps) {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const format = useFormat();
   const getTagCSS = useTagCSS();
   const [latestTransaction, setLatestTransaction] = useState<string>('');
@@ -116,10 +123,17 @@ export function GoalCard({
               }}
               onClose={() => setNameMenuOpen(false)}
             />
-            {linkedTag && (
+            <DateRange start={start} end={end} />
+            {linkedTag ? (
               <View style={{ flexDirection: 'row' }}>
                 <span className={getTagCSS(linkedTag)}>#{linkedTag}</span>
               </View>
+            ) : (
+              <Block
+                style={{ color: theme.pageTextSubdued, fontStyle: 'italic' }}
+              >
+                <Trans>Link a tag to track progress.</Trans>
+              </Block>
             )}
           </View>
           <View style={{ textAlign: 'right' }}>
@@ -167,6 +181,18 @@ export function GoalCard({
               idPrefix={`goal-${widgetId}`}
               initialSettings={{ targetAmount, linkedTag }}
               onSave={settings => {
+                if (!isValidGoalTarget(settings.targetAmount)) {
+                  dispatch(
+                    addNotification({
+                      notification: {
+                        type: 'error',
+                        message: t('Goal amount must be greater than zero.'),
+                      },
+                    }),
+                  );
+                  return;
+                }
+
                 const { linkedTag: _previousTag, ...rest } = meta ?? {};
                 onMetaChange({
                   ...rest,

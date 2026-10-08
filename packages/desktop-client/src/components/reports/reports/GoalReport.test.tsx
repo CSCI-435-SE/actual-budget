@@ -686,6 +686,7 @@ describe('GoalReport', () => {
       const { updateWidget } = renderGoalReport({
         meta: {
           name: 'Vacation',
+          targetAmount: 1000000,
           linkedTag: 'vacation',
           timeFrame: STATIC_TIME_FRAME,
         },
@@ -699,6 +700,21 @@ describe('GoalReport', () => {
       const savedWidget = updateWidget.mock.calls[0][0] as GoalCardWidget;
       expect(savedWidget.meta).not.toHaveProperty('linkedTag');
       expect(savedWidget.meta).toMatchObject({ name: 'Vacation' });
+    });
+
+    it('does not save a goal without a positive amount', async () => {
+      const user = userEvent.setup();
+      const { updateWidget, store } = renderGoalReport({
+        meta: { name: 'Vacation', linkedTag: 'vacation' },
+      });
+      await waitForReport();
+
+      await user.click(screen.getByRole('button', { name: 'Save widget' }));
+
+      expect(updateWidget).not.toHaveBeenCalled();
+      expect(store.getState().notifications.notifications).toMatchObject([
+        { type: 'error', message: 'Goal amount must be greater than zero.' },
+      ]);
     });
   });
 });

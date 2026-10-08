@@ -122,6 +122,18 @@ describe('GoalCard', () => {
     });
   });
 
+  describe('time frame', () => {
+    it('shows the saved time frame', () => {
+      renderGoalCard({
+        meta: {
+          timeFrame: { start: '2024-01-01', end: '2024-06-30', mode: 'static' },
+        },
+      });
+
+      expect(screen.getByText('Jan 2024 - Jun 2024')).toBeInTheDocument();
+    });
+  });
+
   describe('amounts', () => {
     it('shows the computed current amount and the target amount', () => {
       mockTotal(250000);
@@ -416,6 +428,23 @@ describe('GoalCard', () => {
       expect(mockNavigate).not.toHaveBeenCalled();
     });
 
+    it('does not save a goal without a positive amount', async () => {
+      const user = userEvent.setup();
+      const { onMetaChange, store } = renderGoalCard({
+        meta: { name: 'Vacation', targetAmount: 1000000 },
+      });
+
+      chooseContextMenuItem(store, 'Vacation', 'set-goal');
+      await user.clear(screen.getByLabelText('Goal amount'));
+      await user.click(screen.getByRole('button', { name: 'Save' }));
+
+      expect(onMetaChange).not.toHaveBeenCalled();
+      expect(screen.getByLabelText('Goal amount')).toBeInTheDocument();
+      expect(store.getState().notifications.notifications).toMatchObject([
+        { type: 'error', message: 'Goal amount must be greater than zero.' },
+      ]);
+    });
+
     it('does not save anything when cancelled', async () => {
       const user = userEvent.setup();
       const { onMetaChange, store } = renderGoalCard({
@@ -437,10 +466,21 @@ describe('GoalCard', () => {
       expect(screen.getByText('#vacation')).toBeInTheDocument();
     });
 
-    it('shows no tag when none is linked', () => {
+    it('prompts to link a tag when none is linked', () => {
       renderGoalCard({ meta: { name: 'Vacation' } });
 
       expect(screen.queryByText(/^#/)).not.toBeInTheDocument();
+      expect(
+        screen.getByText('Link a tag to track progress.'),
+      ).toBeInTheDocument();
+    });
+
+    it('does not prompt to link a tag once one is linked', () => {
+      renderGoalCard({ meta: { name: 'Vacation', linkedTag: 'vacation' } });
+
+      expect(
+        screen.queryByText('Link a tag to track progress.'),
+      ).not.toBeInTheDocument();
     });
 
     it('links the chosen tag together with the goal amount', async () => {
