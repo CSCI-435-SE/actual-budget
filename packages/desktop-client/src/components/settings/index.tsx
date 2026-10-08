@@ -37,6 +37,7 @@ import { RepairTransactions } from './RepairTransactions';
 import { ResetCache, ResetSync } from './Reset';
 import { ThemeSettings } from './Themes';
 import { AdvancedToggle, Setting } from './UI';
+import { IconSizeSettings } from './IconSizeSettings';
 
 function About() {
   const version = useServerVersion();
@@ -227,6 +228,7 @@ export function Settings() {
         )}
         <About />
         <ThemeSettings />
+        <IconSizeSettings />
         <FormatSettings />
         <LanguageSettings />
         <AuthSettings />

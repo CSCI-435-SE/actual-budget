@@ -7,9 +7,7 @@ export function CompactFiltersButton({ onPress }: { onPress: () => void }) {
   return (
     <Button variant="bare" onPress={onPress} style={{ minWidth: 20 }}>
       <SvgFilter
-        width={15}
-        height={15}
-        style={{ width: 15, height: 15, flexShrink: 0 }}
+        style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)', flexShrink: 0 }}
       />
     </Button>
   );

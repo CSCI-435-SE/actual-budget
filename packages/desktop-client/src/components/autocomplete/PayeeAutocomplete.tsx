@@ -912,7 +912,7 @@ function NearbyPayeeItem({
           }}
         >
           <Trans i18nKey="forget">Forget</Trans>
-          <SvgLocation width={10} height={10} style={{ marginLeft: 4 }} />
+          <SvgLocation style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginLeft: 4 }} />
         </Button>
       )}
     </div>

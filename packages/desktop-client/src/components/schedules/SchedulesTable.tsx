@@ -247,7 +247,7 @@ function ScheduleRow({
           {schedule._date &&
             typeof schedule._date === 'object' &&
             schedule._date.frequency && (
-              <SvgCheck style={{ width: 13, height: 13 }} />
+              <SvgCheck style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)' }} />
             )}
         </Field>
       )}
@@ -274,9 +274,7 @@ function ScheduleRow({
               }}
             >
               <SvgDotsHorizontalTriple
-                width={15}
-                height={15}
-                style={{ transform: 'rotateZ(90deg)' }}
+                style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)', transform: 'rotateZ(90deg)' }}
               />
             </Button>
           </View>

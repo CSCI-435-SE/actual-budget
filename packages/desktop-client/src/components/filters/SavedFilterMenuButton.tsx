@@ -188,7 +188,7 @@ export function SavedFilterMenuButton({
               <Trans>(modified)</Trans>&nbsp;
             </Text>
           )}
-          <SvgExpandArrow width={8} height={8} style={{ marginRight: 5 }} />
+          <SvgExpandArrow style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)', marginRight: 5 }} />
         </Button>
       )}
 

@@ -512,9 +512,7 @@ export function KeyboardShortcutModal() {
                   style={{ marginRight: 10, marginLeft: 15, zIndex: 3000 }}
                 >
                   <SvgArrowLeft
-                    width={10}
-                    height={10}
-                    style={{ marginRight: 5, color: 'currentColor' }}
+                    style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginRight: 5, color: 'currentColor' }}
                   />
                   <Trans>Back</Trans>
                 </Button>

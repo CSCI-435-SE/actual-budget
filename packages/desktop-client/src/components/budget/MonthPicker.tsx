@@ -101,11 +101,11 @@ export const MonthPicker = ({
         >
           <View title={t('Today')}>
             <SvgCalendar
-              style={{
-                width: 20,
-                height: 20,
-              }}
-            />
+  style={{
+    width: 'var(--icon-size-20)',
+    height: 'var(--icon-size-20)',
+  }}
+/>
           </View>
         </Link>
         <Link

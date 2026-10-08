@@ -625,7 +625,7 @@ function SumWithRange({
       }}
     >
       <View style={{ position: 'relative', height: '50px', marginRight: 50 }}>
-        <SvgSum width={50} height={50} />
+        <SvgSum style={{ width: 'var(--icon-size-50)', height: 'var(--icon-size-50)' }}  />
         <Text style={{ position: 'absolute', right: -30, top: -20 }}>{to}</Text>
         <Text style={{ position: 'absolute', right: -30, bottom: -20 }}>
           {from}

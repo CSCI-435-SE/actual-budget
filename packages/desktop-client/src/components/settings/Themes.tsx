@@ -249,7 +249,7 @@ export function ThemeSettings() {
                       }}
                     >
                       <Trans>Custom CSS is active</Trans>
-                      <SvgCode style={{ width: 14, height: 14 }} />
+                      <SvgCode style={{ width: 'var(--icon-size-14)', height: 'var(--icon-size-14)' }} />
                     </Button>
                   )}
                 </View>

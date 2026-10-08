@@ -207,7 +207,7 @@ export function Transaction({
           <View>
             <SpaceBetween style={{ alignItems: 'flex-start' }}>
               <View>
-                <SvgDownAndRightArrow width={16} height={16} />
+                <SvgDownAndRightArrow style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)' }}  />
               </View>
               <View>{formatDate(transaction.date ?? null, dateFormat)}</View>
             </SpaceBetween>

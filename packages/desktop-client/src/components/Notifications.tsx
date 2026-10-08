@@ -260,7 +260,7 @@ function Notification({
           }}
           onPress={onRemove}
         >
-          <SvgDelete style={{ width: 10, height: 10 }} />
+          <SvgDelete style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' }} />
         </Button>
 
         {/* Content and action button layout */}

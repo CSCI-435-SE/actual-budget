@@ -732,13 +732,13 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
                   >
                     {!mobileTransactionsOpen && (
                       <>
-                        <SvgCheveronUp width={16} height={16} />
+                        <SvgCheveronUp style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)' }}  />
                         <Trans>Show transactions</Trans>
                       </>
                     )}
                     {mobileTransactionsOpen && (
                       <>
-                        <SvgCheveronDown width={16} height={16} />
+                        <SvgCheveronDown style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)' }}  />
                         <Trans>Hide transactions</Trans>
                       </>
                     )}
@@ -864,9 +864,7 @@ function CalendarWithHeader({
           style={{ display: 'grid', gridTemplateColumns: '16px 1fr', gap: 2 }}
         >
           <SvgArrowThickUp
-            width={16}
-            height={16}
-            style={{ color: theme.reportsNumberPositive, flexShrink: 0 }}
+            style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)', color: theme.reportsNumberPositive, flexShrink: 0 }}
           />
           <View
             style={{
@@ -884,9 +882,7 @@ function CalendarWithHeader({
             </PrivacyFilter>
           </View>
           <SvgArrowThickDown
-            width={16}
-            height={16}
-            style={{ color: theme.reportsNumberNegative, flexShrink: 0 }}
+            style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)', color: theme.reportsNumberNegative, flexShrink: 0 }}
           />
           <View
             style={{

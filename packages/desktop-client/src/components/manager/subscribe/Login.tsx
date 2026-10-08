@@ -404,7 +404,7 @@ export function Login() {
               }}
             >
               <Trans>Select the login method</Trans>{' '}
-              <SvgCheveronDown width={12} height={12} />
+              <SvgCheveronDown style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }}  />
             </Button>
           </View>
           <Popover

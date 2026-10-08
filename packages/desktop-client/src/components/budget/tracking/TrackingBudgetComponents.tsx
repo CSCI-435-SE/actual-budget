@@ -306,8 +306,8 @@ export const CategoryMonth = memo(function CategoryMonth({
                 }}
               >
                 <SvgCheveronDown
-                  width={14}
-                  height={14}
+                  style={{ width: 'var(--icon-size-14)', height: 'var(--icon-size-14)' }}
+                  
                   className="hover-visible"
                 />
               </Button>
@@ -442,9 +442,9 @@ export const CategoryMonth = memo(function CategoryMonth({
                 }
               >
                 {isScheduleRecurring ? (
-                  <SvgArrowsSynchronize style={{ width: 12, height: 12 }} />
+                  <SvgArrowsSynchronize style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
                 ) : (
-                  <SvgCalendar3 style={{ width: 12, height: 12 }} />
+                  <SvgCalendar3 style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
                 )}
               </Button>
             </View>

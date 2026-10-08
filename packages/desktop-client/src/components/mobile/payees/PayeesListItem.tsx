@@ -80,9 +80,7 @@ export function PayeesListItem({
           <SvgBookmark
             aria-hidden
             focusable={false}
-            width={15}
-            height={15}
-            style={{
+            style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)',
               color: theme.pageText,
               flexShrink: 0,
             }}

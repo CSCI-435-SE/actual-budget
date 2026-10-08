@@ -207,7 +207,7 @@ const TransactionHeader = memo(
               borderTopWidth: 0,
               borderBottomWidth: 0,
             }}
-            icon={<SvgSubtract width={6} height={6} />}
+            icon={<SvgSubtract style={{ width: 'var(--icon-size-6)', height: 'var(--icon-size-6)' }}  />}
             onSelect={(e: KeyboardEvent<HTMLDivElement>) =>
               dispatchSelected({
                 type: 'select-all',
@@ -416,13 +416,13 @@ function StatusCell({
         onSelect={onSelect}
       >
         {createElement(statusProps.Icon, {
-          style: {
-            width: 13,
-            height: 13,
-            color: statusColor,
-            marginTop: status === 'due' ? -1 : 0,
-          },
-        })}
+  style: {
+    width: 'var(--icon-size-13)',
+    height: 'var(--icon-size-13)',
+    color: statusColor,
+    marginTop: status === 'due' ? -1 : 0,
+  },
+})}
       </CellButton>
     </Cell>
   );
@@ -470,10 +470,10 @@ function HeaderCell({
           <Button variant="bare" onPress={onClick} style={style}>
             <UnexposedCellContent value={cellValue} />
             {icon === 'asc' && (
-              <SvgArrowDown width={10} height={10} style={{ marginLeft: 5 }} />
+              <SvgArrowDown style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginLeft: 5 }} />
             )}
             {icon === 'desc' && (
-              <SvgArrowUp width={10} height={10} style={{ marginLeft: 5 }} />
+              <SvgArrowUp style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginLeft: 5 }} />
             )}
           </Button>
         ) : (
@@ -586,13 +586,13 @@ function PayeeCell({
             onNavigateToSchedule={onNavigateToSchedule}
           />
           <SvgSplit
-            style={{
-              color: 'inherit',
-              width: 14,
-              height: 14,
-              marginRight: 5,
-              flexShrink: 0,
-            }}
+  style={{
+    color: 'inherit',
+    width: 'var(--icon-size-14)',
+    height: 'var(--icon-size-14)',
+    marginRight: 5,
+    flexShrink: 0,
+  }}
           />
           <Text
             style={{
@@ -751,12 +751,12 @@ function PayeeCell({
 const payeeIconButtonStyle = {
   marginLeft: -5,
   marginRight: 2,
-  width: 23,
-  height: 23,
+  width: 'var(--icon-size-23)',
+  height: 'var(--icon-size-23)',
   color: 'inherit',
 };
-const scheduleIconStyle = { width: 13, height: 13 };
-const transferIconStyle = { width: 10, height: 10 };
+const scheduleIconStyle = { width: 'var(--icon-size-13)', height: 'var(--icon-size-13)' };
+const transferIconStyle = { width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' };
 
 type PayeeIconsProps = {
   transaction: SerializedTransaction;
@@ -1455,8 +1455,8 @@ const Transaction = memo(function Transaction({
                 ? // TODO: this will require changes in table.tsx
                   ((
                     <SvgHyperlink2
-                      style={{ width: 13, height: 13, color: 'inherit' }}
-                    />
+  style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)', color: 'inherit' }}
+/>
                   ) as unknown as string)
                 : undefined
             }
@@ -1655,14 +1655,14 @@ const Transaction = memo(function Transaction({
               >
                 {isParent && (
                   <SvgCheveronDown
-                    style={{
-                      color: 'inherit',
-                      width: 14,
-                      height: 14,
-                      transition: 'transform .08s',
-                      transform: expanded ? 'rotateZ(0)' : 'rotateZ(-90deg)',
-                    }}
-                  />
+  style={{
+    color: 'inherit',
+    width: 'var(--icon-size-14)',
+    height: 'var(--icon-size-14)',
+    transition: 'transform .08s',
+    transform: expanded ? 'rotateZ(0)' : 'rotateZ(-90deg)',
+  }}
+/>
                 )}
                 {!isPreview && (
                   <Text

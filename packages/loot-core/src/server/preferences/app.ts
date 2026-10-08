@@ -77,6 +77,10 @@ async function getSyncedPrefs(): Promise<SyncedPrefs> {
 }
 
 async function saveGlobalPrefs(prefs: GlobalPrefs) {
+  if (prefs.iconSize !== undefined) {
+    await asyncStorage.setItem('icon-size', prefs.iconSize);
+  }
+  
   if (!prefs) {
     return 'ok';
   }
@@ -144,6 +148,7 @@ async function saveGlobalPrefs(prefs: GlobalPrefs) {
 
 async function loadGlobalPrefs(): Promise<GlobalPrefs> {
   const {
+    'icon-size': iconSize,
     'floating-sidebar': floatingSidebar,
     'category-expanded-state': categoryExpandedState,
     'max-months': maxMonths,
@@ -159,6 +164,7 @@ async function loadGlobalPrefs(): Promise<GlobalPrefs> {
     syncServerConfig,
     notifyWhenUpdateIsAvailable,
   } = await asyncStorage.multiGet([
+    'icon-size',
     'floating-sidebar',
     'category-expanded-state',
     'max-months',
@@ -175,6 +181,7 @@ async function loadGlobalPrefs(): Promise<GlobalPrefs> {
     'notifyWhenUpdateIsAvailable',
   ] as const);
   return {
+    iconSize: iconSize || '1',
     floatingSidebar: floatingSidebar === 'true',
     categoryExpandedState: stringToInteger(categoryExpandedState || '') || 0,
     maxMonths: stringToInteger(maxMonths || '') || 1,
