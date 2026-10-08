@@ -1,20 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 import { View } from '@actual-app/components/view';
 
-import { useGlobalPref } from '#hooks/useGlobalPref';
+import { useResizeObserver } from '#hooks/useResizeObserver';
 
 import { Sidebar } from './Sidebar';
-import { useSidebar } from './SidebarProvider';
+import { SIDEBAR_TRANSITION_MS, useSidebar } from './SidebarProvider';
 
 export function FloatableSidebar() {
-  const [floatingSidebar] = useGlobalPref('floatingSidebar');
-
   const sidebar = useSidebar();
   const { isNarrowWidth } = useResponsive();
+  const [sidebarWidth, setSidebarWidth] = useState(0);
+  const sidebarRef = useResizeObserver<HTMLDivElement>(rect => {
+    setSidebarWidth(rect.width);
+  });
 
-  const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
+  const sidebarShouldFloat = sidebar.floating;
+  // A reflowing sidebar stays in the flex layout next to the main content and
+  // collapses its own width while hidden, so the content resizes alongside it.
+  const sidebarReflows = sidebar.reflows;
+  const transition = `${SIDEBAR_TRANSITION_MS}ms`;
 
   return isNarrowWidth ? null : (
     <View
@@ -30,10 +36,17 @@ export function FloatableSidebar() {
         sidebarShouldFloat ? () => sidebar.setHoveringSidebar(false) : undefined
       }
       style={{
-        position: sidebarShouldFloat ? 'absolute' : undefined,
+        position:
+          sidebarShouldFloat && !sidebarReflows ? 'absolute' : undefined,
         top: 8,
         // If not floating, the -50 takes into account the transform below
         bottom: sidebarShouldFloat ? 8 : -50,
+        ...(sidebarReflows && {
+          flexShrink: 0,
+          marginTop: 8,
+          marginBottom: 8,
+          marginRight: sidebar.hidden ? -sidebarWidth : 0,
+        }),
         zIndex: 1001,
         borderRadius: sidebarShouldFloat ? '0 6px 6px 0' : 0,
         overflow: 'hidden',
@@ -45,11 +58,12 @@ export function FloatableSidebar() {
                       translateX(${
                         sidebarShouldFloat && sidebar.hidden ? '-100' : '0'
                       }%)`,
-        transition:
-          'transform .5s, box-shadow .5s, border-radius .5s, bottom .5s',
+        transition: `transform ${transition}, box-shadow ${transition}, border-radius ${transition}, bottom ${transition}, margin-right ${transition}`,
       }}
     >
-      <Sidebar />
+      <View innerRef={sidebarRef} style={{ flex: 1 }}>
+        <Sidebar />
+      </View>
     </View>
   );
 }

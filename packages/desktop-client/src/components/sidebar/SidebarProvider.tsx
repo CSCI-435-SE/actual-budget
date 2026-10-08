@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
@@ -16,13 +17,18 @@ import { useGlobalPref } from '#hooks/useGlobalPref';
 import { useDispatch } from '#redux';
 
 const HOVER_HIDE_DELAY = 350;
+const MENU_HOVER_OPEN_DELAY = 200;
+export const SIDEBAR_TRANSITION_MS = 500;
 
 type SidebarContextValue = {
   hidden: boolean;
   setHidden: Dispatch<SetStateAction<boolean>>;
   setHoveringSidebar: Dispatch<SetStateAction<boolean>>;
+  onMenuButtonHoverStart: () => void;
+  onMenuButtonHoverEnd: () => void;
   floating: boolean;
   alwaysFloats: boolean;
+  reflows: boolean;
 };
 
 const SidebarContext = createContext<SidebarContextValue>(null);
@@ -37,6 +43,9 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
   const { width } = useResponsive();
   const alwaysFloats = width < 668;
   const floating = floatingSidebar || alwaysFloats;
+  // When floating by choice (not forced by a narrow window), the open sidebar
+  // takes up layout space so the main content shrinks instead of being covered.
+  const reflows = !!floatingSidebar && !alwaysFloats;
   const dispatch = useDispatch();
 
   // A dropdown menu opened from the sidebar (e.g. BudgetName's) renders in a
@@ -47,6 +56,48 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
   // is being used, and only hide together once neither is hovered anymore.
   const [hoveringSidebar, setHoveringSidebar] = useState(false);
   const [hoveringPopover, setHoveringPopover] = useState(false);
+  const [hoveringMenuButton, setHoveringMenuButton] = useState(false);
+
+  // While the sidebar animates open or closed, the titlebar's menu button
+  // slides with the main content and can end up under a resting cursor.
+  // Ignore menu button hovers until the animation finishes so that can't
+  // start an open/close loop.
+  const isAnimatingRef = useRef(false);
+  const isFirstRenderRef = useRef(true);
+  const menuHoverTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+    isAnimatingRef.current = true;
+    const timeout = setTimeout(() => {
+      isAnimatingRef.current = false;
+    }, SIDEBAR_TRANSITION_MS);
+    return () => clearTimeout(timeout);
+  }, [hidden]);
+
+  useEffect(() => () => clearTimeout(menuHoverTimeoutRef.current), []);
+
+  function onMenuButtonHoverStart() {
+    if (isAnimatingRef.current) {
+      return;
+    }
+    clearTimeout(menuHoverTimeoutRef.current);
+    // Only open once the cursor rests on the button, so a mouse passing over
+    // it on the way somewhere else doesn't open the sidebar.
+    menuHoverTimeoutRef.current = setTimeout(() => {
+      if (!isAnimatingRef.current) {
+        setHoveringMenuButton(true);
+      }
+    }, MENU_HOVER_OPEN_DELAY);
+  }
+
+  function onMenuButtonHoverEnd() {
+    clearTimeout(menuHoverTimeoutRef.current);
+    setHoveringMenuButton(false);
+  }
 
   useEffect(() => {
     function handlePointerOver(e: PointerEvent) {
@@ -58,13 +109,13 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
   }, []);
 
   useLayoutEffect(() => {
-    if (hoveringSidebar || hoveringPopover) {
+    if (hoveringSidebar || hoveringPopover || hoveringMenuButton) {
       setHidden(false);
       return;
     }
     const timeout = setTimeout(() => setHidden(true), HOVER_HIDE_DELAY);
     return () => clearTimeout(timeout);
-  }, [hoveringSidebar, hoveringPopover]);
+  }, [hoveringSidebar, hoveringPopover, hoveringMenuButton]);
 
   useEffect(() => {
     if (hidden && !hoveringPopover) {
@@ -74,7 +125,16 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 
   return (
     <SidebarContext.Provider
-      value={{ hidden, setHidden, setHoveringSidebar, floating, alwaysFloats }}
+      value={{
+        hidden,
+        setHidden,
+        setHoveringSidebar,
+        onMenuButtonHoverStart,
+        onMenuButtonHoverEnd,
+        floating,
+        alwaysFloats,
+        reflows,
+      }}
     >
       {children}
     </SidebarContext.Provider>
@@ -82,11 +142,37 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
 }
 
 export function useSidebar() {
-  const { hidden, setHidden, setHoveringSidebar, floating, alwaysFloats } =
-    useContext(SidebarContext);
+  const {
+    hidden,
+    setHidden,
+    setHoveringSidebar,
+    onMenuButtonHoverStart,
+    onMenuButtonHoverEnd,
+    floating,
+    alwaysFloats,
+    reflows,
+  } = useContext(SidebarContext);
 
   return useMemo(
-    () => ({ hidden, setHidden, setHoveringSidebar, floating, alwaysFloats }),
-    [hidden, setHidden, setHoveringSidebar, floating, alwaysFloats],
+    () => ({
+      hidden,
+      setHidden,
+      setHoveringSidebar,
+      onMenuButtonHoverStart,
+      onMenuButtonHoverEnd,
+      floating,
+      alwaysFloats,
+      reflows,
+    }),
+    [
+      hidden,
+      setHidden,
+      setHoveringSidebar,
+      onMenuButtonHoverStart,
+      onMenuButtonHoverEnd,
+      floating,
+      alwaysFloats,
+      reflows,
+    ],
   );
 }
