@@ -198,14 +198,12 @@ export function CategoryGroupMenuModal({
               }}
             >
               <Button style={buttonStyle} onPress={_onAddCategory}>
-                <SvgAdd width={17} height={17} style={{ paddingRight: 5 }} />
+                <SvgAdd style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)', paddingRight: 5 }} />
                 <Trans>Add category</Trans>
               </Button>
               <Button style={buttonStyle} onPress={_onEditNotes}>
                 <SvgNotesPaper
-                  width={20}
-                  height={20}
-                  style={{ paddingRight: 5 }}
+                  style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)', paddingRight: 5 }}
                 />
                 <Trans>Edit notes</Trans>
               </Button>
@@ -225,15 +223,11 @@ export function CategoryGroupMenuModal({
                 >
                   {!showMore ? (
                     <SvgCheveronUp
-                      width={30}
-                      height={30}
-                      style={{ paddingRight: 5 }}
+                      style={{ width: 'var(--icon-size-30)', height: 'var(--icon-size-30)', paddingRight: 5 }}
                     />
                   ) : (
                     <SvgCheveronDown
-                      width={30}
-                      height={30}
-                      style={{ paddingRight: 5 }}
+                      style={{ width: 'var(--icon-size-30)', height: 'var(--icon-size-30)', paddingRight: 5 }}
                     />
                   )}
                   <Trans>Actions</Trans>
@@ -293,9 +287,7 @@ function AdditionalCategoryGroupMenu({
           }}
         >
           <SvgDotsHorizontalTriple
-            width={17}
-            height={17}
-            style={{ color: 'currentColor' }}
+            style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)', color: 'currentColor' }}
           />
           <Popover
             triggerRef={triggerRef}

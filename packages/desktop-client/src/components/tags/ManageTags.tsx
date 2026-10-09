@@ -66,7 +66,7 @@ export function ManageTags() {
         </View>
         <SpaceBetween gap={10} style={{ marginTop: 12, alignItems: 'center' }}>
           <Button variant="bare" onPress={() => setCreate(true)}>
-            <SvgAdd width={10} height={10} style={{ marginRight: 3 }} />
+            <SvgAdd style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' }}  style={{ marginRight: 3 }} />
             <Trans>Add New</Trans>
           </Button>
           <View style={{ flex: 1 }} />

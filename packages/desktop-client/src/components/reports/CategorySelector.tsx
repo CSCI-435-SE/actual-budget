@@ -87,9 +87,7 @@ export function CategorySelector({
             {uncheckedHidden ? (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <SvgViewShow
-                  width={15}
-                  height={15}
-                  style={{ marginRight: 5 }}
+                  style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)', marginRight: 5 }}
                 />
                 <Text>
                   <Trans>Show unchecked</Trans>
@@ -103,9 +101,7 @@ export function CategorySelector({
                 }}
               >
                 <SvgViewHide
-                  width={15}
-                  height={15}
-                  style={{ marginRight: 5 }}
+                  style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)', marginRight: 5 }}
                 />
                 <Text
                   style={{
@@ -131,7 +127,7 @@ export function CategorySelector({
             }}
             style={{ marginRight: 5, padding: 8 }}
           >
-            <SvgCheckAll width={15} height={15} />
+            <SvgCheckAll style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
           </GraphButton>
           <GraphButton
             selected={allCategoriesUnselected}
@@ -141,7 +137,7 @@ export function CategorySelector({
             }}
             style={{ padding: 8 }}
           >
-            <SvgUncheckAll width={15} height={15} />
+            <SvgUncheckAll style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
           </GraphButton>
         </View>
       </View>

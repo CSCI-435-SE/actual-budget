@@ -128,9 +128,7 @@ export function SidebarGroup({
     >
       {!dragPreview && (
         <SvgExpandArrow
-          width={8}
-          height={8}
-          style={{
+          style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)',
             marginRight: 5,
             marginLeft: 5,
             flexShrink: 0,
@@ -159,7 +157,7 @@ export function SidebarGroup({
               style={{ padding: 3 }}
               onPress={handleContextMenu}
             >
-              <SvgCheveronDown width={14} height={14} />
+              <SvgCheveronDown style={{ width: 'var(--icon-size-14)', height: 'var(--icon-size-14)' }}  />
             </Button>
           </View>
           <View style={{ flex: 1 }} />

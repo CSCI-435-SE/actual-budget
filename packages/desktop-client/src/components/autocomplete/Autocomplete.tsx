@@ -700,7 +700,7 @@ function MultiItem({ name, onRemove }: MultiItemProps) {
         {name}
       </span>
       <Button variant="bare" style={{ marginLeft: 1 }} onPress={onRemove}>
-        <SvgRemove style={{ width: 8, height: 8 }} />
+        <SvgRemove style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)' }} />
       </Button>
     </View>
   );

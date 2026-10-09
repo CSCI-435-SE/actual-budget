@@ -76,6 +76,11 @@ async function getSyncedPrefs(): Promise<SyncedPrefs> {
   }, {});
 }
 
+async function saveGlobalPrefs(prefs: GlobalPrefs) {
+  if (prefs.iconSize !== undefined) {
+    await asyncStorage.setItem('icon-size', prefs.iconSize);
+  }
+  
 export async function saveGlobalPrefs(prefs: GlobalPrefs) {
   if (!prefs) {
     return 'ok';
@@ -147,6 +152,7 @@ export async function saveGlobalPrefs(prefs: GlobalPrefs) {
 
 export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
   const {
+    'icon-size': iconSize,
     'floating-sidebar': floatingSidebar,
     'font-size': fontSize,
     'category-expanded-state': categoryExpandedState,
@@ -163,6 +169,7 @@ export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
     syncServerConfig,
     notifyWhenUpdateIsAvailable,
   } = await asyncStorage.multiGet([
+    'icon-size',
     'floating-sidebar',
     'font-size',
     'category-expanded-state',
@@ -180,6 +187,7 @@ export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
     'notifyWhenUpdateIsAvailable',
   ] as const);
   return {
+    iconSize: iconSize || '1',
     floatingSidebar: floatingSidebar === 'true',
     fontSize: fontSize || '1',
     categoryExpandedState: stringToInteger(categoryExpandedState || '') || 0,

@@ -28,6 +28,7 @@ import { loadGlobalPrefs } from '#prefs/prefsSlice';
 import { useDispatch, useSelector, useStore } from '#redux';
 import {
   CustomThemeStyle,
+  IconSizeStyle,
   hasHiddenScrollbars,
   ThemeStyle,
   useTheme,
@@ -226,6 +227,7 @@ export function App() {
                     </ErrorBoundary>
                     <ThemeStyle />
                     <CustomThemeStyle />
+                    <IconSizeStyle />
                     <FontSizeStyle />
                     <ErrorBoundary FallbackComponent={FatalError}>
                       <Modals />

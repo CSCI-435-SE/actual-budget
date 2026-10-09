@@ -101,7 +101,7 @@ export function ReportTopbar({
         style={{ marginRight: 15 }}
         disabled={isItemDisabled('TableGraph')}
       >
-        <SvgQueue width={15} height={15} />
+        <SvgQueue style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </GraphButton>
       <GraphButton
         title={
@@ -123,7 +123,7 @@ export function ReportTopbar({
           customReportItems.mode === 'total' ? 'BarGraph' : 'StackedBarGraph',
         )}
       >
-        <SvgChartBar width={15} height={15} />
+        <SvgChartBar style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </GraphButton>
       <GraphButton
         title={t('Line Graph')}
@@ -134,7 +134,7 @@ export function ReportTopbar({
         style={{ marginRight: 15 }}
         disabled={isItemDisabled('LineGraph')}
       >
-        <SvgChart width={15} height={15} />
+        <SvgChart style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </GraphButton>
       <GraphButton
         title={t('Area Graph')}
@@ -145,7 +145,7 @@ export function ReportTopbar({
         style={{ marginRight: 15 }}
         disabled={isItemDisabled('AreaGraph')}
       >
-        <SvgChartArea width={15} height={15} />
+        <SvgChartArea style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </GraphButton>
       <GraphButton
         title={t('Donut Graph')}
@@ -156,7 +156,7 @@ export function ReportTopbar({
         style={{ marginRight: 15 }}
         disabled={isItemDisabled('DonutGraph')}
       >
-        <SvgChartPie width={15} height={15} />
+        <SvgChartPie style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </GraphButton>
       <View
         style={{
@@ -176,7 +176,7 @@ export function ReportTopbar({
         title={t('Show Legend')}
         disabled={isItemDisabled('ShowLegend')}
       >
-        <SvgListBullet width={15} height={15} />
+        <SvgListBullet style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </GraphButton>
       <GraphButton
         selected={viewSummary}
@@ -186,7 +186,7 @@ export function ReportTopbar({
         style={{ marginRight: 15 }}
         title={t('Show Summary')}
       >
-        <SvgCalculator width={15} height={15} />
+        <SvgCalculator style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </GraphButton>
       <GraphButton
         selected={viewLabels}
@@ -197,7 +197,7 @@ export function ReportTopbar({
         title={t('Show Labels')}
         disabled={isItemDisabled('ShowLabels')}
       >
-        <SvgTag width={15} height={15} />
+        <SvgTag style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </GraphButton>
       <View
         style={{
@@ -213,7 +213,7 @@ export function ReportTopbar({
         title={t('Download Snapshot')}
         onSelect={downloadSnapshot}
       >
-        <SvgCamera width={15} height={15} />
+        <SvgCamera style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}  />
       </SnapshotButton>
       <View
         style={{

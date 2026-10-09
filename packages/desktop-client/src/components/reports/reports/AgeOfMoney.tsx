@@ -427,7 +427,7 @@ function GranularitySelector({
         onPress={() => setIsOpen(true)}
         aria-label={t('Change granularity')}
       >
-        <SvgCalendar style={{ width: 12, height: 12 }} />
+        <SvgCalendar style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
         <span style={{ marginLeft: 5 }}>{currentLabel}</span>
       </Button>
 

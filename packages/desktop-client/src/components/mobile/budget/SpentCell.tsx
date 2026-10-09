@@ -103,9 +103,9 @@ export function SpentCell({
               }}
             >
               {isScheduleRecurring ? (
-                <SvgArrowsSynchronize width={11} height={11} />
+                <SvgArrowsSynchronize style={{ width: 'var(--icon-size-11)', height: 'var(--icon-size-11)' }}  />
               ) : (
-                <SvgCalendar3 width={10} height={10} />
+                <SvgCalendar3 style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' }}  />
               )}
             </View>
           )}

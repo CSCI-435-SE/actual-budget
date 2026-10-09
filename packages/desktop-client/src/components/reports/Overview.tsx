@@ -696,9 +696,7 @@ export function Overview({ dashboard }: OverviewProps) {
                   <DialogTrigger>
                     <Button variant="bare" aria-label={t('Menu')}>
                       <SvgDotsHorizontalTriple
-                        width={15}
-                        height={15}
-                        style={{ transform: 'rotateZ(90deg)' }}
+                        style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)', transform: 'rotateZ(90deg)' }}
                       />
                     </Button>
                     <Popover>

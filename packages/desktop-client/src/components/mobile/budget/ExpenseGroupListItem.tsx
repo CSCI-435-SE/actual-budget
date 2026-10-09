@@ -222,9 +222,7 @@ function ExpenseGroupName({
         onPress={() => onToggleCollapse(group.id)}
       >
         <SvgExpandArrow
-          width={8}
-          height={8}
-          style={{
+          style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)',
             flexShrink: 0,
             transition: 'transform .1s',
             transform: isCollapsed(group.id) ? 'rotate(-90deg)' : '',

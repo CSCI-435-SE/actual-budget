@@ -21,7 +21,7 @@ export function AddScheduleButton() {
       style={{ margin: 10 }}
       onPress={handleAddSchedule}
     >
-      <SvgAdd width={20} height={20} />
+      <SvgAdd style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)' }}  />
     </Button>
   );
 }

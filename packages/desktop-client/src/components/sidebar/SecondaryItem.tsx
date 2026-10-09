@@ -39,13 +39,13 @@ export function SecondaryItem({
 }: SecondaryItemProps) {
   const content = (
     <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 16,
-      }}
-    >
-      {Icon && <Icon width={12} height={12} />}
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 'var(--icon-size-16)',
+  }}
+>
+  {Icon && <Icon style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />}
       <Block style={{ marginLeft: Icon ? 8 : 0, color: 'inherit' }}>
         {title}
       </Block>

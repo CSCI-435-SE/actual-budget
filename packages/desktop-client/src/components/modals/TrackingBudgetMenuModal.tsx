@@ -159,8 +159,8 @@ export function TrackingBudgetMenuModal({
           >
             <Button style={buttonStyle} onPress={_onEditNotes}>
               <SvgNotesPaper
-                width={20}
-                height={20}
+                style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)' }}
+                
                 style={{ paddingRight: 5 }}
               />
               <Trans>Edit notes</Trans>
@@ -170,14 +170,14 @@ export function TrackingBudgetMenuModal({
             <Button variant="bare" style={buttonStyle} onPress={onShowMore}>
               {!showMore ? (
                 <SvgCheveronUp
-                  width={30}
-                  height={30}
+                  style={{ width: 'var(--icon-size-30)', height: 'var(--icon-size-30)' }}
+                  
                   style={{ paddingRight: 5 }}
                 />
               ) : (
                 <SvgCheveronDown
-                  width={30}
-                  height={30}
+                  style={{ width: 'var(--icon-size-30)', height: 'var(--icon-size-30)' }}
+                  
                   style={{ paddingRight: 5 }}
                 />
               )}

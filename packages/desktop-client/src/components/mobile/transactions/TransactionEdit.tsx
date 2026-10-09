@@ -179,9 +179,7 @@ export function lookupName(items: CategoryEntity[], id?: CategoryEntity['id']) {
 
 const dropdownChevron = (
   <SvgCheveronDown
-    width={14}
-    height={14}
-    style={{ color: theme.pageTextSubdued, marginRight: 8 }}
+    style={{ width: 'var(--icon-size-14)', height: 'var(--icon-size-14)', color: theme.pageTextSubdued, marginRight: 8 }}
   />
 );
 
@@ -289,7 +287,7 @@ function Footer({
           isDisabled={!!editingField}
           onPress={onClickRemainingSplit}
         >
-          <SvgSplit width={17} height={17} />
+          <SvgSplit style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />
           <Text
             style={{
               ...styles.text,
@@ -331,7 +329,7 @@ function Footer({
           isDisabled={!!editingField}
           onPress={() => onEditField(transaction.id, 'account')}
         >
-          <SvgPiggyBank width={17} height={17} />
+          <SvgPiggyBank style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />
           <Text
             style={{
               ...styles.text,
@@ -348,7 +346,7 @@ function Footer({
           isDisabled={!!editingField}
           onPress={onAdd}
         >
-          <SvgAdd width={17} height={17} />
+          <SvgAdd style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />
           <Text
             style={{
               ...styles.text,
@@ -365,7 +363,7 @@ function Footer({
           isDisabled={!!editingField}
           onPress={onSave}
         >
-          <SvgPencilWriteAlternate width={16} height={16} />
+          <SvgPencilWriteAlternate style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)' }}  />
           <Text
             style={{
               ...styles.text,
@@ -455,7 +453,7 @@ const ChildTransactionEdit = forwardRef<
           <View style={{ flexBasis: '75%' }}>
             <FieldLabel title={t('Payee')} />
             <TapField
-              icon={<SvgUser width={17} height={17} />}
+              icon={<SvgUser style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />}
               placeholder={t('Who did you pay?')}
               rightContent={dropdownChevron}
               isDisabled={
@@ -499,7 +497,7 @@ const ChildTransactionEdit = forwardRef<
         <View>
           <FieldLabel title={t('Category')} />
           <TapField
-            icon={<SvgTag width={17} height={17} />}
+            icon={<SvgTag style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />}
             placeholder={t('Select a category')}
             rightContent={dropdownChevron}
             textStyle={{
@@ -525,7 +523,7 @@ const ChildTransactionEdit = forwardRef<
           <FieldLabel title={t('Notes')} />
           <InputField
             ref={noteRef}
-            iconStart={<SvgNotesPaper width={17} height={17} />}
+            iconStart={<SvgNotesPaper style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />}
             iconEnd={<NoteInsertHashButton noteRef={noteRef} />}
             placeholder={t('Add a note (optional)')}
             disabled={
@@ -555,9 +553,7 @@ const ChildTransactionEdit = forwardRef<
             }}
           >
             <SvgTrash
-              width={17}
-              height={17}
-              style={{ color: theme.errorText }}
+              style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)', color: theme.errorText }}
             />
             <Text
               style={{
@@ -1167,7 +1163,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
           <View>
             <FieldLabel title={t('Payee')} />
             <TapField
-              icon={<SvgUser width={17} height={17} />}
+              icon={<SvgUser style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />}
               placeholder={t('Who did you pay?')}
               textStyle={{
                 ...(transaction.is_parent && {
@@ -1205,9 +1201,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
                   >
                     <Trans>Save</Trans>
                     <SvgLocation
-                      width={10}
-                      height={10}
-                      style={{ marginLeft: 4 }}
+                      style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginLeft: 4 }}
                     />
                   </Button>
                 ) : nearestPayee && !transaction.payee ? (
@@ -1227,9 +1221,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
                   >
                     <Trans>Nearby</Trans>
                     <SvgLocation
-                      width={10}
-                      height={10}
-                      style={{ marginLeft: 4 }}
+                      style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginLeft: 4 }}
                     />
                   </Button>
                 ) : onRequestLocation && !transaction.payee ? (
@@ -1249,9 +1241,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
                   >
                     <Trans>Request Location</Trans>
                     <SvgLocation
-                      width={10}
-                      height={10}
-                      style={{ marginLeft: 4 }}
+                      style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginLeft: 4 }}
                     />
                   </Button>
                 ) : (
@@ -1265,7 +1255,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
             <View>
               <FieldLabel title={t('Category')} />
               <TapField
-                icon={<SvgTag width={17} height={17} />}
+                icon={<SvgTag style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />}
                 placeholder={t('Select a category')}
                 rightContent={dropdownChevron}
                 style={{
@@ -1340,9 +1330,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
                 onPress={() => onSplit(transaction.id)}
               >
                 <SvgSplit
-                  width={17}
-                  height={17}
-                  style={{ color: theme.formLabelText }}
+                  style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)', color: theme.formLabelText }}
                 />
                 <Text
                   style={{
@@ -1360,7 +1348,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
           <View>
             <FieldLabel title={t('Account')} />
             <TapField
-              icon={<SvgWallet width={17} height={17} />}
+              icon={<SvgWallet style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />}
               placeholder={t('Select an account')}
               rightContent={dropdownChevron}
               isDisabled={
@@ -1378,7 +1366,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
               <FieldLabel title={t('Date')} />
               <InputField
                 type="date"
-                iconStart={<SvgCalendar width={17} height={17} />}
+                iconStart={<SvgCalendar style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />}
                 disabled={
                   !!editingField &&
                   editingField !== getFieldName(transaction.id, 'date')
@@ -1424,7 +1412,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
             <FieldLabel title={t('Notes')} />
             <InputField
               ref={noteRef}
-              iconStart={<SvgNotesPaper width={17} height={17} />}
+              iconStart={<SvgNotesPaper style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />}
               iconEnd={<NoteInsertHashButton noteRef={noteRef} />}
               placeholder={t('Add a note (optional)')}
               disabled={
@@ -1458,9 +1446,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
                 }}
               >
                 <SvgTrash
-                  width={17}
-                  height={17}
-                  style={{ color: theme.errorText }}
+                  style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)', color: theme.errorText }}
                 />
                 <Text
                   style={{
@@ -1519,7 +1505,7 @@ function NoteInsertHashButton({
         setTimeout(() => noteRef.current?.focus(), 1);
       }}
     >
-      <SvgHash width={17} height={17} />
+      <SvgHash style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />
     </Button>
   );
 }
@@ -2201,7 +2187,7 @@ function FillRemainingButton({
       onPress={onPress}
       isDisabled={remaining === 0}
     >
-      <SvgSplit width={17} height={17} />
+      <SvgSplit style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />
       <Text
         style={{
           ...styles.text,

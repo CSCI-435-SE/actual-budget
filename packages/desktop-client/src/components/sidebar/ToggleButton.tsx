@@ -38,7 +38,7 @@ export function ToggleButton({
             }}
           />
         ) : (
-          <SvgArrowButtonLeft1 style={{ width: 13, height: 13 }} />
+          <SvgArrowButtonLeft1 style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)' }} />
         )}
       </Button>
     </View>

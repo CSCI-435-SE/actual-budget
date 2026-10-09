@@ -30,7 +30,7 @@ export function TagsMenuButton() {
         aria-label={t('Menu')}
         onClick={() => setOpen(true)}
       >
-        <SvgDotsHorizontalTriple width={17} height={17} />
+        <SvgDotsHorizontalTriple style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)' }}  />
       </Button>
       <Popover
         triggerRef={triggerRef}

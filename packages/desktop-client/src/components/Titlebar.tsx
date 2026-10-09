@@ -75,7 +75,7 @@ function PrivacyButton({ style }: PrivacyButtonProps) {
     useSyncedPref('isPrivacyEnabled');
   const isPrivacyEnabled = String(isPrivacyEnabledPref) === 'true';
 
-  const privacyIconStyle = { width: 15, height: 15 };
+  const privacyIconStyle = { width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' };
 
   useHotkeys(
     'shift+ctrl+p, shift+cmd+p, shift+meta+p',
@@ -236,7 +236,7 @@ function ServerSyncButton({ style, isMobile = false }: ServerSyncButtonProps) {
     >
       {isMobile ? (
         syncState === 'error' ? (
-          <SvgAlertTriangle width={14} height={14} />
+          <SvgAlertTriangle style={{ width: 'var(--icon-size-14)', height: 'var(--icon-size-14)' }}  />
         ) : (
           <AnimatedRefresh width={18} height={18} animating={syncing} />
         )
@@ -338,9 +338,7 @@ export function Titlebar({ style }: TitlebarProps) {
             location.state?.goBack ? (
               <Button variant="bare" onPress={() => navigate(-1)}>
                 <SvgArrowLeft
-                  width={10}
-                  height={10}
-                  style={{ marginRight: 5 }}
+                  style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginRight: 5 }}
                 />{' '}
                 <Trans>Back</Trans>
               </Button>

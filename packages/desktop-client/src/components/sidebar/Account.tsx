@@ -330,9 +330,9 @@ export function Account<FieldName extends SheetFields<'account'>>({
             >
               <SpaceBetween gap={3}>
                 {showBalanceHistory === 'true' ? (
-                  <SvgArrowButtonUp1 width={10} height={10} />
+                  <SvgArrowButtonUp1 style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' }}  />
                 ) : (
-                  <SvgArrowButtonDown1 width={10} height={10} />
+                  <SvgArrowButtonDown1 style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' }}  />
                 )}
               </SpaceBetween>
             </Button>

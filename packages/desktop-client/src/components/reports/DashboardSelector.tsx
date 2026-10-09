@@ -73,9 +73,7 @@ export function DashboardSelector({
           {currentDashboard.name}
         </View>
         <SvgExpandArrow
-          width={7}
-          height={7}
-          style={{
+          style={{ width: 'var(--icon-size-7)', height: 'var(--icon-size-7)',
             flexGrow: 0,
             flexShrink: 0,
             flexBasis: 'auto',

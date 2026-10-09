@@ -506,9 +506,7 @@ function BudgetTableHeader({
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     {!show3Columns && (
                       <SvgViewShow
-                        width={12}
-                        height={12}
-                        style={{
+                        style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)', 
                           flexShrink: 0,
                           color: theme.pageTextSubdued,
                           marginRight: 5,
@@ -574,9 +572,7 @@ function BudgetTableHeader({
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     {!show3Columns && (
                       <SvgViewShow
-                        width={12}
-                        height={12}
-                        style={{
+                        style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)',
                           flexShrink: 0,
                           color: theme.pageTextSubdued,
                           marginRight: 5,

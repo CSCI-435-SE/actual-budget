@@ -234,9 +234,7 @@ export function BudgetAutomationsBody({
               placement="bottom end"
             >
               <SvgInformationCircle
-                width={12}
-                height={12}
-                style={{ color: theme.pageTextLight, cursor: 'help' }}
+                style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)', color: theme.pageTextLight, cursor: 'help' }}
               />
             </Tooltip>
           </View>
@@ -376,9 +374,7 @@ export function BudgetAutomationsBody({
                     }}
                   >
                     <SvgDelete
-                      width={10}
-                      height={10}
-                      style={{ color: 'inherit' }}
+                      style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', color: 'inherit' }}
                     />
                     <Trans>Remove cleanup</Trans>
                   </span>

@@ -195,7 +195,7 @@ export function BudgetExportMenu() {
         onPress={() => void onOpen()}
         style={{ display: 'flex', alignItems: 'center', gap: 4 }}
       >
-        <SvgDownloadThickBottom width={13} height={13} />
+        <SvgDownloadThickBottom style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)' }}  />
         <Trans>Export</Trans>
       </Button>
 
