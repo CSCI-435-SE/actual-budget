@@ -6,7 +6,7 @@
   "testRunner": "vitest",
   "testRunner_comment": "Take a look at https://stryker-mutator.io/docs/stryker-js/vitest-runner for information about the vitest plugin.",
   "vitest": {
-    "configFile": "vitest.config.ts"
+    "configFile": "vitest.stryker.config.ts"
   },
   "mutate": ["src/server/budget/**/*.ts", "!src/**/*.test.ts"],
   "ignorePatterns": [
