@@ -115,5 +115,6 @@ actual.config.js
 .specstory/cli/config.toml
 .specstory
 
-# stryker temp files
+# stryker temp files and reports
 .stryker-tmp
+**/reports/mutation/

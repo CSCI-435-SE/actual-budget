@@ -105,6 +105,8 @@ __metadata:
     "@jlongster/sql.js": "npm:^1.6.7"
     "@rschedule/core": "npm:^1.5.0"
     "@rschedule/standard-date-adapter": "npm:^1.5.0"
+    "@stryker-mutator/core": "npm:^10.0.0"
+    "@stryker-mutator/vitest-runner": "npm:^10.0.0"
     "@types/adm-zip": "npm:^0.5.8"
     "@types/better-sqlite3": "npm:^7.6.13"
     "@types/jlongster__sql.js": "npm:@types/sql.js@latest"
@@ -11288,8 +11290,6 @@ __metadata:
   dependencies:
     "@monorepo-utils/workspaces-to-typescript-project-references": "npm:^2.11.0"
     "@octokit/rest": "npm:^22.0.1"
-    "@stryker-mutator/core": "npm:^10.0.0"
-    "@stryker-mutator/vitest-runner": "npm:^10.0.0"
     "@types/node": "npm:^22.19.21"
     "@types/prompts": "npm:^2.4.9"
     "@typescript/native-preview": "npm:beta"
