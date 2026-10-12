@@ -1,3 +1,7 @@
 lib-node
 lib-dist
 @types
+
+# stryker sandbox and reports
+.stryker-tmp
+reports/mutation
