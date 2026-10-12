@@ -211,6 +211,8 @@
   "devDependencies": {
     "@actual-app/crdt": "workspace:*",
     "@actual-app/vite-plugin-peggy": "workspace:*",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
     "@types/adm-zip": "^0.5.8",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jlongster__sql.js": "npm:@types/sql.js@latest",
