@@ -141,9 +141,7 @@ export function SidebarCategory({
           onPress={handleContextMenu}
         >
           <SvgCheveronDown
-            width={14}
-            height={14}
-            style={{ color: 'currentColor' }}
+            style={{ width: 'var(--icon-size-14)', height: 'var(--icon-size-14)', color: 'currentColor' }}
           />
         </Button>
       </View>

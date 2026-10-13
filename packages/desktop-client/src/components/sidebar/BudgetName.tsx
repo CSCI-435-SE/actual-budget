@@ -127,10 +127,13 @@ function EditableBudgetName() {
         {budgetName || t('Unnamed')}
       </Text>
       <SvgExpandArrow
-        width={7}
-        height={7}
-        style={{ flexShrink: 0, marginLeft: 5 }}
-      />
+  style={{
+    flexShrink: 0,
+    marginLeft: 5,
+    width: 'var(--icon-size-7)',
+    height: 'var(--icon-size-7)',
+  }}
+/>
     </Button>
   );
 }

@@ -154,9 +154,7 @@ export function BudgetSummary({ month }: BudgetSummaryProps) {
                 onPress={onMenuOpen}
               >
                 <SvgDotsHorizontalTriple
-                  width={15}
-                  height={15}
-                  style={{ color: theme.pageTextLight }}
+                  style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)', color: theme.pageTextLight }}
                 />
               </Button>
 

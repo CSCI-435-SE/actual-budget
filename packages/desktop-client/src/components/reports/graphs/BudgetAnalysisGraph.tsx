@@ -243,8 +243,8 @@ export function BudgetAnalysisGraph({
   );
 
   const commonProps = {
-    width: 0,
-    height: 0,
+    width: 'var(--icon-size-0)',
+    height: 'var(--icon-size-0)',
     data: graphData,
     margin: { top: 5, right: 5, left: 5 + leftPadding, bottom: 5 },
   };

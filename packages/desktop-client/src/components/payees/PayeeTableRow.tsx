@@ -57,7 +57,7 @@ function RuleButton({ ruleCount, focused, onEdit, onClick }: RuleButtonProps) {
         onSelect={onClick}
       >
         <PayeeRuleCountLabel count={ruleCount} style={{ paddingRight: 5 }} />
-        <SvgArrowThinRight style={{ width: 8, height: 8 }} />
+        <SvgArrowThinRight style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)' }} />
       </CellButton>
     </Cell>
   );

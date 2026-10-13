@@ -483,9 +483,7 @@ function CalendarCardInner({
             {calendar.totalIncome !== 0 ? (
               <>
                 <SvgArrowThickUp
-                  width={16}
-                  height={16}
-                  style={{ flexShrink: 0 }}
+                  style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)', flexShrink: 0 }}
                 />
                 <PrivacyFilter>
                   <FinancialText>
@@ -508,9 +506,7 @@ function CalendarCardInner({
             {calendar.totalExpense !== 0 ? (
               <>
                 <SvgArrowThickDown
-                  width={16}
-                  height={16}
-                  style={{ flexShrink: 0 }}
+                  style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)', flexShrink: 0 }}
                 />
                 <PrivacyFilter>
                   <FinancialText>

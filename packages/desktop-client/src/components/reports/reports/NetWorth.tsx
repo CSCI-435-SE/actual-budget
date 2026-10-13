@@ -425,7 +425,7 @@ function IntervalSelector({
         onPress={() => setIsOpen(true)}
         aria-label={t('Change interval')}
       >
-        <SvgCalendar style={{ width: 12, height: 12 }} />
+        <SvgCalendar style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
         <span style={{ marginLeft: 5 }}>{currentLabel}</span>
       </Button>
 
@@ -478,7 +478,7 @@ function ModeSelector({
         onPress={() => setIsOpen(true)}
         aria-label={t('Change mode')}
       >
-        <SvgChart style={{ width: 12, height: 12 }} />
+        <SvgChart style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
         <span style={{ marginLeft: 5 }}>{currentLabel}</span>
       </Button>
 

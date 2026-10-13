@@ -56,8 +56,7 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
         onPress={() => setMenuOpen(true)}
         style={style}
       >
-        <Icon style={{ width: 13, height: 13, color: 'inherit' }} />
-      </Button>
+<Icon style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)', color: 'inherit' }} />      </Button>
 
       <Popover
         offset={8}

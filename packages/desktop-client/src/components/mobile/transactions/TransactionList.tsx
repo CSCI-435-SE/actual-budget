@@ -447,7 +447,7 @@ function SelectedTransactionsFloatingActionBar({
               }
             }}
           >
-            <SvgDelete width={10} height={10} />
+            <SvgDelete style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' }}  />
           </Button>
           <Text style={styles.mediumText}>
             {selectedTransactions.size}{' '}
@@ -585,9 +585,7 @@ function SelectedTransactionsFloatingActionBar({
             {...buttonProps}
           >
             <SvgDotsHorizontalTriple
-              width={16}
-              height={16}
-              style={{ color: 'currentColor' }}
+              style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)', color: 'currentColor' }}
             />
           </Button>
 

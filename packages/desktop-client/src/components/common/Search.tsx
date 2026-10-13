@@ -114,7 +114,7 @@ export function Search({
             }}
             onPress={() => onChange('')}
           >
-            <SvgRemove style={{ width: 8, height: 8 }} />
+            <SvgRemove style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)' }} />
           </Button>
         </View>
       )}

@@ -77,7 +77,7 @@ export function NotesModal({ id, name, onSave }: NotesModalProps) {
                   state.close();
                 }}
               >
-                <SvgCheck width={17} height={17} style={{ paddingRight: 5 }} />
+                <SvgCheck style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)', paddingRight: 5 }} />
                 <Trans>Save notes</Trans>
               </Button>
             </View>

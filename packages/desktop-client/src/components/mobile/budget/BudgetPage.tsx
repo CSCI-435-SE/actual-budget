@@ -606,7 +606,7 @@ export function BudgetPage() {
                 aria-label={t('Today')}
                 style={{ margin: 10 }}
               >
-                <SvgCalendar width={20} height={20} />
+                <SvgCalendar style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)' }}  />
               </Button>
             )
           }
@@ -821,7 +821,7 @@ function OverbudgetedBanner({ month, onBudgetAction, ...props }) {
                 gap: 10,
               }}
             >
-              <SvgArrowButtonDown1 style={{ width: 15, height: 15 }} />
+              <SvgArrowButtonDown1 style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }} />
               <Text>
                 <Trans>You have budgeted more than your available funds</Trans>
               </Text>

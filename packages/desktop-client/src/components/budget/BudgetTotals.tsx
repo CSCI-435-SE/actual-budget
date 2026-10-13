@@ -139,9 +139,7 @@ export const BudgetTotals = memo(function BudgetTotals({
           style={{ color: 'currentColor', padding: 3 }}
         >
           <SvgDotsHorizontalTriple
-            width={15}
-            height={15}
-            style={{ color: theme.tableHeaderText }}
+            style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)', color: theme.tableHeaderText }}
           />
         </Button>
 

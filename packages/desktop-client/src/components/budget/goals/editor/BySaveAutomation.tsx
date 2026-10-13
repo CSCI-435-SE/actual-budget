@@ -268,9 +268,7 @@ export const BySaveAutomation = ({
                   placement="top start"
                 >
                   <SvgInformationCircle
-                    width={12}
-                    height={12}
-                    style={{ color: theme.pageTextLight, cursor: 'help' }}
+                    style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)', color: theme.pageTextLight, cursor: 'help' }}
                   />
                 </Tooltip>
               </span>

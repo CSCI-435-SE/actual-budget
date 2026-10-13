@@ -23,9 +23,7 @@ export function UnsupportedDirectivesNotice({
       }}
     >
       <SvgAlertTriangle
-        width={32}
-        height={32}
-        style={{ color: theme.errorText }}
+        style={{ width: 'var(--icon-size-32)', height: 'var(--icon-size-32)', color: theme.errorText }}
       />
       <Text
         style={{

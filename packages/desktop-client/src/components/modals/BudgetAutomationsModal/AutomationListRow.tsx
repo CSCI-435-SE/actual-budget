@@ -121,9 +121,7 @@ export function AutomationListRow({
           <Text>{meta.label}</Text>
           {error && (
             <SvgAlertTriangle
-              width={11}
-              height={11}
-              style={{ color: 'inherit' }}
+              style={{ width: 'var(--icon-size-11)', height: 'var(--icon-size-11)', color: 'inherit' }}
             />
           )}
         </View>

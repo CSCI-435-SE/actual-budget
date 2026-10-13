@@ -69,7 +69,7 @@ export function ConfirmPayeesMergeModal({
                   </View>
                 ))}
               </View>
-              <SvgArrowDown width={20} height={20} />
+              <SvgArrowDown style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)' }}  />
               <View style={{ width: '100%' }}>
                 <View style={targetPayeeStyle}>
                   <Text

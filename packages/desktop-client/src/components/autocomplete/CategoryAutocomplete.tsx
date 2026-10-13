@@ -355,7 +355,7 @@ function SplitTransactionButton({
         {Icon ? (
           <Icon style={{ marginRight: 5 }} />
         ) : (
-          <SvgSplit width={10} height={10} style={{ marginRight: 5 }} />
+          <SvgSplit style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', marginRight: 5 }} />
         )}
       </Text>
       <Trans>Split Transaction</Trans>

@@ -352,7 +352,7 @@ function MonthlyPatterns({
               })
             }
           >
-            <SvgSubtract style={{ width: 8, height: 8 }} />
+            <SvgSubtract style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)' }} />
           </Button>
           <Button
             variant="bare"
@@ -360,7 +360,7 @@ function MonthlyPatterns({
             style={{ padding: 7, marginLeft: 5 }}
             onPress={() => dispatch({ type: 'add-recurrence' })}
           >
-            <SvgAdd style={{ width: 10, height: 10 }} />
+            <SvgAdd style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)' }} />
           </Button>
         </View>
       ))}

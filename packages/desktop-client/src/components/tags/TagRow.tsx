@@ -169,7 +169,7 @@ export const TagRow = memo(
             <Text style={{ paddingRight: 5 }}>
               <Trans>View Transactions</Trans>
             </Text>
-            <SvgArrowThinRight style={{ width: 8, height: 8 }} />
+            <SvgArrowThinRight style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)' }} />
           </CellButton>
         </Cell>
       </Row>

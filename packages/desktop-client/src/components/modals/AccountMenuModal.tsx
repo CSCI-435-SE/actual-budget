@@ -186,9 +186,7 @@ export function AccountMenuModal({
             >
               <Button style={buttonStyle} onPress={_onEditNotes}>
                 <SvgNotesPaper
-                  width={20}
-                  height={20}
-                  style={{ paddingRight: 5 }}
+                  style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)', paddingRight: 5 }}
                 />
                 <Trans>Edit notes</Trans>
               </Button>
@@ -241,9 +239,7 @@ function AdditionalAccountMenu({
         }}
       >
         <SvgDotsHorizontalTriple
-          width={17}
-          height={17}
-          style={{ color: 'currentColor' }}
+          style={{ width: 'var(--icon-size-17)', height: 'var(--icon-size-17)', color: 'currentColor' }}
         />
         <Popover
           triggerRef={triggerRef}

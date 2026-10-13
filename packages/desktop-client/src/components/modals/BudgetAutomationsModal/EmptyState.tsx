@@ -37,7 +37,7 @@ export function EmptyState({ onAdd }: EmptyStateProps) {
           justifyContent: 'center',
         }}
       >
-        <SvgAlertTriangle width={20} height={20} style={{ color: 'inherit' }} />
+        <SvgAlertTriangle style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)', color: 'inherit' }} />
       </View>
       <Text
         style={{

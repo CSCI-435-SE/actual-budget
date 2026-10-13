@@ -198,7 +198,7 @@ function TopNSelector({ value, onChange }: TopNSelectorProps) {
         onPress={() => setIsOpen(true)}
         aria-label={t('Change category limit')}
       >
-        <SvgList style={{ width: 12, height: 12 }} />
+        <SvgList style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
         <span style={{ marginLeft: 5 }}>
           {t('Show up to {{n}}', { n: displayN(value, t) })}
         </span>
@@ -258,7 +258,7 @@ function CategorySortSelector({ value, onChange }: CategorySortSelectorProps) {
         onPress={() => setIsOpen(true)}
         aria-label={t('Change category sort order')}
       >
-        <SvgArrowDown style={{ width: 12, height: 12 }} />
+        <SvgArrowDown style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
         <span style={{ marginLeft: 5 }}>{currentLabel}</span>
       </Button>
       <Popover
@@ -855,7 +855,7 @@ function SankeyInner({ widget }: SankeyInnerProps) {
                 marginLeft: 10,
               }}
             />
-            <SvgLayers style={{ width: 12, height: 12 }} />
+            <SvgLayers style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
             <LayerSelector
               direction="from"
               value={layerFrom}
@@ -863,7 +863,7 @@ function SankeyInner({ widget }: SankeyInnerProps) {
               menuItems={fromLayerMenuItems}
               onChange={layer => onChangeLayer('from', layer)}
             />
-            <SvgCheveronRight style={{ width: 12, height: 12 }} />
+            <SvgCheveronRight style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
             <LayerSelector
               direction="to"
               value={layerTo}
@@ -876,7 +876,7 @@ function SankeyInner({ widget }: SankeyInnerProps) {
               onPress={onResetLayers}
               aria-label={t('Reset layers')}
             >
-              <SvgRefresh style={{ width: 12, height: 12 }} />
+              <SvgRefresh style={{ width: 'var(--icon-size-12)', height: 'var(--icon-size-12)' }} />
             </Button>
           </>
         }

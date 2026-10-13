@@ -255,9 +255,7 @@ export function BudgetAutomationsBodyMobile({
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
               >
                 <SvgDelete
-                  width={10}
-                  height={10}
-                  style={{ color: 'inherit' }}
+                  style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', color: 'inherit' }}
                 />
                 <Trans>Remove cleanup</Trans>
               </span>

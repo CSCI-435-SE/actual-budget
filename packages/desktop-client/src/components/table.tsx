@@ -517,7 +517,7 @@ export function DeleteCell({ onDelete, style, ...props }: DeleteCellProps) {
         onDelete?.();
       }}
     >
-      {() => <SvgDelete width={7} height={7} />}
+      {() => <SvgDelete style={{ width: 'var(--icon-size-7)', height: 'var(--icon-size-7)' }}  />}
     </Cell>
   );
 }
@@ -643,7 +643,7 @@ export function SelectCell({
   style,
   onSelect,
   onEdit,
-  icon = <SvgCheckmark width={6} height={6} />,
+  icon = <SvgCheckmark style={{ width: 'var(--icon-size-6)', height: 'var(--icon-size-6)' }}  />,
   buttonProps = {},
   ...props
 }: SelectCellProps) {
@@ -864,9 +864,7 @@ export function SelectedItemsButton<Name extends string>({
         data-testid={id + '-select-button'}
       >
         <SvgExpandArrow
-          width={8}
-          height={8}
-          style={{ marginRight: 5, color: theme.pageText }}
+          style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)', marginRight: 5, color: theme.pageText }}
         />
         {buttonLabel}
       </Button>

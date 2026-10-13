@@ -28,7 +28,7 @@ export function AddTransactionButton({
         void navigate(to, { state: { accountId, categoryId } });
       }}
     >
-      <SvgAdd width={20} height={20} />
+      <SvgAdd style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)' }}  />
     </Button>
   );
 }

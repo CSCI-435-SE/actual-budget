@@ -181,8 +181,8 @@ function CustomReportListCardsInner({
             style={{ ...styles.tooltip, maxWidth: 300 }}
           >
             <SvgExclamationSolid
-              width={20}
-              height={20}
+              style={{ width: 'var(--icon-size-20)', height: 'var(--icon-size-20)' }}
+              
               style={{ color: theme.warningText }}
             />
           </Tooltip>

@@ -221,9 +221,7 @@ export function AutomationEditorPane({
             }}
           >
             <SvgAlertTriangle
-              width={14}
-              height={14}
-              style={{ marginTop: 2, color: 'inherit', flexShrink: 0 }}
+              style={{ width: 'var(--icon-size-14)', height: 'var(--icon-size-14)', marginTop: 2, color: 'inherit', flexShrink: 0 }}
             />
             <View style={{ minWidth: 0 }}>
               <Text style={{ fontWeight: 600, color: 'inherit' }}>
@@ -368,7 +366,7 @@ export function AutomationEditorPane({
             <span
               style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
             >
-              <SvgDelete width={10} height={10} style={{ color: 'inherit' }} />
+              <SvgDelete style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', color: 'inherit' }} />
               <Trans>Delete automation</Trans>
             </span>
           </Button>

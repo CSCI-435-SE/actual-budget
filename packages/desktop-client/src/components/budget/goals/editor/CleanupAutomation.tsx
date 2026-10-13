@@ -229,7 +229,7 @@ function ScopeCard({
             aria-label={t('Remove pool')}
             style={{ color: theme.pageTextLight, padding: 2 }}
           >
-            <SvgDelete width={10} height={10} style={{ color: 'inherit' }} />
+            <SvgDelete style={{ width: 'var(--icon-size-10)', height: 'var(--icon-size-10)', color: 'inherit' }} />
           </Button>
         )}
       </View>

@@ -438,7 +438,7 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
               onPress={onExportCsv}
               aria-label={t('Export as CSV')}
             >
-              <SvgDownload style={{ width: 16, height: 16 }} />
+              <SvgDownload style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)' }} />
             </Button>
           </Tooltip>
 

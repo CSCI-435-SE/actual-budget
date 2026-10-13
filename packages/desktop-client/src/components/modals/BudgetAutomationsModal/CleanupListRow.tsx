@@ -64,7 +64,7 @@ export function CleanupListRow({
           flexShrink: 0,
         }}
       >
-        <SvgRefresh width={14} height={14} style={{ color: 'inherit' }} />
+        <SvgRefresh style={{ width: 'var(--icon-size-14)', height: 'var(--icon-size-14)', color: 'inherit' }} />
       </View>
       <View style={{ minWidth: 0, flex: 1 }}>
         <Text

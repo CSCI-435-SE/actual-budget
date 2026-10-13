@@ -134,9 +134,7 @@ function MobileCarryoverIndicator({ style }: { style?: CSSProperties }) {
       }}
     >
       <SvgArrowThickRight
-        width={11}
-        height={11}
-        style={{ color: theme.pillBackgroundLight }}
+        style={{ width: 'var(--icon-size-11)', height: 'var(--icon-size-11)', color: theme.pillBackgroundLight }}
       />
     </View>
   );

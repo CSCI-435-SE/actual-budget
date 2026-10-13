@@ -138,7 +138,7 @@ function BudgetFileMenuButton({
           setMenuOpen(true);
         }}
       >
-        <SvgDotsHorizontalTriple style={{ width: 16, height: 16 }} />
+        <SvgDotsHorizontalTriple style={{ width: 'var(--icon-size-16)', height: 'var(--icon-size-16)' }} />
       </Button>
 
       <Popover
@@ -480,7 +480,7 @@ function SettingsButton({ onOpenSettings }: SettingsButtonProps) {
         }}
         style={{ padding: 10 }}
       >
-        <SvgCog style={{ width: 18, height: 18 }} />
+        <SvgCog style={{ width: 'var(--icon-size-18)', height: 'var(--icon-size-18)' }} />
       </Button>
     </View>
   );

@@ -562,14 +562,14 @@ function QueryItem({
               onPress={handleExport}
               aria-label={t('Export query configuration')}
             >
-              <SvgCopy style={{ width: 13, height: 13 }} />
+              <SvgCopy style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)' }} />
             </Button>
             <DialogTrigger>
               <Button
                 variant="bare"
                 aria-label={t('Import query configuration')}
               >
-                <SvgDownloadThickBottom style={{ width: 13, height: 13 }} />
+                <SvgDownloadThickBottom style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)' }} />
               </Button>
               <Popover>
                 <Dialog>
@@ -647,7 +647,7 @@ function QueryItem({
               </Popover>
             </DialogTrigger>
             <Button variant="bare" onPress={onRemove}>
-              <SvgTrash style={{ width: 13, height: 13 }} />
+              <SvgTrash style={{ width: 'var(--icon-size-13)', height: 'var(--icon-size-13)' }} />
             </Button>
           </View>
         </View>

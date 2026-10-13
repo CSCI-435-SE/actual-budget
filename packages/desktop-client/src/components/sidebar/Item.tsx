@@ -46,13 +46,13 @@ export function Item({
 
   const content = (
     <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 20,
-      }}
-    >
-      <Icon width={15} height={15} />
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 'var(--icon-size-20)',
+  }}
+>
+      <Icon style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }} />
       <Block style={{ marginLeft: 8 }}>{title}</Block>
       <View style={{ flex: 1 }} />
     </View>

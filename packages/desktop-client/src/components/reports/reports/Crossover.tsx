@@ -558,8 +558,8 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
                         style={{ flexDirection: 'row', alignItems: 'center' }}
                       >
                         <SvgViewHide
-                          width={15}
-                          height={15}
+                          style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}
+                          
                           style={{ marginRight: 5 }}
                         />
                         <Text>
@@ -574,8 +574,8 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
                         }}
                       >
                         <SvgViewShow
-                          width={15}
-                          height={15}
+                          style={{ width: 'var(--icon-size-15)', height: 'var(--icon-size-15)' }}
+                          
                           style={{ marginRight: 5 }}
                         />
                         <Text

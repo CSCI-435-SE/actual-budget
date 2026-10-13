@@ -44,7 +44,7 @@ function PayeeTableHeader() {
           exposed
           focused={false}
           selected={selectedItems.size > 0}
-          icon={<SvgSubtract width={6} height={6} />}
+          icon={<SvgSubtract style={{ width: 'var(--icon-size-6)', height: 'var(--icon-size-6)' }}  />}
           onSelect={e =>
             dispatchSelected({ type: 'select-all', isRangeSelect: e.shiftKey })
           }
@@ -241,7 +241,7 @@ export const ManagePayees = ({
               : t('{{count}} payees', {
                   count: selected.items.size,
                 })}
-            <SvgExpandArrow width={8} height={8} style={{ marginLeft: 5 }} />
+            <SvgExpandArrow style={{ width: 'var(--icon-size-8)', height: 'var(--icon-size-8)', marginLeft: 5 }} />
           </Button>
 
           <Popover
