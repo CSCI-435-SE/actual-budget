@@ -22,6 +22,14 @@ vi.mock('./Sidebar', () => ({
   Sidebar: () => <div data-testid="sidebar-stub" />,
 }));
 
+vi.mock('#hooks/useFeatureFlag', () => ({
+  useFeatureFlag: () => false,
+}));
+
+vi.mock('./redesign/SidebarRedesign', () => ({
+  SidebarRedesign: () => <div data-testid="sidebar-redesign-stub" />,
+}));
+
 describe('FloatableSidebar', () => {
   let setHoveringSidebar: Mock;
 

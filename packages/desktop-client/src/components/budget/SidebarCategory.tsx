@@ -78,6 +78,10 @@ export function SidebarCategory({
 
   const temporary = category.id === 'new';
   const canHaveSubcategories = !category.is_income && !category.parent_id;
+  const hasSubcategoryActions =
+    (canHaveSubcategories &&
+      (!!onShowNewSubcategory || validParents.length > 0)) ||
+    !!category.parent_id;
   const triggerRef = useRef(null);
   const { handleContextMenu } = useContextMenu({
     triggerRef,
@@ -97,7 +101,7 @@ export function SidebarCategory({
         text: t('Delete'),
         onClick: () => onDelete(category.id),
       },
-      (canHaveSubcategories || category.parent_id) && Menu.line,
+      hasSubcategoryActions && Menu.line,
       canHaveSubcategories &&
         onShowNewSubcategory && {
           name: 'add-subcategory',
