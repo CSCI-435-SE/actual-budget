@@ -7,7 +7,15 @@ import {
 import type { CategoryEntity } from '@actual-app/core/types/models';
 import { renderHook, waitFor } from '@testing-library/react';
 import i18next from 'i18next';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 
 import { createTestAppStore, TestProviders } from '#mocks';
 import type { AppStore } from '#redux/store';
@@ -23,11 +31,17 @@ vi.mock(
   () => import('#mocks/connection'),
 );
 
-// With no translation resources loaded, i18next echoes the key back with
+// English keys are their own values, so i18next echoes the key back with
 // interpolation applied - matching what the notification messages render.
-void i18next.init({
-  lng: 'en',
-  interpolation: { escapeValue: false },
+// #i18n (pulled in via the redux store) registers a lazy-loading backend, so
+// wait for it to finish: otherwise useTranslation suspends on first render
+// whenever locale/en.json exists (e.g. after `yarn generate:i18n`), leaving
+// renderHook's result.current null.
+beforeAll(async () => {
+  await i18next.init({
+    lng: 'en',
+    interpolation: { escapeValue: false },
+  });
 });
 
 function wrapperFor(store: AppStore) {

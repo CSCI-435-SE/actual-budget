@@ -52,6 +52,8 @@ async function createTestBudget(name) {
 
 describe('Budgets', () => {
   afterEach(async () => {
+    // Close the DB first; Windows can't delete a file that's still open
+    await runHandler(handlers['close-budget']);
     fs._setDocumentDir(null);
     const budgetPath = fs.join(
       __dirname,

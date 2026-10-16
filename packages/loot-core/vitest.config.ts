@@ -1,14 +1,16 @@
 import { peggyLoader } from '@actual-app/vite-plugin-peggy';
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
     globals: true,
     setupFiles: ['./src/mocks/setup.ts'],
     exclude: [
+      ...configDefaults.exclude,
       'src/platform/server/sqlite/index.test.ts',
       'src/platform/server/fs/index.test.ts',
-      'node_modules',
+      // Stryker mutation-testing sandboxes contain copies of every test file
+      '.stryker-tmp/**',
     ],
     onConsoleLog(log: string, type: 'stdout' | 'stderr'): boolean | void {
       // print only console.error
