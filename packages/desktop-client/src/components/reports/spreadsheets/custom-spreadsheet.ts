@@ -17,6 +17,7 @@ import * as d from 'date-fns';
 
 import {
   categoryLists,
+  getIntervalFormat,
   groupBySelections,
   ReportOptions,
 } from '#components/reports/ReportOptions';
@@ -64,6 +65,7 @@ export type createCustomSpreadsheetProps = {
   accounts?: AccountEntity[];
   graphType?: string;
   firstDayOfWeekIdx?: SyncedPrefs['firstDayOfWeekIdx'];
+  dateFormat?: SyncedPrefs['dateFormat'];
 };
 
 export function createCustomSpreadsheet({
@@ -86,6 +88,7 @@ export function createCustomSpreadsheet({
   accounts = [],
   graphType,
   firstDayOfWeekIdx,
+  dateFormat,
 }: createCustomSpreadsheetProps) {
   const [categoryList, categoryGroup] = categoryLists(categories);
 
@@ -267,7 +270,7 @@ export function createCustomSpreadsheet({
         arr.push({
           date: d.format(
             d.parseISO(intervalItem),
-            ReportOptions.intervalFormat.get(interval) || '',
+            getIntervalFormat(interval, dateFormat),
           ),
           ...stacked,
           intervalStartDate: index === 0 ? startDate : intervalItem,

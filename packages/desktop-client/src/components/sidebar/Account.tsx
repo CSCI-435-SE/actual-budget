@@ -37,6 +37,7 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { openAccountCloseModal } from '#modals/modalsSlice';
 import { useDispatch, useSelector } from '#redux';
 import type { Binding, SheetFields } from '#spreadsheet';
+import { isTouchDevice } from '#util/isTouchDevice';
 
 export const accountNameStyle: CSSProperties = {
   marginTop: -2,
@@ -122,10 +123,7 @@ export function Account<FieldName extends SheetFields<'account'>>({
   const [liveName, setLiveName] = useState(name);
 
   const accountNote = useNotes(`account-${account?.id}`);
-  const isTouchDevice =
-    window.matchMedia('(hover: none)').matches ||
-    window.matchMedia('(pointer: coarse)').matches;
-  const needsTooltip = !!account?.id && !isTouchDevice;
+  const needsTooltip = !!account?.id && !isTouchDevice();
   const reopenAccount = useReopenAccountMutation();
   const updateAccount = useUpdateAccountMutation();
 
@@ -139,7 +137,7 @@ export function Account<FieldName extends SheetFields<'account'>>({
   );
   useContextMenu({
     triggerRef,
-    enabled: account && needsTooltip,
+    enabled: account != null && needsTooltip,
     items: [
       {
         name: 'account-rename',

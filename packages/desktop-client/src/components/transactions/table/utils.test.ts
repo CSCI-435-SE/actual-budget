@@ -1,4 +1,28 @@
-import { shouldApplyRuleChange } from './utils';
+import { createElement } from 'react';
+import type { ReactNode } from 'react';
+
+import type { TransactionEntity } from '@actual-app/core/types/models';
+import { renderHook } from '@testing-library/react';
+
+import { useFormat } from '#hooks/useFormat';
+import type { UseFormatResult } from '#hooks/useFormat';
+import { createTestAppStore, TestProviders } from '#mocks';
+import { mergeSyncedPrefs } from '#prefs/prefsSlice';
+
+import type { SerializedTransaction } from './utils';
+import { deserializeTransaction, shouldApplyRuleChange } from './utils';
+
+function renderFormat(): UseFormatResult {
+  const store = createTestAppStore();
+  store.dispatch(mergeSyncedPrefs({ numberFormat: 'comma-dot' }));
+
+  const { result } = renderHook(() => useFormat(), {
+    wrapper: ({ children }: { children: ReactNode }) =>
+      createElement(TestProviders, { store, children }),
+  });
+
+  return result.current;
+}
 
 describe('shouldApplyRuleChange', () => {
   test('applies rule changes to empty fields', () => {
@@ -61,5 +85,77 @@ describe('shouldApplyRuleChange', () => {
     expect(shouldApplyRuleChange('imported_payee', 'Store', 'Store Inc')).toBe(
       false,
     );
+  });
+});
+
+describe('deserializeTransaction', () => {
+  const originalTransaction: TransactionEntity = {
+    id: 'temp',
+    account: 'account-id',
+    date: '2017-01-01',
+    amount: 0,
+    cleared: false,
+  };
+
+  function serialized(
+    overrides: Partial<SerializedTransaction>,
+  ): SerializedTransaction {
+    return {
+      ...originalTransaction,
+      debit: '',
+      credit: '',
+      ...overrides,
+    };
+  }
+
+  test('reads the amount from the debit field', () => {
+    expect(
+      deserializeTransaction(
+        serialized({ debit: '100.00' }),
+        {
+          ...originalTransaction,
+          amount: -2500,
+        },
+        renderFormat(),
+      ).amount,
+    ).toBe(-10000);
+  });
+
+  test('reads the amount from the credit field', () => {
+    expect(
+      deserializeTransaction(
+        serialized({ credit: '100.00' }),
+        {
+          ...originalTransaction,
+          amount: -2500,
+        },
+        renderFormat(),
+      ).amount,
+    ).toBe(10000);
+  });
+
+  test('keeps the in-progress amount when both amount fields are blank', () => {
+    // Editing a non-amount field (e.g. toggling cleared) blanks both debit and
+    // credit, so the amount has to come from elsewhere. `originalTransaction`
+    // can still be showing the pre-save amount while a save is in flight, so
+    // the amount already on the row wins over the parent's copy.
+    const result = deserializeTransaction(
+      serialized({ amount: -10000, cleared: true }),
+      { ...originalTransaction, amount: 0 },
+      renderFormat(),
+    );
+
+    expect(result.amount).toBe(-10000);
+    expect(result.cleared).toBe(true);
+  });
+
+  test('falls back to the original amount when the row has none', () => {
+    expect(
+      deserializeTransaction(
+        serialized({ amount: null as unknown as TransactionEntity['amount'] }),
+        { ...originalTransaction, amount: -2500 },
+        renderFormat(),
+      ).amount,
+    ).toBe(-2500);
   });
 });

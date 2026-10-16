@@ -38,6 +38,7 @@ import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
 import { useAccounts } from '#hooks/useAccounts';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
+import { useDateFormat } from '#hooks/useDateFormat';
 import { useFormat } from '#hooks/useFormat';
 import { useLocale } from '#hooks/useLocale';
 import { useNavigate } from '#hooks/useNavigate';
@@ -123,6 +124,7 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
 
   const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
   const firstDayOfWeekIdx = _firstDayOfWeekIdx || '0';
+  const dateFormat = useDateFormat() || 'MM/dd/yyyy';
 
   const reportParams = useMemo(
     () =>
@@ -135,6 +137,7 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
         locale,
         interval,
         firstDayOfWeekIdx,
+        dateFormat,
       ),
     [
       start,
@@ -145,6 +148,7 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
       locale,
       interval,
       firstDayOfWeekIdx,
+      dateFormat,
     ],
   );
   const data = useReport('net_worth', reportParams);
@@ -320,6 +324,7 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
         earliestTransaction={earliestTransaction}
         latestTransaction={latestTransaction}
         firstDayOfWeekIdx={firstDayOfWeekIdx}
+        granularities={['month', 'day']}
         mode={mode}
         onChangeDates={onChangeDates}
         filters={conditions}
