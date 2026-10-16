@@ -170,7 +170,9 @@ const lootCoreBackend = (): Plugin => ({
         'vite',
         'build',
         '--config',
-        lootCoreConfig,
+        // Relative to `cwd`: with `shell: true` the args are not quoted, so
+        // an absolute path containing spaces would be split apart.
+        path.relative(lootCoreRoot, lootCoreConfig),
         '--mode',
         'development',
         '--watch',
