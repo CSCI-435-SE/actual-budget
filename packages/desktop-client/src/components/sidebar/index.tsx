@@ -3,12 +3,16 @@ import React, { useState } from 'react';
 import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 import { View } from '@actual-app/components/view';
 
+import { useFeatureFlag } from '#hooks/useFeatureFlag';
 import { useResizeObserver } from '#hooks/useResizeObserver';
 
+import { SidebarRedesign } from './redesign/SidebarRedesign';
 import { Sidebar } from './Sidebar';
 import { SIDEBAR_TRANSITION_MS, useSidebar } from './SidebarProvider';
 
 export function FloatableSidebar() {
+  const newSidebarUIEnabled = useFeatureFlag('newSidebarUI');
+
   const sidebar = useSidebar();
   const { isNarrowWidth } = useResponsive();
   const [sidebarWidth, setSidebarWidth] = useState(0);
@@ -62,7 +66,7 @@ export function FloatableSidebar() {
       }}
     >
       <View innerRef={sidebarRef} style={{ flex: 1 }}>
-        <Sidebar />
+        {newSidebarUIEnabled ? <SidebarRedesign /> : <Sidebar />}
       </View>
     </View>
   );

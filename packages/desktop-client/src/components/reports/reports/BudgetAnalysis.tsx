@@ -33,7 +33,10 @@ import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
 import { buildBudgetAnalysisCsv } from '#components/reports/spreadsheets/budget-analysis-export';
-import { createBudgetAnalysisSpreadsheet } from '#components/reports/spreadsheets/budget-analysis-spreadsheet';
+import {
+  createBudgetAnalysisSpreadsheet,
+  getLastSelectableMonth,
+} from '#components/reports/spreadsheets/budget-analysis-spreadsheet';
 import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
@@ -185,7 +188,10 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
   const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
   const firstDayOfWeekIdx = _firstDayOfWeekIdx || '0';
 
-  const calculateIsConcise = (startMonth: string, endMonth: string) => {
+  // Normalize in case a persisted timeFrame still holds `yyyy-MM-dd` values.
+  const calculateIsConcise = (start: string, end: string) => {
+    const startMonth = monthUtils.getMonth(start);
+    const endMonth = monthUtils.getMonth(end);
     const numDays = d.differenceInCalendarDays(
       d.parseISO(endMonth + '-01'),
       d.parseISO(startMonth + '-01'),
@@ -220,8 +226,13 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
         earliestMonth = yearAgo;
       }
 
+      // Extend the selectable range to December of next year so users can
+      // plan ahead (e.g. June 2026 → December 2027), without hiding
+      // transactions dated beyond that.
+      const lastMonth = getLastSelectableMonth(currentMonth, latestMonth);
+
       const allMonthsData = monthUtils
-        .rangeInclusive(earliestMonth, latestMonth)
+        .rangeInclusive(earliestMonth, lastMonth)
         .map(month => ({
           name: month,
           pretty: monthUtils.format(month, 'MMMM, yyyy', locale),
@@ -256,8 +267,9 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
     void run();
   }, [locale, widget?.meta?.timeFrame]);
 
-  const startDate = start + '-01';
-  const endDate = monthUtils.getMonthEnd(end + '-01');
+  // `start`/`end` may be `yyyy-MM` or `yyyy-MM-dd`; collapse to months first.
+  const startDate = `${monthUtils.getMonth(start)}-01`;
+  const endDate = monthUtils.getMonthEnd(`${monthUtils.getMonth(end)}-01`);
 
   const getGraphData = useMemo(
     () =>
@@ -416,38 +428,34 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
         onConditionsOpChange={onConditionsOpChange}
         filterInclude={['category', 'saved']}
       >
-        <View style={{ flexDirection: 'row', gap: 10 }}>
-          <OptionsButton
-            graphType={graphType}
-            onToggleGraphType={() =>
-              setGraphType(graphType === 'Line' ? 'Bar' : 'Line')
-            }
-            showBalance={showBalance}
-            onToggleShowBalance={() => setShowBalance(v => !v)}
-            showCategories={showCategories}
-            onToggleShowCategories={() => setShowCategories(v => !v)}
-            showHiddenCategories={showHiddenCategories}
-            onToggleShowHiddenCategories={() =>
-              setShowHiddenCategories(v => !v)
-            }
-          />
+        <OptionsButton
+          graphType={graphType}
+          onToggleGraphType={() =>
+            setGraphType(graphType === 'Line' ? 'Bar' : 'Line')
+          }
+          showBalance={showBalance}
+          onToggleShowBalance={() => setShowBalance(v => !v)}
+          showCategories={showCategories}
+          onToggleShowCategories={() => setShowCategories(v => !v)}
+          showHiddenCategories={showHiddenCategories}
+          onToggleShowHiddenCategories={() => setShowHiddenCategories(v => !v)}
+        />
 
-          <Tooltip content={t('Export as CSV')}>
-            <Button
-              variant="bare"
-              onPress={onExportCsv}
-              aria-label={t('Export as CSV')}
-            >
-              <SvgDownload style={{ width: 16, height: 16 }} />
-            </Button>
-          </Tooltip>
+        <Tooltip content={t('Export as CSV')}>
+          <Button
+            variant="bare"
+            onPress={onExportCsv}
+            aria-label={t('Export as CSV')}
+          >
+            <SvgDownload style={{ width: 16, height: 16 }} />
+          </Button>
+        </Tooltip>
 
-          {widget && (
-            <Button variant="primary" onPress={onSaveWidget}>
-              <Trans>Save widget</Trans>
-            </Button>
-          )}
-        </View>
+        {widget && (
+          <Button variant="primary" onPress={onSaveWidget}>
+            <Trans>Save widget</Trans>
+          </Button>
+        )}
       </Header>
       <View
         style={{

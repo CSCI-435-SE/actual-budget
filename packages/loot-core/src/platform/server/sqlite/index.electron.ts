@@ -6,7 +6,10 @@ import { getDataDir, readFile, removeFile } from '#platform/server/fs';
 import { logger } from '#platform/server/log';
 
 import { normalise } from './normalise';
+import type { SqlParam } from './types';
 import { unicodeLike } from './unicodeLike';
+
+export type { SqlParam } from './types';
 
 function verifyParamTypes(sql, arr) {
   arr.forEach(val => {
@@ -35,7 +38,7 @@ export function prepare(db, sql) {
 export function runQuery(
   db: SQL.Database,
   sql: string | SQL.Statement,
-  params: (string | number)[] = [],
+  params: SqlParam[] = [],
   fetchAll = false,
 ) {
   if (params) {
@@ -68,8 +71,23 @@ export function execQuery(db: SQL.Database, sql: string) {
   db.exec(sql);
 }
 
-export function transaction(db: SQL.Database, fn: () => void) {
-  db.transaction(fn)();
+export type TransactionOptions = {
+  // Take the write lock up front (`BEGIN IMMEDIATE`). Only matters on
+  // the web backend, but keep the signature the same on every platform.
+  immediate?: boolean;
+};
+
+export function transaction(
+  db: SQL.Database,
+  fn: () => void,
+  { immediate = false }: TransactionOptions = {},
+) {
+  const run = db.transaction(fn);
+  if (immediate) {
+    run.immediate();
+  } else {
+    run();
+  }
 }
 
 // **Important**: this is an unsafe function since sqlite executes

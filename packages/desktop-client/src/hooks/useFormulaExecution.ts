@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { send } from '@actual-app/core/platform/client/connection';
 import {
@@ -21,7 +21,10 @@ import {
   normalizeQueryTimeFrameEnd,
   normalizeQueryTimeFrameStart,
 } from '#components/formula/queryTimeFrame';
-import { calculateTimeRange } from '#components/reports/reportRanges';
+import {
+  asMonthSlidingTimeFrame,
+  calculateTimeRange,
+} from '#components/reports/reportRanges';
 import { includeSubcategoriesInConditions } from '#components/reports/spreadsheets/subcategories';
 import { bootstrapHyperFormula } from '#util/bootstrapHyperFormula';
 
@@ -41,6 +44,8 @@ type QueriesMap = Record<string, QueryConfig>;
 
 type FormulaCellValue = number | string | boolean | null;
 
+export type SimpleAccount = { id: string; name: string };
+
 function createFormulaQueryContext(): Required<FormulaQueryContext> {
   return {
     queryNames: new Set(),
@@ -48,12 +53,14 @@ function createFormulaQueryContext(): Required<FormulaQueryContext> {
     queryExtractCategoryNames: new Set(),
     queryExtractTimeframeStartNames: new Set(),
     queryExtractTimeframeEndNames: new Set(),
+    balanceOfNames: new Set(),
     budgetQueryRequests: new Map(),
     querySumPrefetch: new Map(),
     queryCountPrefetch: new Map(),
     queryExtractCategoriesPrefetch: new Map(),
     queryExtractTimeframeStartPrefetch: new Map(),
     queryExtractTimeframeEndPrefetch: new Map(),
+    balanceOfPrefetch: new Map(),
     budgetQueryPrefetch: new Map(),
     budgetQueryErrors: new Map(),
   };
@@ -135,6 +142,7 @@ export function useFormulaExecution(
   queries: QueriesMap,
   queriesVersion?: number,
   namedExpressions?: Record<string, number | string>,
+  accounts?: SimpleAccount[],
 ) {
   const locale = useLocale();
   const { currency } = useFormat();
@@ -144,6 +152,23 @@ export function useFormulaExecution(
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Callers pass `queries`/`namedExpressions`/`accounts` as plain objects, and
+  // several of them build a fresh object on every render. Keying the effect on
+  // the object identity would re-execute the formula on every render (and each
+  // execution toggles `isLoading`, which renders again — an endless loop).
+  // Depend on the serialized contents instead, and read the live objects
+  // through refs.
+  const queriesKey = JSON.stringify(queries ?? {});
+  const namedExpressionsKey = JSON.stringify(namedExpressions ?? null);
+  const accountsKey = JSON.stringify(accounts ?? null);
+
+  const queriesRef = useRef(queries);
+  queriesRef.current = queries;
+  const namedExpressionsRef = useRef(namedExpressions);
+  namedExpressionsRef.current = namedExpressions;
+  const accountsRef = useRef(accounts);
+  accountsRef.current = accounts;
+
   useEffect(() => {
     let cancelled = false;
 
@@ -151,8 +176,13 @@ export function useFormulaExecution(
       if (!formula || !formula.startsWith('=')) {
         setResult(null);
         setError('Formula must start with =');
+        setIsLoading(false);
         return;
       }
+
+      const currentQueries = queriesRef.current;
+      const currentNamedExpressions = namedExpressionsRef.current;
+      const currentAccounts = accountsRef.current;
 
       setIsLoading(true);
       setError(null);
@@ -179,13 +209,18 @@ export function useFormulaExecution(
           formula,
           formulaQueryContext,
           locale: formulaLocale,
-          namedExpressions,
+          namedExpressions: currentNamedExpressions,
           throwOnCellError: false,
         });
 
         await prefetchFormulaQueries(
           formulaQueryContext,
-          queries,
+          currentQueries,
+          decimalPlaces,
+        );
+        await prefetchAccountBalances(
+          formulaQueryContext,
+          currentAccounts ?? [],
           decimalPlaces,
         );
 
@@ -194,7 +229,7 @@ export function useFormulaExecution(
           formula,
           formulaQueryContext,
           locale: formulaLocale,
-          namedExpressions,
+          namedExpressions: currentNamedExpressions,
           throwOnCellError: false,
         });
 
@@ -204,7 +239,7 @@ export function useFormulaExecution(
           formula,
           formulaQueryContext,
           locale: formulaLocale,
-          namedExpressions,
+          namedExpressions: currentNamedExpressions,
         });
 
         if (cancelled) return;
@@ -233,8 +268,9 @@ export function useFormulaExecution(
     queriesVersion,
     locale,
     language,
-    queries,
-    namedExpressions,
+    queriesKey,
+    namedExpressionsKey,
+    accountsKey,
     decimalPlaces,
   ]);
 
@@ -299,6 +335,44 @@ async function prefetchFormulaQueries(
   }
 }
 
+async function prefetchAccountBalances(
+  formulaQueryContext: Required<FormulaQueryContext>,
+  accounts: SimpleAccount[],
+  decimalPlaces: number,
+) {
+  for (const literal of formulaQueryContext.balanceOfNames) {
+    const account =
+      accounts.find(candidate => candidate.id === literal) ??
+      accounts.find(candidate => candidate.name === literal);
+
+    if (!account) {
+      formulaQueryContext.balanceOfPrefetch.set(literal, 0);
+      continue;
+    }
+
+    formulaQueryContext.balanceOfPrefetch.set(
+      literal,
+      await fetchAccountBalance(account.id, decimalPlaces),
+    );
+  }
+}
+
+async function fetchAccountBalance(
+  accountId: string,
+  decimalPlaces: number,
+): Promise<number> {
+  try {
+    const balanceQuery = q('transactions')
+      .filter({ account: accountId })
+      .calculate({ $sum: '$amount' });
+    const { data } = await send('query', balanceQuery.serialize());
+    return integerToAmount(data || 0, decimalPlaces);
+  } catch (err) {
+    console.error('Error fetching account balance:', err);
+    return 0;
+  }
+}
+
 async function prefetchBudgetQueries(
   formulaQueryContext: Required<FormulaQueryContext>,
   decimalPlaces: number,
@@ -350,7 +424,9 @@ export async function buildFilteredTransactionsQuery(
 
   // Add date range filter if provided
   if (timeFrame && timeFrame.mode) {
-    const [calculatedStart, calculatedEnd] = calculateTimeRange(timeFrame);
+    const [calculatedStart, calculatedEnd] = calculateTimeRange(
+      asMonthSlidingTimeFrame(timeFrame),
+    );
     const startDate = normalizeQueryTimeFrameStart(calculatedStart);
     const endDate = normalizeQueryTimeFrameEnd(calculatedEnd);
 
@@ -545,7 +621,9 @@ async function extractQueryTimeframeStart(
     return monthUtils.currentMonth();
   }
 
-  const [startMonth] = calculateTimeRange(queryConfig.timeFrame);
+  const [startMonth] = calculateTimeRange(
+    asMonthSlidingTimeFrame(queryConfig.timeFrame),
+  );
   return startMonth;
 }
 
@@ -562,7 +640,9 @@ async function extractQueryTimeframeEnd(
     return monthUtils.currentMonth();
   }
 
-  const [, endMonth] = calculateTimeRange(queryConfig.timeFrame);
+  const [, endMonth] = calculateTimeRange(
+    asMonthSlidingTimeFrame(queryConfig.timeFrame),
+  );
   return endMonth;
 }
 

@@ -22,13 +22,15 @@ import {
 } from '#server/transactions/transaction-rules';
 import { undoable } from '#server/undo';
 import { RSchedule } from '#server/util/rschedule';
-import { currentDay, dayFromDate, parseDate } from '#shared/months';
+import { currentDay, dayFromDate } from '#shared/months';
 import { q } from '#shared/query';
 import {
+  DEFAULT_UPCOMING_SCHEDULE_DAYS,
   extractScheduleConds,
   getDateWithSkippedWeekend,
   getHasTransactionsQuery,
   getNextDate,
+  getNextDateAfter,
   getScheduledAmount,
   getStatus,
   recurConfigToRSchedule,
@@ -209,16 +211,14 @@ async function fixRuleForSchedule(id) {
 
 export async function setNextDate({
   id,
-  start,
   conditions,
   reset,
-  skipRequested,
+  advance,
 }: {
   id: string;
-  start?;
   conditions?;
   reset?: boolean;
-  skipRequested?: boolean;
+  advance?: boolean;
 }) {
   if (conditions == null) {
     const rule = await getRuleForSchedule(id);
@@ -230,32 +230,15 @@ export async function setNextDate({
 
   const { date: dateCond } = extractScheduleConds(conditions);
 
-  let { data: nextDate } = await aqlQuery(
+  const { data: nextDate } = await aqlQuery(
     q('schedules').filter({ id }).calculate('next_date'),
   );
 
-  if (skipRequested === true) {
-    const skipWeekend: boolean = dateCond.value?.skipWeekend;
-    const weekendSolveMode: string = dateCond.value?.weekendSolveMode;
-
-    if (weekendSolveMode === 'before' && skipWeekend === true) {
-      const parsedNextDate = parseDate(nextDate);
-      if (d.isFriday(parsedNextDate) || d.isWeekend(parsedNextDate)) {
-        // nextDate is on weekend or friday, moving to monday
-        // so getNextDate and getDateWithSkippedWeekend
-        // don't push the date back to Friday, thus causing
-        // `(newNextDate !== nextDate) ` to be false and not updating the next date
-        nextDate = dayFromDate(d.nextMonday(parsedNextDate));
-      }
-    }
-  }
-
   // Only do this if a date condition exists
   if (dateCond) {
-    const newNextDate = getNextDate(
-      dateCond,
-      start ? start(nextDate) : new Date(),
-    );
+    const newNextDate = advance
+      ? getNextDateAfter(dateCond, nextDate)
+      : getNextDate(dateCond, new Date());
 
     if (newNextDate != null && newNextDate !== nextDate) {
       // Our `update` functon requires the id of the item and we don't
@@ -305,6 +288,17 @@ async function checkIfScheduleExists(name, scheduleId) {
 function normalizeScheduleName(name) {
   const trimmedName = name?.trim();
   return trimmedName || null;
+}
+
+async function moveSchedule({
+  id,
+  targetId,
+}: {
+  id: string;
+  targetId: string | null;
+}) {
+  await db.moveSchedule(id, targetId);
+  return {};
 }
 
 export async function createSchedule({
@@ -470,13 +464,7 @@ export async function deleteSchedule({ id }) {
 }
 
 export async function skipNextDate({ id }) {
-  return setNextDate({
-    id,
-    start: nextDate => {
-      return d.addDays(parseDate(nextDate), 1);
-    },
-    skipRequested: true,
-  });
+  return setNextDate({ id, advance: true });
 }
 
 function discoverSchedules() {
@@ -630,10 +618,7 @@ async function advanceRecurringScheduleFromNextDate(
   const previousNextDate = schedule.next_date;
 
   try {
-    await setNextDate({
-      id: schedule.id,
-      start: nextDate => d.addDays(parseDate(nextDate), 1),
-    });
+    await setNextDate({ id: schedule.id, advance: true });
   } catch {
     // This might error if the rule is corrupted and it can't find the rule.
     return null;
@@ -682,7 +667,9 @@ export async function advanceSchedulesService(syncSuccess) {
       schedule.next_date,
       schedule.completed,
       hasTrans.has(schedule.id),
-      schedule.custom_upcoming_length ?? upcomingLength[0]?.value ?? '7',
+      schedule.custom_upcoming_length ??
+        upcomingLength[0]?.value ??
+        DEFAULT_UPCOMING_SCHEDULE_DAYS,
     );
 
     if (
@@ -702,6 +689,10 @@ export async function advanceSchedulesService(syncSuccess) {
           currentStatus === 'missed')
       ) {
         if (currentStatus === 'paid') {
+          if (currentSchedule.next_date === currentDay()) {
+            break;
+          }
+
           const updatedSchedule =
             await advanceRecurringScheduleFromNextDate(currentSchedule);
 
@@ -716,7 +707,7 @@ export async function advanceSchedulesService(syncSuccess) {
             await hasTransactionForSchedule(currentSchedule),
             currentSchedule.custom_upcoming_length ??
               upcomingLength[0]?.value ??
-              '7',
+              DEFAULT_UPCOMING_SCHEDULE_DAYS,
           );
           continue;
         }
@@ -728,6 +719,11 @@ export async function advanceSchedulesService(syncSuccess) {
           didPost = true;
         } else {
           failedToPost.push(currentSchedule._payee);
+          break;
+        }
+
+        // do not skip schedules due today
+        if (currentStatus === 'due') {
           break;
         }
 
@@ -749,7 +745,7 @@ export async function advanceSchedulesService(syncSuccess) {
           await hasTransactionForSchedule(currentSchedule),
           currentSchedule.custom_upcoming_length ??
             upcomingLength[0]?.value ??
-            '7',
+            DEFAULT_UPCOMING_SCHEDULE_DAYS,
         );
       }
     } else if (status === 'paid') {
@@ -793,6 +789,7 @@ export type SchedulesHandlers = {
   'schedule/create': typeof createSchedule;
   'schedule/update': typeof updateSchedule;
   'schedule/delete': typeof deleteSchedule;
+  'schedule/move': typeof moveSchedule;
   'schedule/skip-next-date': typeof skipNextDate;
   'schedule/post-transaction': typeof postTransactionForSchedule;
   'schedule/force-run-service': typeof advanceSchedulesService;
@@ -806,6 +803,7 @@ export const app = createApp<SchedulesHandlers>();
 app.method('schedule/create', mutator(undoable(createSchedule)));
 app.method('schedule/update', mutator(undoable(updateSchedule)));
 app.method('schedule/delete', mutator(undoable(deleteSchedule)));
+app.method('schedule/move', mutator(undoable(moveSchedule)));
 app.method('schedule/skip-next-date', mutator(undoable(skipNextDate)));
 app.method(
   'schedule/post-transaction',

@@ -22,8 +22,13 @@ import type { Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Compile every workspace package that ships React components. Workspace
+// imports resolve to their real paths under packages/<name>/src, so any
+// current or future package flowing through this build is picked up
+// automatically. Third-party code is never compiled: the babel plugin's
+// default exclude (node_modules) still applies alongside this include.
 const reactCompilerInclude =
-  /[\\/]desktop-client[\\/]src[\\/].*\.[jt]sx(?:$|\?)/;
+  /[\\/]packages[\\/][^\\/]+[\\/]src[\\/].*\.[jt]sx?(?:$|\?)/;
 
 const addWatchers = (): Plugin => ({
   name: 'add-watchers',
@@ -120,6 +125,10 @@ async function stagePluginsService(): Promise<void> {
   await cp(pluginsServiceDistDir, serviceWorkerDir, { recursive: true });
 }
 
+// Extensions of data files served to the backend worker. Keep in sync
+// with the workbox `globPatterns` below so every listed file is precached.
+const DATA_FILE_EXTENSIONS = new Set(['.sql', '.js', '.sqlite']);
+
 async function stagePublicData(): Promise<void> {
   const migrationsDest = path.resolve(publicDataDir, 'migrations');
   await mkdir(publicDataDir, { recursive: true });
@@ -141,10 +150,10 @@ async function stagePublicData(): Promise<void> {
         .relative(publicDataDir, path.join(e.parentPath, e.name))
         .replaceAll(path.sep, '/'),
     )
-    // Skip dotfiles (e.g. legacy `.force-copy-windows` marker). They have no
-    // matching extension in the workbox precache globs, so a PWA opened
-    // offline would fail to fetch them and break startup (issue #7886).
+    // Only list files the backend needs and the workbox precache globs
+    // cover; anything else fails to load offline and breaks startup.
     .filter(file => !file.split('/').some(part => part.startsWith('.')))
+    .filter(file => DATA_FILE_EXTENSIONS.has(path.extname(file)))
     .sort();
   await writeFile(
     path.resolve(publicDir, 'data-file-index.txt'),
@@ -161,7 +170,9 @@ const lootCoreBackend = (): Plugin => ({
         'vite',
         'build',
         '--config',
-        lootCoreConfig,
+        // Relative to `cwd`: with `shell: true` the args are not quoted, so
+        // an absolute path containing spaces would be split apart.
+        path.relative(lootCoreRoot, lootCoreConfig),
         '--mode',
         'development',
         '--watch',

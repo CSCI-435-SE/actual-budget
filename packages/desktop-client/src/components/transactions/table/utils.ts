@@ -95,7 +95,10 @@ export function deserializeTransaction(
     amount = format.fromEdit(credit);
   }
 
-  amount = amount != null ? amount : originalTransaction.amount;
+  amount =
+    amount != null
+      ? amount
+      : (realTransaction.amount ?? originalTransaction.amount);
   let date = originalDate;
   if (date == null) {
     date = originalTransaction.date || currentDay();
