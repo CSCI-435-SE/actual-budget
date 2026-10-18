@@ -3,6 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '@actual-app/components/button';
 import { Menu } from '@actual-app/components/menu';
+import { ModeButton } from '@actual-app/components/mode-button';
 import { Popover } from '@actual-app/components/popover';
 import { Select } from '@actual-app/components/select';
 import type { SelectOption } from '@actual-app/components/select';
@@ -24,13 +25,13 @@ import type {
 import type { SyncedPrefs } from '@actual-app/core/types/prefs';
 
 import { Information } from '#components/alerts';
+import { useDateFormat } from '#hooks/useDateFormat';
 import { useLocale } from '#hooks/useLocale';
 
 import { CategorySelector } from './CategorySelector';
 import { defaultsList, disabledList } from './disabledList';
 import { getLiveRange } from './getLiveRange';
-import { ModeButton } from './ModeButton';
-import { ReportOptions } from './ReportOptions';
+import { getIntervalFormat, ReportOptions } from './ReportOptions';
 import type { dateRangeProps } from './ReportOptions';
 import { validateEnd, validateStart } from './reportRanges';
 import { setSessionReport } from './setSessionReport';
@@ -112,6 +113,7 @@ export function ReportSidebar({
 }: ReportSidebarProps) {
   const { t } = useTranslation();
   const locale = useLocale();
+  const dateFormat = useDateFormat() || 'MM/dd/yyyy';
 
   const [menuOpen, setMenuOpen] = useState(false);
   const triggerRef = useRef(null);
@@ -634,9 +636,7 @@ export function ReportSidebar({
                 value={customReportItems.startDate}
                 defaultLabel={monthUtils.format(
                   customReportItems.startDate,
-                  ReportOptions.intervalFormat.get(
-                    customReportItems.interval,
-                  ) || '',
+                  getIntervalFormat(customReportItems.interval, dateFormat),
                   locale,
                 )}
                 options={allIntervals.map(({ name, pretty }) => [name, pretty])}
@@ -668,9 +668,7 @@ export function ReportSidebar({
                 value={customReportItems.endDate}
                 defaultLabel={monthUtils.format(
                   customReportItems.endDate,
-                  ReportOptions.intervalFormat.get(
-                    customReportItems.interval,
-                  ) || '',
+                  getIntervalFormat(customReportItems.interval, dateFormat),
                   locale,
                 )}
                 options={allIntervals.map(({ name, pretty }) => [name, pretty])}

@@ -23,6 +23,7 @@ import { ReportCardName } from '#components/reports/ReportCardName';
 import { calculateTimeRange } from '#components/reports/reportRanges';
 import { createSpreadsheet as netWorthSpreadsheet } from '#components/reports/spreadsheets/net-worth-spreadsheet';
 import { useReport } from '#components/reports/useReport';
+import { useDateFormat } from '#hooks/useDateFormat';
 import { useFormat } from '#hooks/useFormat';
 import { useLocale } from '#hooks/useLocale';
 import { useSyncedPref } from '#hooks/useSyncedPref';
@@ -48,6 +49,7 @@ export function NetWorthCard({
   const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
   const firstDayOfWeekIdx = _firstDayOfWeekIdx || '0';
   const format = useFormat();
+  const dateFormat = useDateFormat() || 'MM/dd/yyyy';
 
   const [latestTransaction, setLatestTransaction] = useState<string>('');
   const [nameMenuOpen, setNameMenuOpen] = useState(false);
@@ -82,6 +84,7 @@ export function NetWorthCard({
         locale,
         meta?.interval || 'Monthly',
         firstDayOfWeekIdx,
+        dateFormat,
       ),
     [
       start,
@@ -92,6 +95,7 @@ export function NetWorthCard({
       locale,
       meta?.interval,
       firstDayOfWeekIdx,
+      dateFormat,
     ],
   );
   const data = useReport('net_worth', params);
