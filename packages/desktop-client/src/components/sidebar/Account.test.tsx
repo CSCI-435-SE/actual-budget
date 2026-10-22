@@ -119,3 +119,58 @@ describe('sidebar Account context menu', () => {
     expect(contextMenuItemNames()).toEqual(['account-rename', 'account-close']);
   });
 });
+
+describe('sidebar Account color', () => {
+  beforeEach(() => {
+    initServer({
+      query: async () => ({ data: [], dependencies: [] }),
+      'get-cell': async () => ({ name: 'test-cell', value: 0 }),
+    });
+  });
+
+  async function renderRow(children: ReactNode) {
+    const store = configureTestAppStore({
+      queryClient: createTestQueryClient(),
+    });
+    render(
+      <TestProviders store={store}>
+        <SpreadsheetProvider>
+          <MemoryRouter>
+            <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+          </MemoryRouter>
+        </SpreadsheetProvider>
+      </TestProviders>,
+    );
+    await act(() => Promise.resolve());
+  }
+
+  it('shows a colored account as a pill', async () => {
+    const account = { ...generateAccount('Savings'), color: '#1E88E5' };
+
+    await renderRow(
+      <Account
+        name={account.name}
+        account={account}
+        to={`/accounts/${account.id}`}
+        query={bindings.accountBalance(account.id)}
+      />,
+    );
+
+    expect(screen.getByTestId('account-color-pill')).toHaveTextContent(
+      'Savings',
+    );
+  });
+
+  it('never shows a pill on the All accounts row', async () => {
+    await renderRow(
+      <Account
+        name="All accounts"
+        to="/accounts"
+        query={bindings.allAccountBalance()}
+      />,
+    );
+
+    expect(screen.getByText('All accounts')).toBeInTheDocument();
+    expect(screen.queryByTestId('account-color-pill')).not.toBeInTheDocument();
+  });
+});

@@ -8,6 +8,7 @@ import { theme } from '@actual-app/components/theme';
 import { getMonthYearFormat } from '@actual-app/core/shared/months';
 import { format as formatDate, parseISO } from 'date-fns';
 
+import { AccountName } from '#components/accounts/AccountName';
 import { Link } from '#components/common/Link';
 import { FinancialText } from '#components/FinancialText';
 import { useAccounts } from '#hooks/useAccounts';
@@ -16,6 +17,7 @@ import { useDateFormat } from '#hooks/useDateFormat';
 import { useFormat } from '#hooks/useFormat';
 import { useLocale } from '#hooks/useLocale';
 import { usePayees } from '#hooks/usePayees';
+import { isHexColor } from '#util/colorPill';
 import { getRecurringDescription } from '#util/schedule';
 
 type ValueProps<T> = {
@@ -26,6 +28,8 @@ type ValueProps<T> = {
   data?: unknown;
   describe?: (item: T) => string;
   style?: CSSProperties;
+  /** Render accounts (and transfer payees) as their color pill, if they have one */
+  showAccountColors?: boolean;
 };
 
 export function Value<T>({
@@ -37,6 +41,7 @@ export function Value<T>({
   // @ts-expect-error fix this later
   describe = x => x.name,
   style,
+  showAccountColors = false,
 }: ValueProps<T>) {
   const { t } = useTranslation();
   const format = useFormat();
@@ -141,15 +146,44 @@ export function Value<T>({
     }
   }
 
+  function getColoredAccount(value: unknown) {
+    if (
+      !showAccountColors ||
+      valueIsRaw ||
+      dataProp ||
+      typeof value !== 'string'
+    ) {
+      return null;
+    }
+    const accountId =
+      field === 'account'
+        ? value
+        : field === 'payee'
+          ? payees?.find(payee => payee.id === value)?.transfer_acct
+          : null;
+    if (!accountId) {
+      return null;
+    }
+    return (
+      accounts.find(
+        account => account.id === accountId && isHexColor(account.color),
+      ) ?? null
+    );
+  }
+
+  function renderValue(value: unknown) {
+    const coloredAccount = getColoredAccount(value);
+    if (coloredAccount) {
+      return <AccountName account={coloredAccount} compact />;
+    }
+    return <ValueText style={valueStyle}>{formatValue(value)}</ValueText>;
+  }
+
   if (Array.isArray(value)) {
     if (value.length === 0) {
       return <ValueText style={valueStyle}>(empty)</ValueText>;
     } else if (value.length === 1) {
-      return (
-        <Text>
-          [<ValueText style={valueStyle}>{formatValue(value[0])}</ValueText>]
-        </Text>
-      );
+      return <Text>[{renderValue(value[0])}]</Text>;
     }
 
     let displayed: unknown[] = value;
@@ -161,9 +195,7 @@ export function Value<T>({
       <Text style={{ color: theme.tableText }}>
         [
         {displayed.map((v, i) => {
-          const text = (
-            <ValueText style={valueStyle}>{formatValue(v)}</ValueText>
-          );
+          const text = renderValue(v);
           let spacing;
           if (inline) {
             spacing = i !== 0 ? ' ' : '';
@@ -209,6 +241,6 @@ export function Value<T>({
       </Text>
     );
   } else {
-    return <ValueText style={valueStyle}>{formatValue(value)}</ValueText>;
+    return renderValue(value);
   }
 }

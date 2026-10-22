@@ -629,6 +629,30 @@ describe('Transactions', () => {
     });
   });
 
+  test('colored account shows a pill and still opens the account dropdown', async () => {
+    const { container } = renderTransactions({
+      accounts: [{ ...accounts[0], color: '#1E88E5' }],
+    });
+
+    const field = queryField(container, 'account', '', 0);
+    expect(field.textContent).toBe(accounts[0].name);
+    const pill = field.querySelector('[data-testid="account-color-pill"]');
+    expect(pill).not.toBeNull();
+
+    await userEvent.click(pill!);
+    expectToBeEditingField(container, 'account', 0);
+  });
+
+  test('accounts without a color render as plain text', () => {
+    const { container } = renderTransactions();
+
+    expect(
+      queryField(container, 'account', '', 0).querySelector(
+        '[data-testid="account-color-pill"]',
+      ),
+    ).toBeNull();
+  });
+
   describe('Group column', () => {
     test('group column is hidden by default', () => {
       const { container } = renderTransactions();

@@ -84,7 +84,12 @@ function SetActionExpression({
           <Text style={valueStyle}>{options.template}</Text>
         </>
       ) : (
-        <Value style={valueStyle} value={value} field={field} />
+        <Value
+          style={valueStyle}
+          value={value}
+          field={field}
+          showAccountColors
+        />
       )}
     </>
   );
