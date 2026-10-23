@@ -74,3 +74,56 @@ describe('account color and description', () => {
     expect((await getAccount('acct1'))?.description).toBeNull();
   });
 });
+
+describe('account-update', () => {
+  it('saves the last reconciled time', async () => {
+    await db.insertAccount({ id: 'acct1', name: 'Checking' });
+
+    await accountsApp.handlers['account-update']({
+      id: 'acct1',
+      last_reconciled: '1700000000000',
+    });
+    expect((await getAccount('acct1'))?.last_reconciled).toBe('1700000000000');
+  });
+});
+
+describe('accounts-get', () => {
+  it('returns every stored field of a linked account', async () => {
+    await db.insert('banks', {
+      id: 'bank1',
+      bank_id: 'external-bank',
+      name: 'Test Bank',
+    });
+    await db.insertAccount({
+      id: 'acct1',
+      name: 'Linked',
+      account_id: 'external-account',
+      bank: 'bank1',
+      mask: '1234',
+      official_name: 'Official Checking',
+      balance_current: 100,
+      balance_available: 90,
+      balance_limit: 500,
+      account_sync_source: 'simpleFin',
+      last_sync: '1700000000000',
+      bank_sync_status: 'ok',
+      last_reconciled: '1690000000000',
+    });
+
+    expect(await getAccount('acct1')).toMatchObject({
+      account_id: 'external-account',
+      bank: 'bank1',
+      bankName: 'Test Bank',
+      bankId: 'bank1',
+      mask: '1234',
+      official_name: 'Official Checking',
+      balance_current: 100,
+      balance_available: 90,
+      balance_limit: 500,
+      account_sync_source: 'simpleFin',
+      last_sync: '1700000000000',
+      bank_sync_status: 'ok',
+      last_reconciled: '1690000000000',
+    });
+  });
+});
