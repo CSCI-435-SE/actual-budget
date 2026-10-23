@@ -15,6 +15,7 @@ import { css } from '@emotion/css';
 
 import { useReopenAccountMutation, useUpdateAccountMutation } from '#accounts';
 import { isAccountFailedSync } from '#accounts/syncStatus';
+import { AccountName } from '#components/accounts/AccountName';
 import { useContextMenu } from '#hooks/useContextMenu';
 import { useUpdatedAccounts } from '#hooks/useUpdatedAccounts';
 import { openAccountCloseModal, pushModal } from '#modals/modalsSlice';
@@ -190,7 +191,14 @@ export function AccountRow({
                 </InitialFocus>
               ) : (
                 <Text style={{ flex: 1, ...styles.ellipsisText }}>
-                  {account.name}
+                  <AccountName
+                    account={account}
+                    compact
+                    // line-through doesn't propagate into the inline-block pill
+                    style={
+                      isClosed ? { textDecoration: 'line-through' } : undefined
+                    }
+                  />
                 </Text>
               )}
               <Text style={styles.visuallyHidden}>{statusLabel}</Text>

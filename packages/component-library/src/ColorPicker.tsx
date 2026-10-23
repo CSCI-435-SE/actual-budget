@@ -147,12 +147,15 @@ type ColorPickerProps = {
   children?: ReactNode;
   columns?: number;
   colorset?: string[];
+  /** Optional content at the bottom of the popover, e.g. a "Remove color" button */
+  footer?: ReactNode;
 } & AriaColorPickerProps;
 
 export function ColorPicker({
   children,
   columns,
   colorset,
+  footer,
   ...props
 }: ColorPickerProps) {
   const onInput = (value: string) => {
@@ -192,6 +195,7 @@ export function ColorPicker({
             >
               <Input placeholder="#RRGGBB" style={{ width: '100px' }} />
             </ColorField>
+            {footer}
           </Dialog>
         </Popover>
       </DialogTrigger>

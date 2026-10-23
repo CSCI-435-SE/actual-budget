@@ -53,7 +53,13 @@ export function ConditionExpression({
       {!['onbudget', 'offbudget'].includes(
         (op as string)?.toLocaleLowerCase(),
       ) && (
-        <Value style={valueStyle} value={value} field={field} inline={inline} />
+        <Value
+          style={valueStyle}
+          value={value}
+          field={field}
+          inline={inline}
+          showAccountColors
+        />
       )}
     </View>
   );

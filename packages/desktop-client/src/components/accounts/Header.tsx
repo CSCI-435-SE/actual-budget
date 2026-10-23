@@ -54,6 +54,8 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { useSyncServerStatus } from '#hooks/useSyncServerStatus';
 
 import type { TableRef } from './Account';
+import { AccountColorButton } from './AccountColorButton';
+import { AccountDescriptionField } from './AccountDescriptionField';
 import { Balances } from './Balance';
 import { BalanceHistoryGraph } from './BalanceHistoryGraph';
 import { ReconcileMenu, ReconcilingMessage } from './Reconcile';
@@ -187,6 +189,11 @@ export function AccountHeader({
   const { t } = useTranslation();
 
   const [reconcileOpen, setReconcileOpen] = useState(false);
+  // Keyed by account id so it resets when navigating to another account
+  const [editingDescriptionAccountId, setEditingDescriptionAccountId] =
+    useState<AccountEntity['id'] | null>(null);
+  const isEditingDescription =
+    !!account && editingDescriptionAccountId === account.id;
   const searchInput = useRef<HTMLInputElement>(null);
   const reconcileRef = useRef(null);
   const splitsExpanded = useSplitsExpanded();
@@ -309,8 +316,26 @@ export function AccountHeader({
                 isNameEditable={isNameEditable}
                 saveNameError={saveNameError}
                 onSaveName={onSaveName}
+                onAddDescription={
+                  account
+                    ? () => setEditingDescriptionAccountId(account.id)
+                    : undefined
+                }
               />
             </View>
+
+            {isNameEditable &&
+              account &&
+              (account.description || isEditingDescription) && (
+                <AccountDescriptionField
+                  account={account}
+                  isEditing={isEditingDescription}
+                  onStartEditing={() =>
+                    setEditingDescriptionAccountId(account.id)
+                  }
+                  onStopEditing={() => setEditingDescriptionAccountId(null)}
+                />
+              )}
 
             <Balances
               balanceQuery={balanceQuery}
@@ -616,6 +641,7 @@ type AccountNameFieldProps = {
   isNameEditable: boolean;
   saveNameError?: ReactNode;
   onSaveName: (newName: string) => void;
+  onAddDescription?: () => void;
 };
 
 function AccountNameField({
@@ -624,6 +650,7 @@ function AccountNameField({
   isNameEditable,
   saveNameError,
   onSaveName,
+  onAddDescription,
 }: AccountNameFieldProps) {
   const { t } = useTranslation();
   const [editingName, setEditingName] = useState(false);
@@ -696,7 +723,7 @@ function AccountNameField({
               : accountName}
           </View>
 
-          <View style={{ flexDirection: 'row', width: 50 }}>
+          <View style={{ flexDirection: 'row', minWidth: 50 }}>
             {isNameEditable && account && (
               <NotesButton
                 id={`account-${account.id}`}
@@ -722,6 +749,22 @@ function AccountNameField({
                 />
               </Button>
             )}
+            {isNameEditable && account && (
+              <AccountColorButton account={account} />
+            )}
+            {isNameEditable &&
+              account &&
+              !account.description &&
+              onAddDescription && (
+                <Button
+                  variant="bare"
+                  className="hover-visible"
+                  style={{ color: theme.pageTextSubdued }}
+                  onPress={onAddDescription}
+                >
+                  <Trans>Add description</Trans>
+                </Button>
+              )}
           </View>
         </View>
       )}
