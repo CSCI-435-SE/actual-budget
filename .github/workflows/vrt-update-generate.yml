@@ -20,6 +20,7 @@ jobs:
     runs-on: depot-ubuntu-latest
     # Only run on PR comments containing /update-vrt
     if: >
+      github.repository == 'actualbudget/actual' &&
       github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/update-vrt')
     permissions:
@@ -40,6 +41,7 @@ jobs:
     name: Resolve PR details
     runs-on: depot-ubuntu-latest
     if: >
+      github.repository == 'actualbudget/actual' &&
       github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/update-vrt')
     outputs:
@@ -62,6 +64,7 @@ jobs:
             core.setOutput('head_repo', pr.head.repo.full_name);
 
   build-web:
+    if: github.repository == 'actualbudget/actual'
     name: Build web bundle
     runs-on: depot-ubuntu-latest
     needs: get-pr
@@ -96,6 +99,7 @@ jobs:
           overwrite: true
 
   browser-vrt:
+    if: github.repository == 'actualbudget/actual'
     name: Browser VRT (shard ${{ matrix.shard }}/3)
     runs-on: depot-ubuntu-latest
     needs: [get-pr, build-web]
@@ -166,6 +170,7 @@ jobs:
           overwrite: true
 
   desktop-vrt:
+    if: github.repository == 'actualbudget/actual'
     name: Desktop VRT
     runs-on: depot-ubuntu-latest
     needs: get-pr
@@ -237,7 +242,7 @@ jobs:
     name: Merge VRT Patches
     runs-on: depot-ubuntu-latest
     needs: [get-pr, browser-vrt, desktop-vrt]
-    if: ${{ !cancelled() && needs.get-pr.result == 'success' }}
+    if: ${{ github.repository == 'actualbudget/actual' && (!cancelled() && needs.get-pr.result == 'success') }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
