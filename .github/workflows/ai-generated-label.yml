@@ -19,7 +19,7 @@ jobs:
   add-ai-generated-label:
     name: Add 'AI generated' label
     runs-on: depot-ubuntu-latest
-    if: startsWith(github.event.pull_request.title, '[AI]')
+    if: github.repository == 'actualbudget/actual' && (startsWith(github.event.pull_request.title, '[AI]'))
     steps:
       - name: Add 'AI generated' label
         env:
