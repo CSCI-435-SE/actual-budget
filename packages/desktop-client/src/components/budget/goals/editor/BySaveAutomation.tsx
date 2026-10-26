@@ -120,7 +120,13 @@ export const BySaveAutomation = ({
               )
             }
           >
-            <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)', whiteSpace: 'nowrap' }}>
+            <span
+              style={{
+                marginLeft: 6,
+                fontSize: 'var(--font-size-12)',
+                whiteSpace: 'nowrap',
+              }}
+            >
               <Trans>Repeats</Trans>
             </span>
           </LabeledCheckbox>

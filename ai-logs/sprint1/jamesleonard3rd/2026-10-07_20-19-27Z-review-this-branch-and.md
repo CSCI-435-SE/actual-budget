@@ -41,6 +41,7 @@ origin	git@github.com:CSCI-435-SE/actual-budget.git (fetch)
 origin	git@github.com:CSCI-435-SE/actual-budget.git (push)
 (eval):1: command not found: gh
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:19:42Z)**_
@@ -222,6 +223,7 @@ Fetch issue 55 and show branch diff stats
  .../show-subcategories-in-reports.md               |     6 +
  39 files changed, 17245 insertions(+), 170 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:19:51Z)**_
@@ -247,7 +249,7 @@ On reports page, the user's subcategories that are nested under a parent categor
 2. It is clear how much money, if any, from the parent was allocated to the child and how the child's spending compared to the budgeted amount
 3. The subcategories can be accessed wherever the parents can be and are shown on reports.
 
-## Out of Scope 
+## Out of Scope
 - Having separate reports for specific categories.
 - Creation of the subcategory feature (must be done after other sub-issue completed)
 
@@ -258,9 +260,9 @@ On reports page, the user's subcategories that are nested under a parent categor
 ## Design
 One design choice was to clearly nest subcategories under their parent in reports. The alternative was to leave them listed in reports as ordinary categories. Having them as a clear sub-item to their parent makes it clear in reports where their budget is allocated from and what categories are related to them. It also helps clearly show where a parent's budget is being allocated to and makes it easy to identify which titles are categories and which are subcategories. This makes the reports easier to understand but required more work initially to edit the report format to include indented rows for subcategories.
 ----
-icsasso : ### AI Assistance — @icsasso 
+icsasso : ### AI Assistance — @icsasso
 
-**Role in this issue:** Implementation & Testing 
+**Role in this issue:** Implementation & Testing
 
 | # | Tool | Log | What AI helped with |
 |---|---|---|---|
@@ -299,6 +301,7 @@ vitest.config.ts
 yarn.config.cjs
 yarn.lock
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:19:54Z)**_
@@ -309,7 +312,7 @@ Read student guidelines and review guidelines
 
 `cat STUDENTS.md CODE_REVIEW_GUIDELINES.md | head -300; git diff ad09f7d54..HEAD --name-only | grep -v ai-logs`
 
-```text
+````text
 # Getting Started (for Students)
 
 This is a short guide to running **Actual Budget** on your own computer so you
@@ -339,7 +342,7 @@ Enable the correct Yarn version (only needed once):
 
 ```bash
 corepack enable
-```
+````
 
 Yarn will then automatically use the version this project expects.
 
@@ -357,7 +360,6 @@ cd actual
 
 yarn install
 ```
-
 
 > ⚠️ Always run `yarn` commands from the **project root** (the folder with this
 > file in it), never from inside a `packages/…` subfolder.
@@ -408,13 +410,13 @@ For simply learning and experimenting, `yarn start` is enough.
 
 Run all of these from the project root:
 
-| Command | What it does |
-| --- | --- |
-| `yarn start` | Start the app in your browser (main command) |
-| `yarn test` | Run the test suite across all packages |
-| `yarn typecheck` | Check for TypeScript errors |
-| `yarn lint` | Check code style and formatting |
-| `yarn lint:fix` | Auto-fix style and formatting issues |
+| Command          | What it does                                 |
+| ---------------- | -------------------------------------------- |
+| `yarn start`     | Start the app in your browser (main command) |
+| `yarn test`      | Run the test suite across all packages       |
+| `yarn typecheck` | Check for TypeScript errors                  |
+| `yarn lint`      | Check code style and formatting              |
+| `yarn lint:fix`  | Auto-fix style and formatting issues         |
 
 If you change code, `yarn typecheck`, `yarn lint`, and `yarn test` are the three
 commands that tell you everything is still healthy.
@@ -498,11 +500,11 @@ After pushing, GitHub shows a **"Compare & pull request"** banner on the reposit
 
 **Branch naming:**
 
-| Prefix | Use for |
-|---|---|
-| `feat/issue-<N>-short-description` | new features |
-| `fix/issue-<N>-short-description` | bug fixes |
-| `chore/short-description` | docs, config, dependency updates |
+| Prefix                             | Use for                          |
+| ---------------------------------- | -------------------------------- |
+| `feat/issue-<N>-short-description` | new features                     |
+| `fix/issue-<N>-short-description`  | bug fixes                        |
+| `chore/short-description`          | docs, config, dependency updates |
 
 > ⚠️ **`main` is protected — direct pushes are blocked.** All changes go through a reviewed PR. If you accidentally commit to `main` locally, move your changes to a branch before pushing:
 >
@@ -528,15 +530,16 @@ git branch -d feat/issue-17-dark-mode
 Actual has its own established contribution processes. They are **not restated here** — you are
 responsible for finding, reading, and following them from the sources below:
 
-| You must take care of | Where to find it |
-| --- | --- |
-| How to use the tool | <https://actualbudget.org/docs> |
-| Code review process | [CODE_REVIEW_GUIDELINES.md](CODE_REVIEW_GUIDELINES.md) + [Contributing docs](https://actualbudget.org/docs/contributing/) |
-| Bug / issue resolution process | [Contributing docs](https://actualbudget.org/docs/contributing/) |
-| Pull request conventions & PR policies | [CONTRIBUTING.md](CONTRIBUTING.md) + [PR and Commit Rules](.github/agents/pr-and-commit-rules.md) |
-| AI policies | [AI Usage Policy](https://actualbudget.org/docs/contributing/ai-usage-policy) + [AGENTS.md](AGENTS.md) |
+| You must take care of                  | Where to find it                                                                                                          |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| How to use the tool                    | <https://actualbudget.org/docs>                                                                                           |
+| Code review process                    | [CODE_REVIEW_GUIDELINES.md](CODE_REVIEW_GUIDELINES.md) + [Contributing docs](https://actualbudget.org/docs/contributing/) |
+| Bug / issue resolution process         | [Contributing docs](https://actualbudget.org/docs/contributing/)                                                          |
+| Pull request conventions & PR policies | [CONTRIBUTING.md](CONTRIBUTING.md) + [PR and Commit Rules](.github/agents/pr-and-commit-rules.md)                         |
+| AI policies                            | [AI Usage Policy](https://actualbudget.org/docs/contributing/ai-usage-policy) + [AGENTS.md](AGENTS.md)                    |
 
 Happy budgeting! 🎉
+
 # CODE_REVIEW_GUIDELINES.md - Guidelines for LLM Agents Performing Code Reviews
 
 This document provides specific guidelines for LLM agents performing code reviews on the Actual Budget codebase. These guidelines help maintain code quality, consistency, and follow the project's design principles.
@@ -648,7 +651,8 @@ packages/desktop-client/src/hooks/useFormulaExecution.test.ts
 packages/desktop-client/src/hooks/useFormulaExecution.ts
 packages/loot-core/src/types/models/reports.ts
 upcoming-release-notes/show-subcategories-in-reports.md
-```
+
+````
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:19:55Z)**_
@@ -665,7 +669,8 @@ Run typecheck and relevant unit tests
 
 ```text
 Command running in background with ID: b3hzf4eru. Output is being written to: /private/tmp/claude-501/-Users-james-ActualBudget/210f593b-2db0-4ee9-bcf3-660ef0a3c421/tasks/b3hzf4eru.output. You will be notified when it completes. To check interim output, use Read on that file path.
-```
+````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:20:20Z)**_
@@ -684,7 +689,7 @@ index 5ebccd8e0..4772f311c 100644
 @@ -239,8 +239,15 @@ export async function fetchBudgetData({
          cell.name.endsWith(`budget-${cat.id}`),
        );
- 
+
 +      const spentCell = monthData.find((cell: BudgetMonthCell) =>
 +        cell.name.endsWith(`sum-amount-${cat.id}`),
 +      );
@@ -697,14 +702,14 @@ index 5ebccd8e0..4772f311c 100644
 +      if (amount === 0 && spent === 0) {
          continue;
        }
- 
+
 @@ -257,6 +264,7 @@ export async function fetchBudgetData({
          payee: '',
          transferAccount: '',
          amount,
 +        spent,
        };
- 
+
        if (amount > 0) {
 diff --git a/packages/desktop-client/src/components/reports/spreadsheets/custom-spreadsheet.ts b/packages/desktop-client/src/components/reports/spreadsheets/custom-spreadsheet.ts
 index b744487b4..4aeed3baf 100644
@@ -726,7 +731,7 @@ index b744487b4..4aeed3baf 100644
 @@ -88,6 +94,19 @@ export function createCustomSpreadsheet({
      groupByLabel: 'category' | 'categoryGroup' | 'payee' | 'account',
    ] = groupBySelections(groupBy, categoryList, categoryGroup, payees, accounts);
- 
+
 +  // By category, a parent's row includes its subcategories, which then get
 +  // no row of their own. Every amount lands in exactly one row, so the
 +  // graphs and totals built from these rows never count a subcategory
@@ -746,7 +751,7 @@ index b744487b4..4aeed3baf 100644
 @@ -109,8 +128,12 @@ export function createCustomSpreadsheet({
        return;
      }
- 
+
 +    const reportConditions = expandSubcategoryConditions(
 +      conditions,
 +      categories.grouped,
@@ -756,7 +761,7 @@ index b744487b4..4aeed3baf 100644
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 @@ -124,7 +147,7 @@ export function createCustomSpreadsheet({
        interval,
        categories: categories.list,
@@ -769,7 +774,7 @@ index b744487b4..4aeed3baf 100644
 @@ -170,8 +193,17 @@ export function createCustomSpreadsheet({
          let perIntervalTotals = 0;
          const stacked: Record<string, number> = {};
- 
+
 -        groupByList.map(item => {
 +        rowItems.map(item => {
            let stackAmounts = 0;
@@ -782,7 +787,7 @@ index b744487b4..4aeed3baf 100644
 +              ? categoryIds.includes(row.category)
 +              : row[groupByLabel] === (item.id ?? null) ||
 +                (item.uncategorized_id && groupsByCategory);
- 
+
            const intervalAssets = filterHiddenItems(
              item,
 @@ -181,12 +213,7 @@ export function createCustomSpreadsheet({
@@ -798,7 +803,7 @@ index b744487b4..4aeed3baf 100644
 +            .filter(asset => asset.date === intervalItem && matchesItem(asset))
              .reduce((a, v) => a + v.amount, 0);
            perIntervalAssets += intervalAssets;
- 
+
 @@ -198,12 +225,7 @@ export function createCustomSpreadsheet({
              showUncategorized,
              groupsByCategory,
@@ -812,11 +817,11 @@ index b744487b4..4aeed3baf 100644
 +            .filter(debt => debt.date === intervalItem && matchesItem(debt))
              .reduce((a, v) => a + v.amount, 0);
            perIntervalDebts += intervalDebts;
- 
+
 @@ -268,7 +290,7 @@ export function createCustomSpreadsheet({
        [],
      );
- 
+
 -    const calcData: GroupedEntity[] = groupByList.map(item => {
 +    const calcData: GroupedEntity[] = rowItems.map(item => {
        const calc = recalculate({
@@ -830,7 +835,7 @@ index b744487b4..4aeed3baf 100644
        });
        return { ...calc };
      });
- 
+
 +    // Budgeted reports also compare with what was spent. It's added up
 +    // from the rows above, which are top-level only, so each category's
 +    // spending is counted once.
@@ -864,11 +869,11 @@ index 6a1aa2c1c..379d41598 100644
 --- a/packages/desktop-client/src/components/reports/spreadsheets/fetchSpreadsheetQueryData.ts
 +++ b/packages/desktop-client/src/components/reports/spreadsheets/fetchSpreadsheetQueryData.ts
 @@ -11,20 +11,9 @@ import { aqlQuery } from '#queries/aqlQuery';
- 
+
  import { fetchBudgetData } from './budgetDataQuery';
  import { makeQuery } from './makeQuery';
 +import { hideSubcategoriesOfHiddenParents } from './subcategories';
- 
+
 -export async function fetchSpreadsheetQueryData({
 -  balanceTypeOp,
 -  startDate,
@@ -945,7 +950,7 @@ index d896cf3e4..e79edb852 100644
  import * as monthUtils from '@actual-app/core/shared/months';
  import type { GroupedEntity } from '@actual-app/core/types/models';
 +import { t } from 'i18next';
- 
+
  import {
    categoryLists,
    ReportOptions,
@@ -956,7 +961,7 @@ index d896cf3e4..e79edb852 100644
 +  UncategorizedEntity,
 +} from '#components/reports/ReportOptions';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
- 
+
  import type { createCustomSpreadsheetProps } from './custom-spreadsheet';
 @@ -14,6 +18,11 @@ import { fetchSpreadsheetQueryData } from './fetchSpreadsheetQueryData';
  import { filterEmptyRows } from './filterEmptyRows';
@@ -976,13 +981,13 @@ index d896cf3e4..e79edb852 100644
    const [categoryList, categoryGroup] = categoryLists(categories);
 +  const subcategoryIdsByParent = getSubcategoryIdsByParent(categories.grouped);
 +  const nestedSubcategoryIds = getNestedSubcategoryIds(subcategoryIdsByParent);
- 
+
    return async (
      spreadsheet: ReturnType<typeof useSpreadsheet>,
 @@ -47,8 +58,12 @@ export function createGroupedSpreadsheet({
        return;
      }
- 
+
 +    const reportConditions = expandSubcategoryConditions(
 +      conditions,
 +      categories.grouped,
@@ -992,7 +997,7 @@ index d896cf3e4..e79edb852 100644
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 @@ -62,7 +77,7 @@ export function createGroupedSpreadsheet({
        interval,
        categories: categories.list,
@@ -1005,7 +1010,7 @@ index d896cf3e4..e79edb852 100644
 @@ -106,23 +121,68 @@ export function createGroupedSpreadsheet({
            endDate,
          });
- 
+
 +        const calculateCategory = (
 +          item: UncategorizedEntity,
 +          categoryIds?: string[],
@@ -1082,7 +1087,7 @@ index d896cf3e4..e79edb852 100644
              });
 -            return { ...calc };
 -          });
- 
+
          return {
            ...grouped,
 diff --git a/packages/desktop-client/src/components/reports/spreadsheets/recalculate.ts b/packages/desktop-client/src/components/reports/spreadsheets/recalculate.ts
@@ -1097,7 +1102,7 @@ index 14432743b..e3cadc8c3 100644
 +  // `item.id`; a parent category passes its own id and its subcategories'.
 +  categoryIds?: string[];
  };
- 
+
  export function recalculate({
 @@ -35,49 +38,54 @@ export function recalculate({
    showUncategorized,
@@ -1123,7 +1128,7 @@ index 14432743b..e3cadc8c3 100644
    const intervalData = intervals.reduce(
      (arr: IntervalEntity[], intervalItem, index) => {
        const last = arr.length === 0 ? null : arr[arr.length - 1];
- 
+
 -      const groupsByCategory =
 -        groupByLabel === 'category' || groupByLabel === 'categoryGroup';
 -      const intervalAssets = filterHiddenItems(
@@ -1145,7 +1150,7 @@ index 14432743b..e3cadc8c3 100644
 +      ).filter(asset => asset.date === intervalItem && matchesItem(asset));
 +      const intervalAssets = assetRows.reduce((a, v) => a + v.amount, 0);
        totalAssets += intervalAssets;
- 
+
 -      const intervalDebts = filterHiddenItems(
 +      const debtRows = filterHiddenItems(
          item,
@@ -1165,14 +1170,14 @@ index 14432743b..e3cadc8c3 100644
 +      ).filter(debt => debt.date === intervalItem && matchesItem(debt));
 +      const intervalDebts = debtRows.reduce((a, v) => a + v.amount, 0);
        totalDebts += intervalDebts;
- 
+
 +      // Each budget row is in exactly one of the two lists, so this
 +      // counts every row's spending once.
 +      const intervalSpent = sumSpent(assetRows) + sumSpent(debtRows);
 +      totalSpent += intervalSpent;
 +
        const intervalTotals = intervalAssets + intervalDebts;
- 
+
        const change = last ? intervalTotals - last.totalTotals : 0;
 @@ -90,6 +98,7 @@ export function recalculate({
          netDebts: intervalTotals < 0 ? intervalTotals : 0,
@@ -1340,7 +1345,7 @@ index 5ddb28402..6aa6068b8 100644
 @@ -135,22 +135,24 @@ export function trimGroupedDataIntervals(
        group.intervalData = group.intervalData.slice(startIndex, endIndex + 1);
      }
- 
+
 -    // Trim the nested categories' intervalData
 +    // Trim the nested categories' intervalData, and their subcategories'
      if (group.categories) {
@@ -1389,7 +1394,7 @@ index 2675c9a3a..6d5d8f099 100644
 +  // reports, so they can compare it with what was budgeted.
 +  totalSpent?: number;
  };
- 
+
  export type LegendEntity = {
 @@ -109,6 +112,8 @@ export type IntervalEntity = {
    netDebts: number;
@@ -1398,7 +1403,7 @@ index 2675c9a3a..6d5d8f099 100644
 +  // Only set by Budgeted reports; see DataEntity.totalSpent.
 +  totalSpent?: number;
  };
- 
+
  export type GroupedEntity = {
 @@ -123,7 +128,17 @@ export type GroupedEntity = {
    netAssets: number;
@@ -1416,9 +1421,10 @@ index 2675c9a3a..6d5d8f099 100644
 +  // what its subcategories hold.
 +  isUnallocated?: boolean;
  };
- 
+
  export type Interval = {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:20:26Z)**_
@@ -1437,7 +1443,7 @@ index 4717c039f..ca53de1b2 100644
 @@ -36,6 +36,8 @@ import { Autocomplete } from './Autocomplete';
  import { filterCategorySuggestions } from './filterCategorySuggestions';
  import { ItemHeader } from './ItemHeader';
- 
+
 +const SUBCATEGORY_INDENT = 16;
 +
  type CategoryAutocompleteItem = Omit<CategoryEntity, 'group'> & {
@@ -1461,12 +1467,12 @@ index 8664c1ff2..48b33e871 100644
 @@ -16,10 +16,14 @@ import type {
    CategoryGroupEntity,
  } from '@actual-app/core/types/models';
- 
+
 +import { getCategoryRows } from '#components/budget/util';
  import { Checkbox } from '#components/forms';
- 
+
  import { GraphButton } from './GraphButton';
- 
+
 +// Matches the subcategory indent on the budget page.
 +const SUBCATEGORY_INDENT = 16;
 +
@@ -1488,7 +1494,7 @@ index 8664c1ff2..48b33e871 100644
 +    getCategoryRows(categoryGroup.categories, showHiddenCategories);
 +  const filteredGroup = (categoryGroup: CategoryGroupEntity) =>
 +    categoryRows(categoryGroup).map(row => row.category);
- 
+
    const selectAll: CategoryEntity[] = [];
    categoryGroups.map(categoryGroup =>
 @@ -217,48 +222,60 @@ export function CategorySelector({
@@ -1603,7 +1609,7 @@ index b61f3df5b..a28d2958d 100644
 +  // Budget rows only: what the category spent that month.
 +  spent?: number;
  };
- 
+
  type UncategorizedId = 'off_budget' | 'transfer' | 'other' | 'all';
 diff --git a/packages/desktop-client/src/components/reports/graphs/showActivity.ts b/packages/desktop-client/src/components/reports/graphs/showActivity.ts
 index 86f27c588..b848480d0 100644
@@ -1611,14 +1617,14 @@ index 86f27c588..b848480d0 100644
 +++ b/packages/desktop-client/src/components/reports/graphs/showActivity.ts
 @@ -10,6 +10,11 @@ import type {
  } from '@actual-app/core/types/models';
- 
+
  import { ReportOptions } from '#components/reports/ReportOptions';
 +import {
 +  expandSubcategoryConditions,
 +  getSubcategoryIdsByParent,
 +  getSubcategoryIdsOfHiddenParents,
 +} from '#components/reports/spreadsheets/subcategories';
- 
+
  type showActivityProps = {
    navigate: NavigateFunction;
 @@ -26,6 +31,9 @@ type showActivityProps = {
@@ -1629,7 +1635,7 @@ index 86f27c588..b848480d0 100644
 +  // does too. Set to false for a row of the category's own amounts only.
 +  includeSubcategories?: boolean;
  };
- 
+
  export function showActivity({
 @@ -43,10 +51,23 @@ export function showActivity({
    id,
@@ -1670,7 +1676,7 @@ index 86f27c588..b848480d0 100644
 +            value: drilldownId,
              type: 'id',
            };
- 
+
    const filterConditions = [
 -    ...filters,
 +    // A filter on a parent covers its subcategories, as in the report
@@ -1688,12 +1694,12 @@ index 900473229..9342435ce 100644
    style?: CSSProperties;
 +  isSubcategory?: boolean;
  };
- 
+
  export function ReportTable({
 @@ -77,7 +78,7 @@ export function ReportTable({
      }
    });
- 
+
 -  const renderRow = ({ item, mode, style }: renderRowProps) => {
 +  const renderRow = ({ item, mode, style, isSubcategory }: renderRowProps) => {
      return (
@@ -1823,7 +1829,7 @@ index b2a60e439..5f80b2a13 100644
    colorized?: boolean;
 +  isSubcategory?: boolean;
  };
- 
+
 +// Matches the subcategory indent on the budget page.
 +const SUBCATEGORY_INDENT = 16;
 +
@@ -1843,7 +1849,7 @@ index b2a60e439..5f80b2a13 100644
 +    const remaining = item.totalBudgeted + spent;
      const groupByItem = groupBy === 'Interval' ? 'date' : 'name';
      const format = useFormat();
- 
+
 @@ -124,7 +133,10 @@ export const ReportTableRow = memo(
                flexGrow: 1,
                backgroundColor: style?.backgroundColor,
@@ -1987,7 +1993,7 @@ index c538016cf..007b3242c 100644
      totalBudgeted: data.totalBudgeted,
 +    totalSpent: data.totalSpent,
    };
- 
+
    const totalsStyle: CSSProperties = {
 diff --git a/packages/desktop-client/src/components/reports/reports/Calendar.tsx b/packages/desktop-client/src/components/reports/reports/Calendar.tsx
 index fe9e0a5c0..a0d8afa1e 100644
@@ -2004,7 +2010,7 @@ index fe9e0a5c0..a0d8afa1e 100644
 @@ -193,9 +194,12 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
    useEffect(() => {
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 -    send('make-filters-from-conditions', {
 -      conditions: conditions.filter(cond => !cond.customName),
 -    })
@@ -2027,7 +2033,7 @@ index 9f7475e97..6791abbd4 100644
  import { calculateTimeRange } from '#components/reports/reportRanges';
 +import { includeSubcategoriesInConditions } from '#components/reports/spreadsheets/subcategories';
  import { bootstrapHyperFormula } from '#util/bootstrapHyperFormula';
- 
+
  import { useFormat } from './useFormat';
 @@ -331,7 +332,9 @@ async function prefetchBudgetQueries(
  export async function buildFilteredTransactionsQuery(
@@ -2039,10 +2045,10 @@ index 9f7475e97..6791abbd4 100644
 +  );
    const conditionsOp = config.conditionsOp || 'and';
    const timeFrame = config.timeFrame;
- 
+
 @@ -519,7 +522,7 @@ async function extractQueryCategories(
    }
- 
+
    const categoryConditions = extractCategoryConditions(
 -    queryConfig.conditions || [],
 +    await includeSubcategoriesInConditions(queryConfig.conditions || []),
@@ -2050,6 +2056,7 @@ index 9f7475e97..6791abbd4 100644
    const { list: allCategories } = await send('get-categories');
    return getCategoriesFromConditions(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:20:46Z)**_
@@ -2093,15 +2100,15 @@ index 7541cda30..5ef4e8731 100644
 +++ b/packages/desktop-client/src/components/reports/spreadsheets/budget-analysis-spreadsheet.ts
 @@ -9,6 +9,7 @@ import type {
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
- 
+
  import type { BudgetMonthCell } from './budgetMonthCell';
 +import { expandSubcategoryConditions } from './subcategories';
- 
+
  type BudgetAnalysisIntervalData = {
    date: string;
 @@ -67,7 +68,10 @@ export function createBudgetAnalysisSpreadsheet({
      );
- 
+
      // Filter categories based on conditions (supports both 'category' and 'category_group' fields)
 -    const relevantConditions = conditions.filter(
 +    const relevantConditions = expandSubcategoryConditions(
@@ -2118,7 +2125,7 @@ index 5bd0b58d1..2990b123b 100644
 @@ -13,6 +13,8 @@ import { ReportOptions } from '#components/reports/ReportOptions';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
  import { aqlQuery } from '#queries/aqlQuery';
- 
+
 +import { includeSubcategoriesInConditions } from './subcategories';
 +
  type Balance = {
@@ -2134,7 +2141,7 @@ index 5bd0b58d1..2990b123b 100644
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 diff --git a/packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts b/packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts
 index 2f404c852..6acee0919 100644
 --- a/packages/desktop-client/src/components/reports/spreadsheets/sankey-spreadsheet.ts
@@ -2142,7 +2149,7 @@ index 2f404c852..6acee0919 100644
 @@ -12,6 +12,12 @@ import { getColorScale } from '#components/reports/chart-theme';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
  import { aqlQuery } from '#queries/aqlQuery';
- 
+
 +import {
 +  expandSubcategoryConditions,
 +  getSubcategoryIdsByParent,
@@ -2157,12 +2164,12 @@ index 2f404c852..6acee0919 100644
      )();
    }
 +  data = labelSubcategories(data, categories);
- 
+
    return aggregated
      ? createBudgetGraph(data, aggregated)
      : createTransactionsGraph(data);
  }
- 
+
 +// Names each subcategory after its parent too, e.g. "Food › Restaurants",
 +// so it's clear where it belongs wherever the chart places it.
 +export function labelSubcategories(
@@ -2217,14 +2224,14 @@ index 2f404c852..6acee0919 100644
    baseGraph: Graph,
    topNcategories: number,
 @@ -303,7 +360,7 @@ export function createBudgetSpreadsheet(
- 
+
      const filteredCategoryGroups = filterCategoryGroups(
        categoryGroups,
 -      conditions,
 +      await includeSubcategoriesInConditions(conditions),
        conditionsOp,
      );
- 
+
 @@ -355,8 +412,12 @@ export function createTransactionsSpreadsheet(
  ) {
    return async () => {
@@ -2238,11 +2245,11 @@ index 2f404c852..6acee0919 100644
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 @@ -1203,6 +1264,8 @@ export function sortGraph(
      }
    }
- 
+
 +  sortedEntries = keepSubcategoriesAfterParent(sortedEntries, categories);
 +
    // We always want certain nodes to be shown at the start/end of their layers
@@ -2257,19 +2264,19 @@ index f356730a5..c27aabfce 100644
  } from './budgetDataQuery';
  import { makeQuery } from './makeQuery';
 +import { includeSubcategoriesInConditions } from './subcategories';
- 
+
  type createSpendingSpreadsheetProps = {
    conditions?: RuleConditionEntity[];
 @@ -105,8 +106,9 @@ export function createSpendingSpreadsheet({
      const averageMonths = new Set(resolvedAverageRange.months);
      const startDate = (resolvedAverageRange.startMonth ?? compareMonth) + '-01';
- 
+
 +    const reportConditions = await includeSubcategoriesInConditions(conditions);
      const { filters } = await send('make-filters-from-conditions', {
 -      conditions: conditions.filter(cond => !cond.customName),
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
- 
+
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
 @@ -194,7 +196,7 @@ export function createSpendingSpreadsheet({
      const budgetMonth = parseInt(compareMonth.replace('-', ''));
@@ -2296,7 +2303,7 @@ index bba2a08bf..092975501 100644
 @@ -11,6 +11,8 @@ import type { Locale } from 'date-fns';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
  import { aqlQuery } from '#queries/aqlQuery';
- 
+
 +import { includeSubcategoriesInConditions } from './subcategories';
 +
  export function summarySpreadsheet(
@@ -2332,6 +2339,7 @@ index bba2a08bf..092975501 100644
 84:    totalBudgeted: data.totalBudgeted,
 85:    totalSpent: data.totalSpent,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:20:49Z)**_
@@ -2437,6 +2445,7 @@ packages/loot-core/src/server/budget/goal-template.ts:171:    if (categoryWithGo
 ad09f7d54 Merge pull request #73 from CSCI-435-SE/feat/issue-54-mainbudgetpage-subcategories
 6c61ea4fa feat: add subcategories on main budget page & add AI log (#54)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:20:53Z)**_
@@ -2527,6 +2536,7 @@ function handleTransactionChange(transaction, changedFields) {
     transaction.date &&
 (eval):1: ===== not found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:20:58Z)**_
@@ -2545,7 +2555,7 @@ index ec5a211a4..bf67d95b6 100644
 @@ -26,6 +26,56 @@ export class CustomReportPage {
      await this.pageContent.getByRole('button', { name: vizName }).click();
    }
- 
+
 +  async selectBalanceType(current: string, type: string) {
 +    await this.pageContent
 +      .getByRole('button', { name: current, exact: true })
@@ -2715,7 +2725,7 @@ index 773ec174e..91937c854 100644
 @@ -10,6 +10,8 @@ import * as d from 'date-fns';
  import { runAll } from '#components/reports/util';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
- 
+
 +import { includeSubcategoriesInConditions } from './subcategories';
 +
  export type AgeOfMoneyData = {
@@ -2724,14 +2734,14 @@ index 773ec174e..91937c854 100644
 @@ -330,8 +332,9 @@ export function createAgeOfMoneySpreadsheet({
      const today = monthUtils.currentDay();
      const fixedEnd = endDate > today ? today : endDate;
- 
+
 +    const reportConditions = await includeSubcategoriesInConditions(conditions);
      const { filters } = await send('make-filters-from-conditions', {
 -      conditions: conditions.filter(cond => !cond.customName),
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 diff --git a/packages/desktop-client/src/components/reports/spreadsheets/calendar-spreadsheet.ts b/packages/desktop-client/src/components/reports/spreadsheets/calendar-spreadsheet.ts
 index cb3bf4a63..479f34b3d 100644
 --- a/packages/desktop-client/src/components/reports/spreadsheets/calendar-spreadsheet.ts
@@ -2739,7 +2749,7 @@ index cb3bf4a63..479f34b3d 100644
 @@ -8,6 +8,8 @@ import * as d from 'date-fns';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
  import { aqlQuery } from '#queries/aqlQuery';
- 
+
 +import { includeSubcategoriesInConditions } from './subcategories';
 +
  export type CalendarDataType = {
@@ -2747,7 +2757,7 @@ index cb3bf4a63..479f34b3d 100644
    incomeValue: number;
 @@ -37,10 +39,12 @@ export function calendarSpreadsheet(
      let filters: unknown[];
- 
+
      try {
 +      const reportConditions =
 +        await includeSubcategoriesInConditions(conditions);
@@ -2766,7 +2776,7 @@ index 8c7df0089..17a07a98f 100644
 @@ -7,6 +7,8 @@ import * as d from 'date-fns';
  import { indexCashFlow, runAll } from '#components/reports/util';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
- 
+
 +import { includeSubcategoriesInConditions } from './subcategories';
 +
  export function simpleCashFlow(
@@ -2782,7 +2792,7 @@ index 8c7df0089..17a07a98f 100644
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 @@ -79,8 +82,9 @@ export function cashFlowByDate(
      spreadsheet: ReturnType<typeof useSpreadsheet>,
      setData: (data: ReturnType<typeof recalculate>) => void,
@@ -2793,7 +2803,7 @@ index 8c7df0089..17a07a98f 100644
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 diff --git a/upcoming-release-notes/show-subcategories-in-reports.md b/upcoming-release-notes/show-subcategories-in-reports.md
 new file mode 100644
 index 000000000..18f1858c2
@@ -2812,6 +2822,7 @@ index 000000000..18f1858c2
    15361 ai-logs/sprint1/icsasso/2026-10-06_claude-code_issue55-reports-subcategories.md
    35161 total
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:00Z)**_
@@ -2852,6 +2863,7 @@ README.md
  .../src/hooks/useFormulaExecution.test.ts          |   2 +
  8 files changed, 1097 insertions(+), 1 deletion(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:07Z)**_
@@ -2920,6 +2932,7 @@ packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.test.ts
 +  it('places subcategories right after their parent when sorting by value', () => {
 +  it('leaves a subcategory in place when its parent is not shown', () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:15Z)**_
@@ -2934,6 +2947,7 @@ Trace how selected categories feed report data
 (eval):1: no matches found: --include=*.ts
 head: illegal line count -- 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:17Z)**_
@@ -2953,6 +2967,7 @@ ReportSidebar.tsx:40:  selectedCategories: CategoryEntity[];
 ReportSidebar.tsx:83:  selectedCategories,
 ReportSidebar.tsx:709:            selectedCategories={selectedCategories || []}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:19Z)**_
@@ -3069,6 +3084,7 @@ ReportOptions.ts-395-    // CategoryGroup uses category-level data from createCu
 ReportOptions.ts-396-    // The group-level data comes from groupedData (createGroupedSpreadsheet).
 ReportOptions.ts-397-    // This case just prevents the default throw so the spreadsheet doesn't error.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:21Z)**_
@@ -3134,6 +3150,7 @@ Read setSelectedCategories implementation
     // If the existing conditions does not have a "category" - append a new one
     onApplyFilter(newCondition);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:28Z)**_
@@ -3171,6 +3188,7 @@ TC EXIT 0
  ✓ src/components/reports/spreadsheets/sankey-spreadsheet.test.ts (51 tests) 26ms
  ✓ src/components/reports/spreadsheets/budget-analysis-export.test.ts (8 tests) 14ms
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:36Z)**_
@@ -3314,6 +3332,7 @@ describe('filters on a parent category', () => {
     );
   });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:21:53Z)**_
@@ -3339,6 +3358,7 @@ TEST EXIT 0
 7675:+I'll replace the Deposits/Payments columns in Budgeted mode with Budgeted | Spent | Remaining | Average, pulling Spent from each month's sum-amount budget value and computing Remaining as Budgeted + Spent. Now checking the interval type.
 8552:+113	const spreadsheet = {} as ReturnType<typeof useSpreadsheet>;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:22:02Z)**_
@@ -3352,6 +3372,7 @@ Run oxlint on changed files
 ```text
 exit 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:22:12Z)**_
@@ -3363,15 +3384,15 @@ Check for an open PR for this branch
 `curl -s "https://api.github.com/repos/CSCI-435-SE/actual-budget/pulls?head=CSCI-435-SE:feat/issue-55-report-subcategories&state=all" | python3 -c "import json,sys;d=json.load(sys.stdin);[print(p['number'],p['state'],p['title'],'\n',p['body']) for p in d] or print('no PR')"`
 
 ```text
-83 open [AI] Add subcategories to reports (#55) 
+83 open [AI] Add subcategories to reports (#55)
  <!-- Thank you for submitting a pull request! Make sure to follow the instructions to write release notes for your PR — it should only take a minute or two: https://actualbudget.org/docs/contributing/#writing-good-release-notes. Try running yarn generate:release-notes *before* pushing your PR for an interactive experience. -->
 
 ## Description
 
 <!-- What does this PR do? Why is it needed? Please give context on the "why?": why do we need this change? What problem is it solving for you?-->
-Before these changes, reports listed subcategories as ordinary categories, and a parent's row showed only what it had kept for itself, so its budget looked smaller every time it funded a subcategory. 
+Before these changes, reports listed subcategories as ordinary categories, and a parent's row showed only what it had kept for itself, so its budget looked smaller every time it funded a subcategory.
 
-Now each parent's row includes its subcategories, with each one indented underneath alongside an "Unallocated" line for what the parent kept. Budgeted, Spent and Remaining appear side by side, and filters, the category picker and Sankey (experimental) treat a parent and its subcategories as one family. 
+Now each parent's row includes its subcategories, with each one indented underneath alongside an "Unallocated" line for what the parent kept. Budgeted, Spent and Remaining appear side by side, and filters, the category picker and Sankey (experimental) treat a parent and its subcategories as one family.
 
 This lets users see clearly how much each subcategory was given and how its spending compared, while totals still count every amount only once, which is the issue's main goal of seeing where all the money went each month.
 
@@ -3381,7 +3402,7 @@ This change was written with the help of Claude Code (Anthropic).
 ## Related issue(s)
 
 <!-- e.g. Fixes #123, Relates to #456 -->
-Closes #55 
+Closes #55
 
 ## Testing
 
@@ -3390,7 +3411,7 @@ Closes #55
 - Unit tests : Check that a parent's row includes its subcategories and that every total adds up top-level rows only, so nothing is counted twice. They also cover Budgeted/Spent/Remaining (including a subcategory that spent with no budget), filters on a parent covering its subcategories, hidden parents, and click-throughs (a parent's row includes its subcategories' transactions; "Unallocated" shows only the parent's own).
 - Component and Sankey tests: They cover the report table row's click-throughs and spending columns, the category picker (indenting, ticking a parent ticks its subcategories, hidden parents), the indent in the category dropdowns, and Sankey's "Food › Dining Out" labels and ordering.
 - End-to-end test (`e2e/report-subcategories.test.ts`): Creates a Dining Out subcategory under Food with a $150 budget and a $42.50 transaction. It checks the indented table rows, that the amounts add up (150.00 | -42.50 | 107.50), and that unticking Food in the picker also unticks Dining Out. It passed 6 of 6 runs.
-- Manual testing in the app: these steps were each checked by hand on the demo budget: the indented rows and the "Unallocated"/"Not in a subcategory" line, the Budgeted columns, parent filters, the category picker and dropdowns, and Sankey (with its experimental setting turned on). 
+- Manual testing in the app: these steps were each checked by hand on the demo budget: the indented rows and the "Unallocated"/"Not in a subcategory" line, the Budgeted columns, parent filters, the category picker and dropdowns, and Sankey (with its experimental setting turned on).
 - To test: run `yarn test` and `yarn workspace @actual-app/web e2e`. Then, in the demo budget, add a subcategory with its own budget and a transaction. Open a custom report split by Category as a Data Table, and check that the parent's amounts equal the rows under it in both Payment and Budgeted modes, and that the bottom total doesn't change when you add the subcategory.
 
 
@@ -3402,6 +3423,7 @@ Closes #55
 
 <!--- actual-bot-sections --->
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:22:23Z)**_
@@ -3423,6 +3445,7 @@ reports/graphs/tableGraph/ReportTableRow.tsx:45:const SUBCATEGORY_INDENT = 16;
 budget/SidebarCategory.tsx:25:const SUBCATEGORY_INDENT = 16;
 106:  const rowItems = groupByList.filter(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:22:44Z)**_
@@ -3435,19 +3458,21 @@ _**Agent (claude-opus-5-5 2026-10-07 20:22:44Z)**_
 
 ## How the branch maps to the acceptance criteria
 
-| Criterion | Status |
-|---|---|
-| 1. Subcategories clearly shown under their parent | ✅ In the data table, subcategories are indented under the parent, followed by an "Unallocated" / "Not in a subcategory" row. The category picker, the dropdowns and the Sankey chart's "Food › Dining Out" labels do the same. |
-| 2. Clear how much the parent gave the child, and how the child's spending compared to its budget | ✅ The Budgeted mode now has Budgeted, Spent and Remaining columns. |
-| 3. Subcategories available wherever parents are | ⚠️ Mostly. Filters, drill-downs and every report type's conditions cover the whole family. But bar, donut and line charts only show the parent's rolled-up total (`custom-spreadsheet.ts:106`); subcategories only show up in the data table. That's a reasonable choice, but it should be stated. |
+| Criterion                                                                                        | Status                                                                                                                                                                                                                                                                                             |
+| ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Subcategories clearly shown under their parent                                                | ✅ In the data table, subcategories are indented under the parent, followed by an "Unallocated" / "Not in a subcategory" row. The category picker, the dropdowns and the Sankey chart's "Food › Dining Out" labels do the same.                                                                    |
+| 2. Clear how much the parent gave the child, and how the child's spending compared to its budget | ✅ The Budgeted mode now has Budgeted, Spent and Remaining columns.                                                                                                                                                                                                                                |
+| 3. Subcategories available wherever parents are                                                  | ⚠️ Mostly. Filters, drill-downs and every report type's conditions cover the whole family. But bar, donut and line charts only show the parent's rolled-up total (`custom-spreadsheet.ts:106`); subcategories only show up in the data table. That's a reasonable choice, but it should be stated. |
 
 ## Correctness: B+
 
 **What's right:**
+
 - **Nothing is counted twice.** #54 takes a subcategory's budget out of its parent's own budget. This branch therefore adds the parent's own amount and its subcategories' amounts into the parent row. Totals add up top-level rows only, and the subcategory rows are display-only. I followed the logic through `recalculate`, the grouped and custom spreadsheets, and the totals row, and it holds up.
 - **Hidden parents and drill-downs are handled.** A hidden parent hides its subcategories. Clicking a parent's row shows the transactions of the whole family, and clicking its "Unallocated" row shows only the parent's own.
 
 **Bug: you can't untick a subcategory on its own while its parent is ticked.**
+
 - **Steps:** start with all categories ticked and untick "Dining Out".
 - **What happens:** `setSelectedCategories` creates a `oneOf` filter that lists every category except Dining Out, including its parent Food. `expandSubcategoryConditions` ([subcategories.ts:93](packages/desktop-client/src/components/reports/spreadsheets/subcategories.ts#L93)) then adds Food's subcategories back into the filter, so Dining Out is still included.
 - **Result:** the checkbox shows unticked, but Dining Out's spending stays in the report.
@@ -3456,6 +3481,7 @@ _**Agent (claude-opus-5-5 2026-10-07 20:22:44Z)**_
 - **Possible fixes:** don't expand filters that come from the picker, since the picker already ticks the whole family. Or untick the parent whenever one of its subcategories is unticked.
 
 **Behaviour changes not mentioned in the PR:**
+
 - Budgeted mode no longer shows the Deposits and Payments columns ([ReportTableRow.tsx:197](packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTableRow.tsx#L197), [ReportTableHeader.tsx:96](packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTableHeader.tsx#L96)).
 - Budgeted reports now include categories that had no budget but did spend money. That's a sensible change, but it alters what existing reports show.
 
@@ -3484,7 +3510,7 @@ _**Agent (claude-opus-5-5 2026-10-07 20:22:44Z)**_
 
 ## Documentation: A
 
-- Comments explain *why*, for example why subcategory rows must never be added into a total, and they match the style of the surrounding code. The new type fields have doc comments.
+- Comments explain _why_, for example why subcategory rows must never be added into a total, and they match the style of the surrounding code. The new type fields have doc comments.
 - The PR description is thorough. It covers the motivation, testing at each level, steps to reproduce, the AI disclosure, and links the issue with "Closes #55".
 - **Nits:**
   - Upstream convention names release notes after the PR number (`upcoming-release-notes/83.md`, like the other files there), not `show-subcategories-in-reports.md`.
@@ -3558,6 +3584,7 @@ Look up UI steps used by the e2e page models
 93-    }
 94-  }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:27:38Z)**_
@@ -3627,6 +3654,7 @@ Check which report views use grouped (subcategory) data
 reports/CustomReport.tsx:605:  const groupedData = useReport('grouped', getGroupData);
 reports/CustomReport.tsx:608:    ? { ...graphData, groupedData }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:45:44Z)**_
@@ -3695,6 +3723,7 @@ Read where grouped data is chosen for the table
 141:        groupBy={groupBy}
 174:            groupBy={groupBy}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:45:46Z)**_
@@ -3804,6 +3833,7 @@ export function ReportTableList({
                       {item.categories.map(
                         (category: GroupedEntity, i: number) => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 20:46:04Z)**_
@@ -3815,6 +3845,7 @@ No, you're probably not doing anything wrong. The code produces what you're seei
 Subcategory rows exist in only one combination: the **Data Table** view with **Group by: Category** ([ReportTableList.tsx:27](packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTableList.tsx#L27)). That is the only place that reads the grouped data, where subcategories are attached under their parent.
 
 Everything else reads the flat data from `custom-spreadsheet.ts`. That file deliberately drops subcategories as rows of their own and adds their amounts into the parent ([custom-spreadsheet.ts:106](packages/desktop-client/src/components/reports/spreadsheets/custom-spreadsheet.ts#L106)). This covers:
+
 - every chart (bar, stacked bar, donut, line, area),
 - every other Group by setting.
 
@@ -3823,6 +3854,7 @@ So in a chart, Food's bar already includes Dining Out, with nothing showing how 
 ## Why the checkbox does nothing
 
 While Food is ticked:
+
 - **Unticking Dining Out:** the filter-expansion code adds it straight back, because Food is ticked.
 - **Ticking Dining Out:** this can't add anything, since its amounts are already inside Food.
 
@@ -3834,6 +3866,7 @@ So the subcategory checkbox has no effect while its parent is ticked. It only ma
 2. Make sure **Group by** is set to **Category**.
 
 You should then see Dining Out indented under Food. If it still doesn't appear:
+
 - **The subcategory may have no transactions in the report's date range.** Rows with no activity are hidden. Check the date range, or turn on **Show empty rows** in the sidebar.
 - **The subcategory may be in a different category group from its parent.** In that case it's treated as an ordinary category of its own.
 
@@ -3842,6 +3875,7 @@ You should then see Dining Out indented under Food. If it still doesn't appear:
 In my review I called the chart behaviour "a reasonable choice, but it should be stated." From a user's point of view that was too generous. A custom report opens as a chart, and acceptance criterion 1 says subcategories should be clearly shown under their parent. As built, that only happens after the user switches to one particular view.
 
 I'd lower **Correctness to B−** and the overall grade to **B+**. I'd also add two items to the PR feedback:
+
 1. Make the breakdown visible beyond the Data Table. Options include giving charts one bar or segment per subcategory, or at minimum a note in the UI that charts show rolled-up totals.
 2. Fix the checkbox so it actually changes what the report shows. Alternatively, disable the subcategory checkbox while its parent is ticked.
 

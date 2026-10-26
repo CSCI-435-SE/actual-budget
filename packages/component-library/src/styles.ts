@@ -18,7 +18,7 @@ export const styles: CSSProperties = {
   monthRightPadding: 5,
   menuBorderRadius: 4,
   mobileMinHeight: MOBILE_MIN_HEIGHT,
-  
+
   //--font-size* variables are defined by FontSizeStyle in desktop-client
 
   mobileMenuItem: {

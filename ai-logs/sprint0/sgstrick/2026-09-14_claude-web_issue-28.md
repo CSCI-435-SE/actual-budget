@@ -3,7 +3,7 @@
 **Created:** 9/14/2026 15:00:34  
 **Updated:** 9/15/2026 0:45:23  
 **Exported:** 9/15/2026 17:13:11  
-**Link:** [https://claude.ai/chat/ba496261-cf31-4396-980c-4be3fbc04c27](https://claude.ai/chat/ba496261-cf31-4396-980c-4be3fbc04c27)  
+**Link:** [https://claude.ai/chat/ba496261-cf31-4396-980c-4be3fbc04c27](https://claude.ai/chat/ba496261-cf31-4396-980c-4be3fbc04c27)
 
 ## User:
 
@@ -35,6 +35,7 @@ Here's a clear map of all the cursor-related code in the codebase:
 
 **`packages/desktop-client/src/hooks/useCursorPosition.ts`**
 This is the primary hook for tracking the text cursor (caret) position inside an `<input>` element. It:
+
 - Listens to `focusin`, `keyup`, and `selectionchange` events
 - Returns the current `selectionStart` index of the input
 - Also returns a setter that uses `setSelectionRange()` to programmatically move the cursor
@@ -46,16 +47,17 @@ A companion hook that takes the cursor position and figures out the start/end in
 
 ## 2. Where These Hooks Are Used
 
-| File | Purpose |
-|---|---|
-| `packages/desktop-client/src/components/autocomplete/TagAutocomplete.tsx` | Tracks cursor to show tag suggestions mid-sentence; moves cursor after inserting a tag |
-| `packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx` | Same behavior for the mobile transaction note/input fields |
+| File                                                                             | Purpose                                                                                |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `packages/desktop-client/src/components/autocomplete/TagAutocomplete.tsx`        | Tracks cursor to show tag suggestions mid-sentence; moves cursor after inserting a tag |
+| `packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx` | Same behavior for the mobile transaction note/input fields                             |
 
 ---
 
 ## 3. CSS `cursor:` Styles (visual pointer styles)
 
-These are scattered across many UI components and are purely cosmetic — they control what the mouse pointer *looks like* when hovering:
+These are scattered across many UI components and are purely cosmetic — they control what the mouse pointer _looks like_ when hovering:
+
 - `cursor: 'pointer'` — clickable elements (buttons, rows, links)
 - `cursor: 'default'` — non-interactive areas
 - `cursor: 'not-allowed'` — disabled elements (e.g. `TypePicker.tsx`)
@@ -142,7 +144,7 @@ This is where all three options live. Specifically:
 - **Lines ~155–163**: The `onMenuSelect` handler dispatches to the corresponding callback (`toggleHiddenCategories()`, `expandAllCategories()`, `collapseAllCategories()`) based on which item is selected
 - **Lines ~137–151**: A button triggers `setMenuOpen(true)` to open the dropdown as a `<Popover>`
 
-The component receives those three callbacks as props (`toggleHiddenCategories`, `expandAllCategories`, `collapseAllCategories`), so the actual logic for *what happens* when you click each option lives upstream — wherever `BudgetTotals` is rendered and those props are passed in. To trace that, you'd want to search for `<BudgetTotals` across the `budget/` folder to find the parent component.
+The component receives those three callbacks as props (`toggleHiddenCategories`, `expandAllCategories`, `collapseAllCategories`), so the actual logic for _what happens_ when you click each option lives upstream — wherever `BudgetTotals` is rendered and those props are passed in. To trace that, you'd want to search for `<BudgetTotals` across the `budget/` folder to find the parent component.
 
 ## User:
 
@@ -164,11 +166,13 @@ You just need to add `cursor: 'pointer'` to the button that opens the dropdown m
 You just need to add `cursor: 'pointer'` to the `style` prop on that `<Button>`. Here's the change:
 
 **Find this line (~line 139):**
+
 ```tsx
 style={{ color: 'currentColor', padding: 3 }}
 ```
 
 **Change it to:**
+
 ```tsx
 style={{ color: 'currentColor', padding: 3, cursor: 'pointer' }}
 ```
@@ -198,12 +202,14 @@ Found it. The menu items are rendered in **`packages/component-library/src/Menu.
 **File:** `packages/component-library/src/Menu.tsx`
 
 **Find (~line 193):**
+
 ```tsx
 style={{
   cursor: 'default',
 ```
 
 **Change it to:**
+
 ```tsx
 style={{
   cursor: 'pointer',

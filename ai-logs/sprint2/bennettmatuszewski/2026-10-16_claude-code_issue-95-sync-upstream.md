@@ -33,6 +33,7 @@ d80b19045 2026-10-12 Merge pull request #93 from CSCI-435-SE/docs/showcase1-hand
 v26.9.0-csci435-s1
 v26.9.0-csci435-s0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 18:52:35Z)**_
@@ -49,11 +50,13 @@ git fetch upstream --tags
 ## Syncing to the new release
 
 **1. Save your current work.** You have uncommitted changes on `fix/issue-98-94-failing-tests` (`mutations.test.tsx`, `main.test.ts`, `vitest.config.ts`), so commit or stash them first:
+
 ```bash
 git stash        # or commit them to the branch
 ```
 
 **2. Make a sync branch off your `master`.** Doing the merge on a branch and opening a PR means your teammates can review it before it hits the shared `master`.
+
 ```bash
 git checkout master
 git pull origin master
@@ -61,13 +64,16 @@ git checkout -b chore/sync-upstream-v26.10.0
 ```
 
 **3. Merge the release tag.** Use the tag rather than `upstream/master`, because the tag is a stable, released snapshot.
+
 ```bash
 git tag -l 'v26.*' --sort=-v:refname | head   # find the exact new tag name
 git merge v26.10.0                             # substitute the real tag
 ```
+
 Merge instead of rebasing. Your `master` is shared and already has merged PRs, and rebasing would rewrite history your team has pulled.
 
 **4. Resolve conflicts.** They'll most likely show up where your team changed upstream files, such as `packages/loot-core/vitest.config.ts`, the Stryker setup, `package.json`, and `yarn.lock`. For `yarn.lock`, take upstream's version and regenerate it:
+
 ```bash
 git checkout --theirs yarn.lock
 yarn install
@@ -75,6 +81,7 @@ git add yarn.lock
 ```
 
 **5. Check the result** (run from the repo root):
+
 ```bash
 yarn install
 yarn typecheck
@@ -84,6 +91,7 @@ yarn test
 **6. Push and open a PR into `master`.** After it's merged, you can tag it the way you've been doing (e.g. `v26.10.0-csci435-s2`).
 
 **7. Bring your feature branch up to date:**
+
 ```bash
 git checkout fix/issue-98-94-failing-tests
 git merge master
@@ -91,6 +99,7 @@ git stash pop    # if you stashed in step 1
 ```
 
 ## Notes
+
 - GitHub's **"Sync fork"** button only shows up if the class repo was created as a real GitHub fork, not an import. Even when it's there, it merges `upstream/master` straight into your `master` with no review step, and it can't resolve conflicts. The manual steps above are safer.
 - Upstream may have changed the test files or configs your sprint work touches, so expect some test fixes after the merge.
 
@@ -119,6 +128,7 @@ master
 origin	https://github.com/CSCI-435-SE/actual-budget.git (fetch)
 origin	https://github.com/CSCI-435-SE/actual-budget.git (push)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:08:18Z)**_
@@ -145,6 +155,7 @@ List recent local branches and stashes
 d80b19045 Merge pull request #93 from CSCI-435-SE/docs/showcase1-handout
 ## master...origin/master
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:08:20Z)**_
@@ -167,6 +178,7 @@ Switched to branch 'chore/sync-upstream-v26.10.0'
 2bebdbaae0b701120a8cad9d56aafd64fa04c577
 2bebdbaae 2026-10-02 fix mobile datepicker not opening (#9071) (#9072)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:09:06Z)**_
@@ -211,6 +223,7 @@ Auto-merging yarn.lock
 CONFLICT (content): Merge conflict in yarn.lock
 Automatic merge failed; fix conflicts and then commit the result.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:09:15Z)**_
@@ -269,6 +282,7 @@ a3f651c8d 2026-05-25 [AI] Fix split double-counting in balance forecast (#7955)
 938824951 2026-05-25 automation UI: add per-category notes and tooltip (#7906)
 fd9d2c3bf 2026-05-25 :wrench: Prevent release branch workflow from running on forks (#7949)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:10:00Z)**_
@@ -318,6 +332,7 @@ ef0f0614a 2026-09-27 19:58:29 +0000 fix rare freeze when saving a change (#9027)
 09c47beb6 2026-09-27 18:29:09 +0000 :bug: Fix app failing to start when opened offline (#9025)
 18688645f 2026-09-27 14:57:09 +0000 [AI] Add light-theme border to redesigned sidebar (#9013)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:10:07Z)**_
@@ -343,6 +358,7 @@ Find upstream master commit closest to the release cut
 16 8b36554d5 2026-09-24 10:45:39 +0000 sidebar pt. 7: group-aware account drag and drop (#8974)
 36 bc9bba67f 2026-09-24 01:44:25 +0000  [AI] Keep custom report charts stable with long legends (#5394) (#8911)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:10:15Z)**_
@@ -363,6 +379,7 @@ Show remaining differences between cut point and release prep
  packages/sync-server/package.json      | 2 +-
  7 files changed, 7 insertions(+), 7 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:10:26Z)**_
@@ -381,7 +398,35 @@ Abort tag merge and merge the upstream release-cut commit
 `cd "/c/Actual Budget" && git merge --abort && git status -sb | head -3 && git rev-list --count HEAD..bfa850ca6 && git merge --no-ff -m "Merge upstream actualbudget/actual master at v26.10.0 release cut (bfa850ca6)" bfa850ca6 2>&1 | grep -E 'CONFLICT|Automatic|Merge made|fatal|error' | head -40`
 
 ```text
-Updating files:  73% (828/1122)Updating files:  74% (831/1122)Updating files:  75% (842/1122)Updating files:  76% (853/1122)Updating files:  77% (864/1122)Updating files:  78% (876/1122)Updating files:  79% (887/1122)Updating files:  80% (898/1122)Updating files:  81% (909/1122)Updating files:  82% (921/1122)Updating files:  83% (932/1122)Updating files:  84% (943/1122)Updating files:  85% (954/1122)Updating files:  86% (965/1122)Updating files:  87% (977/1122)Updating files:  88% (988/1122)Updating files:  89% (999/1122)Updating files:  90% (1010/1122)Updating files:  91% (1022/1122)Updating files:  92% (1033/1122)Updating files:  93% (1044/1122)Updating files:  94% (1055/1122)Updating files:  95% (1066/1122)Updating files:  96% (1078/1122)Updating files:  97% (1089/1122)Updating files:  98% (1100/1122)Updating files:  99% (1111/1122)Updating files: 100% (1122/1122)Updating files: 100% (1122/1122), done.
+Updating files:  73% (828/1122)
+Updating files:  74% (831/1122)
+Updating files:  75% (842/1122)
+Updating files:  76% (853/1122)
+Updating files:  77% (864/1122)
+Updating files:  78% (876/1122)
+Updating files:  79% (887/1122)
+Updating files:  80% (898/1122)
+Updating files:  81% (909/1122)
+Updating files:  82% (921/1122)
+Updating files:  83% (932/1122)
+Updating files:  84% (943/1122)
+Updating files:  85% (954/1122)
+Updating files:  86% (965/1122)
+Updating files:  87% (977/1122)
+Updating files:  88% (988/1122)
+Updating files:  89% (999/1122)
+Updating files:  90% (1010/1122)
+Updating files:  91% (1022/1122)
+Updating files:  92% (1033/1122)
+Updating files:  93% (1044/1122)
+Updating files:  94% (1055/1122)
+Updating files:  95% (1066/1122)
+Updating files:  96% (1078/1122)
+Updating files:  97% (1089/1122)
+Updating files:  98% (1100/1122)
+Updating files:  99% (1111/1122)
+Updating files: 100% (1122/1122)
+Updating files: 100% (1122/1122), done.
 ## chore/sync-upstream-v26.10.0
 215
 CONFLICT (content): Merge conflict in packages/desktop-client/package.json
@@ -412,6 +457,7 @@ CONFLICT (content): Merge conflict in packages/loot-core/src/types/prefs.ts
 CONFLICT (content): Merge conflict in yarn.lock
 Automatic merge failed; fix conflicts and then commit the result.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:10:44Z)**_
@@ -454,6 +500,7 @@ Count conflict hunks per file
 1 packages/desktop-client/src/components/App.tsx
 1 packages/desktop-client/src/budget/mutations.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:10:52Z)**_
@@ -868,6 +915,7 @@ export function translateBudgetTemplateNotification(
         paddingBottom: 'calc(45px + env(safe-area-inset-bottom))',
 >>>>>>> theirs
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:11:07Z)**_
@@ -1346,6 +1394,7 @@ import { useTableNavigator } from '#components/table';
                   </View>
 >>>>>>> theirs
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:11:15Z)**_
@@ -1541,6 +1590,7 @@ import type { FormatType } from '#hooks/useFormat';
   dateFormat?: string,
 >>>>>>> theirs
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:11:25Z)**_
@@ -1581,6 +1631,7 @@ python --version
 ```text
 Python 3.12.1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:11:32Z)**_
@@ -1750,6 +1801,7 @@ packages/desktop-client/src/components/reports/spreadsheets/age-of-money-spreads
 packages/desktop-client/src/components/banksync/BuiltInProviders.tsx hunk 2: custom; 1 left
 packages/desktop-client/src/components/banksync/BuiltInProviders.tsx hunk 1: custom; 0 left
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:11:55Z)**_
@@ -1772,6 +1824,7 @@ packages/loot-core/package.json:0
 227:=======$
 229:>>>>>>> theirs$
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:03Z)**_
@@ -1790,6 +1843,7 @@ i=t.find('<<<<<<<'); print(repr(t[i-5:i+400]))"
 ```text
 '*",\r\n<<<<<<< ours\r\n    "@stryker-mutator/core": "^10.0.0",\r\n    "@stryker-mutator/vitest-runner": "^10.0.0",\r\n    "@types/adm-zip": "^0.5.8",\r\n    "@types/better-sqlite3": "^7.6.13",\r\n||||||| base\r\n    "@types/adm-zip": "^0.5.8",\r\n    "@types/better-sqlite3": "^7.6.13",\r\n=======\r\n    "@types/better-sqlite3": "^9.6.0",\r\n>>>>>>> theirs\r\n    "@types/jlongster__sql.js": "npm:@types/sql.js@latest",\r\n    "@t'
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:07Z)**_
@@ -1834,6 +1888,7 @@ i/lf  w/lf    packages/desktop-client/src/hooks/useFormulaExecution.ts
 i/lf  w/lf    packages/loot-core/src/types/prefs.ts
 i/lf  w/lf    yarn.lock
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:13Z)**_
@@ -1877,6 +1932,7 @@ packages/loot-core/src/server/formulas/customFunctionsPreferences.ts:20:  | 'fla
 packages/loot-core/src/server/formulas/customFunctionsPreferences.ts:28:  'flags.currency',
 packages/loot-core/src/server/formulas/customFunctionsPreferences.ts:122:    const isCurrencyFeatureEnabled = preferences['flags.currency'] === 'true';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:24Z)**_
@@ -1897,6 +1953,7 @@ ours:
 theirs:
 3
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:30Z)**_
@@ -1913,10 +1970,10 @@ View sidebar file with conflicts and history
 
 ```text
      1	import React, { useState } from 'react';
-     2	
+     2
      3	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
      4	import { View } from '@actual-app/components/view';
-     5	
+     5
      6	<<<<<<< ours
      7	import { useResizeObserver } from '#hooks/useResizeObserver';
      8	||||||| base
@@ -1925,20 +1982,20 @@ View sidebar file with conflicts and history
     11	import { useFeatureFlag } from '#hooks/useFeatureFlag';
     12	import { useGlobalPref } from '#hooks/useGlobalPref';
     13	>>>>>>> theirs
-    14	
+    14
     15	import { SidebarRedesign } from './redesign/SidebarRedesign';
     16	import { Sidebar } from './Sidebar';
     17	import { SIDEBAR_TRANSITION_MS, useSidebar } from './SidebarProvider';
-    18	
+    18
     19	export function FloatableSidebar() {
     20	<<<<<<< ours
     21	||||||| base
     22	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
-    23	
+    23
     24	=======
     25	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
     26	  const newSidebarUIEnabled = useFeatureFlag('newSidebarUI');
-    27	
+    27
     28	>>>>>>> theirs
     29	  const sidebar = useSidebar();
     30	  const { isNarrowWidth } = useResponsive();
@@ -1946,13 +2003,13 @@ View sidebar file with conflicts and history
     32	  const sidebarRef = useResizeObserver<HTMLDivElement>(rect => {
     33	    setSidebarWidth(rect.width);
     34	  });
-    35	
+    35
     36	  const sidebarShouldFloat = sidebar.floating;
     37	  // A reflowing sidebar stays in the flex layout next to the main content and
     38	  // collapses its own width while hidden, so the content resizes alongside it.
     39	  const sidebarReflows = sidebar.reflows;
     40	  const transition = `${SIDEBAR_TRANSITION_MS}ms`;
-    41	
+    41
     42	  return isNarrowWidth ? null : (
     43	    <View
     44	      onMouseOver={
@@ -2042,6 +2099,7 @@ c76a045b7 [AI] fix: budget name dropdown (#16)
 d8317c44b [AI] Migrate desktop-client to subpath imports (#7446)
 cc204ba70 Use @desktop-client/hooks alias for cleaner imports (#4789)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:39Z)**_
@@ -2060,18 +2118,18 @@ index f3da4047d..8bbf9d96a 100644
 @@ -4,13 +4,16 @@ import { useResponsive } from '@actual-app/components/hooks/useResponsive';
  import { View } from '@actual-app/components/view';
  import { useDebounceCallback } from 'usehooks-ts';
- 
+
 +import { useFeatureFlag } from '#hooks/useFeatureFlag';
  import { useGlobalPref } from '#hooks/useGlobalPref';
- 
+
 +import { SidebarRedesign } from './redesign/SidebarRedesign';
  import { Sidebar } from './Sidebar';
  import { useSidebar } from './SidebarProvider';
- 
+
  export function FloatableSidebar() {
    const [floatingSidebar] = useGlobalPref('floatingSidebar');
 +  const newSidebarUIEnabled = useFeatureFlag('newSidebarUI');
- 
+
    const sidebar = useSidebar();
    const { isNarrowWidth } = useResponsive();
 @@ -55,7 +58,7 @@ export function FloatableSidebar() {
@@ -2084,6 +2142,7 @@ index f3da4047d..8bbf9d96a 100644
    );
  }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:42Z)**_
@@ -2129,11 +2188,11 @@ index b85ab9816..6791abbd4 100644
  import { calculateTimeRange } from '#components/reports/reportRanges';
 +import { includeSubcategoriesInConditions } from '#components/reports/spreadsheets/subcategories';
  import { bootstrapHyperFormula } from '#util/bootstrapHyperFormula';
- 
+
 +import { useFormat } from './useFormat';
  import { useGlobalPref } from './useGlobalPref';
  import { useLocale } from './useLocale';
- 
+
 @@ -135,6 +137,8 @@ export function useFormulaExecution(
    namedExpressions?: Record<string, number | string>,
  ) {
@@ -2146,23 +2205,23 @@ index b85ab9816..6791abbd4 100644
 @@ -179,7 +183,11 @@ export function useFormulaExecution(
            throwOnCellError: false,
          });
- 
+
 -        await prefetchFormulaQueries(formulaQueryContext, queries);
 +        await prefetchFormulaQueries(
 +          formulaQueryContext,
 +          queries,
 +          decimalPlaces,
 +        );
- 
+
          formulaQueryContext.budgetQueryRequests.clear();
          evaluateFormulaWithContext({
 @@ -190,7 +198,7 @@ export function useFormulaExecution(
            throwOnCellError: false,
          });
- 
+
 -        await prefetchBudgetQueries(formulaQueryContext);
 +        await prefetchBudgetQueries(formulaQueryContext, decimalPlaces);
- 
+
          const cellValue = evaluateFormulaWithContext({
            formula,
 @@ -220,7 +228,15 @@ export function useFormulaExecution(
@@ -2179,7 +2238,7 @@ index b85ab9816..6791abbd4 100644
 +    namedExpressions,
 +    decimalPlaces,
 +  ]);
- 
+
    return { result, isLoading, error };
  }
 @@ -228,6 +244,7 @@ export function useFormulaExecution(
@@ -2198,9 +2257,9 @@ index b85ab9816..6791abbd4 100644
 +      integerToAmount(data, decimalPlaces),
      );
    }
- 
+
 @@ -284,6 +301,7 @@ async function prefetchFormulaQueries(
- 
+
  async function prefetchBudgetQueries(
    formulaQueryContext: Required<FormulaQueryContext>,
 +  decimalPlaces: number,
@@ -2225,10 +2284,10 @@ index b85ab9816..6791abbd4 100644
 +  );
    const conditionsOp = config.conditionsOp || 'and';
    const timeFrame = config.timeFrame;
- 
+
 @@ -501,7 +522,7 @@ async function extractQueryCategories(
    }
- 
+
    const categoryConditions = extractCategoryConditions(
 -    queryConfig.conditions || [],
 +    await includeSubcategoriesInConditions(queryConfig.conditions || []),
@@ -2245,12 +2304,12 @@ index b85ab9816..6791abbd4 100644
      'budgeted',
 @@ -579,15 +601,18 @@ async function fetchBudgetDimensionValueDirect(
    };
- 
+
    if (dim === 'budgeted') {
 -    return integerToAmount(await sumDimension('budget-{catId}'), 2);
 +    return integerToAmount(await sumDimension('budget-{catId}'), decimalPlaces);
    }
- 
+
    if (dim === 'spent') {
 -    return integerToAmount(await sumDimension('sum-amount-{catId}'), 2);
 +    return integerToAmount(
@@ -2258,16 +2317,16 @@ index b85ab9816..6791abbd4 100644
 +      decimalPlaces,
 +    );
    }
- 
+
    if (dim === 'goal') {
 -    return integerToAmount(await sumDimension('goal-{catId}'), 2);
 +    return integerToAmount(await sumDimension('goal-{catId}'), decimalPlaces);
    }
- 
+
    // Handle balance dimensions: chain month-by-month with carryover logic
 @@ -646,11 +671,11 @@ async function fetchBudgetDimensionValueDirect(
      }
- 
+
      if (dim === 'balance_start') {
 -      return integerToAmount(balances[intervals[0]]?.start || 0, 2);
 +      return integerToAmount(balances[intervals[0]]?.start || 0, decimalPlaces);
@@ -2279,6 +2338,7 @@ index b85ab9816..6791abbd4 100644
      );
    }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:52Z)**_
@@ -2484,6 +2544,7 @@ View merged formula hook region and decimal usage
 776:    return integerToAmount(
 778:      decimalPlaces,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:12:56Z)**_
@@ -2494,7 +2555,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:12:56Z)**_
 
 ```text
 360	}
-361	
+361
 362	async function prefetchAccountBalances(
 363	  formulaQueryContext: Required<FormulaQueryContext>,
 364	  accounts: SimpleAccount[],
@@ -2503,19 +2564,19 @@ _**Agent (claude-opus-5-5 2026-10-16 19:12:56Z)**_
 367	    const account =
 368	      accounts.find(candidate => candidate.id === literal) ??
 369	      accounts.find(candidate => candidate.name === literal);
-370	
+370
 371	    if (!account) {
 372	      formulaQueryContext.balanceOfPrefetch.set(literal, 0);
 373	      continue;
 374	    }
-375	
+375
 376	    formulaQueryContext.balanceOfPrefetch.set(
 377	      literal,
 378	      await fetchAccountBalance(account.id),
 379	    );
 380	  }
 381	}
-382	
+382
 383	async function fetchAccountBalance(accountId: string): Promise<number> {
 384	  try {
 385	    const balanceQuery = q('transactions')
@@ -2529,6 +2590,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:12:56Z)**_
 393	  }
 394	}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:13:01Z)**_
@@ -2611,6 +2673,7 @@ packages/desktop-client/src/hooks/useFormulaExecution.ts hunk 2: custom; 1 left
 packages/desktop-client/src/hooks/useFormulaExecution.ts hunk 1: custom; 0 left
 patched account balance decimals
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:13:10Z)**_
@@ -2633,12 +2696,12 @@ index a0cce68f9..2990b123b 100644
 +++ b/packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
 @@ -10,10 +10,11 @@ import type { Locale } from 'date-fns';
  import { keyBy } from 'es-toolkit';
- 
+
  import { ReportOptions } from '#components/reports/ReportOptions';
 -import type { FormatType } from '#hooks/useFormat';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
  import { aqlQuery } from '#queries/aqlQuery';
- 
+
 +import { includeSubcategoriesInConditions } from './subcategories';
 +
  type Balance = {
@@ -2660,7 +2723,7 @@ index a0cce68f9..2990b123b 100644
 +      conditions: reportConditions.filter(cond => !cond.customName),
      });
      const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
- 
+
 @@ -177,7 +178,6 @@ export function createSpreadsheet(
          locale,
          interval,
@@ -2721,7 +2784,7 @@ index a0cce68f9..51fe9ec56 100644
  import * as d from 'date-fns';
  import type { Locale } from 'date-fns';
  import { keyBy } from 'es-toolkit';
- 
+
 -import { ReportOptions } from '#components/reports/ReportOptions';
 +import { getIntervalFormat } from '#components/reports/ReportOptions';
  import type { FormatType } from '#hooks/useFormat';
@@ -2730,7 +2793,7 @@ index a0cce68f9..51fe9ec56 100644
 @@ -19,6 +20,27 @@ type Balance = {
    amount: number;
  };
- 
+
 +type AccountBalanceData = {
 +  id: string;
 +  name: string;
@@ -2766,7 +2829,7 @@ index a0cce68f9..51fe9ec56 100644
 @@ -94,7 +117,24 @@ export function createSpreadsheet(
        }
      }
- 
+
 -    const data = await Promise.all(
 +    const accountIds = accounts.map(account => account.id);
 +    const transferLegsPromise =
@@ -2832,7 +2895,7 @@ index a0cce68f9..51fe9ec56 100644
 +      interval,
 +      firstDayOfWeekIdx,
 +    });
- 
+
      setData(
        recalculate(
 @@ -178,24 +257,119 @@ export function createSpreadsheet(
@@ -2844,7 +2907,7 @@ index a0cce68f9..51fe9ec56 100644
      );
    };
  }
- 
+
 +function alignInternalTransferDates(
 +  data: AccountBalanceData[],
 +  transferLegs: TransferLeg[],
@@ -2964,17 +3027,18 @@ index a0cce68f9..51fe9ec56 100644
 @@ -281,9 +455,9 @@ function recalculate(
      }
      endNetWorth = total;
- 
+
 -    // Use standardized format from ReportOptions
 -    const displayFormat =
 -      ReportOptions.intervalFormat.get(interval) ?? "MMM ''yy";
 +    // Use standardized format from ReportOptions, following the user's date
 +    // format preference for the day-level intervals.
 +    const displayFormat = getIntervalFormat(interval, dateFormat) || "MMM ''yy";
- 
+
      const tooltipFormat =
        interval === 'Daily'
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:13:20Z)**_
@@ -3103,6 +3167,7 @@ Show context around net-worth caller conflicts
 273:  const dateFormat = useDateFormat() || 'MM/dd/yyyy';
 352:    const pointFormat = getIntervalFormat(interval, dateFormat);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:13:35Z)**_
@@ -3157,6 +3222,7 @@ packages/desktop-client/src/components/reports/reports/NetWorth.tsx:73:  const f
 packages/desktop-client/src/components/reports/reports/NetWorthCard.tsx:27:import { useFormat } from '#hooks/useFormat';
 packages/desktop-client/src/components/reports/reports/NetWorthCard.tsx:51:  const format = useFormat();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:13:41Z)**_
@@ -3200,7 +3266,7 @@ index e6ab84526..efc0cf45d 100644
 @@ -12,6 +10,8 @@ import type {
  } from '@actual-app/core/types/models';
  import { isValid as isDateValid, parseISO } from 'date-fns';
- 
+
 +import type { UseFormatResult } from '#hooks/useFormat';
 +
  export type SerializedTransaction = Omit<TransactionEntity, 'date'> & {
@@ -3209,7 +3275,7 @@ index e6ab84526..efc0cf45d 100644
 @@ -28,8 +28,22 @@ export type TransactionUpdateFunction = <T extends keyof SerializedTransaction>(
    value: SerializedTransaction[T],
  ) => void;
- 
+
 +// Keep the currency's decimals when the value actually has a fractional part,
 +// so that hiding fractions in the read-only display doesn't truncate the
 +// amount when the cell round-trips back through `deserializeTransaction`.
@@ -3239,14 +3305,14 @@ index e6ab84526..efc0cf45d 100644
 +    credit: credit != null ? serializeAmount(credit, format) : '',
    };
  }
- 
+
  export function deserializeTransaction(
    transaction: SerializedTransaction,
    originalTransaction: TransactionEntity,
 +  format: UseFormatResult,
  ) {
    const { debit, credit, date: originalDate, ...realTransaction } = transaction;
- 
+
 -  let amount: number | null;
 +  let amount: IntegerAmount | null;
    if (debit !== '') {
@@ -3257,7 +3323,7 @@ index e6ab84526..efc0cf45d 100644
 -    amount = evalArithmetic(credit, null);
 +    amount = format.fromEdit(credit);
    }
- 
+
 -  amount =
 -    amount != null ? amountToInteger(amount) : originalTransaction.amount;
 +  amount = amount != null ? amount : originalTransaction.amount;
@@ -3312,6 +3378,7 @@ export function deserializeTransaction(
   return { ...realTransaction, date, amount };
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:13:48Z)**_
@@ -3381,7 +3448,7 @@ index ba842599a..fe0685918 100644
    const { t } = useTranslation();
 +  const format = useFormat();
    const { data: { list: categories } = { list: [] } } = useCategories();
- 
+
    const { data: payee } = usePayee(transaction?.payee);
 @@ -248,7 +249,7 @@ export function TransactionListItem({
                  )}
@@ -3426,6 +3493,7 @@ index ba842599a..fe0685918 100644
              )}
            </View>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:13:56Z)**_
@@ -3461,6 +3529,7 @@ packages/desktop-client/src/components/mobile/transactions/TransactionListItem.t
 328:                    fontSize: 11,
 338:                  {integerToCurrency(runningBalance)}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:14:03Z)**_
@@ -3550,6 +3619,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:14:04Z)**_
 343	        </Button>
 344	      </PressResponder>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:14:10Z)**_
@@ -3645,6 +3715,7 @@ echo "##### TransactionsTable ours vs base (excluding the conflicted hunk area):
 +                {format(
 +                  'financial',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:14:13Z)**_
@@ -3687,6 +3758,7 @@ formatters: 2, forEdit(0): 2
 1994:            value={debit === '' && credit === '' ? format.forEdit(0) : debit}
 2012:                debit === '' && credit === '' ? format.forEdit(0) : debit,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:14:24Z)**_
@@ -3739,6 +3811,7 @@ export function useAmountColumnWidths(
 67:import type { IntegerAmount } from '@actual-app/core/shared/util';
 1818:                {titleFirst(getStatusLabel(previewStatus ?? ''))}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:14:29Z)**_
@@ -3814,6 +3887,7 @@ packages/loot-core/package.json
 packages/loot-core/src/types/prefs.ts
 yarn.lock
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:14:36Z)**_
@@ -3840,6 +3914,7 @@ warning: in the working copy of 'packages/desktop-client/package.json', LF will 
 warning: in the working copy of 'packages/loot-core/package.json', LF will be replaced by CRLF the next time Git touches it
 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:17:03Z)**_
@@ -3867,6 +3942,7 @@ Install dependencies to regenerate yarn.lock
 ➤ YN0000: └ Completed in 1m 45s
 ➤ YN0000: · Done with warnings in 2m 7s
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:17:05Z)**_
@@ -3924,6 +4000,7 @@ src/icons/add-attribute.ts(33,39): error TS2345: Argument of type 'Expression' i
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 18.86s to complete.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:17:50Z)**_
@@ -3976,6 +4053,7 @@ Compare @babel/types resolutions across lockfiles
 "@babel/types@npm:^8.0.5, @babel/types@npm:^8.0.6":
   version: 8.0.6
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:17:55Z)**_
@@ -4002,6 +4080,7 @@ Deduplicate @babel/types in the lockfile
 ➤ YN0000: │ 48 packages can be deduped using the highest strategy
 ➤ YN0000: └ Completed in 0s 349ms
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:18:16Z)**_
@@ -4022,6 +4101,7 @@ Re-run typecheck after dedupe
 success: 0, skipped: 2, pending: 5, aborted: 0, failed: 1
 src/icons/add-attribute.ts(33,39): error TS2345: Argument of type 'Expression' is not assignable to parameter of type 'JSXEmptyExpression | Expression'.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:18:31Z)**_
@@ -4060,6 +4140,7 @@ types
 ├─ @babel/helpers@npm:8.0.7
 │  └─ @babel/template@npm:8.0.0 (via npm:^8.0.0)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:18:37Z)**_
@@ -4127,6 +4208,7 @@ const positionMethod = {
 +    "vite": "^8.1.5",
 +    "vitest": "^5.0.0"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:18:44Z)**_
@@ -4147,6 +4229,7 @@ Look for upstream fixes to babel type resolution
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:18:52Z)**_
@@ -4170,6 +4253,7 @@ Find who pulls @babel/core 8
 "@babel/core@npm:^8.0.1":
   version: 8.0.1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:19:04Z)**_
@@ -4199,6 +4283,7 @@ packages/component-library/src/icons/add-attribute.ts:1:import type BabelTemplat
 packages/component-library/src/icons/add-attribute.ts:2:import type { NodePath } from '@babel/traverse';
 packages/component-library/src/icons/add-attribute.ts:3:import type * as BabelTypes from '@babel/types';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:19:11Z)**_
@@ -4233,6 +4318,7 @@ EOF
   version: 7.29.7
 added
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:20:22Z)**_
@@ -4256,6 +4342,7 @@ src/components/transactions/table/utils.test.ts(101,7): error TS2554: Expected 3
 src/components/transactions/table/utils.test.ts(113,20): error TS2554: Expected 3 arguments, but got 2.
 src/components/transactions/table/utils.test.ts(124,7): error TS2554: Expected 3 arguments, but got 2.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:20:27Z)**_
@@ -4418,6 +4505,7 @@ columns.ts
 utils.test.ts
 utils.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:20:34Z)**_
@@ -4437,6 +4525,7 @@ packages/desktop-client/src/hooks/useFormat.test.ts:157:    expect(format.forEdi
 packages/desktop-client/src/hooks/useFormat.test.ts:158:    expect(format.forEdit(1234, { keepFraction: true })).toBe('12.34');
 ---
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:20:37Z)**_
@@ -4541,6 +4630,7 @@ describe('useFormat forEdit keepFraction', () => {
 57:function format(
 125:export function useFormat(): UseFormatResult {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:20:43Z)**_
@@ -4636,6 +4726,7 @@ tests updated
 Finished in 314ms on 10 files using 16 threads.
 success: 4, skipped: 6, pending: 0, aborted: 0, failed: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:22:32Z)**_
@@ -4682,6 +4773,7 @@ yarn.config.cjs (25ms)
 Format issues found in above 582 files. Run without `--check` to fix.
 Finished in 12340ms on 2672 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:22:52Z)**_
@@ -4719,6 +4811,7 @@ packages/desktop-client/src/browser-preload.js:8:8: warning import(default): No 
 packages/desktop-client/src/components/App.tsx:34:3: error perfectionist(sort-named-imports): Expected "FontSizeStyle" to come before "useTheme".
 packages/api/index.browser.ts:5:8: warning import(default): No default export found in imported module "./browser-worker?worker&inline" help: Does "./browser-worker?worker&inline" have the default export?
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:23:53Z)**_
@@ -4769,6 +4862,7 @@ import { app } from './app';
 
 const saveGlobalPrefs = app.handlers['save-global-prefs'];
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:24:27Z)**_
@@ -4790,6 +4884,7 @@ Run full test suite, saving output
 Command running in background with ID: b3v61ypjq. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\7d9ad3c0-a264-496b-8ab3-f5b63320aaf9\tasks\b3v61ypjq.output. You will be notified when it completes — do not poll that file or sleep while waiting. Read the file only if the user asks for progress, or if you need a line it prints before you can go on, such as a server's ready line or port.
 Session cwd remains C:\Actual Budget; directory changes made by the backgrounded command do not apply to subsequent commands.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:24:33Z)**_
@@ -4813,6 +4908,7 @@ Find upstream master commits for release cherry-picks
 ef0f0614a 2026-09-27 fix rare freeze when saving a change (#9027)
 5e39105f5 2026-10-02 fix mobile datepicker not opening (#9071)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:24:39Z)**_
@@ -4850,6 +4946,7 @@ Show files touched by each release fix
  .../fix-mobile-date-picker-chrome.md               |  6 ++
  3 files changed, 112 insertions(+)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:24:41Z)**_
@@ -4893,6 +4990,7 @@ eslint-plugin-actual test … queued
 @actual-app/components test ➔ start
 @actual-app/cli test ✓ done - 3.51s
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:25:25Z)**_
@@ -4940,7 +5038,6 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
-
 ARGUMENTS: commit the in-progress upstream merge (v26.10.0) on branch chore/sync-upstream-v26.10.0
 
 ---
@@ -4959,6 +5056,7 @@ Stage resolutions and check status
 --- unmerged:
 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:25:32Z)**_
@@ -5003,6 +5101,7 @@ git log -1 --format='%h %s' && git log -1 --format=%P
 157a8029a [AI] Merge upstream actualbudget/actual v26.10.0 release cut
 d80b19045bd1e57bba06f2e22ca3123d5942b0e5 bfa850ca618ca78c556ded61274602f1fca7a4a4
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:25:43Z)**_
@@ -5026,6 +5125,7 @@ Check which packages finished testing
 @actual-app/components test ✓ done - 54.95s
 @actual-app/crdt test ✓ done - 3.13s
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:25:53Z)**_
@@ -5033,6 +5133,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:25:53Z)**_
 The merge commit is in, but the tests are still running. Four packages have passed so far: ci-actions, cli, components and crdt. The bigger ones (web, core, api, sync-server) are still going.
 
 **What I did on `chore/sync-upstream-v26.10.0`:**
+
 - **Merged upstream's `master` instead of the release tag.** Actual publishes each release on a separate branch of squashed and cherry-picked commits. Merging the `v26.10.0` tag directly produced dozens of fake conflicts, so I aborted that. 26.10.0 is upstream `master` at `bfa850ca6` (Sep 24) plus version-number bumps, and that's the commit I merged: 215 upstream commits.
 - **Resolved 26 conflicted files, keeping your team's work on top.** Your font-size and currency changes are reapplied inside upstream's rewritten code, including the new transactions table layout, the mobile transaction list item and the Net Worth report. Upstream's new sidebar switch is added alongside your team's sidebar resizing. Upstream had removed the `ageOfMoneyReport` flag and your team had removed `currency`, so both are gone.
 - **Fixed one type error the dependency upgrade caused.** Your Stryker setup pulls in a newer Babel, which made the component library's icon script pick up mismatched Babel versions. Listing the Babel 7 packages it uses in the component library's `package.json` fixed it.
@@ -5040,11 +5141,13 @@ The merge commit is in, but the tests are still running. Four packages have pass
 - **Committed the merge** as `157a8029a` with an `[AI]` message.
 
 **Checks so far:**
+
 - `yarn typecheck` passes for every package.
 - `yarn lint` shows two errors that were already on your `master` before the merge: import order in `App.tsx` and `preferences/app.test.ts`. I didn't change them.
 - `yarn lint` also flags about 580 files for formatting, but only because Windows checks them out with CRLF line endings. The repo stores them correctly.
 
 **Still to do:**
+
 1. Wait for the tests to finish and fix anything the merge broke.
 2. Cherry-pick the four fixes that were added to 26.10.0 after it was cut: a sidebar light-theme border, the app failing to start offline, a rare freeze when saving, and the mobile date picker not opening.
 3. Optionally, set the `package.json` version numbers to 26.10.0. Your fork has never matched upstream's versions, so I'll skip this unless you want it.
@@ -5140,6 +5243,7 @@ Failed to save payee location: Error: Save failed
      × basic reads/writes are stored in idb 10ms
      × writing to sqlite files creates symlinks 2ms
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:36:30Z)**_
@@ -5211,6 +5315,7 @@ Show error details for web test failures
 1064-    393|     element = field.querySelector('input')!;
 1065-    394|     expect(element).toBeTruthy();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:36:42Z)**_
@@ -5271,6 +5376,7 @@ e64d6696f fix failing mutation and existing test cases
  packages/loot-core/vitest.config.ts                |    6 +-
  4 files changed, 1864 insertions(+), 7 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:36:48Z)**_
@@ -5307,7 +5413,7 @@ index 46f0ad969..5c50224ef 100644
 --- a/packages/loot-core/src/server/main.test.ts
 +++ b/packages/loot-core/src/server/main.test.ts
 @@ -52,6 +52,8 @@ async function createTestBudget(name) {
- 
+
  describe('Budgets', () => {
    afterEach(async () => {
 +    // Close the DB first; Windows can't delete a file that's still open
@@ -5323,7 +5429,7 @@ index f0f4c6e90..0fd322684 100644
  import { peggyLoader } from '@actual-app/vite-plugin-peggy';
 -import { defineConfig } from 'vitest/config';
 +import { configDefaults, defineConfig } from 'vitest/config';
- 
+
  export default defineConfig({
    test: {
      globals: true,
@@ -5339,6 +5445,7 @@ index f0f4c6e90..0fd322684 100644
      onConsoleLog(log: string, type: 'stdout' | 'stderr'): boolean | void {
        // print only console.error
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:36:56Z)**_
@@ -5365,6 +5472,7 @@ Error /create-web-token Invalid GoCardless identifier: undefined
       Tests  606 passed (606)
 error during close [Error: EBUSY: resource busy or locked, unlink 'C:\Actual Budget\packages\sync-server\test-server-files\account.sqlite'] {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:37:03Z)**_
@@ -5475,6 +5583,7 @@ describe('FloatableSidebar', () => {
 
   it('reports hovering the sidebar on mouse over when floating', () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:37:12Z)**_
@@ -5492,6 +5601,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:37:32Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\sidebar\index.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:38:04Z)**_
@@ -5510,6 +5620,7 @@ AssertionError: expected [ 'rename', 'toggle-visibility', …(2) ] to deeply equ
  Test Files  1 failed | 1 passed (2)
       Tests  1 failed | 8 passed (9)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:38:06Z)**_
@@ -5551,7 +5662,7 @@ index 15b0fd6c3..8104f5c06 100644
  import type { CSSProperties, Ref } from 'react';
 -import { useTranslation } from 'react-i18next';
 +import { Trans, useTranslation } from 'react-i18next';
- 
+
  import { Button } from '@actual-app/components/button';
  import { SvgCheveronDown } from '@actual-app/components/icons/v1';
 +import { Menu } from '@actual-app/components/menu';
@@ -5561,9 +5672,9 @@ index 15b0fd6c3..8104f5c06 100644
  import { theme } from '@actual-app/components/theme';
  import { View } from '@actual-app/components/view';
 @@ -19,6 +22,8 @@ import { useGlobalPref } from '#hooks/useGlobalPref';
- 
+
  import { SidebarCategoryButtons } from './SidebarCategoryButtons';
- 
+
 +const SUBCATEGORY_INDENT = 16;
 +
  type SidebarCategoryProps = {
@@ -5601,6 +5712,7 @@ index 15b0fd6c3..8104f5c06 100644
    const categoryExpandedState = categoryExpandedStatePref ?? 0;
 +  const [parentPickerOpen, setParentPickerOpen] = useState(false);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:38:12Z)**_
@@ -5655,6 +5767,7 @@ Locate menu items in SidebarCategory
 
     store.dispatch({ type: 'contextMenu/closeContextMenu' });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:38:14Z)**_
@@ -5666,7 +5779,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:38:14Z)**_
 ```text
 76	  const categoryExpandedState = categoryExpandedStatePref ?? 0;
 77	  const [parentPickerOpen, setParentPickerOpen] = useState(false);
-78	
+78
 79	  const temporary = category.id === 'new';
 80	  const canHaveSubcategories = !category.is_income && !category.parent_id;
 81	  const triggerRef = useRef(null);
@@ -5705,6 +5818,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:38:14Z)**_
 114	        name: 'remove-from-parent',
 115	        text: t('Remove from parent'),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:38:20Z)**_
@@ -5722,6 +5836,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:38:26Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\budget\SidebarCategory.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:38:29Z)**_
@@ -5732,6 +5847,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:38:29Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\budget\SidebarCategory.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:39:48Z)**_
@@ -5757,6 +5873,7 @@ Run budget component and TransactionsTable tests
  Test Files  11 passed (11)
       Tests  134 passed | 1 skipped (135)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:39:52Z)**_
@@ -5793,6 +5910,7 @@ picked 09c47beb6: :bug: Fix app failing to start when opened offline (#9025)
 picked ef0f0614a: fix rare freeze when saving a change (#9027)
 picked 5e39105f5: fix mobile datepicker not opening (#9071)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:40:08Z)**_
@@ -5826,6 +5944,7 @@ success: 7, skipped: 3, pending: 0, aborted: 0, failed: 0
  Test Files  1 failed | 7 passed (8)
       Tests  6 failed | 57 passed (63)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:43:08Z)**_
@@ -5854,6 +5973,7 @@ Check remaining differences are team changes
  1 file changed, 94 insertions(+), 1 deletion(-)
    team changed it pre-merge? yes
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:43:23Z)**_
@@ -5863,6 +5983,7 @@ Your branch `chore/sync-upstream-v26.10.0` now contains Actual 26.10.0 with your
 **How I did the merge:** Actual publishes each release on a separate branch of squashed copies of commits, so merging the `v26.10.0` tag directly produced dozens of fake conflicts. Instead I merged the upstream `master` commit the release was built from (215 upstream commits), then added the four bug fixes that went into 26.10.0 afterwards. Wherever a file still differs from the official release, it's because of your team's own changes.
 
 **Commits on the branch:**
+
 1. **`157a8029a`, the merge.** It resolves 26 conflicted files, keeping your team's changes:
    - Your font-size and currency changes are reapplied inside upstream's rewritten code, including the transactions table, the mobile transaction list and the Net Worth report.
    - Upstream's new sidebar switch is added alongside your team's sidebar resizing.
@@ -5875,6 +5996,7 @@ Your branch `chore/sync-upstream-v26.10.0` now contains Actual 26.10.0 with your
 3. **The four 26.10.0 fixes**, with their original upstream authors kept: a sidebar border in light theme, the app failing to start offline, a rare freeze when saving, and the mobile date picker not opening.
 
 **Test results on Windows:**
+
 - **6 of 9 packages pass.**
 - **6 tests in `mutations.test.tsx` fail.** They failed on `master` before the merge too, and your fix branch fixes them.
 - **Core fails** because of leftover Stryker files in `packages/loot-core/.stryker-tmp`, plus one Windows-only test. Both were already failing on `master`, and your fix branch handles them.
@@ -5884,6 +6006,7 @@ Your branch `chore/sync-upstream-v26.10.0` now contains Actual 26.10.0 with your
 **Lint:** it reports two errors, in `App.tsx` and `preferences/app.test.ts`, that were already on `master`. It also flags about 580 files for formatting, but that's only Windows line endings in your local checkout.
 
 **Next steps:**
+
 - Push the branch and open a PR into `master`. The title needs the `[AI]` prefix and the PR template has to stay blank.
 - Merge your fix branch so the remaining failures go away.
 - After merging, tag it the way you've been doing, e.g. `v26.10.0-csci435-s2`.
@@ -5924,6 +6047,7 @@ A	packages/loot-core/migrations/1787013118115_add_account_groups.sql
 A	packages/loot-core/migrations/1788468782000_add_messages_pending.js
 A	packages/loot-core/migrations/README.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:53:43Z)**_
@@ -5965,6 +6089,7 @@ packages/loot-core/src/server/migrate/migrations.ts:116:  const run = javascript
  packages/loot-core/src/server/sync/index.ts        |   9 +-
  7 files changed, 334 insertions(+), 9 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:53:51Z)**_
@@ -6010,6 +6135,7 @@ Show error for budget-load test failure
 1600- FAIL  .stryker-tmp/sandbox-rFkDc1/src/platform/server/fs/index.test.ts > web filesystem > files are restored from idb
 1601- FAIL  .stryker-tmp/sandbox-rFkDc1/src/platform/server/fs/index.test.ts > join > basic join works
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:53:58Z)**_
@@ -6030,6 +6156,7 @@ Search for the budget's files on disk
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:54:42Z)**_
@@ -6073,6 +6200,7 @@ packages\desktop-client\src\util\error.ts-193-    );
 packages\desktop-client\src\util\error.ts-194-  } else {
 packages\desktop-client\src\util\error.ts:195:    return t('We had an unknown problem opening "{{id}}".', { id });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:54:48Z)**_
@@ -6138,6 +6266,7 @@ Find error returns in budget loading code
 640:    captureException(e);
 642:    return { error: 'opening-budget' };
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:54:50Z)**_
@@ -6149,7 +6278,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:54:50Z)**_
 ```text
 560	    return { error: 'budget-not-found' };
 561	  }
-562	
+562
 563	  try {
 564	    resetFormulaPreferencesCache();
 565	    await prefs.loadPrefs(id);
@@ -6160,14 +6289,14 @@ _**Agent (claude-opus-5-5 2026-10-16 19:54:50Z)**_
 570	    await closeBudget();
 571	    return { error: 'opening-budget' };
 572	  }
-573	
+573
 574	  // Older versions didn't tag the file with the current user, so do
 575	  // so now
 576	  if (!prefs.getPrefs().userId) {
 577	    const userId = await asyncStorage.getItem('user-token');
 578	    await prefs.savePrefs({ userId });
 579	  }
-580	
+580
 581	  try {
 582	    await updateVersion();
 583	  } catch (e) {
@@ -6183,11 +6312,11 @@ _**Agent (claude-opus-5-5 2026-10-16 19:54:50Z)**_
 593	      logger.log('Error updating budget', e);
 594	      result = { error: 'loading-budget' };
 595	    }
-596	
+596
 597	    await closeBudget();
 598	    return result;
 599	  }
-600	
+600
 601	  try {
 602	    // Apply sync messages deferred from a newer app version, now that
 603	    // migrations have run. Skipped without a sync server: serverless
@@ -6201,9 +6330,9 @@ _**Agent (claude-opus-5-5 2026-10-16 19:54:50Z)**_
 611	    // messages stay pending
 612	    captureException(e);
 613	  }
-614	
+614
 615	  await db.loadClock();
-616	
+616
 617	  if (prefs.getPrefs().resetClock) {
 618	    // If we need to generate a fresh clock, we need to generate a new
 619	    // client id. This happens when the database is transferred to a
@@ -6216,14 +6345,14 @@ _**Agent (claude-opus-5-5 2026-10-16 19:54:50Z)**_
 626	      'INSERT OR REPLACE INTO messages_clock (id, clock) VALUES (1, ?)',
 627	      [CRDT.serializeClock(CRDT.getClock())],
 628	    );
-629	
+629
 630	    await prefs.savePrefs({ resetClock: false });
 631	  }
-632	
+632
 633	  if (!Platform.isBrowser && process.env.NODE_ENV !== 'test') {
 634	    startBackupService(id);
 635	  }
-636	
+636
 637	  try {
 638	    await sheet.loadSpreadsheet(db, onSheetChange);
 639	  } catch (e) {
@@ -6231,13 +6360,14 @@ _**Agent (claude-opus-5-5 2026-10-16 19:54:50Z)**_
 641	    await closeBudget();
 642	    return { error: 'opening-budget' };
 643	  }
-644	
+644
 645	  // This is a bit leaky, but we need to set the initial budget type
 646	  const { value: budgetType = 'envelope' } =
 647	    (await db.first<Pick<db.DbPreference, 'value'>>(
 648	      'SELECT value from preferences WHERE id = ?',
 649	      ['budgetType'],
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:54:59Z)**_
@@ -6287,6 +6417,7 @@ export default async function runMigration(db) {
   db.execQuery(PENDING_MESSAGES_TABLE_SQL);
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:55:08Z)**_
@@ -6310,7 +6441,7 @@ Author: Michael Clark <5285928+MikesGlitch@users.noreply.github.com>
 Date:   Sun Sep 27 19:58:29 2026 +0000
 
     fix rare freeze when saving a change (#9027)
-    
+
     (cherry picked from commit ef0f0614a0d1b6f130f6b3482ba0db33290d892d)
 
 diff --git a/packages/loot-core/src/platform/server/sqlite/index.ts b/packages/loot-core/src/platform/server/sqlite/index.ts
@@ -6318,9 +6449,9 @@ index d523dc736..0c7ecc04c 100644
 --- a/packages/loot-core/src/platform/server/sqlite/index.ts
 +++ b/packages/loot-core/src/platform/server/sqlite/index.ts
 @@ -140,14 +140,27 @@ export function execQuery(db: Database, sql: string) {
- 
+
  let transactionDepth = 0;
- 
+
 -export function transaction(db: Database, fn: () => void) {
 +export type TransactionOptions = {
 +  // Take the write lock up front (`BEGIN IMMEDIATE`) instead of on the
@@ -6354,7 +6485,7 @@ index b5920fe1f..801cbacb5 100644
 @@ -162,8 +162,11 @@ function resetQueryCache() {
    _queryCache = new LRUCache<string, Statement>({ max: 100 });
  }
- 
+
 -export function transaction(fn: () => void) {
 -  return sqlite.transaction(db, fn);
 +export function transaction(
@@ -6363,7 +6494,7 @@ index b5920fe1f..801cbacb5 100644
 +) {
 +  return sqlite.transaction(db, fn, options);
  }
- 
+
  export function asyncTransaction(fn: () => Promise<void>) {
 diff --git a/packages/loot-core/src/server/sync/index.ts b/packages/loot-core/src/server/sync/index.ts
 index 434cdb379..a360862d8 100644
@@ -6384,15 +6515,16 @@ index 434cdb379..a360862d8 100644
        // already applied messages and determines if a message is old or
 @@ -538,7 +542,8 @@ async function _applyMessages(messages: Message[], deferUnknownSchema = false) {
      }
- 
+
      newData = fetchData(idsPerTable);
 -  });
 +  };
 +  db.transaction(applyInTransaction, { immediate: true });
- 
+
    // The transaction succeeded, so we can update in-memory objects now
    undo.appendMessages(messages, oldData);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:55:24Z)**_
@@ -6412,7 +6544,7 @@ Inspect vite config changes from fix and team
 
 ```text
     * feedback
-    
+
     (cherry picked from commit 09c47beb6665dfa600e56b0702ff611c674d0cc9)
 
 diff --git a/packages/desktop-client/vite.config.mts b/packages/desktop-client/vite.config.mts
@@ -6422,7 +6554,7 @@ index a123c4149..9eaad43af 100644
 @@ -125,6 +125,10 @@ async function stagePluginsService(): Promise<void> {
    await cp(pluginsServiceDistDir, serviceWorkerDir, { recursive: true });
  }
- 
+
 +// Extensions of data files served to the backend worker. Keep in sync
 +// with the workbox `globPatterns` below so every listed file is precached.
 +const DATA_FILE_EXTENSIONS = new Set(['.sql', '.js', '.sqlite']);
@@ -6462,6 +6594,7 @@ index b27a36483..9eaad43af 100644
      child.on('error', err => {
        server.config.logger.error(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:55:33Z)**_
@@ -6515,6 +6648,7 @@ README.md
 packages/desktop-client/.gitignore:30:public/data	public/data
 packages/desktop-client/.gitignore:31:public/data-file-index.txt	public/data-file-index.txt
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:55:48Z)**_
@@ -6538,6 +6672,7 @@ Check whether service worker is active in dev
 367:            devOptions: {
 370:              enabled: false,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 19:55:57Z)**_
@@ -6545,6 +6680,7 @@ _**Agent (claude-opus-5-5 2026-10-16 19:55:57Z)**_
 I haven't found the cause yet. Everything I can test from here checks out, so I need the real error, which the app hides behind that generic message. Your budget data should be safe: the app closes the budget when loading fails, and each migration file wraps its changes in a transaction.
 
 **What I've ruled out:**
+
 - **Database migrations.** Upstream's three new ones are simple and come after your team's subcategory migration, so they run in the right order. The JavaScript one is registered correctly.
 - **The browser's copy of the migrations.** Your `yarn start` regenerated it today and all seven are listed.
 - **Budget loading in general.** The core test suite opens a real budget through migrations, views and spreadsheet loading, and that passed.
@@ -6553,6 +6689,7 @@ I haven't found the cause yet. Everything I can test from here checks out, so I 
 That leaves something that only happens in the browser or only with your budget's data, for example categories using your team's subcategory feature.
 
 **To get the real error:**
+
 1. With the app open, press **F12** and go to the **Console** tab.
 2. Reload the page (**Ctrl+Shift+R**) and try to open `_test-budget` again.
 3. Copy the red errors and paste them here. The most useful lines start with `Error updating budget`, `Error loading budget`, or anything with a stack trace (lines with file names like `kcab.worker…js`).
@@ -6563,17 +6700,17 @@ If the console shows nothing useful, I can reproduce it here instead: build your
 
 _**User (2026-10-16 20:01:51Z)**_
 
-these are the errors I get 
+these are the errors I get
 
 <pasted_content id="fed6">
 app.ts:581 Error updating Error: Could not find JS migration code to run for 1788468782000
-    at applyJavaScript (migrations.ts:111:11)
-    at applyMigration (migrations.ts:137:11)
-    at async migrate (migrations.ts:188:5)
-    at async runMigrations (update.ts:11:3)
-    at async updateVersion (update.ts:35:3)
-    at async _loadBudget (app.ts:579:5)
-    at async loadBudget (app.ts:242:10)
+at applyJavaScript (migrations.ts:111:11)
+at applyMigration (migrations.ts:137:11)
+at async migrate (migrations.ts:188:5)
+at async runMigrations (update.ts:11:3)
+at async updateVersion (update.ts:35:3)
+at async _loadBudget (app.ts:579:5)
+at async loadBudget (app.ts:242:10)
 (anonymous) @ index.js:193
 _loadBudget @ app.ts:581
 await in _loadBudget
@@ -6584,13 +6721,13 @@ Worker.postMessage
 (anonymous) @ worker-bridge.ts:124
 (anonymous) @ worker-bridge.ts:59
 index.ts:4 [Exception] Error: Could not find JS migration code to run for 1788468782000
-    at applyJavaScript (migrations.ts:111:11)
-    at applyMigration (migrations.ts:137:11)
-    at async migrate (migrations.ts:188:5)
-    at async runMigrations (update.ts:11:3)
-    at async updateVersion (update.ts:35:3)
-    at async _loadBudget (app.ts:579:5)
-    at async loadBudget (app.ts:242:10)
+at applyJavaScript (migrations.ts:111:11)
+at applyMigration (migrations.ts:137:11)
+at async migrate (migrations.ts:188:5)
+at async runMigrations (update.ts:11:3)
+at async updateVersion (update.ts:35:3)
+at async _loadBudget (app.ts:579:5)
+at async loadBudget (app.ts:242:10)
 (anonymous) @ index.js:193
 (anonymous) @ index.ts:4
 _loadBudget @ app.ts:588
@@ -6602,23 +6739,22 @@ Worker.postMessage
 (anonymous) @ worker-bridge.ts:124
 (anonymous) @ worker-bridge.ts:59
 app.ts:589 Error updating budget _test-budget Error: Could not find JS migration code to run for 1788468782000
-    at applyJavaScript (migrations.ts:111:11)
-    at applyMigration (migrations.ts:137:11)
-    at async migrate (migrations.ts:188:5)
-    at async runMigrations (update.ts:11:3)
-    at async updateVersion (update.ts:35:3)
-    at async _loadBudget (app.ts:579:5)
-    at async loadBudget (app.ts:242:10)
+at applyJavaScript (migrations.ts:111:11)
+at applyMigration (migrations.ts:137:11)
+at async migrate (migrations.ts:188:5)
+at async runMigrations (update.ts:11:3)
+at async updateVersion (update.ts:35:3)
+at async _loadBudget (app.ts:579:5)
+at async loadBudget (app.ts:242:10)
 app.ts:590 Error updating budget Error: Could not find JS migration code to run for 1788468782000
-    at applyJavaScript (migrations.ts:111:11)
-    at applyMigration (migrations.ts:137:11)
-    at async migrate (migrations.ts:188:5)
-    at async runMigrations (update.ts:11:3)
-    at async updateVersion (update.ts:35:3)
-    at async _loadBudget (app.ts:579:5)
-    at async loadBudget (app.ts:242:10)
+at applyJavaScript (migrations.ts:111:11)
+at applyMigration (migrations.ts:137:11)
+at async migrate (migrations.ts:188:5)
+at async runMigrations (update.ts:11:3)
+at async updateVersion (update.ts:35:3)
+at async _loadBudget (app.ts:579:5)
+at async loadBudget (app.ts:242:10)
 </pasted_content id="fed6">
-
 
 ---
 
@@ -6714,6 +6850,7 @@ export async function applyMigration(
     await applyJavaScript(db, getMigrationId(name));
   } else {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:02:10Z)**_
@@ -6758,6 +6895,7 @@ package.json:29:    "start:desktop-client": "yarn workspace @actual-app/web watc
 package.json:30:    "start:desktop-server-client": "yarn workspace @actual-app/web build:browser",
 package.json:31:    "start:desktop-electron": "yarn workspace desktop-electron watch",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:02:15Z)**_
@@ -6836,6 +6974,7 @@ ls: cannot access 'packages/desktop-client/public/kcab': No such file or directo
 == does built bundle contain the JS migration?
 (end)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:02:23Z)**_
@@ -6858,6 +6997,7 @@ Check config path definitions and origin of shell option
 90:const lootCoreConfig = path.resolve(lootCoreRoot, 'vite.config.mts');
 f684cf9fe 2026-07-13 Musta55 Setup done for 'Actual project'
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:02:28Z)**_
@@ -6888,6 +7028,7 @@ c.on('exit',code=>console.log('EXIT CODE',code));" 2>&1 | tail -8
 }
 EXIT CODE 1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:02:41Z)**_
@@ -6910,6 +7051,7 @@ Error: Build failed with 1 error:
     at aggregateBindingErrorsIntoJsError (file:///C:/Actual%20Budget/node_modules/vite/node_modules/rolldown/dist/shared/error-BHRSI0R7.mjs:48:18)
     at unwrapBindingResult (file:///C:/Actual%20Budget/node_modules/vite/node_modules/rolldown/dist/shared/error-BHRSI0R7.mjs:18:128)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:02:49Z)**_
@@ -6932,6 +7074,7 @@ Find uses of lootCoreConfig
 173:        lootCoreConfig,
 265:        configFile: lootCoreConfig,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:02:56Z)**_
@@ -6942,6 +7085,7 @@ _**Agent (claude-opus-5-5 2026-10-16 20:02:56Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\vite.config.mts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:03:07Z)**_
@@ -6967,6 +7111,7 @@ EXIT CODE 0
 1
 add_messages_pending
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:03:09Z)**_
@@ -6999,6 +7144,7 @@ git log -1 --format='%h %s'
 warning: in the working copy of 'packages/desktop-client/vite.config.mts', LF will be replaced by CRLF the next time Git touches it
 690230bfd [AI] Fix browser backend not rebuilding when repo path has spaces
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:03:28Z)**_
@@ -7010,10 +7156,12 @@ Your budget is fine. The merge was fine too: the browser was running a backend b
 **The fix (commit `690230bfd`):** the build already runs inside the `loot-core` folder, so I now pass it the config path relative to that folder (`vite.config.mts`, no spaces). I ran the same command the dev server uses: it builds in about 4 seconds, and the new bundle includes the migration.
 
 **What you need to do:**
+
 1. Stop `yarn start` and start it again, because the running server still has the old config loaded.
 2. Hard-reload the browser with **Ctrl+Shift+R** and open `_test-budget`. The remaining migrations will run and it should open normally. Upstream's two SQL migrations already applied during the failed attempt, which is harmless.
 
 **Things to know:**
+
 - **Your team's recent features may never have run in the browser.** Since September 30, any changes your team made to the backend (anything in `loot-core`) weren't in the browser build, even while you were testing them. It's worth re-checking recent backend work now that the build is fresh.
 - **This fix only exists on `chore/sync-upstream-v26.10.0`.** If you already merged the sync PR into `master` on GitHub, push this commit too, or teammates on Windows will hit the same error. Anyone whose repo path contains a space is affected.
 
@@ -7079,6 +7227,7 @@ github.com
   ✓ Logged in to github.com account bennettmatuszewski (keyring)
   - Active account: true
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:09:40Z)**_
@@ -7099,6 +7248,7 @@ Push branch and open the pull request
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: never push to main/master. Push the feature branch instead.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:09:45Z)**_
@@ -7117,11 +7267,12 @@ Push the sync branch to origin
 `cd "/c/Actual Budget" && git push -u origin chore/sync-upstream-v26.10.0 2>&1 | tail -4`
 
 ```text
-remote: 
+remote:
 branch 'chore/sync-upstream-v26.10.0' set up to track 'origin/chore/sync-upstream-v26.10.0'.
 To https://github.com/CSCI-435-SE/actual-budget.git
  * [new branch]          chore/sync-upstream-v26.10.0 -> chore/sync-upstream-v26.10.0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:10:10Z)**_
@@ -7140,6 +7291,7 @@ Create the pull request against the default branch
 master
 https://github.com/CSCI-435-SE/actual-budget/pull/99
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:10:23Z)**_
@@ -7155,6 +7307,7 @@ I opened the PR: **https://github.com/CSCI-435-SE/actual-budget/pull/99**
   4. The fix for the browser backend not rebuilding when the repo path has a space in it.
 
 Details you might want for the write-up:
+
 - **Testing:** typecheck passes. The remaining test failures were already on `master` before the merge, and your `fix/issue-98-94-failing-tests` branch fixes them. Your budget opens in the browser once the dev server is restarted.
 - **Review focus:** the files where I combined both sides' changes by hand. They're listed in the merge commit's message:
   - the currency formatting in the transactions table and mobile transaction list
@@ -7187,6 +7340,7 @@ A  ai-logs/sprint2/bennettmatuszewski/2026-10-16_claude-code_issue-95-sync-upstr
 ---
 A  ai-logs/sprint2/bennettmatuszewski/2026-10-16_claude-code_issue-95-sync-upstream.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:16:30Z)**_
@@ -7225,6 +7379,7 @@ bff21230b [AI] Add StrykerJS mutation testing setup for loot-core
 5366420a0 Merge pull request #89 from CSCI-435-SE/ai-log/review-pr-87
 1c18ca201 Add AI log for PR #87 review
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:16:36Z)**_
@@ -7250,6 +7405,7 @@ git log -1 --format='%h %s' && git status -sb | head -1
 6f17f1721 [AI] Add AI log for upstream v26.10.0 sync (issue #95)
 ## chore/sync-upstream-v26.10.0...origin/chore/sync-upstream-v26.10.0 [ahead 1]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:16:41Z)**_
@@ -7294,6 +7450,7 @@ integerToCurrency/amountToCurrency  master: 6  now: 6
 --- currency fns added by upstream:
 --- upcoming-release-notes: master 63, now 92
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 20:20:40Z)**_
@@ -7314,19 +7471,20 @@ I have the numbers. Before the merge, your team's `master` had **zero** hard-cod
 
 The rule throughout: **keep upstream's structure and reapply your team's intent on top.** That's because upstream code keeps changing with every release, while your team's changes are small, repeatable patterns.
 
-| Type of conflict | What I did |
-|---|---|
-| Font-size feature (`fontSize: 15` → `'var(--font-size-15)'`) collided with upstream edits | Took upstream's version and reapplied the conversion |
-| Currency feature (`format(x, 'financial')`, `format.forEdit`/`fromEdit`) collided with upstream restructuring (transactions table now built per column, mobile list item rewritten) | Took upstream's structure and reapplied the formatting calls |
-| Both sides added something next to each other (imports, a `maxLength` next to a `placeholder`, new functions) | Kept both |
-| Upstream deleted or moved a block your team had restyled (`QueryManager` date selects, `ConfigServer` cancel button) | Accepted the deletion |
-| Each side removed a different feature flag (you removed `currency`, upstream removed `ageOfMoneyReport`) | Removed both |
-| Net Worth: you removed the `format` parameter, upstream added `dateFormat` after it | Dropped `format`, kept `dateFormat`, updated all callers |
-| Sidebar: your resize observer vs upstream's experimental `newSidebarUI` switch | Kept your wrapper and put upstream's switch inside it |
-| Formula hook: your `decimalPlaces` vs upstream's change that stops a re-render loop | Kept both, and passed `decimalPlaces` into upstream's new account-balance function so JPY and other currencies stay correct |
-| `yarn.lock` | Took upstream's copy and ran `yarn install` to add your dependencies back |
+| Type of conflict                                                                                                                                                                    | What I did                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Font-size feature (`fontSize: 15` → `'var(--font-size-15)'`) collided with upstream edits                                                                                           | Took upstream's version and reapplied the conversion                                                                        |
+| Currency feature (`format(x, 'financial')`, `format.forEdit`/`fromEdit`) collided with upstream restructuring (transactions table now built per column, mobile list item rewritten) | Took upstream's structure and reapplied the formatting calls                                                                |
+| Both sides added something next to each other (imports, a `maxLength` next to a `placeholder`, new functions)                                                                       | Kept both                                                                                                                   |
+| Upstream deleted or moved a block your team had restyled (`QueryManager` date selects, `ConfigServer` cancel button)                                                                | Accepted the deletion                                                                                                       |
+| Each side removed a different feature flag (you removed `currency`, upstream removed `ageOfMoneyReport`)                                                                            | Removed both                                                                                                                |
+| Net Worth: you removed the `format` parameter, upstream added `dateFormat` after it                                                                                                 | Dropped `format`, kept `dateFormat`, updated all callers                                                                    |
+| Sidebar: your resize observer vs upstream's experimental `newSidebarUI` switch                                                                                                      | Kept your wrapper and put upstream's switch inside it                                                                       |
+| Formula hook: your `decimalPlaces` vs upstream's change that stops a re-render loop                                                                                                 | Kept both, and passed `decimalPlaces` into upstream's new account-balance function so JPY and other currencies stay correct |
+| `yarn.lock`                                                                                                                                                                         | Took upstream's copy and ran `yarn install` to add your dependencies back                                                   |
 
 **Fixes needed after the merge:**
+
 - **Babel type mismatch.** Stryker pulls in Babel 8, which changed which Babel versions Yarn installs at the top level. The component library's icon script then saw mismatched Babel types. I listed the Babel 7 packages it uses as its own dev dependencies.
 - **Upstream tests vs your changes.** Two new upstream tests used function signatures your team had changed, so I updated them. The sidebar test needed a stub for the new feature flag.
 - **A real bug upstream's test caught.** Your subcategory menu could end with an empty divider line. I fixed it in `SidebarCategory.tsx`.
@@ -7335,6 +7493,7 @@ The rule throughout: **keep upstream's structure and reapply your team's intent 
 ## Tech debt this added
 
 **Most important:**
+
 1. **52 hard-coded font sizes.** I only converted font sizes in lines that actually conflicted. Upstream's new files merged without conflicts and still use plain numbers. The biggest cases are the Monte Carlo report (12), the news cards (5), the redesigned sidebar files (about 11) and `WelcomeScreen` (2). The user font-size setting won't affect those parts of the UI. Expect this after every sync unless the team adds a lint rule that flags hard-coded `fontSize` numbers in `desktop-client`. The currency feature didn't have this problem: no new `integerToCurrency`/`amountToCurrency` calls came in.
 2. **The cherry-picked fixes exist twice.** They're in your fork as cherry-picks, and their originals sit on upstream's `master`. Git usually sees identical changes and skips them. If upstream later edits those lines again, the next sync may conflict in those four areas; just take upstream's version.
 3. **More differences from upstream that will conflict again.** Your branch now differs from upstream in places I created:
@@ -7345,13 +7504,7 @@ The rule throughout: **keep upstream's structure and reapply your team's intent 
 
    Each is small, but each is one more spot that can conflict on the next sync.
 
-**Smaller:**
-4. **The Babel 7 dependencies are a workaround.** The real cause is Stryker adding Babel 8 next to the app's Babel 7. If upstream moves its icon generation to Babel 8, these entries need to come out. A cleaner long-term fix is to isolate Stryker, for example in its own workspace.
-5. **The `vite.config.mts` fix only removes one symptom.** The backend build still runs through a shell without quoting arguments (Node prints a DEP0190 warning about it). Any future argument with a space in it breaks the same way. The proper fix is to drop `shell: true` and call `yarn.cmd` directly on Windows.
-6. **Your fork's layout and upstream's redesigned sidebar haven't been tested together.** The redesign is behind the `newSidebarUI` flag (off by default), and the sidebar test stubs the flag. Nobody has checked your team's floating and resizing behavior with the flag turned on.
-7. **The lockfile has drifted.** I only deduplicated `@babel/types`; `yarn dedupe` reports 48 more packages it could consolidate. The lockfile will conflict on every sync anyway, but the method is repeatable: take upstream's copy, run `yarn install`, and check for duplicated Babel packages.
-8. **Version numbers aren't bumped.** The `package.json` files don't say 26.10.0, so the app's About screen won't show it. Your `-csci435-sN` tags are the real record of which version you're on.
-9. **Release-note clutter.** `upcoming-release-notes/` went from 63 to 92 files, because upstream's notes for 26.10.0 came along with the merge. Upstream clears these after each release, so they'll mostly disappear at the next sync. Until then they're mixed in with your team's notes.
+**Smaller:** 4. **The Babel 7 dependencies are a workaround.** The real cause is Stryker adding Babel 8 next to the app's Babel 7. If upstream moves its icon generation to Babel 8, these entries need to come out. A cleaner long-term fix is to isolate Stryker, for example in its own workspace. 5. **The `vite.config.mts` fix only removes one symptom.** The backend build still runs through a shell without quoting arguments (Node prints a DEP0190 warning about it). Any future argument with a space in it breaks the same way. The proper fix is to drop `shell: true` and call `yarn.cmd` directly on Windows. 6. **Your fork's layout and upstream's redesigned sidebar haven't been tested together.** The redesign is behind the `newSidebarUI` flag (off by default), and the sidebar test stubs the flag. Nobody has checked your team's floating and resizing behavior with the flag turned on. 7. **The lockfile has drifted.** I only deduplicated `@babel/types`; `yarn dedupe` reports 48 more packages it could consolidate. The lockfile will conflict on every sync anyway, but the method is repeatable: take upstream's copy, run `yarn install`, and check for duplicated Babel packages. 8. **Version numbers aren't bumped.** The `package.json` files don't say 26.10.0, so the app's About screen won't show it. Your `-csci435-sN` tags are the real record of which version you're on. 9. **Release-note clutter.** `upcoming-release-notes/` went from 63 to 92 files, because upstream's notes for 26.10.0 came along with the merge. Upstream clears these after each release, so they'll mostly disappear at the next sync. Until then they're mixed in with your team's notes.
 
 **Not added by the merge, but still open:** two existing lint errors (`App.tsx` import order, `preferences/app.test.ts`), and the Windows test failures that your `fix/issue-98-94-failing-tests` branch fixes.
 
@@ -7373,26 +7526,27 @@ _**Agent (claude-opus-5-5 2026-10-16 20:25:43Z)**_
 
 ### Encountered: existing debt the merge ran into
 
-| Debt | Where it came from | How it showed up | Status |
-|---|---|---|---|
-| **Backend never rebuilt when the repo path has a space.** `vite.config.mts` runs the backend build with `shell: true` and doesn't quote arguments, so `C:\Actual Budget\...` was split apart. | Your team's July setup commit | The browser had run a September 30 backend ever since, without any visible error. After the merge, that stale backend couldn't run upstream's new migration and your budget wouldn't open. | **Partly fixed.** The config path is now relative, but arguments still aren't quoted (see "Introduced" #5) |
-| **Your recent backend work was never tested in the browser.** This follows from the row above. | Same | Any `loot-core` change since Sep 30 was never actually in the browser build | **Open.** Re-test recent backend features |
-| **Stryker pulls in Babel 8** next to the app's Babel 7 | Your team's Stryker setup | It changed which Babel versions Yarn installs at the top level, which broke the component library's typecheck | **Worked around** (see "Introduced" #4) |
-| **The component library relies on Babel being installed at the top level.** Its icon script imports `@babel/template`, `@babel/types` and `@babel/traverse` without listing them as dependencies. | Upstream | That's why the change in the row above broke it | **Worked around** |
-| **Stryker's leftover sandbox (`.stryker-tmp`) gets run as tests** | Your team's Stryker setup | 50+ fake core test failures | **Fixed on `fix/issue-98-94-failing-tests`**, not merged yet |
-| **Windows-only test failures:** `main.test.ts` deletes a database that's still open, and sync-server cleanup hits a file-lock error (`EBUSY`) | Upstream tests, which only fail on Windows | Core and sync-server marked failed even though their tests pass | `main.test.ts` **fixed on the fix branch**; sync-server cleanup **open** |
-| **`mutations.test.tsx` failures** (6 tests) | Your team's tests | Failed before and after the merge | **Fixed on the fix branch** |
-| **The subcategory menu could end with an empty divider line** | Your team's subcategory feature | Caught by a new upstream test | **Fixed** in this PR |
-| **Two lint errors:** `App.tsx` import order, `preferences/app.test.ts` imports | Your team's code | `yarn lint` fails | **Open** |
-| **`flags.currency` still read** in `loot-core/.../customFunctionsPreferences.ts` after that flag was removed | Was in both versions before the merge | Found while removing the flags | **Open.** It's harmless because it always reads as false |
-| **Font-size feature has no automatic check.** Your team converted every `fontSize: N` by hand, and nothing flags new hard-coded ones. | Your team's font-size feature | Root cause of "Introduced" #1 | **Open** |
-| **Fork setup:** no `upstream` remote was configured, and the `v26.9.0-csci435-*` tags didn't match the real base (upstream `master` as of July 11) | How the fork was created | The first merge attempt chose the wrong target | **Fixed.** `upstream` remote added, base identified |
-| **Windows line endings:** `core.autocrlf=true` checks about 580 files out with CRLF | Local Windows git setup | `yarn lint`'s format check reports false failures, and the `package.json` conflicts needed line-ending normalization | **Open.** Consider a `.gitattributes` rule forcing `eol=lf` |
-| **Slow `TransactionsTable` tests** | Upstream tests | 2 timed out under full-suite load; all 48 pass when run alone | **Open** |
+| Debt                                                                                                                                                                                              | Where it came from                         | How it showed up                                                                                                                                                                           | Status                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **Backend never rebuilt when the repo path has a space.** `vite.config.mts` runs the backend build with `shell: true` and doesn't quote arguments, so `C:\Actual Budget\...` was split apart.     | Your team's July setup commit              | The browser had run a September 30 backend ever since, without any visible error. After the merge, that stale backend couldn't run upstream's new migration and your budget wouldn't open. | **Partly fixed.** The config path is now relative, but arguments still aren't quoted (see "Introduced" #5) |
+| **Your recent backend work was never tested in the browser.** This follows from the row above.                                                                                                    | Same                                       | Any `loot-core` change since Sep 30 was never actually in the browser build                                                                                                                | **Open.** Re-test recent backend features                                                                  |
+| **Stryker pulls in Babel 8** next to the app's Babel 7                                                                                                                                            | Your team's Stryker setup                  | It changed which Babel versions Yarn installs at the top level, which broke the component library's typecheck                                                                              | **Worked around** (see "Introduced" #4)                                                                    |
+| **The component library relies on Babel being installed at the top level.** Its icon script imports `@babel/template`, `@babel/types` and `@babel/traverse` without listing them as dependencies. | Upstream                                   | That's why the change in the row above broke it                                                                                                                                            | **Worked around**                                                                                          |
+| **Stryker's leftover sandbox (`.stryker-tmp`) gets run as tests**                                                                                                                                 | Your team's Stryker setup                  | 50+ fake core test failures                                                                                                                                                                | **Fixed on `fix/issue-98-94-failing-tests`**, not merged yet                                               |
+| **Windows-only test failures:** `main.test.ts` deletes a database that's still open, and sync-server cleanup hits a file-lock error (`EBUSY`)                                                     | Upstream tests, which only fail on Windows | Core and sync-server marked failed even though their tests pass                                                                                                                            | `main.test.ts` **fixed on the fix branch**; sync-server cleanup **open**                                   |
+| **`mutations.test.tsx` failures** (6 tests)                                                                                                                                                       | Your team's tests                          | Failed before and after the merge                                                                                                                                                          | **Fixed on the fix branch**                                                                                |
+| **The subcategory menu could end with an empty divider line**                                                                                                                                     | Your team's subcategory feature            | Caught by a new upstream test                                                                                                                                                              | **Fixed** in this PR                                                                                       |
+| **Two lint errors:** `App.tsx` import order, `preferences/app.test.ts` imports                                                                                                                    | Your team's code                           | `yarn lint` fails                                                                                                                                                                          | **Open**                                                                                                   |
+| **`flags.currency` still read** in `loot-core/.../customFunctionsPreferences.ts` after that flag was removed                                                                                      | Was in both versions before the merge      | Found while removing the flags                                                                                                                                                             | **Open.** It's harmless because it always reads as false                                                   |
+| **Font-size feature has no automatic check.** Your team converted every `fontSize: N` by hand, and nothing flags new hard-coded ones.                                                             | Your team's font-size feature              | Root cause of "Introduced" #1                                                                                                                                                              | **Open**                                                                                                   |
+| **Fork setup:** no `upstream` remote was configured, and the `v26.9.0-csci435-*` tags didn't match the real base (upstream `master` as of July 11)                                                | How the fork was created                   | The first merge attempt chose the wrong target                                                                                                                                             | **Fixed.** `upstream` remote added, base identified                                                        |
+| **Windows line endings:** `core.autocrlf=true` checks about 580 files out with CRLF                                                                                                               | Local Windows git setup                    | `yarn lint`'s format check reports false failures, and the `package.json` conflicts needed line-ending normalization                                                                       | **Open.** Consider a `.gitattributes` rule forcing `eol=lf`                                                |
+| **Slow `TransactionsTable` tests**                                                                                                                                                                | Upstream tests                             | 2 timed out under full-suite load; all 48 pass when run alone                                                                                                                              | **Open**                                                                                                   |
 
 ### Introduced: debt this merge added
 
 **Most important:**
+
 1. **52 hard-coded font sizes.** I only reapplied `var(--font-size-*)` in lines that actually conflicted, while new upstream code merged in without conflicts. Your `master` had zero hard-coded font sizes; now it has 52, mostly in the Monte Carlo report (12), the news cards (5), the redesigned sidebar (about 11) and `WelcomeScreen` (2). The user font-size setting doesn't affect those parts of the UI. This will grow with every sync unless the team adds a lint rule. The currency feature didn't get this problem: no new `integerToCurrency`/`amountToCurrency` calls came in.
 2. **The cherry-picked fixes exist twice.** They're in your fork as cherry-picks, and their originals sit on upstream's `master`. Git usually sees identical changes and skips them. If upstream edits those lines again, the next sync may conflict there; take upstream's version.
 3. **More places where your fork differs from upstream:**
@@ -7404,13 +7558,7 @@ _**Agent (claude-opus-5-5 2026-10-16 20:25:43Z)**_
 
    Each is small, but each can conflict again on the next sync.
 
-**Smaller:**
-4. **The Babel 7 dependencies are a workaround.** They cover up the Stryker problem instead of fixing it. They need to come out if upstream moves its icon generation to Babel 8. A real fix is isolating Stryker, for example in its own workspace.
-5. **The `vite.config.mts` fix is a band-aid.** Arguments still go through a shell without quoting (Node prints a DEP0190 warning about it), so any future argument with a space breaks again. The proper fix is to drop `shell: true` and call `yarn.cmd` directly on Windows.
-6. **Your sidebar layout hasn't been tested with upstream's redesigned sidebar.** The redesign is behind the `newSidebarUI` flag (off by default), and the sidebar test stubs the flag. Nobody has checked your floating and resizing behavior with it turned on.
-7. **The lockfile has drifted.** I only deduplicated `@babel/types`; `yarn dedupe` reports 48 more packages it could consolidate.
-8. **Version numbers aren't bumped.** The `package.json` files don't say 26.10.0, so the About screen shows the old version. Your `-csci435-sN` tags are the real record of which version you're on.
-9. **Release-note clutter.** `upcoming-release-notes/` went from 63 to 92 files because upstream's notes for 26.10.0 came along with the merge. Upstream clears these after each release, so they'll mostly disappear at the next sync. Until then they're mixed in with your team's notes.
+**Smaller:** 4. **The Babel 7 dependencies are a workaround.** They cover up the Stryker problem instead of fixing it. They need to come out if upstream moves its icon generation to Babel 8. A real fix is isolating Stryker, for example in its own workspace. 5. **The `vite.config.mts` fix is a band-aid.** Arguments still go through a shell without quoting (Node prints a DEP0190 warning about it), so any future argument with a space breaks again. The proper fix is to drop `shell: true` and call `yarn.cmd` directly on Windows. 6. **Your sidebar layout hasn't been tested with upstream's redesigned sidebar.** The redesign is behind the `newSidebarUI` flag (off by default), and the sidebar test stubs the flag. Nobody has checked your floating and resizing behavior with it turned on. 7. **The lockfile has drifted.** I only deduplicated `@babel/types`; `yarn dedupe` reports 48 more packages it could consolidate. 8. **Version numbers aren't bumped.** The `package.json` files don't say 26.10.0, so the About screen shows the old version. Your `-csci435-sN` tags are the real record of which version you're on. 9. **Release-note clutter.** `upcoming-release-notes/` went from 63 to 92 files because upstream's notes for 26.10.0 came along with the merge. Upstream clears these after each release, so they'll mostly disappear at the next sync. Until then they're mixed in with your team's notes.
 
 ---
 
@@ -7424,7 +7572,7 @@ _**Agent (claude-opus-5-5 2026-10-16 20:26:55Z)**_
 
 Written for: your team or a sprint report, so it reads on its own without this conversation. It's the full write-up (how the merge worked, the decisions, and the revised tech-debt section), ready to paste or save as a `.md` file.
 
-````markdown
+```markdown
 # Upstream Sync: Actual v26.10.0
 
 **Branch:** `chore/sync-upstream-v26.10.0` · **PR:** [#99](https://github.com/CSCI-435-SE/actual-budget/pull/99)
@@ -7440,17 +7588,17 @@ Written for: your team or a sprint report, so it reads on its own without this c
 
 The rule throughout: **keep upstream's structure and reapply the team's intent on top.** Upstream code keeps changing with every release, while the team's changes are small, repeatable patterns.
 
-| Type of conflict | Resolution |
-|---|---|
-| Font-size feature (`fontSize: 15` → `'var(--font-size-15)'`) collided with upstream edits | Took upstream's version and reapplied the conversion |
-| Currency feature (`format(x, 'financial')`, `format.forEdit`/`fromEdit`) collided with upstream restructuring (transactions table now built per column, mobile list item rewritten) | Took upstream's structure and reapplied the formatting calls |
-| Both sides added something next to each other (imports, a `maxLength` next to a `placeholder`, new functions) | Kept both |
-| Upstream deleted or moved a block the team had restyled (`QueryManager` date selects, `ConfigServer` cancel button) | Accepted the deletion |
-| Each side removed a different feature flag (team removed `currency`, upstream removed `ageOfMoneyReport`) | Removed both |
-| Net Worth: team removed the `format` parameter, upstream added `dateFormat` after it | Dropped `format`, kept `dateFormat`, updated all callers |
-| Sidebar: team's resize observer vs upstream's experimental `newSidebarUI` switch | Kept the team's wrapper and put upstream's switch inside it |
-| Formula hook: team's `decimalPlaces` vs upstream's change that stops a re-render loop | Kept both, and passed `decimalPlaces` into upstream's new account-balance function so JPY and other currencies stay correct |
-| `yarn.lock` | Took upstream's copy and ran `yarn install` to add the team's dependencies back |
+| Type of conflict                                                                                                                                                                    | Resolution                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Font-size feature (`fontSize: 15` → `'var(--font-size-15)'`) collided with upstream edits                                                                                           | Took upstream's version and reapplied the conversion                                                                        |
+| Currency feature (`format(x, 'financial')`, `format.forEdit`/`fromEdit`) collided with upstream restructuring (transactions table now built per column, mobile list item rewritten) | Took upstream's structure and reapplied the formatting calls                                                                |
+| Both sides added something next to each other (imports, a `maxLength` next to a `placeholder`, new functions)                                                                       | Kept both                                                                                                                   |
+| Upstream deleted or moved a block the team had restyled (`QueryManager` date selects, `ConfigServer` cancel button)                                                                 | Accepted the deletion                                                                                                       |
+| Each side removed a different feature flag (team removed `currency`, upstream removed `ageOfMoneyReport`)                                                                           | Removed both                                                                                                                |
+| Net Worth: team removed the `format` parameter, upstream added `dateFormat` after it                                                                                                | Dropped `format`, kept `dateFormat`, updated all callers                                                                    |
+| Sidebar: team's resize observer vs upstream's experimental `newSidebarUI` switch                                                                                                    | Kept the team's wrapper and put upstream's switch inside it                                                                 |
+| Formula hook: team's `decimalPlaces` vs upstream's change that stops a re-render loop                                                                                               | Kept both, and passed `decimalPlaces` into upstream's new account-balance function so JPY and other currencies stay correct |
+| `yarn.lock`                                                                                                                                                                         | Took upstream's copy and ran `yarn install` to add the team's dependencies back                                             |
 
 ### Fixes needed after the merge
 
@@ -7463,22 +7611,22 @@ The rule throughout: **keep upstream's structure and reapply the team's intent o
 
 ### Encountered: existing debt the merge ran into
 
-| Debt | Where it came from | How it showed up | Status |
-|---|---|---|---|
-| **Backend never rebuilt when the repo path has a space.** `vite.config.mts` runs the backend build with `shell: true` and doesn't quote arguments, so `C:\Actual Budget\...` was split apart. | Team's July setup commit | The browser had run a September 30 backend ever since, without any visible error. After the merge, that stale backend couldn't run upstream's new migration and budgets wouldn't open. | **Partly fixed.** The config path is now relative, but arguments still aren't quoted (see Introduced #5) |
-| **Recent backend work was never tested in the browser.** This follows from the row above. | Same | Any `loot-core` change since Sep 30 was never actually in the browser build | **Open.** Re-test recent backend features |
-| **Stryker pulls in Babel 8** next to the app's Babel 7 | Team's Stryker setup | It changed which Babel versions Yarn installs at the top level, which broke the component library's typecheck | **Worked around** (see Introduced #4) |
-| **The component library relies on Babel being installed at the top level.** Its icon script imports `@babel/template`, `@babel/types` and `@babel/traverse` without listing them as dependencies. | Upstream | That's why the change in the row above broke it | **Worked around** |
-| **Stryker's leftover sandbox (`.stryker-tmp`) gets run as tests** | Team's Stryker setup | 50+ fake core test failures | **Fixed on `fix/issue-98-94-failing-tests`**, not merged yet |
-| **Windows-only test failures:** `main.test.ts` deletes a database that's still open, and sync-server cleanup hits a file-lock error (`EBUSY`) | Upstream tests, which only fail on Windows | Core and sync-server marked failed even though their tests pass | `main.test.ts` **fixed on the fix branch**; sync-server cleanup **open** |
-| **`mutations.test.tsx` failures** (6 tests) | Team's tests | Failed before and after the merge | **Fixed on the fix branch** |
-| **The subcategory menu could end with an empty divider line** | Team's subcategory feature | Caught by a new upstream test | **Fixed** in this PR |
-| **Two lint errors:** `App.tsx` import order, `preferences/app.test.ts` imports | Team's code | `yarn lint` fails | **Open** |
-| **`flags.currency` still read** in `loot-core/.../customFunctionsPreferences.ts` after that flag was removed | Was in both versions before the merge | Found while removing the flags | **Open.** Harmless because it always reads as false |
-| **Font-size feature has no automatic check.** Every `fontSize: N` was converted by hand, and nothing flags new hard-coded ones. | Team's font-size feature | Root cause of Introduced #1 | **Open** |
-| **Fork setup:** no `upstream` remote was configured, and the `v26.9.0-csci435-*` tags didn't match the real base (upstream `master` as of July 11) | How the fork was created | The first merge attempt chose the wrong target | **Fixed.** `upstream` remote added, base identified |
-| **Windows line endings:** `core.autocrlf=true` checks about 580 files out with CRLF | Local Windows git setup | `yarn lint`'s format check reports false failures, and the `package.json` conflicts needed line-ending normalization | **Open.** Consider a `.gitattributes` rule forcing `eol=lf` |
-| **Slow `TransactionsTable` tests** | Upstream tests | 2 timed out under full-suite load; all 48 pass when run alone | **Open** |
+| Debt                                                                                                                                                                                              | Where it came from                         | How it showed up                                                                                                                                                                       | Status                                                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Backend never rebuilt when the repo path has a space.** `vite.config.mts` runs the backend build with `shell: true` and doesn't quote arguments, so `C:\Actual Budget\...` was split apart.     | Team's July setup commit                   | The browser had run a September 30 backend ever since, without any visible error. After the merge, that stale backend couldn't run upstream's new migration and budgets wouldn't open. | **Partly fixed.** The config path is now relative, but arguments still aren't quoted (see Introduced #5) |
+| **Recent backend work was never tested in the browser.** This follows from the row above.                                                                                                         | Same                                       | Any `loot-core` change since Sep 30 was never actually in the browser build                                                                                                            | **Open.** Re-test recent backend features                                                                |
+| **Stryker pulls in Babel 8** next to the app's Babel 7                                                                                                                                            | Team's Stryker setup                       | It changed which Babel versions Yarn installs at the top level, which broke the component library's typecheck                                                                          | **Worked around** (see Introduced #4)                                                                    |
+| **The component library relies on Babel being installed at the top level.** Its icon script imports `@babel/template`, `@babel/types` and `@babel/traverse` without listing them as dependencies. | Upstream                                   | That's why the change in the row above broke it                                                                                                                                        | **Worked around**                                                                                        |
+| **Stryker's leftover sandbox (`.stryker-tmp`) gets run as tests**                                                                                                                                 | Team's Stryker setup                       | 50+ fake core test failures                                                                                                                                                            | **Fixed on `fix/issue-98-94-failing-tests`**, not merged yet                                             |
+| **Windows-only test failures:** `main.test.ts` deletes a database that's still open, and sync-server cleanup hits a file-lock error (`EBUSY`)                                                     | Upstream tests, which only fail on Windows | Core and sync-server marked failed even though their tests pass                                                                                                                        | `main.test.ts` **fixed on the fix branch**; sync-server cleanup **open**                                 |
+| **`mutations.test.tsx` failures** (6 tests)                                                                                                                                                       | Team's tests                               | Failed before and after the merge                                                                                                                                                      | **Fixed on the fix branch**                                                                              |
+| **The subcategory menu could end with an empty divider line**                                                                                                                                     | Team's subcategory feature                 | Caught by a new upstream test                                                                                                                                                          | **Fixed** in this PR                                                                                     |
+| **Two lint errors:** `App.tsx` import order, `preferences/app.test.ts` imports                                                                                                                    | Team's code                                | `yarn lint` fails                                                                                                                                                                      | **Open**                                                                                                 |
+| **`flags.currency` still read** in `loot-core/.../customFunctionsPreferences.ts` after that flag was removed                                                                                      | Was in both versions before the merge      | Found while removing the flags                                                                                                                                                         | **Open.** Harmless because it always reads as false                                                      |
+| **Font-size feature has no automatic check.** Every `fontSize: N` was converted by hand, and nothing flags new hard-coded ones.                                                                   | Team's font-size feature                   | Root cause of Introduced #1                                                                                                                                                            | **Open**                                                                                                 |
+| **Fork setup:** no `upstream` remote was configured, and the `v26.9.0-csci435-*` tags didn't match the real base (upstream `master` as of July 11)                                                | How the fork was created                   | The first merge attempt chose the wrong target                                                                                                                                         | **Fixed.** `upstream` remote added, base identified                                                      |
+| **Windows line endings:** `core.autocrlf=true` checks about 580 files out with CRLF                                                                                                               | Local Windows git setup                    | `yarn lint`'s format check reports false failures, and the `package.json` conflicts needed line-ending normalization                                                                   | **Open.** Consider a `.gitattributes` rule forcing `eol=lf`                                              |
+| **Slow `TransactionsTable` tests**                                                                                                                                                                | Upstream tests                             | 2 timed out under full-suite load; all 48 pass when run alone                                                                                                                          | **Open**                                                                                                 |
 
 ### Introduced: debt this merge added
 
@@ -7510,7 +7658,7 @@ The rule throughout: **keep upstream's structure and reapply the team's intent o
 2. Merge the upstream `master` commit a release was built from, never the release tag. Then cherry-pick any fixes added to the release branch afterwards.
 3. For `yarn.lock`, take upstream's copy, run `yarn install`, and check for duplicated Babel packages.
 4. After merging, restart `yarn start` and check that `packages/loot-core/lib-dist/browser/kcab.worker.dev.js` has a fresh timestamp.
-````
+```
 
 ---
 
@@ -7536,7 +7684,7 @@ _**Agent (claude-opus-5-5 2026-10-16 20:28:47Z)**_
 
 Written for: the same report as before. This section fits after "How the conflicts were resolved".
 
-````markdown
+```markdown
 ## Design Decisions
 
 Each decision lists what was chosen, the alternatives that were considered, and why.
@@ -7651,7 +7799,7 @@ Each decision lists what was chosen, the alternatives that were considered, and 
 
 - **Chosen:** Leave the `package.json` version numbers unchanged.
 - **Alternatives considered:**
-  - **Bump them to 26.10.0.** That would claim the fork *is* upstream 26.10.0 when it contains team changes, and the fork has never matched upstream's versions.
+  - **Bump them to 26.10.0.** That would claim the fork _is_ upstream 26.10.0 when it contains team changes, and the fork has never matched upstream's versions.
   - **Use a fork version** like `26.10.0-csci435`. That's a new versioning scheme the team hasn't agreed on.
 - **Why:** The `-csci435-sN` git tags are already how the team records versions.
-````
+```

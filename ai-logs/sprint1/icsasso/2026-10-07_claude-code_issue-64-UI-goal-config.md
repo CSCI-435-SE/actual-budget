@@ -9,49 +9,50 @@ _**User (2026-10-08 03:31:13Z)**_
 Goal:
 Implement the dashboard UI that allows a user to fully configure and edit a Personal Goal widget without manually constructing widget metadata.
 Before making changes, inspect the existing dashboard widget implementation and identify how existing widgets handle editable configuration and persistence. In particular, inspect:
+
 - packages/desktop-client/src/hooks/useRuleConditionFilters.ts
 - NetWorth.tsx
 - Spending.tsx
 - the existing time-frame picker implementation
 - onMetaChange and the generic widget CRUD implementation in packages/loot-core/src/server/dashboard/app.ts
 - the existing goal-card/scaffold implementation from the related issue
-Required functionality:
-A user should be able to add a goal card from the dashboard menu and configure all of the information needed for the goal directly from the UI:
+  Required functionality:
+  A user should be able to add a goal card from the dashboard menu and configure all of the information needed for the goal directly from the UI:
 - Target amount
--- Provide a numeric input for the goal's target amount.
--- The value should be editable after the goal has been created.
+  -- Provide a numeric input for the goal's target amount.
+  -- The value should be editable after the goal has been created.
 - Filter conditions
--- Reuse the existing rule/filter condition infrastructure rather than creating a separate implementation.
--- Follow the condition-editing patterns already used by NetWorth.tsx and Spending.tsx.
+  -- Reuse the existing rule/filter condition infrastructure rather than creating a separate implementation.
+  -- Follow the condition-editing patterns already used by NetWorth.tsx and Spending.tsx.
 - Time frame
--- Reuse the existing time-frame picker/pattern used elsewhere in the application.
+  -- Reuse the existing time-frame picker/pattern used elsewhere in the application.
 - Persistence
--- Persist configuration through the existing onMetaChange mechanism.
--- Use the existing generic dashboard widget CRUD behavior.
--- Do not create new backend endpoints or a separate persistence mechanism.
+  -- Persist configuration through the existing onMetaChange mechanism.
+  -- Use the existing generic dashboard widget CRUD behavior.
+  -- Do not create new backend endpoints or a separate persistence mechanism.
 - Dashboard workflow
--- A user should be able to add a goal card from the dashboard menu and completely configure it using the UI.
--- The resulting configuration should persist when the dashboard is reloaded.
--- A user should not need to manually edit widget data or receive engineering assistance to configure the goal.
-UI approach:
-First, inspect the existing dashboard architecture and the implementations referenced above. Based on the existing patterns and the scope of this issue, recommend whether inline editing on the card or a dedicated page is more appropriate.
-Once the approach is selected, implement the configuration UI consistently with existing application patterns.
-Validation:
-Before implementing validation, inspect how similar inputs and filter configurations are validated elsewhere in the codebase. Identify the minimum validation necessary for:
+  -- A user should be able to add a goal card from the dashboard menu and completely configure it using the UI.
+  -- The resulting configuration should persist when the dashboard is reloaded.
+  -- A user should not need to manually edit widget data or receive engineering assistance to configure the goal.
+  UI approach:
+  First, inspect the existing dashboard architecture and the implementations referenced above. Based on the existing patterns and the scope of this issue, recommend whether inline editing on the card or a dedicated page is more appropriate.
+  Once the approach is selected, implement the configuration UI consistently with existing application patterns.
+  Validation:
+  Before implementing validation, inspect how similar inputs and filter configurations are validated elsewhere in the codebase. Identify the minimum validation necessary for:
 - target amount
 - filter conditions
 - time frame
-Follow existing validation and error-display conventions rather than introducing a new validation system. If a validation rule is ambiguous or represents a product decision, flag it rather than making a significant assumption.
-Out of scope:
-Do not implement a deadline/target-date field or any deadline-related calculation. Do not add new backend endpoints.
-Before coding:
-Provide a short implementation plan identifying
+  Follow existing validation and error-display conventions rather than introducing a new validation system. If a validation rule is ambiguous or represents a product decision, flag it rather than making a significant assumption.
+  Out of scope:
+  Do not implement a deadline/target-date field or any deadline-related calculation. Do not add new backend endpoints.
+  Before coding:
+  Provide a short implementation plan identifying
 - the existing components/patterns you will reuse,
 - where the configuration UI will live,
 - how the configuration will be persisted,
 - any product/UX decisions that need to be made before implementation,
 - any assumptions you are making.
-Then implement the feature using the smallest change that fits the existing architecture.
+  Then implement the feature using the smallest change that fits the existing architecture.
 
 ---
 
@@ -76,6 +77,7 @@ packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx
 packages\desktop-client\src\components\reports\reports\GoalCard.tsx
 packages\desktop-client\src\components\reports\Overview.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:17Z)**_
@@ -86,9 +88,9 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:17Z)**_
 
 ```text
 1	import { useCallback, useMemo, useState } from 'react';
-2	
+2
 3	import type { RuleConditionEntity } from '@actual-app/core/types/models';
-4	
+4
 5	export function useRuleConditionFilters<T extends RuleConditionEntity>(
 6	  initialConditions: T[] = [],
 7	  initialConditionsOp: 'and' | 'or' = 'and',
@@ -98,7 +100,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:17Z)**_
 11	    initialConditionsOp,
 12	  );
 13	  const [saved, setSaved] = useState<T[] | null>(null);
-14	
+14
 15	  const onApply = useCallback(
 16	    (
 17	      conditionsOrSavedFilter:
@@ -120,7 +122,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:17Z)**_
 33	    },
 34	    [setConditions],
 35	  );
-36	
+36
 37	  const onUpdate = useCallback(
 38	    (oldFilter: T, updatedFilter: T) => {
 39	      setConditions(state =>
@@ -130,7 +132,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:17Z)**_
 43	    },
 44	    [setConditions],
 45	  );
-46	
+46
 47	  const onDelete = useCallback(
 48	    (deletedFilter: T) => {
 49	      setConditions(state => state.filter(f => f !== deletedFilter));
@@ -138,7 +140,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:17Z)**_
 51	    },
 52	    [setConditions],
 53	  );
-54	
+54
 55	  return useMemo(
 56	    () => ({
 57	      conditions,
@@ -162,6 +164,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:17Z)**_
 75	}
 76
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
@@ -173,7 +176,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 ```text
 1	import React, { useEffect, useRef, useState } from 'react';
 2	import { Trans, useTranslation } from 'react-i18next';
-3	
+3
 4	import { Block } from '@actual-app/components/block';
 5	import { styles } from '@actual-app/components/styles';
 6	import { theme } from '@actual-app/components/theme';
@@ -182,7 +185,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 9	import * as monthUtils from '@actual-app/core/shared/months';
 10	import type { GoalCardWidget } from '@actual-app/core/types/models';
 11	import type { TransObjectLiteral } from '@actual-app/core/types/util';
-12	
+12
 13	import { FinancialText } from '#components/FinancialText';
 14	import { PrivacyFilter } from '#components/PrivacyFilter';
 15	import { GoalProgress } from '#components/reports/GoalProgress';
@@ -194,14 +197,14 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 21	import { useContextMenu } from '#hooks/useContextMenu';
 22	import { useFormat } from '#hooks/useFormat';
 23	import { useTagCSS } from '#hooks/useTagCSS';
-24	
+24
 25	type GoalCardProps = {
 26	  widgetId: string;
 27	  isEditing?: boolean;
 28	  meta?: GoalCardWidget['meta'];
 29	  onMetaChange: (newMeta: GoalCardWidget['meta']) => void;
 30	};
-31	
+31
 32	export function GoalCard({
 33	  widgetId,
 34	  isEditing,
@@ -212,11 +215,11 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 39	  const format = useFormat();
 40	  const getTagCSS = useTagCSS();
 41	  const [latestTransaction, setLatestTransaction] = useState<string>('');
-42	
+42
 43	  const [nameMenuOpen, setNameMenuOpen] = useState(false);
 44	  const [isCardHovered, setIsCardHovered] = useState(false);
 45	  const [isSettingGoal, setIsSettingGoal] = useState(false);
-46	
+46
 47	  const contextMenuTriggerRef = useRef(null);
 48	  useContextMenu({
 49	    triggerRef: contextMenuTriggerRef,
@@ -229,7 +232,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 56	      },
 57	    ],
 58	  });
-59	
+59
 60	  useEffect(() => {
 61	    async function fetchLatestTransaction() {
 62	      const latestTrans = await send('get-latest-transaction');
@@ -239,7 +242,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 66	    }
 67	    void fetchLatestTransaction();
 68	  }, []);
-69	
+69
 70	  const [start, end] = calculateTimeRange(
 71	    meta?.timeFrame,
 72	    {
@@ -249,10 +252,10 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 76	    },
 77	    latestTransaction,
 78	  );
-79	
+79
 80	  const targetAmount = meta?.targetAmount ?? 0;
 81	  const linkedTag = meta?.linkedTag;
-82	
+82
 83	  const currentAmount = useGoalTotal({
 84	    start,
 85	    end,
@@ -260,7 +263,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 87	    conditionsOp: meta?.conditionsOp,
 88	    linkedTag,
 89	  });
-90	
+90
 91	  return (
 92	    <ReportCard
 93	      widgetId={widgetId}
@@ -325,7 +328,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 152	            </Block>
 153	          </View>
 154	        </View>
-155	
+155
 156	        <View
 157	          style={{
 158	            flex: 1,
@@ -365,6 +368,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:19Z)**_
 192	}
 193
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
@@ -377,7 +381,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 1	import { useEffect, useState } from 'react';
 2	import { Trans, useTranslation } from 'react-i18next';
 3	import { useParams } from 'react-router';
-4	
+4
 5	import { Block } from '@actual-app/components/block';
 6	import { Button } from '@actual-app/components/button';
 7	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
@@ -388,7 +392,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 12	import * as monthUtils from '@actual-app/core/shared/months';
 13	import type { GoalCardWidget, TimeFrame } from '@actual-app/core/types/models';
 14	import type { TransObjectLiteral } from '@actual-app/core/types/util';
-15	
+15
 16	import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 17	import { FinancialText } from '#components/FinancialText';
 18	import { MobileBackButton } from '#components/mobile/MobileBackButton';
@@ -412,25 +416,25 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 36	import { addNotification } from '#notifications/notificationsSlice';
 37	import { useDispatch } from '#redux';
 38	import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
-39	
+39
 40	export function GoalReport() {
 41	  const params = useParams();
 42	  const { data: widget, isLoading } = useDashboardWidget<GoalCardWidget>({
 43	    id: params.id,
 44	    type: 'goal-card',
 45	  });
-46	
+46
 47	  if (isLoading) {
 48	    return <LoadingIndicator />;
 49	  }
-50	
+50
 51	  return <GoalReportInner widget={widget} />;
 52	}
-53	
+53
 54	type GoalReportInnerProps = {
 55	  widget?: GoalCardWidget;
 56	};
-57	
+57
 58	function GoalReportInner({ widget }: GoalReportInnerProps) {
 59	  const { t } = useTranslation();
 60	  const locale = useLocale();
@@ -438,7 +442,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 62	  const navigate = useNavigate();
 63	  const format = useFormat();
 64	  const { isNarrowWidth } = useResponsive();
-65	
+65
 66	  const [start, setStart] = useState(
 67	    monthUtils.dayFromDate(monthUtils.currentMonth()),
 68	  );
@@ -453,10 +457,10 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 77	  const [allMonths, setAllMonths] = useState<
 78	    Array<{ name: string; pretty: string }>
 79	  >([]);
-80	
+80
 81	  const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
 82	  const firstDayOfWeekIdx = _firstDayOfWeekIdx || '0';
-83	
+83
 84	  const {
 85	    conditions,
 86	    conditionsOp,
@@ -468,7 +472,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 92	    widget?.meta?.conditions,
 93	    widget?.meta?.conditionsOp,
 94	  );
-95	
+95
 96	  // The date picker needs the range of months that have transactions.
 97	  useEffect(() => {
 98	    async function run() {
@@ -478,7 +482,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 102	      const latestDay = latest ? latest.date : monthUtils.currentDay();
 103	      setEarliestTransaction(earliestDay);
 104	      setLatestTransaction(latestDay);
-105	
+105
 106	      const currentMonth = monthUtils.currentMonth();
 107	      const latestTransactionMonth = monthUtils.monthFromDate(latestDay);
 108	      const latestMonth =
@@ -488,7 +492,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 112	      // Show at least a year's worth of months in the selects.
 113	      const yearAgo = monthUtils.subMonths(latestMonth, 12);
 114	      const earliestMonth = monthUtils.monthFromDate(earliestDay);
-115	
+115
 116	      setAllMonths(
 117	        monthUtils
 118	          .rangeInclusive(
@@ -504,7 +508,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 128	    }
 129	    void run();
 130	  }, [locale]);
-131	
+131
 132	  useEffect(() => {
 133	    if (latestTransaction) {
 134	      const [initialStart, initialEnd, initialMode] = calculateTimeRange(
@@ -521,9 +525,9 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 145	      setMode(initialMode);
 146	    }
 147	  }, [latestTransaction, widget?.meta?.timeFrame]);
-148	
+148
 149	  const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
-150	
+150
 151	  const title = widget?.meta?.name || t('Personal goal');
 152	  // Uses the unsaved editor state so the report previews changes before the
 153	  // widget is saved.
@@ -534,7 +538,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 158	    conditionsOp,
 159	    linkedTag,
 160	  });
-161	
+161
 162	  function notifyMissingWidget() {
 163	    dispatch(
 164	      addNotification({
@@ -545,13 +549,13 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 169	      }),
 170	    );
 171	  }
-172	
+172
 173	  const onSaveWidgetName = async (newName: string) => {
 174	    if (!widget) {
 175	      notifyMissingWidget();
 176	      return;
 177	    }
-178	
+178
 179	    const name = newName || t('Personal goal');
 180	    updateDashboardWidgetMutation.mutate({
 181	      widget: {
@@ -563,13 +567,13 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 187	      },
 188	    });
 189	  };
-190	
+190
 191	  function onSaveWidget() {
 192	    if (!widget) {
 193	      notifyMissingWidget();
 194	      return;
 195	    }
-196	
+196
 197	    const { linkedTag: _previousTag, ...previousMeta } = widget.meta ?? {};
 198	    updateDashboardWidgetMutation.mutate(
 199	      {
@@ -599,7 +603,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 223	      },
 224	    );
 225	  }
-226	
+226
 227	  function onChangeDates(
 228	    newStart: string,
 229	    newEnd: string,
@@ -609,7 +613,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 233	    setEnd(newEnd);
 234	    setMode(newMode);
 235	  }
-236	
+236
 237	  return (
 238	    <Page
 239	      header={
@@ -660,7 +664,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 284	          </Button>
 285	        )}
 286	      </Header>
-287	
+287
 288	      <View
 289	        style={{
 290	          flex: 1,
@@ -740,13 +744,13 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 364	            />
 365	          </View>
 366	        </View>
-367	
+367
 368	        <GoalProgress
 369	          currentAmount={currentAmount}
 370	          targetAmount={targetAmount}
 371	          size="large"
 372	        />
-373	
+373
 374	        <View
 375	          style={{
 376	            flex: 1,
@@ -795,6 +799,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:20Z)**_
 419	}
 420
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:21Z)**_
@@ -845,6 +850,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:21Z)**_
 161-  | SankeyWidget
 162-  | AgeOfMoneyWidget
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:23Z)**_
@@ -877,6 +883,7 @@ ad09f7d54 Merge pull request #73 from CSCI-435-SE/feat/issue-54-mainbudgetpage-s
 ffa850259 Merge pull request #81 from CSCI-435-SE/feat/issue-63-wire-spending-to-goalcard
 601181241 Add AI logs for Sprint 1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:29Z)**_
@@ -956,6 +963,7 @@ packages\desktop-client\src\components\reports\ReportRouter.tsx-197-          </
 packages\desktop-client\src\components\reports\ReportRouter.tsx-198-        }
 packages\desktop-client\src\components\reports\ReportRouter.tsx-199-      />
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:32Z)**_
@@ -974,6 +982,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:52Z)**_
 ```text
 Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:34Z)**_
@@ -1011,6 +1020,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:34Z)**_
 168-
 169-async function resetDashboard(id: string) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:57Z)**_
@@ -1028,6 +1038,7 @@ GoalTransactions.test.tsx
 GoalTransactions.tsx
 useGoalTotal.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
@@ -1039,27 +1050,27 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 ```text
 1	import { useState } from 'react';
 2	import { Trans } from 'react-i18next';
-3	
+3
 4	import { Button } from '@actual-app/components/button';
 5	import { theme } from '@actual-app/components/theme';
 6	import { View } from '@actual-app/components/view';
-7	
+7
 8	import { NON_DRAGGABLE_AREA_CLASS_NAME } from '#components/reports/constants';
 9	import { GoalTagSelect } from '#components/reports/GoalTagSelect';
 10	import { AmountInput } from '#components/util/AmountInput';
-11	
+11
 12	type GoalSettings = {
 13	  targetAmount: number;
 14	  linkedTag?: string;
 15	};
-16	
+16
 17	type GoalSettingsEditorProps = {
 18	  idPrefix: string;
 19	  initialSettings: GoalSettings;
 20	  onSave: (settings: GoalSettings) => void;
 21	  onCancel: () => void;
 22	};
-23	
+23
 24	export function GoalSettingsEditor({
 25	  idPrefix,
 26	  initialSettings,
@@ -1070,11 +1081,11 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 31	    initialSettings.targetAmount,
 32	  );
 33	  const [linkedTag, setLinkedTag] = useState(initialSettings.linkedTag);
-34	
+34
 35	  const amountId = `${idPrefix}-amount`;
 36	  const tagId = `${idPrefix}-tag`;
 37	  const labelStyle = { color: theme.pageTextSubdued, marginBottom: 3 };
-38	
+38
 39	  return (
 40	    <View
 41	      className={NON_DRAGGABLE_AREA_CLASS_NAME}
@@ -1128,6 +1139,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 89	}
 90
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
@@ -1138,17 +1150,17 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 
 ```text
 1	import { useEffect, useMemo, useState } from 'react';
-2	
+2
 3	import { listen } from '@actual-app/core/platform/client/connection';
 4	import type {
 5	  RuleConditionEntity,
 6	  SummaryContent,
 7	} from '@actual-app/core/types/models';
-8	
+8
 9	import { summarySpreadsheet } from '#components/reports/spreadsheets/summary-spreadsheet';
 10	import { useReport } from '#components/reports/useReport';
 11	import { useLocale } from '#hooks/useLocale';
-12	
+12
 13	type UseGoalTotalArgs = {
 14	  start: string;
 15	  end: string;
@@ -1156,7 +1168,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 17	  conditionsOp?: 'and' | 'or';
 18	  linkedTag?: string;
 19	};
-20	
+20
 21	/**
 22	 * Sums the transactions tagged with `linkedTag` that match `conditions`
 23	 * between `start` and `end`. Returns 0 when no tag is linked.
@@ -1174,7 +1186,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 35	  const locale = useLocale();
 36	  const [refreshCount, setRefreshCount] = useState(0);
 37	  const [lastTotal, setLastTotal] = useState<number | null>(null);
-38	
+38
 39	  useEffect(() => {
 40	    if (!linkedTag) {
 41	      return;
@@ -1189,7 +1201,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 50	      }
 51	    });
 52	  }, [linkedTag]);
-53	
+53
 54	  // `refreshCount` is a dependency only so a transaction change produces a new
 55	  // function, which makes `useReport` run the query again.
 56	  const params = useMemo(() => {
@@ -1208,21 +1220,21 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 69	    );
 70	    // oxlint-disable-next-line react-hooks/exhaustive-deps -- refreshCount forces a re-run
 71	  }, [start, end, conditions, conditionsOp, linkedTag, locale, refreshCount]);
-72	
+72
 73	  const data = useReport<{ total: number }>('goal', params);
-74	
+74
 75	  // `useReport` clears its result while re-running, so keep showing the last
 76	  // total until the new one arrives instead of flickering to 0.
 77	  if (data && data.total !== lastTotal) {
 78	    setLastTotal(data.total);
 79	  }
-80	
+80
 81	  if (!linkedTag) {
 82	    return 0;
 83	  }
 84	  return data?.total ?? lastTotal ?? 0;
 85	}
-86	
+86
 87	/**
 88	 * The condition that limits a goal to transactions tagged with its tag. It is
 89	 * always ANDed with the goal's own conditions.
@@ -1235,10 +1247,11 @@ _**Agent (claude-opus-5-5 2026-10-08 03:31:58Z)**_
 96	    type: 'string',
 97	  };
 98	}
-99	
+99
 100	const SUM_CONTENT: SummaryContent = { type: 'sum' };
 101
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:32:08Z)**_
@@ -1252,7 +1265,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:32:10Z)**_
  path `./ai-logs` pattern `#64|issue 64|UI goal config|configur`
 
 ```text
-ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1389-6	
+ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1389-6
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1390-7	import type { ContextMenuItem } from '#contextmenu/types';
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1391-8	import { useNavigate } from '#hooks/useNavigate';
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1392-9	import {
@@ -1264,35 +1277,35 @@ ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calc
 --
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1411-28	  { id: 'tag-2', tag: 'emergency' },
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1412-29	];
-ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1413-30	
+ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1413-30
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1414-31	type Meta = GoalCardWidget['meta'];
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md:1415:32	type TestStore = ReturnType<typeof configureTestAppStore>;
-ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1416-33	
+ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1416-33
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1417-34	function createTestEnvironment() {
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1418-35	  const queryClient = createTestQueryClient();
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1419-36	  queryClient.setQueryData(tagQueries.list().queryKey, TAGS);
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md:1420:37	  return { queryClient, store: configureTestAppStore({ queryClient }) };
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1421-38	}
-ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1422-39	
+ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1422-39
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1423-40	function renderGoalCard({
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-1424-41	  meta,
 --
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2731-19	import type { Mock } from 'vitest';
-ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2732-20	
+ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2732-20
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2733-21	import { useNavigate } from '#hooks/useNavigate';
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2734-22	import {
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md:2735:23	  configureTestAppStore,
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2736-24	  createTestQueryClient,
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2737-25	  TestProviders,
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2738-26	} from '#mocks';
-ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2739-27	
+ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2739-27
 --
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2866-154	    widgets: meta === undefined ? [] : [makeWidget(meta)],
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2867-155	    ...serverOptions,
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2868-156	  });
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2869-157	  const queryClient = createTestQueryClient();
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md:2870:158	  const store = configureTestAppStore({ queryClient });
-ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2871-159	
+ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2871-159
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2872-160	  render(
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2873-161	    <TestProviders queryClient={queryClient} store={store}>
 ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calculation.md-2874-162	      <MemoryRouter initialEntries={[path]}>
@@ -1335,6 +1348,7 @@ ai-logs\sprint1\RaccoonSwarm\2026-10-06_claude-code_issue-63-goal-card-live-calc
 
 [Showing results with pagination = limit: 80]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:32:11Z)**_
@@ -1362,6 +1376,7 @@ packages\desktop-client\src\components\reports\reports\NetWorth.tsx:250:        
 packages\desktop-client\src\components\reports\reports\NetWorth.tsx:272:    updateDashboardWidgetMutation.mutate({
 packages\desktop-client\src\components\reports\reports\NetWorth.tsx:324:        onChangeDates={onChangeDates}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:32:18Z)**_
@@ -1380,19 +1395,19 @@ _**Agent (claude-opus-5-5 2026-10-08 03:32:18Z)**_
 ```text
 1	import React from 'react';
 2	import { Trans } from 'react-i18next';
-3	
+3
 4	import { Block } from '@actual-app/components/block';
 5	import { styles } from '@actual-app/components/styles';
 6	import { theme } from '@actual-app/components/theme';
 7	import { View } from '@actual-app/components/view';
 8	import { css } from '@emotion/css';
-9	
+9
 10	type GoalProgressProps = {
 11	  currentAmount: number;
 12	  targetAmount: number;
 13	  size?: 'small' | 'large';
 14	};
-15	
+15
 16	/**
 17	 * Progress bar for a goal. Yellow while the goal is in progress, green with a
 18	 * congratulations message once the target is reached.
@@ -1407,7 +1422,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:32:18Z)**_
 27	    targetAmount,
 28	  );
 29	  const barHeight = size === 'large' ? 16 : 12;
-30	
+30
 31	  return (
 32	    <View>
 33	      <View
@@ -1462,7 +1477,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:32:18Z)**_
 82	    </View>
 83	  );
 84	}
-85	
+85
 86	/**
 87	 * Whole-number percent toward the goal. `percent` keeps counting past 100 once
 88	 * the goal is exceeded, while `barPercent` is the bar width, capped at 100.
@@ -1479,6 +1494,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:32:18Z)**_
 99	}
 100
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:32:19Z)**_
@@ -1528,6 +1544,7 @@ packages\desktop-client\src\components\reports\reports\SummaryCard.tsx:16:import
 packages\desktop-client\src\components\reports\reports\SummaryCard.tsx:50:  const [start, end] = calculateTimeRange(
 packages\desktop-client\src\components\reports\reports\SummaryCard.tsx:113:          <DateRange start={start} end={end} />
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:32:22Z)**_
@@ -1550,6 +1567,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:32:22Z)**_
 151:      setSymbol(sign);
 186:        isDisabled={disabled || !!sign}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:32:23Z)**_
@@ -1628,6 +1646,7 @@ packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx:440:   
 packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx:446:    it('links the chosen tag together with the goal amount', async () => {
 packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx:467:    it('unlinks the tag when "No tag" is chosen', async () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:32:41Z)**_
@@ -1636,14 +1655,14 @@ I stopped before writing any code. Everything this issue asks for is already on 
 
 ## What already exists
 
-| Requirement | Where it's done |
-|---|---|
-| Add from the dashboard menu | The "Personal goal" item in [Overview.tsx:579-616](packages/desktop-client/src/components/reports/Overview.tsx#L579-L616) creates the widget with `targetAmount: 0` |
+| Requirement                   | Where it's done                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Add from the dashboard menu   | The "Personal goal" item in [Overview.tsx:579-616](packages/desktop-client/src/components/reports/Overview.tsx#L579-L616) creates the widget with `targetAmount: 0`                                                                                                                                                                                                                |
 | Target amount, editable later | On the card: right-click → "Set goal" opens [GoalSettingsEditor.tsx](packages/desktop-client/src/components/reports/GoalSettingsEditor.tsx), which saves through `onMetaChange`. On the goal page: an amount input at [GoalReport.tsx:340](packages/desktop-client/src/components/reports/reports/GoalReport.tsx#L340). Both use `sign="+"`, so negative amounts can't be entered. |
-| Filter conditions | [GoalReport.tsx:84-94](packages/desktop-client/src/components/reports/reports/GoalReport.tsx#L84-L94) uses `useRuleConditionFilters` and the shared report `Header`, the same way NetWorth and Spending do |
-| Time frame | The same `Header` time-frame picker, with `calculateTimeRange` to restore the saved range |
-| Saving | "Save widget" uses `useUpdateDashboardWidgetMutation`, which goes through the generic `updateDashboardWidget` in `app.ts`. This is the same as [NetWorth.tsx:224](packages/desktop-client/src/components/reports/reports/NetWorth.tsx#L224). No new endpoints. |
-| Tests | GoalReport has a test that saves the goal amount, tag, filters and time frame; GoalCard has tests for setting a goal, linking a tag and renaming |
+| Filter conditions             | [GoalReport.tsx:84-94](packages/desktop-client/src/components/reports/reports/GoalReport.tsx#L84-L94) uses `useRuleConditionFilters` and the shared report `Header`, the same way NetWorth and Spending do                                                                                                                                                                         |
+| Time frame                    | The same `Header` time-frame picker, with `calculateTimeRange` to restore the saved range                                                                                                                                                                                                                                                                                          |
+| Saving                        | "Save widget" uses `useUpdateDashboardWidgetMutation`, which goes through the generic `updateDashboardWidget` in `app.ts`. This is the same as [NetWorth.tsx:224](packages/desktop-client/src/components/reports/reports/NetWorth.tsx#L224). No new endpoints.                                                                                                                     |
+| Tests                         | GoalReport has a test that saves the goal amount, tag, filters and time frame; GoalCard has tests for setting a goal, linking a tag and renaming                                                                                                                                                                                                                                   |
 
 **UI approach:** the current split is already the right one, so I'd keep it. Quick edits (amount and tag) happen on the card. Full setup (filters and time frame) happens on the dedicated page, which is how every other report with filters works. Putting filter editing on the card itself would be a new pattern that nothing else in the dashboard uses.
 
@@ -1662,7 +1681,7 @@ If you want only the gaps that don't need a product decision, I'd do #1, plus #2
 
 _**User (2026-10-08 03:44:18Z)**_
 
-Please clarify what would need to be added/changed for the issue, if anything, since you mention lots of it is already implemented. Here's the exact description of the same issue, copied straight from Github: 
+Please clarify what would need to be added/changed for the issue, if anything, since you mention lots of it is already implemented. Here's the exact description of the same issue, copied straight from Github:
 
 <pasted_content id="abd6">
 Summary
@@ -1683,7 +1702,6 @@ Inline-editable card vs. dedicated full page — carried over unresolved from Ad
 Should a deadline/target-date field be added to the form now (cheap to add a field, even with no calculation behind it yet), or deferred entirely until a future issue takes on Add dynamic Personal Goal tracking widget to dashboard #14's Open Question 2?
 What validation is needed — e.g., target amount must be positive, at least one filter condition required — and how should invalid states be surfaced to the user?
 </pasted_content id="abd6">
-
 
 ---
 
@@ -1708,6 +1726,7 @@ _**Agent (claude-opus-5-5 2026-10-08 03:44:29Z)**_
 452-
 453-  const deleteDashboardPageMutation = useDeleteDashboardPageMutation();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 03:44:44Z)**_
@@ -1717,23 +1736,27 @@ I checked the issue's acceptance criteria against master one by one. **Every fun
 ## Acceptance criteria vs. master
 
 **1. Decide and document inline card vs. full page: decided in code, not yet documented.**
+
 - The earlier work built both. The card does quick edits: right-click → "Set goal" opens a target amount and linked tag editor. The full page at `/reports/goal/:id` handles everything, including filters and time frame.
 - The issue recommends inline-on-card, but I'd keep the full page for filters and time frame. NetWorth and Spending do it that way, and it already works and is tested. Moving the filter editor onto a small dashboard card would be a pattern nothing else in the dashboard uses.
 - **Needed:** state this decision in the PR description. No code required.
 
 **2. UI for target amount, filters and time frame: done.**
+
 - Target amount uses the standard amount input on both the card and the page.
 - Filters use `useRuleConditionFilters` plus the shared report `Header` filter components, the same as NetWorth and Spending.
 - The time frame uses the same `Header` picker.
 - **Needed:** nothing.
 
 **3. Settings saved through `onMetaChange` and the generic widget save: done.**
+
 - The card saves through `onMetaChange`. In [Overview.tsx:441-451](packages/desktop-client/src/components/reports/Overview.tsx#L441-L451) that's just a wrapper around `useUpdateDashboardWidgetMutation`.
 - The full page calls that same mutation directly, as NetWorth and Spending do.
 - Both end up in the generic `updateDashboardWidget` in `app.ts`. There are no new endpoints.
 - **Needed:** nothing. Optionally, mention in the PR that the page calls the mutation directly rather than going through `onMetaChange`, since the criterion's wording names `onMetaChange`.
 
 **4. Add from the menu and fully configure without hand-edited data: done, with one catch.**
+
 - "Personal goal" is in the add-widget menu, and the full page saves amount, tag, filters and time frame. There's a test that saves all four.
 - The catch: issue #63 added a **linked tag** that this issue's spec doesn't mention. Without a tag, the goal total is always 0, whatever the filters and time frame say. A user who sets only the three fields this issue lists will see no progress.
 - **Needed:** a decision (open question C below).
@@ -1745,19 +1768,22 @@ I checked the issue's acceptance criteria against master one by one. **Every fun
 **B. Deadline field.** Defer it to a future issue, as you said. No code.
 
 **C. Validation.** For comparison, none of the other reports check inputs before saving a widget. Each input limits itself (for example, the amount input can't go negative), and errors are shown as notifications, which `GoalReport` already uses.
-- **Target must be positive:** negatives are already impossible, but **0 can be saved**. Nothing breaks; the bar just never completes. Blocking a 0 target would be a small change: an error notification on save, on both the page and the card. *Needs your call.*
+
+- **Target must be positive:** negatives are already impossible, but **0 can be saved**. Nothing breaks; the bar just never completes. Blocking a 0 target would be a small change: an error notification on save, on both the page and the card. _Needs your call._
 - **At least one filter required:** I'd **not** add this. In this design the linked tag decides which transactions count, and a tag-only goal ("everything tagged #vacation") is valid. Requiring a filter would block that.
 - **A tag being required:** this is the real question from criterion 4. Options:
   - (a) Keep it as is, and add a hint on the card when no tag is linked. The page already shows one.
   - (b) Allow goals with no tag that count every transaction matching the filters. This means changing `useGoalTotal` and its tests.
 
-  *Needs your call.* I'd lean toward (a), since it's the smaller change and keeps #63's design.
+  _Needs your call._ I'd lean toward (a), since it's the smaller change and keeps #63's design.
 
 ## Optional polish (no decisions needed)
+
 - Show the goal's dates on the card. Every other card with a time frame does, and it lets the user confirm on the dashboard that the time frame saved.
 - Add an empty-state hint on a new, unconfigured card, which currently just shows "0 of 0".
 
 ## Bottom line
+
 For the issue to close, the only things required are the PR write-up (criterion 1) and your answers on C. Any code change is small and depends on those answers: a 0-target check, a no-tag hint or no-tag goals, and the optional dates on the card. Tell me which of these you want and I'll implement them.
 
 ---
@@ -1820,6 +1846,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 138	                  <FinancialText>
 139	                    {format(data.netWorth, 'financial')}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
@@ -1830,7 +1857,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 
 ```text
 1	import React from 'react';
-2	
+2
 3	import type {
 4	  GoalCardWidget,
 5	  RuleConditionEntity,
@@ -1838,7 +1865,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 7	} from '@actual-app/core/types/models';
 8	import { act, fireEvent, render, screen, within } from '@testing-library/react';
 9	import userEvent from '@testing-library/user-event';
-10	
+10
 11	import { summarySpreadsheet } from '#components/reports/spreadsheets/summary-spreadsheet';
 12	import { useReport } from '#components/reports/useReport';
 13	import type { ContextMenuItem } from '#contextmenu/types';
@@ -1850,9 +1877,9 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 19	} from '#mocks';
 20	import { initServer, serverPush } from '#mocks/connection';
 21	import { tagQueries } from '#tags/queries';
-22	
+22
 23	import { GoalCard } from './GoalCard';
-24	
+24
 25	vi.mock(
 26	  '@actual-app/core/platform/client/connection',
 27	  () => import('#mocks/connection'),
@@ -1871,22 +1898,22 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 40	vi.mock('#hooks/useIsInViewport', () => ({
 41	  useIsInViewport: () => true,
 42	}));
-43	
+43
 44	const WIDGET_ID = 'goal-widget-1';
 45	const TAGS: TagEntity[] = [
 46	  { id: 'tag-1', tag: 'vacation' },
 47	  { id: 'tag-2', tag: 'emergency' },
 48	];
-49	
+49
 50	type Meta = GoalCardWidget['meta'];
 51	type TestStore = ReturnType<typeof configureTestAppStore>;
-52	
+52
 53	function createTestEnvironment() {
 54	  const queryClient = createTestQueryClient();
 55	  queryClient.setQueryData(tagQueries.list().queryKey, TAGS);
 56	  return { queryClient, store: configureTestAppStore({ queryClient }) };
 57	}
-58	
+58
 59	function renderGoalCard({
 60	  meta,
 61	  isEditing = false,
@@ -1911,7 +1938,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 80	  );
 81	  return { ...result, onMetaChange, store };
 82	}
-83	
+83
 84	function getProgressFill(container: HTMLElement) {
 85	  const track = container.querySelector('[aria-hidden="true"]');
 86	  const fill = track?.firstElementChild;
@@ -1920,58 +1947,58 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 89	  }
 90	  return fill;
 91	}
-92	
+92
 93	function mockTotal(total: number) {
 94	  vi.mocked(useReport).mockReturnValue({ total });
 95	}
-96	
+96
 97	describe('GoalCard', () => {
 98	  const mockNavigate = vi.fn();
-99	
+99
 100	  beforeEach(() => {
 101	    vi.clearAllMocks();
 102	    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 103	    vi.mocked(useReport).mockReturnValue(null);
 104	    initServer({ 'get-latest-transaction': () => null });
 105	  });
-106	
+106
 107	  describe('name', () => {
 108	    it('shows the goal name from meta', () => {
 109	      renderGoalCard({ meta: { name: 'Emergency fund' } });
-110	
+110
 111	      expect(
 112	        screen.getByRole('heading', { name: 'Emergency fund' }),
 113	      ).toBeInTheDocument();
 114	    });
-115	
+115
 116	    it('falls back to a default name when none is set', () => {
 117	      renderGoalCard({ meta: {} });
-118	
+118
 119	      expect(
 120	        screen.getByRole('heading', { name: 'Personal goal' }),
 121	      ).toBeInTheDocument();
 122	    });
 123	  });
-124	
+124
 125	  describe('amounts', () => {
 126	    it('shows the computed current amount and the target amount', () => {
 127	      mockTotal(250000);
 128	      renderGoalCard({
 129	        meta: { linkedTag: 'vacation', targetAmount: 1000000 },
 130	      });
-131	
+131
 132	      expect(screen.getByText('2,500.00')).toBeInTheDocument();
 133	      expect(screen.getByText(/10,000\.00/)).toBeInTheDocument();
 134	    });
-135	
+135
 136	    it('shows zero amounts when meta is missing', () => {
 137	      renderGoalCard({ meta: null });
-138	
+138
 139	      expect(screen.getAllByText(/0\.00/)).toHaveLength(2);
 140	      expect(screen.getByText('0%')).toBeInTheDocument();
 141	    });
 142	  });
-143	
+143
 144	  describe('progress', () => {
 145	    it.each([
 146	      {
@@ -2027,20 +2054,20 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 196	      const { container } = renderGoalCard({
 197	        meta: { linkedTag: 'vacation', targetAmount },
 198	      });
-199	
+199
 200	      expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
 201	      expect(getComputedStyle(getProgressFill(container)).width).toBe(
 202	        `${Math.min(expected, 100)}%`,
 203	      );
 204	    });
-205	
+205
 206	    it('updates when the computed total changes', () => {
 207	      const environment = createTestEnvironment();
 208	      const meta: Meta = { linkedTag: 'vacation', targetAmount: 1000000 };
 209	      mockTotal(100000);
 210	      const { rerender, container } = renderGoalCard({ meta, environment });
 211	      expect(screen.getByText('10%')).toBeInTheDocument();
-212	
+212
 213	      mockTotal(600000);
 214	      rerender(
 215	        <TestProviders
@@ -2050,22 +2077,22 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 219	          <GoalCard widgetId={WIDGET_ID} meta={meta} onMetaChange={vi.fn()} />
 220	        </TestProviders>,
 221	      );
-222	
+222
 223	      expect(screen.getByText('60%')).toBeInTheDocument();
 224	      expect(getComputedStyle(getProgressFill(container)).width).toBe('60%');
 225	    });
-226	
+226
 227	    it('shows no progress when no tag is linked', () => {
 228	      mockTotal(500000);
 229	      const { container } = renderGoalCard({
 230	        meta: { targetAmount: 1000000 },
 231	      });
-232	
+232
 233	      expect(screen.getByText('0%')).toBeInTheDocument();
 234	      expect(getComputedStyle(getProgressFill(container)).width).toBe('0%');
 235	      expect(summarySpreadsheet).not.toHaveBeenCalled();
 236	    });
-237	
+237
 238	    it('sums tagged transactions using the stored conditions', () => {
 239	      const conditions: RuleConditionEntity[] = [
 240	        { field: 'amount', op: 'gt', value: 0, type: 'number' },
@@ -2078,7 +2105,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 247	          conditionsOp: 'or',
 248	        },
 249	      });
-250	
+250
 251	      expect(summarySpreadsheet).toHaveBeenCalledWith(
 252	        expect.any(String),
 253	        expect.any(String),
@@ -2097,85 +2124,85 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 266	      );
 267	    });
 268	  });
-269	
+269
 270	  describe('live updates', () => {
 271	    const meta: Meta = { linkedTag: 'vacation', targetAmount: 1000000 };
-272	
+272
 273	    async function pushTableChange(tables: string[]) {
 274	      await act(async () => {
 275	        serverPush('sync-event', { type: 'applied', tables });
 276	      });
 277	    }
-278	
+278
 279	    it('recalculates when transactions change', async () => {
 280	      mockTotal(400000);
 281	      renderGoalCard({ meta });
 282	      expect(await screen.findByText('40%')).toBeInTheDocument();
 283	      const callsBefore = vi.mocked(summarySpreadsheet).mock.calls.length;
-284	
+284
 285	      mockTotal(700000);
 286	      await pushTableChange(['transactions']);
-287	
+287
 288	      expect(vi.mocked(summarySpreadsheet).mock.calls.length).toBe(
 289	        callsBefore + 1,
 290	      );
 291	      expect(screen.getByText('70%')).toBeInTheDocument();
 292	    });
-293	
+293
 294	    it('ignores changes that do not touch transactions', async () => {
 295	      mockTotal(400000);
 296	      renderGoalCard({ meta });
 297	      await screen.findByText('40%');
 298	      const callsBefore = vi.mocked(summarySpreadsheet).mock.calls.length;
-299	
+299
 300	      await pushTableChange(['categories']);
-301	
+301
 302	      expect(vi.mocked(summarySpreadsheet).mock.calls.length).toBe(callsBefore);
 303	    });
-304	
+304
 305	    it('keeps showing the last total while recalculating', async () => {
 306	      mockTotal(400000);
 307	      renderGoalCard({ meta });
 308	      await screen.findByText('40%');
-309	
+309
 310	      // useReport returns null while a new query is in flight.
 311	      vi.mocked(useReport).mockReturnValue(null);
 312	      await pushTableChange(['transactions']);
-313	
+313
 314	      expect(screen.getByText('40%')).toBeInTheDocument();
 315	    });
-316	
+316
 317	    it('does not listen for changes when no tag is linked', async () => {
 318	      renderGoalCard({ meta: { targetAmount: 1000000 } });
-319	
+319
 320	      await pushTableChange(['transactions']);
-321	
+321
 322	      expect(summarySpreadsheet).not.toHaveBeenCalled();
 323	    });
 324	  });
-325	
+325
 326	  describe('navigation', () => {
 327	    it('opens the goal report for this widget when clicked', async () => {
 328	      const user = userEvent.setup();
 329	      renderGoalCard({ meta: { name: 'Vacation' } });
-330	
+330
 331	      await user.click(screen.getByRole('button'));
-332	
+332
 333	      expect(mockNavigate).toHaveBeenCalledWith(`/reports/goal/${WIDGET_ID}`, {
 334	        state: { goBack: true },
 335	      });
 336	    });
-337	
+337
 338	    it('does not navigate while the dashboard is being edited', async () => {
 339	      const user = userEvent.setup();
 340	      renderGoalCard({ meta: { name: 'Vacation' }, isEditing: true });
-341	
+341
 342	      await user.click(screen.getByRole('heading', { name: 'Vacation' }));
-343	
+343
 344	      expect(mockNavigate).not.toHaveBeenCalled();
 345	    });
 346	  });
-347	
+347
 348	  describe('renaming', () => {
 349	    it('saves the new name and keeps the rest of the goal', async () => {
 350	      const user = userEvent.setup();
@@ -2185,13 +2212,13 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 354	        targetAmount: 1000000,
 355	      };
 356	      const { onMetaChange, store } = renderGoalCard({ meta });
-357	
+357
 358	      chooseContextMenuItem(store, 'Vacation', 'rename');
-359	
+359
 360	      const input = screen.getByRole('textbox');
 361	      await user.clear(input);
 362	      await user.type(input, 'Trip to Japan{Enter}');
-363	
+363
 364	      expect(onMetaChange).toHaveBeenCalledWith({
 365	        name: 'Trip to Japan',
 366	        linkedTag: 'vacation',
@@ -2199,7 +2226,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 368	      });
 369	    });
 370	  });
-371	
+371
 372	  describe('setting a goal', () => {
 373	    it('saves the entered amount as the target and keeps the rest of the goal', async () => {
 374	      const user = userEvent.setup();
@@ -2209,13 +2236,13 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 378	        targetAmount: 1000000,
 379	      };
 380	      const { onMetaChange, store } = renderGoalCard({ meta });
-381	
+381
 382	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
-383	
+383
 384	      const input = screen.getByLabelText('Goal amount');
 385	      await user.clear(input);
 386	      await user.type(input, '7,500{Enter}');
-387	
+387
 388	      expect(onMetaChange).toHaveBeenCalledWith({
 389	        name: 'Vacation',
 390	        conditionsOp: 'or',
@@ -2223,70 +2250,70 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 392	      });
 393	      expect(screen.queryByLabelText('Goal amount')).not.toBeInTheDocument();
 394	    });
-395	
+395
 396	    it('sets a goal on a new card that has no target yet', async () => {
 397	      const user = userEvent.setup();
 398	      const { onMetaChange, store } = renderGoalCard({ meta: {} });
-399	
+399
 400	      chooseContextMenuItem(store, 'Personal goal', 'set-goal');
-401	
+401
 402	      const input = screen.getByLabelText('Goal amount');
 403	      await user.clear(input);
 404	      await user.type(input, '1000{Enter}');
-405	
+405
 406	      expect(onMetaChange).toHaveBeenCalledWith({ targetAmount: 100000 });
 407	    });
-408	
+408
 409	    it('does not open the report while the goal is being edited', async () => {
 410	      const user = userEvent.setup();
 411	      const { store } = renderGoalCard({ meta: { name: 'Vacation' } });
-412	
+412
 413	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 414	      await user.click(screen.getByLabelText('Goal amount'));
-415	
+415
 416	      expect(mockNavigate).not.toHaveBeenCalled();
 417	    });
-418	
+418
 419	    it('does not save anything when cancelled', async () => {
 420	      const user = userEvent.setup();
 421	      const { onMetaChange, store } = renderGoalCard({
 422	        meta: { name: 'Vacation', targetAmount: 1000000 },
 423	      });
-424	
+424
 425	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 426	      await user.click(screen.getByRole('button', { name: 'Cancel' }));
-427	
+427
 428	      expect(onMetaChange).not.toHaveBeenCalled();
 429	      expect(screen.queryByLabelText('Goal amount')).not.toBeInTheDocument();
 430	    });
 431	  });
-432	
+432
 433	  describe('linked tag', () => {
 434	    it('shows the linked tag on the card', () => {
 435	      renderGoalCard({ meta: { name: 'Vacation', linkedTag: 'vacation' } });
-436	
+436
 437	      expect(screen.getByText('#vacation')).toBeInTheDocument();
 438	    });
-439	
+439
 440	    it('shows no tag when none is linked', () => {
 441	      renderGoalCard({ meta: { name: 'Vacation' } });
-442	
+442
 443	      expect(screen.queryByText(/^#/)).not.toBeInTheDocument();
 444	    });
-445	
+445
 446	    it('links the chosen tag together with the goal amount', async () => {
 447	      const user = userEvent.setup();
 448	      const { onMetaChange, store } = renderGoalCard({
 449	        meta: { name: 'Vacation', targetAmount: 1000000 },
 450	      });
-451	
+451
 452	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 453	      const input = screen.getByLabelText('Goal amount');
 454	      await user.clear(input);
 455	      await user.type(input, '2,000');
 456	      await chooseTag(user, '#vacation');
 457	      await user.click(screen.getByRole('button', { name: 'Save' }));
-458	
+458
 459	      expect(onMetaChange).toHaveBeenCalledTimes(1);
 460	      expect(onMetaChange).toHaveBeenCalledWith({
 461	        name: 'Vacation',
@@ -2294,7 +2321,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 463	        linkedTag: 'vacation',
 464	      });
 465	    });
-466	
+466
 467	    it('unlinks the tag when "No tag" is chosen', async () => {
 468	      const user = userEvent.setup();
 469	      const { onMetaChange, store } = renderGoalCard({
@@ -2304,18 +2331,18 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 473	          linkedTag: 'vacation',
 474	        },
 475	      });
-476	
+476
 477	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 478	      await chooseTag(user, 'No tag');
 479	      await user.click(screen.getByRole('button', { name: 'Save' }));
-480	
+480
 481	      const savedMeta = vi.mocked(onMetaChange).mock.calls[0][0];
 482	      expect(savedMeta).toEqual({ name: 'Vacation', targetAmount: 1000000 });
 483	      expect(savedMeta).not.toHaveProperty('linkedTag');
 484	    });
 485	  });
 486	});
-487	
+487
 488	/**
 489	 * Opens the "Linked tag" dropdown and picks the option with the given label.
 490	 */
@@ -2327,7 +2354,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 496	  const menu = await screen.findByRole('menu');
 497	  await user.click(within(menu).getByText(label));
 498	}
-499	
+499
 500	/**
 501	 * Opens the card's context menu and runs the item with the given name.
 502	 */
@@ -2348,6 +2375,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:00Z)**_
 517	}
 518
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
@@ -2360,7 +2388,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 1	import React from 'react';
 2	import type { ReactNode } from 'react';
 3	import { MemoryRouter, Route, Routes } from 'react-router';
-4	
+4
 5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 6	import {
 7	  clearServer,
@@ -2376,7 +2404,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 17	import { render, screen, waitFor, within } from '@testing-library/react';
 18	import userEvent from '@testing-library/user-event';
 19	import type { Mock } from 'vitest';
-20	
+20
 21	import { summarySpreadsheet } from '#components/reports/spreadsheets/summary-spreadsheet';
 22	import { useReport } from '#components/reports/useReport';
 23	import { useNavigate } from '#hooks/useNavigate';
@@ -2385,9 +2413,9 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 26	  createTestQueryClient,
 27	  TestProviders,
 28	} from '#mocks';
-29	
+29
 30	import { GoalReport } from './GoalReport';
-31	
+31
 32	vi.mock(
 33	  '@actual-app/core/platform/client/connection',
 34	  () => import('#mocks/connection'),
@@ -2422,7 +2450,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 63	vi.mock('@actual-app/components/hooks/useResponsive', () => ({
 64	  useResponsive: vi.fn(),
 65	}));
-66	
+66
 67	// The real Header pulls in the filter menus and date pickers, which are
 68	// covered elsewhere. This stub shows what GoalReport passes to it and lets
 69	// tests change the dates and filters.
@@ -2437,7 +2465,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 78	  onApply: (condition: RuleConditionEntity) => void;
 79	  children?: ReactNode;
 80	};
-81	
+81
 82	vi.mock('#components/reports/Header', () => ({
 83	  Header: ({
 84	    start,
@@ -2468,7 +2496,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 109	    </div>
 110	  ),
 111	}));
-112	
+112
 113	const WIDGET_ID = 'goal-widget-1';
 114	const TAGS: TagEntity[] = [
 115	  { id: 'tag-1', tag: 'vacation' },
@@ -2485,9 +2513,9 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 126	  end: '2024-06-30',
 127	  mode: 'static',
 128	};
-129	
+129
 130	type Meta = GoalCardWidget['meta'];
-131	
+131
 132	function makeWidget(meta: Meta): GoalCardWidget {
 133	  return {
 134	    id: WIDGET_ID,
@@ -2501,14 +2529,14 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 142	    tombstone: false,
 143	  };
 144	}
-145	
+145
 146	type ServerOptions = {
 147	  widgets?: GoalCardWidget[];
 148	  earliest?: { date: string } | null;
 149	  latest?: { date: string } | null;
 150	  isWidgetQueryPending?: boolean;
 151	};
-152	
+152
 153	function setUpServer({
 154	  widgets = [],
 155	  earliest = { date: '2024-01-05' },
@@ -2528,7 +2556,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 169	  });
 170	  return { updateWidget };
 171	}
-172	
+172
 173	function renderGoalReport({
 174	  meta,
 175	  path = `/reports/goal/${WIDGET_ID}`,
@@ -2540,7 +2568,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 181	  });
 182	  const queryClient = createTestQueryClient();
 183	  const store = configureTestAppStore({ queryClient });
-184	
+184
 185	  render(
 186	    <TestProviders queryClient={queryClient} store={store}>
 187	      <MemoryRouter initialEntries={[path]}>
@@ -2551,14 +2579,14 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 192	      </MemoryRouter>
 193	    </TestProviders>,
 194	  );
-195	
+195
 196	  return { ...server, store };
 197	}
-198	
+198
 199	async function waitForReport() {
 200	  return screen.findByText('Matching transactions');
 201	}
-202	
+202
 203	function getProgressFill() {
 204	  const track = document.querySelector('[aria-hidden="true"]');
 205	  const fill = track?.firstElementChild;
@@ -2567,14 +2595,14 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 208	  }
 209	  return fill;
 210	}
-211	
+211
 212	function mockTotal(total: number) {
 213	  vi.mocked(useReport).mockReturnValue({ total });
 214	}
-215	
+215
 216	describe('GoalReport', () => {
 217	  const mockNavigate = vi.fn();
-218	
+218
 219	  beforeEach(() => {
 220	    vi.clearAllMocks();
 221	    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
@@ -2583,11 +2611,12 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:07Z)**_
 224	      isNarrowWidth: false,
 225	    });
 226	  });
-227	
+227
 228	  afterEach(async () => {
 229	    await clearServer();
 230	  });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:14:08Z)**_
@@ -2601,7 +2630,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:08Z)**_
 631	      expect(screen.getByText('Jan 2025 - Mar 2025')).toBeInTheDocument();
 632	    });
 633	  });
-634	
+634
 635	  describe('saving the widget', () => {
 636	    it('saves the goal amount, tag, filters and time frame', async () => {
 637	      const user = userEvent.setup();
@@ -2618,7 +2647,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:08Z)**_
 648	          '2024-01-01',
 649	        ),
 650	      );
-651	
+651
 652	      const input = screen.getByLabelText('Goal amount');
 653	      await user.clear(input);
 654	      await user.type(input, '7,500{Enter}');
@@ -2626,7 +2655,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:08Z)**_
 656	      await user.click(screen.getByRole('button', { name: 'Add filter' }));
 657	      await user.click(screen.getByRole('button', { name: 'Change dates' }));
 658	      await user.click(screen.getByRole('button', { name: 'Save widget' }));
-659	
+659
 660	      await waitFor(() =>
 661	        expect(updateWidget).toHaveBeenCalledWith({
 662	          id: WIDGET_ID,
@@ -2650,7 +2679,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:08Z)**_
 680	        ]),
 681	      );
 682	    });
-683	
+683
 684	    it('removes the linked tag when "No tag" is chosen', async () => {
 685	      const user = userEvent.setup();
 686	      const { updateWidget } = renderGoalReport({
@@ -2661,10 +2690,10 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:08Z)**_
 691	        },
 692	      });
 693	      await waitForReport();
-694	
+694
 695	      await chooseTag(user, 'No tag');
 696	      await user.click(screen.getByRole('button', { name: 'Save widget' }));
-697	
+697
 698	      await waitFor(() => expect(updateWidget).toHaveBeenCalled());
 699	      const savedWidget = updateWidget.mock.calls[0][0] as GoalCardWidget;
 700	      expect(savedWidget.meta).not.toHaveProperty('linkedTag');
@@ -2672,11 +2701,11 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:08Z)**_
 702	    });
 703	  });
 704	});
-705	
+705
 706	function tagCondition(tag: string): RuleConditionEntity {
 707	  return { field: 'notes', op: 'hasTags', value: `#${tag}`, type: 'string' };
 708	}
-709	
+709
 710	/**
 711	 * Opens the "Linked tag" dropdown and picks the option with the given label.
 712	 */
@@ -2690,6 +2719,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:14:08Z)**_
 720	}
 721
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:14:11Z)**_
@@ -2704,6 +2734,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:15:39Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:15:41Z)**_
@@ -2718,6 +2749,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:18:25Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:18:38Z)**_
@@ -2728,6 +2760,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:18:38Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:18:40Z)**_
@@ -2742,6 +2775,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:20:09Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:22:28Z)**_
@@ -2752,6 +2786,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:22:28Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:24:38Z)**_
@@ -2762,6 +2797,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:24:38Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:24:44Z)**_
@@ -2772,6 +2808,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:24:44Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:24:51Z)**_
@@ -2782,6 +2819,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:24:51Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:24:56Z)**_
@@ -2796,6 +2834,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:25:20Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:25:54Z)**_
@@ -2806,6 +2845,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:25:54Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:25:54Z)**_
@@ -2820,6 +2860,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:26:10Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:26:14Z)**_
@@ -2830,6 +2871,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:26:14Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:26:18Z)**_
@@ -2840,6 +2882,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:26:18Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:38:06Z)**_
@@ -2849,9 +2892,9 @@ _**Agent (claude-opus-5-5 2026-10-08 04:38:06Z)**_
 Run goal card, report and progress tests
 
 ```text
-This ensures that you're testing the behavior the user would see in the browser. Learn more at 
+This ensures that you're testing the behavior the user would see in the browser. Learn more at
 https://react.dev/link/wrap-tests-with-act
-stderr | src/components/reports/reports/GoalCard.test.tsx > GoalCard > linked tag > prompts to link a tag when none is 
+stderr | src/components/reports/reports/GoalCard.test.tsx > GoalCard > linked tag > prompts to link a tag when none is
 linked
 An update to GoalCard inside a test was not wrapped in act(...).
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -2859,9 +2902,9 @@ act(() => {
   /* fire events that update state */
 });
 /* assert on the output */
-This ensures that you're testing the behavior the user would see in the browser. Learn more at 
+This ensures that you're testing the behavior the user would see in the browser. Learn more at
 https://react.dev/link/wrap-tests-with-act
-stderr | src/components/reports/reports/GoalCard.test.tsx > GoalCard > linked tag > does not prompt to link a tag once 
+stderr | src/components/reports/reports/GoalCard.test.tsx > GoalCard > linked tag > does not prompt to link a tag once
 one is linked
 An update to GoalCard inside a test was not wrapped in act(...).
 When testing, code that causes React state updates should be wrapped into act(...):
@@ -2869,7 +2912,7 @@ act(() => {
   /* fire events that update state */
 });
 /* assert on the output */
-This ensures that you're testing the behavior the user would see in the browser. Learn more at 
+This ensures that you're testing the behavior the user would see in the browser. Learn more at
 https://react.dev/link/wrap-tests-with-act
  ✓ src/components/reports/reports/GoalCard.test.tsx (33 tests) 2430ms
        ✓ saves the new name and keeps the rest of the goal  319ms
@@ -2885,6 +2928,7 @@ https://react.dev/link/wrap-tests-with-act
    Start at  00:37:49
    Duration  15.27s (transform 7.55s, setup 5.36s, import 13.74s, tests 6.10s, environment 4.24s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:38:09Z)**_
@@ -2912,12 +2956,13 @@ desktop-electron typecheck success, took 4.32s, queued for 0.00s
 success: 6, skipped: 4, pending: 0, aborted: 0, failed: 0
 worker restarts: 0, max worker memory usage: 37.44 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-Took a total of 1m 21.33s to complete. 
+Took a total of 1m 21.33s to complete.
 Checking formatting...
 
 All matched files use the correct format.
 Finished in 120ms on 5 files using 12 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:39:55Z)**_
@@ -2933,6 +2978,7 @@ Lint changed files and show exit code
 ```text
 exit: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:41:52Z)**_
@@ -2940,6 +2986,7 @@ _**Agent (claude-opus-5-5 2026-10-08 04:41:52Z)**_
 I made the three changes you picked, and they all work. Tests (81), typecheck, lint and format checks all pass.
 
 **1. A goal amount of 0 can no longer be saved.**
+
 - This applies on the goal page ("Save widget") and in the card's quick "Set goal" editor.
 - A 0 amount shows the error notification "Goal amount must be greater than zero.", the same style the goal page already uses for errors, and nothing is saved.
 - On the card, the editor stays open so the user can fix the amount.
@@ -2951,12 +2998,14 @@ I made the three changes you picked, and they all work. Tests (81), typecheck, l
 **3. The card shows its dates.** It uses the same date-range display as NetWorthCard and the other cards, placed under the goal name.
 
 **Tests:**
+
 - New tests cover the blocked 0 amount on both the card and the page, the tag prompt showing and hiding, and the dates on the card.
 - One existing GoalReport test ("removes the linked tag when 'No tag' is chosen") saved a goal with no amount. I gave it a target so it keeps testing what it was meant to test.
 
 The card changes are in [GoalCard.tsx](packages/desktop-client/src/components/reports/reports/GoalCard.tsx), and the page change is in [GoalReport.tsx](packages/desktop-client/src/components/reports/reports/GoalReport.tsx). Nothing is committed yet.
 
 Before the PR, two things are still needed:
+
 - **A release note** in `upcoming-release-notes/`, which this repo expects for user-facing changes.
 - **The PR description**, which has to state the issue's decision: a dedicated page for full setup plus quick edits on the card, rather than inline-only. Remember the repo rule that the PR template body stays unfilled, so this may need to go in a comment instead.
 
@@ -3019,7 +3068,6 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-10-08 04:43:26Z)**_
@@ -3052,6 +3100,7 @@ authors: [RaccoonSwarm]
 
 Connects the Personal goal widget (goal-card) to real transaction data and adds progress bar states.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:45:39Z)**_
@@ -3066,7 +3115,7 @@ Get the signed-in GitHub username
 
 ```text
 Exit code 1
-gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
 spelling of the name, or if a path was included, verify that the path is correct and try again.
 At line:1 char:302
 + ... y { $PSStyle.OutputRendering = 'PlainText' } catch {} } }; gh api use ...
@@ -3074,6 +3123,7 @@ At line:1 char:302
     + CategoryInfo          : ObjectNotFound: (gh:String) [], CommandNotFoundException
     + FullyQualifiedErrorId : CommandNotFoundException
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:47:06Z)**_
@@ -3092,12 +3142,12 @@ authors: [icsasso]
 ---
 
 Show the time frame on Personal goal cards, prompt to link a tag, and require a goal amount greater than zero
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\upcoming-release-notes\feat-issue-64-goal-configuration.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:48:01Z)**_
@@ -3115,20 +3165,24 @@ The issue suggested inline editing on the card to keep scope down. We went with 
 - **Goal page (click the card):** edits everything: goal amount, linked tag, filter conditions and time frame, then "Save widget".
 
 Why:
+
 - The page works the same way as NetWorth and Spending. It reuses `useRuleConditionFilters` and the shared report `Header`, which provides the filter editor and the time-frame picker. Building filter editing into a small dashboard card would be a pattern no other widget uses.
 - Most of this already shipped with #62/#63 and is tested, so this PR finishes it off instead of rebuilding it.
 
 Saving goes through the generic widget update (`dashboard-update-widget` in `loot-core/src/server/dashboard/app.ts`). The card uses `onMetaChange`, and the page calls the same mutation directly, as NetWorth and Spending do. There are no new backend endpoints.
 
 ## Validation (#64 open question)
+
 - **Goal amount must be greater than zero.** Negative amounts were already impossible. A 0 amount is now blocked on both the card and the page, with an error notification, and nothing is saved.
 - **Filters are not required.** The linked tag decides which transactions count, so a goal that uses only a tag is valid.
 - **A tag is not required either, but without one nothing counts toward the goal.** The card now says "Link a tag to track progress." (the page already had a similar hint).
 
 ## Also in this PR
+
 - The goal card shows its time frame, like the other cards that have one.
 
 ## Out of scope
+
 - Deadline / target-date field (#14 Open Question 2). Deferred to a future issue.
 ```
 
@@ -3184,7 +3238,6 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-10-08 04:49:15Z)**_
@@ -3205,6 +3258,7 @@ warning: in the working copy of 'upcoming-release-notes/feat-issue-64-goal-confi
 ?? ai-logs/sprint1/icsasso/2026-09-29_claude-web_splittingup-issue23.md
 6499237e6 [AI] Finish goal configuration UI (#64)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 04:49:40Z)**_

@@ -25,6 +25,7 @@ View PR #2 details from GitHub
 ```text
 {"additions":10,"body":"Help keep dependencies up-to-date","changedFiles":1,"deletions":0,"files":[{"path":".github/dependabot.yml","additions":10,"deletions":0,"changeType":"ADDED"}],"labels":[],"state":"CLOSED","title":"Create dependabot.yml","url":"https://github.com/actualbudget/actual/pull/2"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:11:24Z)**_
@@ -38,6 +39,7 @@ Find existing ai-logs directories in repo
 ```text
 ./ai-logs
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:11:28Z)**_
@@ -56,6 +58,7 @@ Show git remotes to find the correct org/repo
 origin	https://github.com/CSCI-435-SE/actual-budget.git (fetch)
 origin	https://github.com/CSCI-435-SE/actual-budget.git (push)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:11:29Z)**_
@@ -98,6 +101,7 @@ drwxr-xr-x   3 liammclemore  staff    96 Sep  8 08:39 sprint4
 ./ai-logs/sprint0/tigerk9/2026-09-13_copilot_git-pull-and-specstory-logging.md
 ./ai-logs/sprint0/tigerk9/2026-09-13_claude-code_issue-20-account-name-length.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:11:34Z)**_
@@ -111,6 +115,7 @@ View PR #2 details from the CSCI-435-SE fork
 ```text
 GraphQL: Could not resolve to a PullRequest with the number of 2. (repository.pullRequest)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:11:34Z)**_
@@ -122,6 +127,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:11:34Z)**_
 ```text
 File content (268.2KB) exceeds maximum allowed size (256KB). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:11:34Z)**_
@@ -130,13 +136,13 @@ _**Agent (claude-sonnet-5 2026-09-13 16:11:34Z)**_
 <summary>Tool use: **Read**</summary>
  `./ai-logs/README.md`
 
-```text
+````text
 1	# AI Logs
-2	
+2
 3	This folder contains AI interaction logs for each sprint.
-4	
+4
 5	## Structure
-6	
+6
 7	```
 8	ai-logs/
 9	  sprint0/
@@ -146,14 +152,15 @@ _**Agent (claude-sonnet-5 2026-09-13 16:11:34Z)**_
 13	  sprint1/
 14	    ...
 15	```
-16	
+16
 17	## Instructions
-18	
+18
 19	See the [Sprint 0 deliverables](../../docs/sprints.md#d4--ai-tooling-setup) for full instructions on capturing and submitting AI logs.
-20	
+20
 21	Tool identifiers for filenames: `claude-code`, `claude-web`, `claude-desktop`, `cursor`, `gemini-cli`, `codex-cli`, `copilot`, `chatgpt`, `gemini-web`, `other-<name>`.
 22
-```
+````
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:11:40Z)**_
@@ -169,6 +176,7 @@ Check PR/issue #2 via GitHub API on the fork
 ---issue---
 {"body":"**Summary**\n\nUsers need a way to get their transaction data out of Actual Budget and into external tools (Excel, Google Sheets, tax software, a financial advisor's template). Right now there is no one-click export at the account level; users must either use the budget-level export or manually copy data. Adding a \"Download as CSV\" button to each account's transaction view gives individuals and small businesses a frictionless path to their own data.\n\n**User Story**\n\nAs a user reviewing my checking account, I want to click \"Export to CSV\" so that I can open my transactions in a spreadsheet without manually copying them.\n\n**Rough Scope**\n\nMedium — CSV serialization is straightforward, but for a beginner team the real work is locating the right component to add the button to, understanding how transaction data is accessed in that view's context, and handling edge cases like an empty account or a filtered transaction list vs. the full account. Navigating an unfamiliar codebase to find and confidently modify the right file takes meaningful time.\n\n**Source**\n\nPersonal use / original idea from the assignment brief.","html_url":"https://github.com/CSCI-435-SE/actual-budget/issues/2","labels":[{"archived_at":null,"archived_by":null,"color":"b5b323","default":false,"description":"","id":12064161416,"name":"scope: medium","node_id":"LA_kwDOTldplM8AAAACzxR-iA","url":"https://api.github.com/repos/CSCI-435-SE/actual-budget/labels/scope:%20medium"}],"state":"open","title":"Export Account Transactions as CSV"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:11:49Z)**_
@@ -184,9 +192,9 @@ _**Agent (claude-sonnet-5 2026-09-13 16:12:04Z)**_
 **There's no PR #2 in CSCI-435-SE/actual-budget — did you mean Issue #2 ("Export Account Transactions as CSV", labeled scope: medium)?**
 
 Options:
+
 - **Yes, Issue #2** - I meant the GitHub issue #2 (Export Account Transactions as CSV), not a pull request.
 - **Something else** - I meant a different PR/issue number, or a PR in a different repo — let me clarify.
-
 
 **Answer:** Yes, Issue #2
 </details></tool-use>
@@ -197,48 +205,48 @@ _**Agent (claude-sonnet-5 2026-09-13 16:12:08Z)**_
 <summary>Tool use: **Read**</summary>
  `./ai-logs/sprint0/tigerk9/2026-09-13_copilot_git-pull-and-specstory-logging.md`
 
-```text
+````text
 1	<!-- Generated by SpecStory, Markdown v2.1.0 -->
-2	
+2
 3	# 2026-09-12 22:01:23Z
-4	
+4
 5	<!-- VS Code Copilot IDE Session e7bbd5a3-012e-4cfc-af25-d963974a3238 (2026-09-12 22:01:23Z) -->
-6	
+6
 7	_**User (2026-09-12 22:01:23Z)**_
-8	
+8
 9	I'd like to pull the changes done in the last pull requests. I'm relatively new to git within a team environment. Looking at the terminal, did I pull their changes?
-10	
+10
 11	---
-12	
+12
 13	_**Agent (copilot/auto)**_
-14	
+14
 15	I’ll inspect the repository’s current branch, tracking status, and recent commit history so we can distinguish “pulled successfully” from merely having local or remote commits available.
-16	
+16
 17	_**Agent (copilot/auto)**_
-18	
+18
 19	<tool-use data-tool-type="generic" data-tool-name="tool_search"><details>
 20	<summary>Tool use: **tool_search**</summary>
-21	
+21
 22	**Input:**
-23	
+23
 24	- query: `Run a read-only terminal command in the workspace and return its output, especially git status/log commands`
-25	
+25
 26	**Result:**
-27	
+27
 28	```
 29	["run_vscode_command","terminal_last_command","vscode_get_terminal_confirmation","mcp_pylance_mcp_s_pylanceRunCodeSnippet","read_notebook_cell_output"]
 30	```
 31	</details></tool-use>
-32	
+32
 33	_**Agent (copilot/auto)**_
-34	
+34
 35	<tool-use data-tool-type="generic" data-tool-name="terminal_last_command"><details>
 36	<summary>Tool use: **terminal_last_command**</summary>
-37	
+37
 38	Got last terminal command
-39	
+39
 40	**Result:**
-41	
+41
 42	```
 43	The following is the last command run in the terminal:
 44	git pull
@@ -258,7 +266,8 @@ _**Agent (claude-sonnet-5 2026-09-13 16:12:08Z)**_
 58	Already up to date.
 59	```
 60	</details></tool-use>
-```
+````
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:12:20Z)**_
@@ -267,48 +276,49 @@ _**Agent (claude-sonnet-5 2026-09-13 16:12:20Z)**_
 <summary>Tool use: **Read**</summary>
  `./ai-logs/sprint0/bennettmatuszewski/2026-09-10_claude-code_issue-25-calendar-icon.md`
 
-```text
+````text
 1	<!-- Generated by SpecStory, Markdown v2.1.0 -->
-2	
+2
 3	# 2026-09-11 00:37:31Z
-4	
+4
 5	<!-- Claude Code Session 5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd (2026-09-11 00:37:31Z) -->
-6	
+6
 7	_**User (2026-09-11 00:37:31Z)**_
-8	
+8
 9	<ide_opened_file>The user opened the file c:\Actual Budget\docs\sprint0\standards.md in the IDE. This may or may not be related to the current task.</ide_opened_file>
-10	
+10
 11	Help me locate how the http://localhost:3001/budget page is built. I am trying to find the specific index.tsx file and specifically the three calendar icon buttons in the top left of the page.
-12	
+12
 13	---
-14	
+14
 15	_**Agent (claude-sonnet-5 2026-09-11 00:37:35Z)**_
-16	
+16
 17	<tool-use data-tool-type="search" data-tool-name="Grep"><details>
 18	<summary>Tool use: **Grep**</summary>
 19	 path `./\packages\desktop-client\src\components` pattern `budget`
-20	
+20
 21	```text
 22	No files found
 23	```
 24	</details></tool-use>
-25	
+25
 26	_**Agent (claude-sonnet-5 2026-09-11 00:37:35Z)**_
-27	
+27
 28	<tool-use data-tool-type="search" data-tool-name="Glob"><details>
 29	<summary>Tool use: **Glob**</summary>
 30	 path `./\packages\desktop-client\src` pattern `**/budget/index.tsx`
-31	
+31
 32	```text
 33	packages\desktop-client\src\components\budget\index.tsx
 34	```
 35	</details></tool-use>
-36	
+36
 37	_**Agent (claude-sonnet-5 2026-09-11 00:37:38Z)**_
-38	
+38
 39	<tool-use data-tool-type="search" data-tool-name="Grep"><details>
 40	<summary>Tool use: **Grep**</summary>
-```
+````
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:12:21Z)**_
@@ -317,48 +327,49 @@ _**Agent (claude-sonnet-5 2026-09-13 16:12:21Z)**_
 <summary>Tool use: **Read**</summary>
  `./ai-logs/sprint0/tigerk9/2026-09-13_claude-code_issue-20-account-name-length.md`
 
-```text
+````text
 1	<!-- Generated by SpecStory, Markdown v2.1.0 -->
-2	
+2
 3	# 2026-09-13 13:42:27Z
-4	
+4
 5	<!-- Claude Code Session 43aa365c-f2e3-46f5-b6df-7feb04493ded (2026-09-13 13:42:27Z) -->
-6	
+6
 7	_**User (2026-09-13 13:42:27Z)**_
-8	
+8
 9	I just worked with github-copilot briefly. Export this session’s SpecStory log to tigerk9 using YYYY-MM-DD_claude-code_<short-slug>.md. Create the folder if needed, preserve the SpecStory-generated Markdown, and verify the filename and path. It will be in ai-logs and sprint0.
-10	
+10
 11	---
-12	
+12
 13	_**Agent (claude-sonnet-5 2026-09-13 13:42:33Z)**_
-14	
+14
 15	I'll locate the SpecStory-generated log for this session first.
-16	
+16
 17	_**Agent (claude-sonnet-5 2026-09-13 13:42:36Z)**_
-18	
+18
 19	<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
 20	<summary>Tool use: **Bash**</summary>
 21	Find .specstory directory in project
-22	
+22
 23	`find /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget -type d -iname ".specstory" -not -path "*/node_modules/*" 2>/dev/null`
-24	
+24
 25	```text
 26	/Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory
 27	```
 28	</details></tool-use>
-29	
+29
 30	_**Agent (claude-sonnet-5 2026-09-13 13:42:38Z)**_
-31	
+31
 32	<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
 33	<summary>Tool use: **Bash**</summary>
 34	List files under .specstory
-35	
+35
 36	`find /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory -type f | sort`
-37	
+37
 38	```text
 39	/Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/.project.json
 40	/Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/cli/config.toml
-```
+````
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:12:34Z)**_
@@ -372,6 +383,7 @@ Check for newer specstory session files after most recent existing log
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:12:37Z)**_
@@ -390,6 +402,7 @@ List all specstory files sorted, show most recent entries
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/history/2026-09-13_15-07-46Z-i-d-like-to.md
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/statistics.json
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:12:41Z)**_
@@ -400,21 +413,22 @@ _**Agent (claude-sonnet-5 2026-09-13 16:12:41Z)**_
 
 ```text
 1	<!-- Generated by SpecStory, Markdown v2.1.0 -->
-2	
+2
 3	# 2026-09-13 15:07:46Z
-4	
+4
 5	<!-- Claude Code Session 0fa882e3-0dd7-4696-8634-ec977c7777fc (2026-09-13 15:07:46Z) -->
-6	
+6
 7	_**User (2026-09-13 15:07:46Z)**_
-8	
+8
 9	I'd like to review my teammate's PR #34, where he limits notes up to 1800 characters.
-10	
+10
 11	---
-12	
+12
 13	_**Agent (claude-sonnet-5 2026-09-13 15:07:48Z)**_
-14	
+14
 15	I'll use the PR review skill to check out and review PR #34.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:13:04Z)**_
@@ -493,12 +507,12 @@ change.
   message ("Don't make any changes, don't look at code, I just want to start
   looking at PR #2...").
 - Confirm no unrelated/earlier session content is present in the file.
-
 ```
 
 ```text
 File created successfully at: /Users/liammclemore/.claude/plans/don-t-make-any-changes-agile-nygaard.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:13:06Z)**_
@@ -516,6 +530,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:13:06Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:15:00Z)**_
@@ -526,6 +541,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:15:00Z)**_
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  How long will it take us to implement this change, and will it mess up other things on the codebase?
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:16:43Z)**_
@@ -535,9 +551,9 @@ _**Agent (claude-sonnet-5 2026-09-13 16:16:43Z)**_
 **Answering time/risk accurately means looking at the account transactions view code (export button placement, how transaction data is fetched there). Earlier you said not to look at code — want me to lift that now for this estimate, or just give a rough answer based on the issue text alone?**
 
 Options:
+
 - **Yes, look at code now** - Explore the relevant component(s) read-only so the time/risk estimate is grounded in the actual code, not just the issue description.
 - **No, rough estimate only** - Keep it code-free — give a ballpark based on the issue's own description (scope: medium, CSV serialization + finding the right component).
-
 
 **Answer:** Yes, look at code now
 </details></tool-use>
@@ -588,6 +604,7 @@ I now have everything needed. Here's the concise report.
 
 **Time estimate implication:** given the backend and even the account-level trigger already exist, this is much smaller than "scope: medium" for a from-scratch CSV export — realistically a small UI relocation/polish task, plus optionally a small fix for the search-filter edge case. Worth flagging to the issue reporter/maintainers that the core ask may already be resolved, and the real remaining work is discoverability (button placement) and the search-filter consistency fix.
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-13 16:16:59Z)**_
@@ -663,6 +680,7 @@ packages/loot-core/src/server/auth/app.ts
 packages/loot-core/src/server/tags/app.ts
 packages/loot-core/src/server/transactions/transfer.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:02Z)**_
@@ -724,6 +742,7 @@ packages/desktop-client/src/components/filters/PayeeFilter.tsx
 packages/desktop-client/src/components/filters/NameFilter.tsx
 packages/desktop-client/src/components/filters/FiltersMenu.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:04Z)**_
@@ -746,6 +765,7 @@ packages/loot-core/src/server/budgetfiles/backups.test.ts
 packages/loot-core/src/server/budgetfiles/backups.ts
 packages/loot-core/src/server/budgetfiles/__snapshots__/backups.test.ts.snap
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:05Z)**_
@@ -763,6 +783,7 @@ packages/desktop-client/src/components/transactions/table
 packages/desktop-client/src/components/mobile/transactions
 packages/desktop-client/src/components/mobile/accounts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:06Z)**_
@@ -778,12 +799,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 ```text
 1	// @ts-strict-ignore
 2	import { stringify as csvStringify } from 'csv-stringify/sync';
-3	
+3
 4	import { aqlQuery } from '#server/aql';
 5	import { integerToAmount } from '#shared/util';
-6	
+6
 7	const FORMULA_TRIGGERS = /^[=+\-@\t\r]/;
-8	
+8
 9	const csvStringifyOptions = {
 10	  header: true,
 11	  cast: {
@@ -791,7 +812,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 13	      FORMULA_TRIGGERS.test(value) ? "'" + value : value,
 14	  },
 15	};
-16	
+16
 17	export async function exportToCSV(
 18	  transactions,
 19	  accounts,
@@ -802,7 +823,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 24	    reduced[id] = name;
 25	    return reduced;
 26	  }, {});
-27	
+27
 28	  const categoryNamesById = categoryGroups.reduce(
 29	    (reduced, { name, categories: subCategories }) => {
 30	      subCategories.forEach(
@@ -813,12 +834,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 35	    },
 36	    {},
 37	  );
-38	
+38
 39	  const payeeNamesById = payees.reduce((reduced, { id, name }) => {
 40	    reduced[id] = name;
 41	    return reduced;
 42	  }, {});
-43	
+43
 44	  const transactionsForExport = transactions.map(
 45	    ({
 46	      account,
@@ -840,10 +861,10 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 62	      Reconciled: reconciled,
 63	    }),
 64	  );
-65	
+65
 66	  return csvStringify(transactionsForExport, csvStringifyOptions);
 67	}
-68	
+68
 69	export async function exportQueryToCSV(query) {
 70	  const { data: transactions } = await aqlQuery(
 71	    query
@@ -865,11 +886,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 87	      ])
 88	      .options({ splits: 'all' }),
 89	  );
-90	
+90
 91	  // initialize a map to allow splits to have correct number of split from
 92	  const parentsChildCount: Map<number, number> = new Map();
 93	  const childSplitOrder: Map<number, number> = new Map();
-94	
+94
 95	  // find children, their order, and total # siblings
 96	  for (const trans of transactions) {
 97	    if (trans.IsChild) {
@@ -879,7 +900,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 101	      parentsChildCount.set(trans.ParentId, childNumber);
 102	    }
 103	  }
-104	
+104
 105	  // map final properties for export and grab the child count for splits from their parent transaction
 106	  const transactionsForExport = transactions.map(trans => {
 107	    return {
@@ -915,11 +936,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 137	            : 'Not cleared',
 138	    };
 139	  });
-140	
+140
 141	  return csvStringify(transactionsForExport, csvStringifyOptions);
 142	}
 143
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
@@ -931,38 +953,38 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 ```text
 1	import React, { useState } from 'react';
 2	import { Trans, useTranslation } from 'react-i18next';
-3	
+3
 4	import { Block } from '@actual-app/components/block';
 5	import { ButtonWithLoading } from '@actual-app/components/button';
 6	import { Text } from '@actual-app/components/text';
 7	import { theme } from '@actual-app/components/theme';
 8	import { send } from '@actual-app/core/platform/client/connection';
 9	import { format } from 'date-fns';
-10	
+10
 11	import { useMetadataPref } from '#hooks/useMetadataPref';
-12	
+12
 13	import { Setting } from './UI';
-14	
+14
 15	export function ExportBudget() {
 16	  const { t } = useTranslation();
 17	  const [isLoading, setIsLoading] = useState(false);
 18	  const [error, setError] = useState<string | null>(null);
 19	  const [budgetName] = useMetadataPref('budgetName');
 20	  const [encryptKeyId] = useMetadataPref('encryptKeyId');
-21	
+21
 22	  async function onExport() {
 23	    setIsLoading(true);
 24	    setError(null);
-25	
+25
 26	    const response = await send('export-budget');
-27	
+27
 28	    if ('error' in response && response.error) {
 29	      setError(response.error);
 30	      setIsLoading(false);
 31	      console.log('Export error code:', response.error);
 32	      return;
 33	    }
-34	
+34
 35	    if (response.data) {
 36	      void window.Actual.saveFile(
 37	        response.data,
@@ -972,7 +994,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 41	    }
 42	    setIsLoading(false);
 43	  }
-44	
+44
 45	  return (
 46	    <Setting
 47	      primaryAction={
@@ -1011,6 +1033,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:07Z)**_
 80	}
 81
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:08Z)**_
@@ -1039,6 +1062,7 @@ TransactionsTable.tsx
 table
 useTransactionRowContextActions.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:12Z)**_
@@ -1068,6 +1092,7 @@ packages/loot-core/src/server/api.ts:494:handlers['api/transactions-export'] = a
 packages/loot-core/src/server/api.ts:501:  return handlers['transactions-export']({
 packages/loot-core/src/server/api.ts:1063:export function installAPI(serverHandlers: ServerHandlers) {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
@@ -1082,7 +1107,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 3	import { Dialog, DialogTrigger } from 'react-aria-components';
 4	import { useHotkeys } from 'react-hotkeys-hook';
 5	import { Trans, useTranslation } from 'react-i18next';
-6	
+6
 7	import { Button } from '@actual-app/components/button';
 8	import { AnimatedLoading } from '@actual-app/components/icons/AnimatedLoading';
 9	import {
@@ -1113,7 +1138,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 34	  TransactionFilterEntity,
 35	} from '@actual-app/core/types/models';
 36	import { format as formatDate } from 'date-fns';
-37	
+37
 38	import { isAccountFailedSync } from '#accounts/syncStatus';
 39	import { AnimatedRefresh } from '#components/AnimatedRefresh';
 40	import { CharacterCounter } from '#components/common/CharacterCounter';
@@ -1130,12 +1155,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 51	import { useSplitsExpanded } from '#hooks/useSplitsExpanded';
 52	import { useSyncedPref } from '#hooks/useSyncedPref';
 53	import { useSyncServerStatus } from '#hooks/useSyncServerStatus';
-54	
+54
 55	import type { TableRef } from './Account';
 56	import { Balances } from './Balance';
 57	import { BalanceHistoryGraph } from './BalanceHistoryGraph';
 58	import { ReconcileMenu, ReconcilingMessage } from './Reconcile';
-59	
+59
 60	type AccountHeaderProps = {
 61	  tableRef: TableRef;
 62	  isNameEditable: boolean;
@@ -1210,7 +1235,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 131	    | 'onClearFilters'
 132	    | 'onReloadSavedFilter'
 133	  >;
-134	
+134
 135	export function AccountHeader({
 136	  tableRef,
 137	  isNameEditable,
@@ -1269,7 +1294,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 190	  onMergeTransactions,
 191	}: AccountHeaderProps) {
 192	  const { t } = useTranslation();
-193	
+193
 194	  const [reconcileOpen, setReconcileOpen] = useState(false);
 195	  const searchInput = useRef<HTMLInputElement>(null);
 196	  const reconcileRef = useRef(null);
@@ -1282,32 +1307,32 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 203	    `show-account-${accountId}-net-worth-chart`,
 204	  );
 205	  const showNetWorthChart = showNetWorthChartPref === 'true';
-206	
+206
 207	  const dateFormat = useDateFormat() || 'MM/dd/yyyy';
 208	  const locale = useLocale();
-209	
+209
 210	  let canSync = !!(account?.account_id && isUsingServer);
 211	  if (!account) {
 212	    // All accounts - check for any syncable account
 213	    canSync = !!accounts.find(account => !!account.account_id) && isUsingServer;
 214	  }
-215	
+215
 216	  // Only show the ability to make linked transfers on multi-account views.
 217	  const showMakeTransfer = !account;
-218	
+218
 219	  function onToggleSplits() {
 220	    if (tableRef.current) {
 221	      splitsExpanded.dispatch({
 222	        type: 'switch-mode',
 223	        id: tableRef.current.getScrolledItem(),
 224	      });
-225	
+225
 226	      setExpandSplitsPref(!(splitsExpanded.state.mode === 'expand'));
 227	    }
 228	  }
-229	
+229
 230	  const graphRef = useRef<HTMLDivElement>(null);
-231	
+231
 232	  useHotkeys(
 233	    'ctrl+f, cmd+f, meta+f',
 234	    e => {
@@ -1355,7 +1380,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 276	    },
 277	    [onSync],
 278	  );
-279	
+279
 280	  return (
 281	    <>
 282	      <View style={{ ...styles.pageContent, paddingBottom: 10, flexShrink: 0 }}>
@@ -1395,7 +1420,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 316	                onSaveName={onSaveName}
 317	              />
 318	            </View>
-319	
+319
 320	            <Balances
 321	              balanceQuery={balanceQuery}
 322	              showExtraBalances={showExtraBalances}
@@ -1405,7 +1430,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 326	              filteredAmount={filteredAmount}
 327	            />
 328	          </View>
-329	
+329
 330	          <BalanceHistoryGraph
 331	            ref={graphRef}
 332	            accountId={accountId}
@@ -1435,7 +1460,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 356	              {isServerOffline ? t('Bank Sync Offline') : t('Bank Sync')}
 357	            </Button>
 358	          )}
-359	
+359
 360	          {account && !account.closed && (
 361	            <Button variant="bare" onPress={onImport}>
 362	              <SvgDownloadThickBottom
@@ -1446,7 +1471,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 367	              <Trans>Import</Trans>
 368	            </Button>
 369	          )}
-370	
+370
 371	          {!showEmptyMessage && (
 372	            <Button variant="bare" onPress={onAddTransaction}>
 373	              <SvgAdd width={10} height={10} style={{ marginRight: 3 }} />
@@ -1458,7 +1483,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 379	            <FilterButton onApply={onApplyFilter} />
 380	          </View>
 381	          <View style={{ flex: 1 }} />
-382	
+382
 383	          <Search
 384	            placeholder={t('Search')}
 385	            value={search}
@@ -1583,7 +1608,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 504	                    style={{ transform: 'rotateZ(90deg)' }}
 505	                  />
 506	                </Button>
-507	
+507
 508	                <Popover style={{ minWidth: 275 }}>
 509	                  <Dialog>
 510	                    <AccountMenu
@@ -1613,7 +1638,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 534	                    style={{ transform: 'rotateZ(90deg)' }}
 535	                  />
 536	                </Button>
-537	
+537
 538	                <Popover>
 539	                  <Dialog>
 540	                    <Menu
@@ -1668,12 +1693,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 589	    </>
 590	  );
 591	}
-592	
+592
 593	type AccountSyncSidebarProps = {
 594	  account: AccountEntity;
 595	  accountsSyncing: string[];
 596	};
-597	
+597
 598	function AccountSyncSidebar({
 599	  account,
 600	  accountsSyncing,
@@ -1694,7 +1719,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 615	    />
 616	  );
 617	}
-618	
+618
 619	type AccountNameFieldProps = {
 620	  account?: AccountEntity;
 621	  accountName: string;
@@ -1702,7 +1727,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 623	  saveNameError?: ReactNode;
 624	  onSaveName: (newName: string) => void;
 625	};
-626	
+626
 627	function AccountNameField({
 628	  account,
 629	  accountName,
@@ -1713,12 +1738,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 634	  const { t } = useTranslation();
 635	  const [editingName, setEditingName] = useState(false);
 636	  const [liveName, setLiveName] = useState(accountName);
-637	
+637
 638	  const handleSave = (newName: string) => {
 639	    onSaveName(newName);
 640	    setEditingName(false);
 641	  };
-642	
+642
 643	  return (
 644	    <View style={{ flexShrink: 0, alignItems: 'center' }}>
 645	      {editingName ? (
@@ -1780,7 +1805,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 701	              ? t('Closed: {{ accountName }}', { accountName })
 702	              : accountName}
 703	          </View>
-704	
+704
 705	          <View style={{ flexDirection: 'row', width: 50 }}>
 706	            {isNameEditable && account && (
 707	              <NotesButton
@@ -1813,7 +1838,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 734	    </View>
 735	  );
 736	}
-737	
+737
 738	type AccountMenuProps = {
 739	  account: AccountEntity;
 740	  canSync: boolean;
@@ -1837,7 +1862,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 758	      | 'toggle-net-worth-chart',
 759	  ) => void;
 760	};
-761	
+761
 762	function AccountMenu({
 763	  account,
 764	  canSync,
@@ -1851,7 +1876,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 772	}: AccountMenuProps) {
 773	  const { t } = useTranslation();
 774	  const syncServerStatus = useSyncServerStatus();
-775	
+775
 776	  return (
 777	    <Menu
 778	      slot="close"
@@ -1913,7 +1938,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 834	                ]
 835	              : []
 836	          : []),
-837	
+837
 838	        ...(account.closed
 839	          ? [{ name: 'reopen', text: t('Reopen account') } as const]
 840	          : [{ name: 'close', text: t('Close account') } as const]),
@@ -1923,6 +1948,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:13Z)**_
 844	}
 845
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:17Z)**_
@@ -1943,6 +1969,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:17Z)**_
 1846:                onMenuSelect={this.onMenuSelect}
 2007:export function Account() {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:19Z)**_
@@ -1955,7 +1982,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:19Z)**_
 80	  if (!transaction) {
 81	    throw new Error(`Transaction not found: ${id}`);
 82	  }
-83	
+83
 84	  // Validate that the provided accountId matches the transaction's actual account
 85	  // This prevents sort order calculations against the wrong account
 86	  if (transaction.account !== accountId) {
@@ -1963,14 +1990,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:19Z)**_
 88	      `Account mismatch: transaction belongs to account ${transaction.account}, not ${accountId}`,
 89	    );
 90	  }
-91	
+91
 92	  // Child transactions can be reordered within their parent's children
 93	  // The db.moveTransaction handles the sibling-scoped reordering for children
-94	
+94
 95	  await db.moveTransaction(id, accountId, targetId);
 96	  return {};
 97	}
-98	
+98
 99	async function parseTransactionsFile({
 100	  filepath,
 101	  options,
@@ -1980,7 +2007,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:19Z)**_
 105	}) {
 106	  return parseFile(filepath, options);
 107	}
-108	
+108
 109	async function exportTransactions({
 110	  transactions,
 111	  accounts,
@@ -1994,7 +2021,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:19Z)**_
 119	}) {
 120	  return exportToCSV(transactions, accounts, categoryGroups, payees);
 121	}
-122	
+122
 123	async function exportTransactionsQuery({
 124	  query: queryState,
 125	}: {
@@ -2002,7 +2029,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:19Z)**_
 127	}) {
 128	  return exportQueryToCSV(new Query(queryState));
 129	}
-130	
+130
 131	async function getEarliestTransaction() {
 132	  const { data } = await aqlQuery(
 133	    q('transactions')
@@ -2013,6 +2040,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:19Z)**_
 138	  );
 139	  return data[0] || null;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:20Z)**_
@@ -2029,6 +2057,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:21Z)**_
 You sent (first 159 of 159 bytes): {"file_path": "/Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/accounts/Account.tsx", "offset": 600, 670}
 Common causes: unescaped backslashes in file paths (use / or \\), unescaped control characters, or truncated output. Retry with valid JSON.</tool_use_error>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:23Z)**_
@@ -2039,14 +2068,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:23Z)**_
 
 ```text
 600	    const account = this.props.accounts.find(acct => acct.id === accountId);
-601	
+601
 602	    this.props.onSyncAndDownload(account ? account.id : accountId);
 603	  };
-604	
+604
 605	  onImport = async () => {
 606	    const accountId = this.props.accountId;
 607	    const account = this.props.accounts.find(acct => acct.id === accountId);
-608	
+608
 609	    if (account) {
 610	      const res = await window.Actual.openFileDialog({
 611	        filters: [
@@ -2056,7 +2085,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:23Z)**_
 615	          },
 616	        ],
 617	      });
-618	
+618
 619	      if (res) {
 620	        if (accountId && res?.length > 0) {
 621	          this.props.dispatch(
@@ -2079,7 +2108,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:23Z)**_
 638	      }
 639	    }
 640	  };
-641	
+641
 642	  onExport = async (accountName: string) => {
 643	    const exportedTransactions = await send('transactions-export-query', {
 644	      query: this.currentQuery.serialize(),
@@ -2087,14 +2116,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:23Z)**_
 646	    const normalizedName =
 647	      accountName && accountName.replace(/[()]/g, '').replace(/\s+/g, '-');
 648	    const filename = `${normalizedName || 'transactions'}.csv`;
-649	
+649
 650	    void window.Actual.saveFile(
 651	      exportedTransactions,
 652	      filename,
 653	      t('Export transactions'),
 654	    );
 655	  };
-656	
+656
 657	  onTransactionsChange = (updatedTransaction: TransactionEntity) => {
 658	    // Apply changes to pagedQuery data optimistically. Set the flag so that
 659	    // onData skips the expensive aggregate DB queries for this update.
@@ -2108,10 +2137,10 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:23Z)**_
 667	        });
 668	      }
 669	    });
-670	
+670
 671	    this.props.dispatch(updateNewTransactions({ id: updatedTransaction.id }));
 672	  };
-673	
+673
 674	  canCalculateBalance = () => {
 675	    const accountId = this.props.accountId;
 676	    const account = this.props.accounts.find(
@@ -2119,6 +2148,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:23Z)**_
 678	    );
 679
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:24Z)**_
@@ -2132,11 +2162,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:24Z)**_
 791	      this.setState({ nameError: '' });
 792	    }
 793	  };
-794	
+794
 795	  onToggleExtraBalances = () => {
 796	    this.props.setShowExtraBalances(!this.props.showExtraBalances);
 797	  };
-798	
+798
 799	  onMenuSelect = async (
 800	    item:
 801	      | 'link'
@@ -2154,7 +2184,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:24Z)**_
 813	    const account = this.props.accounts.find(
 814	      account => account.id === accountId,
 815	    )!;
-816	
+816
 817	    switch (item) {
 818	      case 'link':
 819	        this.props.dispatch(
@@ -2229,6 +2259,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:24Z)**_
 888	        break;
 889	      }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:29Z)**_
@@ -2256,6 +2287,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:29Z)**_
 1693:    this.currentQuery = this.currentQuery.orderBy({ sort_order: sortAscDesc });
 1695:    this.updateQuery(this.currentQuery, isFiltered);
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:40Z)**_
@@ -2285,6 +2317,7 @@ e8a62f89a Migrate core to TS p3 (#896)
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/upcoming-release-notes/ai-feat-budget-analysis-report-export-csv-feature.md
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/upcoming-release-notes/ai-feat-budget-analysis-report-export-csv-feature.md
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:49Z)**_
@@ -2301,7 +2334,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:49Z)**_
 1544	      default:
 1545	    }
 1546	  };
-1547	
+1547
 1548	  applyFilters = async (conditions: ConditionEntity[]) => {
 1549	    if (conditions.length > 0) {
 1550	      const filteredCustomQueryFilters: Partial<RuleConditionEntity>[] =
@@ -2322,7 +2355,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:49Z)**_
 1565	      this.currentQuery = this.rootQuery.filter({
 1566	        [conditionsOpKey]: [...queryFilters, ...customQueryFilters],
 1567	      });
-1568	
+1568
 1569	      this.setState(
 1570	        {
 1571	          filterConditions: conditions,
@@ -2335,6 +2368,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:49Z)**_
 1578	      this.setState(
 1579	        {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:50Z)**_
@@ -2351,6 +2385,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:50Z)**_
 854:        void this.onExport(accountName);
 1548:  applyFilters = async (conditions: ConditionEntity[]) => {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:51Z)**_
@@ -2364,7 +2399,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:51Z)**_
 576	    this.paged?.unsubscribe();
 577	    this.setState({ search: value }, this.onSearchDone);
 578	  };
-579	
+579
 580	  onSearchDone = debounce(() => {
 581	    if (this.state.search === '') {
 582	      this.updateQuery(
@@ -2382,10 +2417,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:17:51Z)**_
 594	      );
 595	    }
 596	  }, 150);
-597	
+597
 598	  onSync = async () => {
 599	    const accountId = this.props.accountId;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:18:01Z)**_
@@ -2407,6 +2443,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:18:01Z)**_
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/reports/BudgetAnalysis.tsx:338:    void window.Actual.saveFile(
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/Overview.tsx:336:    void window.Actual.saveFile(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:18:01Z)**_
@@ -2424,6 +2461,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:18:01Z)**_
 483:    this.paged = pagedQuery(query.select('*'), {
 658:    // Apply changes to pagedQuery data optimistically. Set the flag so that
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:18:04Z)**_
@@ -2466,6 +2504,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:18:04Z)**_
   applyAppUpdate: async () => {
     updateSW();
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:18:30Z)**_
@@ -2477,6 +2516,7 @@ I now have everything needed. Here's the concise report.
 **The single most important finding:** per-account "Export as CSV" already exists end-to-end, and has existed since the initial open-source commit (`4d9fdfc59`) — it's not new code. It's just tucked inside the account's "⋮" (three-dot) overflow menu rather than a visible toolbar button, which is almost certainly why the issue author didn't find it.
 
 ### 1. Budget-level export vs. existing CSV logic
+
 - Budget-level export: `packages/desktop-client/src/components/settings/Export.tsx:22-43` — calls `send('export-budget')`, handled by `packages/loot-core/src/server/budgetfiles/app.ts:67,91`. This exports a **zip** (`db.sqlite` + `metadata.json`), not CSV — a different, unrelated code path.
 - The actual CSV logic is in `packages/loot-core/src/server/transactions/export/export-to-csv.ts`:
   - `exportToCSV()` (line 17) — takes a raw transaction list.
@@ -2485,6 +2525,7 @@ I now have everything needed. Here's the concise report.
 - This is fully reusable — nothing new needs to be written for serialization.
 
 ### 2. Account view / toolbar file
+
 - `packages/desktop-client/src/components/accounts/Header.tsx` renders the toolbar (`AccountHeader`, line 135) with Search, FilterButton, SelectedTransactionsButton, Reconcile, etc. (lines 340-566).
 - The account "⋮" menu is `AccountMenu` (line 762) inside `Header.tsx`, which already lists `{ name: 'export', text: t('Export') }` at **line 819** (and again at line 552 for the "all accounts" view).
 - Selecting it calls `onMenuSelect` in `packages/desktop-client/src/components/accounts/Account.tsx:799-855`, case `'export'` (line 852-855) → `this.onExport(accountName)` (defined lines 642-655).
@@ -2492,16 +2533,20 @@ I now have everything needed. Here's the concise report.
 - **This is exactly where a "Download as CSV" button would go** — either promote this existing menu item to a bare `Button` in `AccountHeader`'s `SpaceBetween` toolbar row (`Header.tsx:340-566`, alongside Import/Add New/FilterButton), or simply relabel/re-icon the existing menu entry.
 
 ### 3. Data access and filter edge case — a real gap found
+
 - Transaction list is **not** a fully-loaded client-side array; it's a `pagedQuery` (`packages/desktop-client/src/components/accounts/Account.tsx:85-86, 300, 483`), i.e., virtualized/paginated. Export correctly avoids depending on that in-memory page and instead re-runs a query server-side via `transactions-export-query`.
 - Filter state: `this.currentQuery` starts as `this.rootQuery` (line 454) and gets reassigned when the rule-based `FilterButton`/`applyFilters` is used (line 1565: `this.currentQuery = this.rootQuery.filter(...)`), so **exporting after applying a saved/rule filter correctly narrows the CSV**.
 - **However**, the free-text `Search` box does NOT update `this.currentQuery`. In `onSearchDone` (lines 580-596), the search-derived query (`queries.transactionsSearch(this.currentQuery, this.state.search, ...)`) is passed straight to `updateQuery` for the on-screen paged list only — it is never assigned back to `this.currentQuery`. Since `onExport` (line 644) serializes `this.currentQuery`, **a search term typed into the box is silently ignored by Export** — the exported CSV will contain the full (or rule-filtered) account, not just the visibly-searched rows. This is precisely the "filtered vs. full account" edge case the issue calls out, and it's a pre-existing latent bug/gap in the current export path, not something new to invent — worth deciding explicitly whether the new work should fix it (e.g., include search text when serializing the query) or explicitly document the limitation.
 
 ### 4. Reusable UI/file-save primitives
+
 - `window.Actual.saveFile(contents, filename, title?)` is the shared save primitive, implemented for browser in `packages/desktop-client/src/browser-preload.js:187-195` (creates a `Blob`, triggers an `<a download>` click) and used identically in four places: `settings/Export.tsx:36`, `accounts/Account.tsx:650`, `reports/Overview.tsx:336`, `reports/reports/BudgetAnalysis.tsx:338`. Any new button reuses this unchanged.
 - Icon: `SvgDownloadThickBottom` (`@actual-app/components/icons/v2`) is already imported in `Header.tsx:16` and used for the "Import" button — same icon family fits a "Download CSV" button visually.
 
 ### 5. Risk assessment
+
 **Low risk.** This is not a new feature touching shared/critical paths — it's exposing/relocating an already-battle-tested, already-shipped code path:
+
 - No changes needed to the transaction data layer, sync logic, or DB layer.
 - No new server handler needed (`transactions-export-query` already exists and is stable, used since initial commit).
 - The only genuinely new work is UI: adding/promoting a button in `Header.tsx`'s toolbar and wiring its `onPress` to the existing `onExport`/`onMenuSelect('export')` path in `Account.tsx`.
@@ -2517,6 +2562,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:18:50Z)**_
 ```text
 The file /Users/liammclemore/.claude/plans/don-t-make-any-changes-agile-nygaard.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:18:55Z)**_
@@ -2536,6 +2582,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:21:51Z)**_
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  As this is already implemented, let's instead look at issue 21
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:21:55Z)**_
@@ -2549,6 +2596,7 @@ Fetch details of Issue #21
 ```text
 {"body":"Summary: \nThe budget page shows the budget for months in the past, present, and future. Currently, you can either click on the month you would like displayed, or you can use the left and right arrow keys to switch them. The ability to scroll through the calendar would be intuitive and easy for users, especially when displaying multiple months at once.\n\nUser story: \nAs a user, I want the ability to scroll so that I can use the budget calendar more efficiently.\n\nRough scope: \nMedium scope. It appears fairly simple, but implementing an input in addition to the left and right arrow keys may prove more difficult.\n\nSource: \nPersonal use","html_url":"https://github.com/CSCI-435-SE/actual-budget/issues/21","labels":["scope: medium"],"state":"open","title":"Adding scroll function to the months on the budget page"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:23:52Z)**_
@@ -2615,6 +2663,7 @@ Low, due to DOM layout separation in **`packages/desktop-client/src/components/b
 
 So an `onWheel` handler scoped to the `MonthPicker`/`BudgetPageHeader` area would not sit on top of, or share an element with, the vertically-scrolling category grid — attaching it there shouldn't hijack the grid's normal scroll. The main residual risk is UX rather than technical breakage: if a user's trackpad/mouse wheel produces vertical scroll deltas while hovering over the header (which has nothing to scroll), interpreting any wheel event there as "change month" could feel surprising unless the handler is deliberately restricted (e.g., only reacts past some threshold, or only to horizontal delta/shift+wheel, matching common calendar-scroll conventions) and calls `preventDefault` narrowly. No sibling reference pattern exists in-repo for this threshold/debounce logic (per point 3), so that part should be treated as new, hand-designed logic and tested carefully, even though the state wiring itself is simple and centralized.
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-13 16:22:08Z)**_
@@ -2690,6 +2739,7 @@ packages/desktop-client/src/components/budget/tracking/TrackingBudgetComponents.
 packages/desktop-client/src/components/budget/tracking/TrackingBudgetContext.tsx
 packages/desktop-client/src/components/budget/util.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:11Z)**_
@@ -2704,6 +2754,7 @@ packages/desktop-client/src/components/Titlebar.tsx
 packages/desktop-client/src/components/modals/KeyboardShortcutModal.tsx
 packages/desktop-client/src/components/select/DateSelect.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:16Z)**_
@@ -2716,6 +2767,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:16Z)**_
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:17Z)**_
@@ -2728,6 +2780,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:17Z)**_
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:17Z)**_
@@ -2740,14 +2793,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:17Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext } from 'react';
 3	import type { ReactNode } from 'react';
-4	
+4
 5	import * as monthUtils from '@actual-app/core/shared/months';
-6	
+6
 7	export type MonthBounds = {
 8	  start: string;
 9	  end: string;
 10	};
-11	
+11
 12	export function getValidMonthBounds(
 13	  bounds: MonthBounds,
 14	  startMonth: undefined | string,
@@ -2758,14 +2811,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:17Z)**_
 19	    end: endMonth > bounds.end ? bounds.end : endMonth,
 20	  };
 21	}
-22	
+22
 23	type MonthsContextProps = {
 24	  months: string[];
 25	  type: string;
 26	};
-27	
+27
 28	export const MonthsContext = createContext<MonthsContextProps>(null);
-29	
+29
 30	type MonthsProviderProps = {
 31	  startMonth: string | undefined;
 32	  numMonths: number;
@@ -2773,7 +2826,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:17Z)**_
 34	  type: string;
 35	  children: ReactNode;
 36	};
-37	
+37
 38	export function MonthsProvider({
 39	  startMonth,
 40	  numMonths,
@@ -2784,7 +2837,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:17Z)**_
 45	  const endMonth = monthUtils.addMonths(startMonth, numMonths - 1);
 46	  const bounds = getValidMonthBounds(monthBounds, startMonth, endMonth);
 47	  const months = monthUtils.rangeInclusive(bounds.start, bounds.end);
-48	
+48
 49	  return (
 50	    <MonthsContext.Provider value={{ months, type }}>
 51	      {children}
@@ -2793,6 +2846,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:17Z)**_
 54	}
 55
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:20Z)**_
@@ -2806,6 +2860,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:20Z)**_
 packages/desktop-client/src/components/budget/BudgetTable.tsx:205:  const onKeyDown = (e: KeyboardEvent) => {
 packages/desktop-client/src/components/budget/BudgetTable.tsx:312:            onKeyDown={onKeyDown}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:20Z)**_
@@ -2818,6 +2873,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:20Z)**_
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:23Z)**_
@@ -2830,7 +2886,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:23Z)**_
 150	      }
 151	    }
 152	  };
-153	
+153
 154	  const _onReorderGroup = (
 155	    id: string,
 156	    dropPos: DropPosition | null,
@@ -2842,7 +2898,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:23Z)**_
 162	      ...findSortDown(expenseGroups, dropPos, targetId),
 163	    });
 164	  };
-165	
+165
 166	  const moveVertically = (dir: 1 | -1) => {
 167	    const flattened = categoryGroups.reduce(
 168	      (all, group) => {
@@ -2858,14 +2914,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:23Z)**_
 178	        { id: CategoryGroupEntity['id']; isGroup: boolean } | CategoryEntity
 179	      >,
 180	    );
-181	
+181
 182	    if (editing) {
 183	      const idx = flattened.findIndex(item => item.id === editing.id);
 184	      let nextIdx = idx + dir;
-185	
+185
 186	      while (nextIdx >= 0 && nextIdx < flattened.length) {
 187	        const next = flattened[nextIdx];
-188	
+188
 189	        if ('isGroup' in next && next.isGroup) {
 190	          nextIdx += dir;
 191	          continue;
@@ -2881,38 +2937,38 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:23Z)**_
 201	      }
 202	    }
 203	  };
-204	
+204
 205	  const onKeyDown = (e: KeyboardEvent) => {
 206	    if (!editing) {
 207	      return null;
 208	    }
-209	
+209
 210	    if (e.key === 'Enter' || e.key === 'Tab') {
 211	      e.preventDefault();
 212	      moveVertically(e.shiftKey ? -1 : 1);
 213	    }
 214	  };
-215	
+215
 216	  const onCollapse = (collapsedIds: string[]) => {
 217	    setCollapsedGroupIdsPref(collapsedIds);
 218	  };
-219	
+219
 220	  const onToggleHiddenCategories = () => {
 221	    setShowHiddenCategoriesPef(!showHiddenCategories);
 222	  };
-223	
+223
 224	  const toggleHiddenCategories = () => {
 225	    onToggleHiddenCategories();
 226	  };
-227	
+227
 228	  const expandAllCategories = () => {
 229	    onCollapse([]);
 230	  };
-231	
+231
 232	  const collapseAllCategories = () => {
 233	    onCollapse(categoryGroups.map(g => g.id));
 234	  };
-235	
+235
 236	  const _onShowActivity = (id: string, month?: string) => {
 237	    if (scrollContainerRef.current) {
 238	      sessionStorage.setItem(
@@ -2922,9 +2978,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:23Z)**_
 242	    }
 243	    onShowActivity(id, month);
 244	  };
-245	
+245
 246	  const schedulesQuery = useMemo(() => q('schedules').select('*'), []);
-247	
+247
 248	  return (
 249	    <View
 250	      data-testid="budget-table"
@@ -2962,7 +3018,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:23Z)**_
 282	          <BudgetSummaries />
 283	        </MonthsProvider>
 284	      </View>
-285	
+285
 286	      <MonthsProvider
 287	        startMonth={startMonth}
 288	        numMonths={numMonths}
@@ -3008,6 +3064,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:23Z)**_
 328	                onApplyBudgetTemplatesInGroup={onApplyBudgetTemplatesInGroup}
 329	                onSortCategories={onSortCategories}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
@@ -3021,7 +3078,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
 2	import React, { useState } from 'react';
 3	import type { CSSProperties } from 'react';
 4	import { useTranslation } from 'react-i18next';
-5	
+5
 6	import {
 7	  SvgCheveronLeft,
 8	  SvgCheveronRight,
@@ -3031,13 +3088,13 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
 12	import { theme } from '@actual-app/components/theme';
 13	import { View } from '@actual-app/components/view';
 14	import * as monthUtils from '@actual-app/core/shared/months';
-15	
+15
 16	import { Link } from '#components/common/Link';
 17	import { useLocale } from '#hooks/useLocale';
 18	import { useResizeObserver } from '#hooks/useResizeObserver';
-19	
+19
 20	import type { MonthBounds } from './MonthsContext';
-21	
+21
 22	type MonthPickerProps = {
 23	  startMonth: string;
 24	  numDisplayed: number;
@@ -3045,7 +3102,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
 26	  style: CSSProperties;
 27	  onSelect: (month: string) => void;
 28	};
-29	
+29
 30	export const MonthPicker = ({
 31	  startMonth,
 32	  numDisplayed,
@@ -3057,15 +3114,15 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
 38	  const { t } = useTranslation();
 39	  const [hoverId, setHoverId] = useState(null);
 40	  const [targetMonthCount, setTargetMonthCount] = useState(12);
-41	
+41
 42	  const currentMonth = monthUtils.currentMonth();
 43	  const firstSelectedMonth = startMonth;
-44	
+44
 45	  const lastSelectedMonth = monthUtils.addMonths(
 46	    firstSelectedMonth,
 47	    numDisplayed - 1,
 48	  );
-49	
+49
 50	  const range = monthUtils.rangeInclusive(
 51	    monthUtils.subMonths(
 52	      firstSelectedMonth,
@@ -3076,11 +3133,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
 57	      Math.floor(targetMonthCount / 2 - numDisplayed / 2),
 58	    ),
 59	  );
-60	
+60
 61	  const firstSelectedIndex =
 62	    Math.floor(range.length / 2) - Math.floor(numDisplayed / 2);
 63	  const lastSelectedIndex = firstSelectedIndex + numDisplayed - 1;
-64	
+64
 65	  const [size, setSize] = useState('small');
 66	  const containerRef = useResizeObserver(rect => {
 67	    setSize(rect.width <= 400 ? 'small' : 'big');
@@ -3088,9 +3145,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
 69	      Math.min(Math.max(Math.floor(rect.width / 50), 12), 24),
 70	    );
 71	  });
-72	
+72
 73	  const yearHeadersShown = [];
-74	
+74
 75	  return (
 76	    <View
 77	      style={{
@@ -3149,24 +3206,24 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
 130	          const monthName = monthUtils.format(month, 'MMM', locale);
 131	          const selected =
 132	            idx >= firstSelectedIndex && idx <= lastSelectedIndex;
-133	
+133
 134	          const lastHoverId = hoverId + numDisplayed - 1;
 135	          const hovered =
 136	            hoverId === null ? false : idx >= hoverId && idx <= lastHoverId;
-137	
+137
 138	          const current = currentMonth === month;
 139	          const year = monthUtils.getYear(month);
-140	
+140
 141	          let showYearHeader = false;
-142	
+142
 143	          if (!yearHeadersShown.includes(year)) {
 144	            yearHeadersShown.push(year);
 145	            showYearHeader = true;
 146	          }
-147	
+147
 148	          const isMonthBudgeted =
 149	            month >= monthBounds.start && month <= monthBounds.end;
-150	
+150
 151	          return (
 152	            <View
 153	              key={month}
@@ -3287,6 +3344,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:27Z)**_
 268	};
 269
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:28Z)**_
@@ -3299,6 +3357,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:28Z)**_
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:32Z)**_
@@ -3314,6 +3373,7 @@ packages/desktop-client/src/components/budget/BudgetPageHeader.tsx:16:  monthBou
 packages/desktop-client/src/components/budget/BudgetPageHeader.tsx:38:          <MonthPicker
 packages/desktop-client/src/components/budget/BudgetPageHeader.tsx:43:            onSelect={month => onMonthSelect(month)}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:32Z)**_
@@ -3332,6 +3392,7 @@ packages/desktop-client/src/components/budget/envelope/budgetsummary/ToBudget.ts
 packages/desktop-client/src/components/budget/envelope/budgetsummary/BudgetSummary.tsx
 packages/desktop-client/src/components/budget/envelope/budgetsummary/TotalsList.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:33Z)**_
@@ -3349,6 +3410,7 @@ packages/desktop-client/src/components/modals/KeyboardShortcutModal.tsx:230:    
 packages/desktop-client/src/components/modals/KeyboardShortcutModal.tsx:233:            id: 'view-next-month',
 packages/desktop-client/src/components/modals/KeyboardShortcutModal.tsx:235:            description: t('View next month'),
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:35Z)**_
@@ -3361,6 +3423,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:35Z)**_
 You sent (first 183 of 183 bytes): {"file_path": "/Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/modals/KeyboardShortcutModal.tsx", "offset": 195, 245, "limit": 1}
 Common causes: unescaped backslashes in file paths (use / or \\), unescaped control characters, or truncated output. Retry with valid JSON.</tool_use_error>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:37Z)**_
@@ -3416,6 +3479,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:37Z)**_
 238	            ? [
 239	                {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:38Z)**_
@@ -3431,6 +3495,7 @@ packages/desktop-client/src/components/modals/KeyboardShortcutModal.tsx:228:    
 packages/desktop-client/src/components/modals/KeyboardShortcutModal.tsx:233:            id: 'view-next-month',
 packages/desktop-client/src/components/reports/spendingAverageRange.test.ts:152:  it('describes current-month average MTD by selected range', () => {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
@@ -3443,7 +3508,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 1	// @ts-strict-ignore
 2	import React, { useEffect, useEffectEvent, useMemo, useState } from 'react';
 3	import type { ComponentType } from 'react';
-4	
+4
 5	import { styles } from '@actual-app/components/styles';
 6	import { View } from '@actual-app/components/view';
 7	import { send } from '@actual-app/core/platform/client/connection';
@@ -3452,7 +3517,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 10	  CategoryEntity,
 11	  CategoryGroupEntity,
 12	} from '@actual-app/core/types/models';
-13	
+13
 14	import {
 15	  useBudgetActions,
 16	  useDeleteCategoryGroupMutation,
@@ -3470,14 +3535,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 28	import { SheetNameProvider } from '#hooks/useSheetName';
 29	import { useSpreadsheet } from '#hooks/useSpreadsheet';
 30	import { useSyncedPref } from '#hooks/useSyncedPref';
-31	
+31
 32	import { AutoSizingBudgetTable } from './DynamicBudgetTable';
 33	import * as envelopeBudget from './envelope/EnvelopeBudgetComponents';
 34	import { EnvelopeBudgetProvider } from './envelope/EnvelopeBudgetContext';
 35	import * as trackingBudget from './tracking/TrackingBudgetComponents';
 36	import { TrackingBudgetProvider } from './tracking/TrackingBudgetContext';
 37	import { prewarmAllMonths, prewarmMonth } from './util';
-38	
+38
 39	export function Budget() {
 40	  const currentMonth = monthUtils.currentMonth();
 41	  const spreadsheet = useSpreadsheet();
@@ -3497,26 +3562,26 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 55	  const [initialized, setInitialized] = useState(false);
 56	  const { data: { grouped: categoryGroups } = { grouped: [] } } =
 57	    useCategories();
-58	
+58
 59	  const init = useEffectEvent(() => {
 60	    async function run() {
 61	      const { start, end } = await send('get-budget-bounds');
 62	      setBounds({ start, end });
-63	
+63
 64	      await prewarmAllMonths(
 65	        budgetType,
 66	        spreadsheet,
 67	        { start, end },
 68	        startMonth,
 69	      );
-70	
+70
 71	      setInitialized(true);
 72	    }
-73	
+73
 74	    void run();
 75	  });
 76	  useEffect(() => init(), []);
-77	
+77
 78	  const loadBoundBudgets = useEffectEvent(() => {
 79	    void send('get-budget-bounds').then(({ start, end }) => {
 80	      if (bounds.start !== start || bounds.end !== end) {
@@ -3525,12 +3590,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 83	    });
 84	  });
 85	  useEffect(() => loadBoundBudgets(), []);
-86	
+86
 87	  const onMonthSelect = async (month, numDisplayed) => {
 88	    setStartMonthPref(month);
-89	
+89
 90	    const warmingMonth = month;
-91	
+91
 92	    // We could be smarter about this, but this is a good start. We
 93	    // optimize for the case where users press the left/right button
 94	    // to move between months. This loads the month data all at once
@@ -3552,16 +3617,16 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 110	        monthUtils.addMonths(month, numDisplayed),
 111	      );
 112	    }
-113	
+113
 114	    if (warmingMonth === month) {
 115	      setStartMonthPref(month);
 116	    }
 117	  };
-118	
+118
 119	  const onToggleCollapse = () => {
 120	    setSummaryCollapsedPref(!summaryCollapsed);
 121	  };
-122	
+122
 123	  const onApplyBudgetTemplatesInGroup = async categories => {
 124	    applyBudgetAction.mutate({
 125	      month: startMonth,
@@ -3571,7 +3636,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 129	      },
 130	    });
 131	  };
-132	
+132
 133	  const onShowActivity = (categoryId, month) => {
 134	    const filterConditions = [
 135	      { field: 'category', op: 'is', value: categoryId, type: 'id' },
@@ -3591,7 +3656,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 149	      },
 150	    });
 151	  };
-152	
+152
 153	  const saveCategory = useSaveCategoryMutation();
 154	  const onSaveCategory = category => {
 155	    saveCategory.mutate({ category });
@@ -3612,15 +3677,15 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 170	  const reorderCategoryGroup = useReorderCategoryGroupMutation();
 171	  const sortCategories = useSortCategoriesMutation();
 172	  const applyBudgetAction = useBudgetActions();
-173	
+173
 174	  const onBudgetAction = (month, type, args) => {
 175	    applyBudgetAction.mutate({ month, type, args });
 176	  };
-177	
+177
 178	  if (!initialized || !categoryGroups) {
 179	    return null;
 180	  }
-181	
+181
 182	  let table;
 183	  if (budgetType === 'tracking') {
 184	    table = (
@@ -3681,7 +3746,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 239	      </EnvelopeBudgetProvider>
 240	    );
 241	  }
-242	
+242
 243	  return (
 244	    <SheetNameProvider name={monthUtils.sheetForMonth(startMonth)}>
 245	      {/*
@@ -3703,11 +3768,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 261	    </SheetNameProvider>
 262	  );
 263	}
-264	
+264
 265	export type BudgetSummaryProps = {
 266	  month: string;
 267	};
-268	
+268
 269	export type CategoryMonthProps = {
 270	  month: string;
 271	  category: CategoryEntity;
@@ -3717,12 +3782,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 275	  onBudgetAction: (month: string, action: string, arg: unknown) => void;
 276	  onShowActivity: (id: CategoryEntity['id'], month: string) => void;
 277	};
-278	
+278
 279	export type CategoryGroupMonthProps = {
 280	  month: string;
 281	  group: CategoryGroupEntity;
 282	};
-283	
+283
 284	export type BudgetComponents = {
 285	  SummaryComponent: ComponentType<BudgetSummaryProps>;
 286	  ExpenseCategoryComponent: ComponentType<CategoryMonthProps>;
@@ -3732,15 +3797,15 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 290	  BudgetTotalsComponent: ComponentType;
 291	  IncomeHeaderComponent: ComponentType;
 292	};
-293	
+293
 294	export function useBudgetComponents(): BudgetComponents {
 295	  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
 296	  const envelopeComponents = useEnvelopeBudgetComponents();
 297	  const trackingComponents = useTrackingBudgetComponents();
-298	
+298
 299	  return budgetType === 'envelope' ? envelopeComponents : trackingComponents;
 300	}
-301	
+301
 302	function useTrackingBudgetComponents(): BudgetComponents {
 303	  return useMemo(
 304	    () => ({
@@ -3755,7 +3820,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 313	    [],
 314	  );
 315	}
-316	
+316
 317	function useEnvelopeBudgetComponents(): BudgetComponents {
 318	  return useMemo(
 319	    () => ({
@@ -3772,6 +3837,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:41Z)**_
 330	}
 331
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:48Z)**_
@@ -3808,6 +3874,7 @@ packages/desktop-client/src/components/GlobalKeys.ts:36:    document.addEventLis
 packages/desktop-client/src/components/CommandBar.tsx:160:    document.addEventListener('keydown', openEventListener);
 packages/desktop-client/src/components/formula/FormulaEditor.tsx:270:    document.addEventListener('keydown', onKeyDown, true);
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
@@ -3823,21 +3890,21 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
 4	import { ErrorBoundary } from 'react-error-boundary';
 5	import { useHotkeys } from 'react-hotkeys-hook';
 6	import { AutoSizer } from 'react-virtualized-auto-sizer';
-7	
+7
 8	import { View } from '@actual-app/components/view';
 9	import * as monthUtils from '@actual-app/core/shared/months';
-10	
+10
 11	import { FeatureErrorFallback } from '#components/FeatureErrorFallback';
 12	import { useFeatureFlag } from '#hooks/useFeatureFlag';
 13	import { useGlobalPref } from '#hooks/useGlobalPref';
-14	
+14
 15	import { useBudgetMonthCount } from './BudgetMonthCountContext';
 16	import { BudgetPageHeader } from './BudgetPageHeader';
 17	import { BudgetTable } from './BudgetTable';
-18	
+18
 19	function getNumPossibleMonths(width: number, categoryWidth: number) {
 20	  const estimatedTableWidth = width - categoryWidth;
-21	
+21
 22	  if (estimatedTableWidth < 500) {
 23	    return 1;
 24	  } else if (estimatedTableWidth < 750) {
@@ -3849,15 +3916,15 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
 30	  } else if (estimatedTableWidth < 1500) {
 31	    return 5;
 32	  }
-33	
+33
 34	  return 6;
 35	}
-36	
+36
 37	type DynamicBudgetTableProps = {
 38	  width: number;
 39	  height: number;
 40	} & AutoSizingBudgetTableProps;
-41	
+41
 42	const DynamicBudgetTable = ({
 43	  type,
 44	  width,
@@ -3874,22 +3941,22 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
 55	  const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
 56	  const isGoalTemplatesEnabled = useFeatureFlag('goalTemplatesEnabled');
 57	  const categoryExpandedState = categoryExpandedStatePref ?? 0;
-58	
+58
 59	  const numPossible = getNumPossibleMonths(
 60	    width,
 61	    200 + 100 * categoryExpandedState,
 62	  );
 63	  const numMonths = Math.min(numPossible, maxMonths);
 64	  const maxWidth = 200 + 100 * categoryExpandedState + 500 * numMonths;
-65	
+65
 66	  useEffect(() => {
 67	    setDisplayMax(numPossible);
 68	  }, [setDisplayMax, numPossible]);
-69	
+69
 70	  function getValidMonth(month) {
 71	    const start = monthBounds.start;
 72	    const end = monthUtils.subMonths(monthBounds.end, numMonths - 1);
-73	
+73
 74	    if (month < start) {
 75	      return start;
 76	    } else if (month > end) {
@@ -3897,11 +3964,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
 78	    }
 79	    return month;
 80	  }
-81	
+81
 82	  function _onMonthSelect(month) {
 83	    onMonthSelect(getValidMonth(month), numMonths);
 84	  }
-85	
+85
 86	  useHotkeys(
 87	    'left',
 88	    () => {
@@ -3956,7 +4023,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
 137	    },
 138	    [onBudgetAction, startMonth, isGoalTemplatesEnabled],
 139	  );
-140	
+140
 141	  return (
 142	    <View
 143	      style={{
@@ -3988,9 +4055,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
 169	    </View>
 170	  );
 171	};
-172	
+172
 173	DynamicBudgetTable.displayName = 'DynamicBudgetTable';
-174	
+174
 175	type AutoSizingBudgetTableProps = Omit<
 176	  ComponentProps<typeof BudgetTable>,
 177	  'numMonths'
@@ -3998,7 +4065,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
 179	  maxMonths: number;
 180	  onMonthSelect: (month: string, numMonths: number) => void;
 181	};
-182	
+182
 183	export const AutoSizingBudgetTable = (props: AutoSizingBudgetTableProps) => {
 184	  return (
 185	    <AutoSizer
@@ -4006,16 +4073,17 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:51Z)**_
 187	        if (width === 0 || height === 0) {
 188	          return null;
 189	        }
-190	
+190
 191	        return <DynamicBudgetTable width={width} height={height} {...props} />;
 192	      }}
 193	    />
 194	  );
 195	};
-196	
+196
 197	AutoSizingBudgetTable.displayName = 'AutoSizingBudgetTable';
 198
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:56Z)**_
@@ -4028,27 +4096,27 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:56Z)**_
 1	// @ts-strict-ignore
 2	import React, { memo } from 'react';
 3	import type { ComponentProps } from 'react';
-4	
+4
 5	import { View } from '@actual-app/components/view';
-6	
+6
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
-8	
+8
 9	import { MonthPicker } from './MonthPicker';
 10	import { getScrollbarWidth } from './util';
-11	
+11
 12	type BudgetPageHeaderProps = {
 13	  startMonth: string;
 14	  onMonthSelect: (month: string) => void;
 15	  numMonths: number;
 16	  monthBounds: ComponentProps<typeof MonthPicker>['monthBounds'];
 17	};
-18	
+18
 19	export const BudgetPageHeader = memo<BudgetPageHeaderProps>(
 20	  ({ startMonth, onMonthSelect, numMonths, monthBounds }) => {
 21	    const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
 22	    const categoryExpandedState = categoryExpandedStatePref ?? 0;
 23	    const offsetMultipleMonths = numMonths === 1 ? 4 : 0;
-24	
+24
 25	    return (
 26	      <View
 27	        style={{
@@ -4074,10 +4142,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:22:56Z)**_
 47	    );
 48	  },
 49	);
-50	
+50
 51	BudgetPageHeader.displayName = 'BudgetPageHeader';
 52
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:05Z)**_
@@ -4090,6 +4159,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:05Z)**_
 ```text
 packages/desktop-client/src/components/formula/codeMirror-excelLanguage.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:06Z)**_
@@ -4102,6 +4172,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:06Z)**_
 ```text
 packages/desktop-client/src/components/formula/codeMirror-excelLanguage.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:07Z)**_
@@ -4116,6 +4187,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:07Z)**_
 1098:  view.dom.ownerDocument.addEventListener('wheel', handleWheel, {
 1113:      view.dom.ownerDocument.removeEventListener('wheel', handleWheel, {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:09Z)**_
@@ -4129,6 +4201,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:09Z)**_
 packages/desktop-client/src/components/budget/BudgetTable.tsx:267:          overflow: 'hidden',
 packages/desktop-client/src/components/budget/BudgetTable.tsx:301:            overflowY: 'scroll',
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:23:52Z)**_
@@ -4161,6 +4234,7 @@ It's a **single `startMonth` value**, centralized as a local pref:
 `numMonths` (how many months are visible starting at `startMonth`) is a derived, computed value (from viewport width), not independent state — so "showing multiple months" is a windowing effect over one `startMonth` anchor, not multiple independently-selected months.
 
 Click-to-select flow: **`packages/desktop-client/src/components/budget/MonthPicker.tsx`**
+
 - Line 96: "Today" button → `onSelect(currentMonth)`
 - Line 114: prev chevron → `onSelect(monthUtils.prevMonth(startMonth))`
 - Line 214: clicking a month cell → `onSelect(month)`
@@ -4198,42 +4272,42 @@ _**Agent (claude-sonnet-5 2026-09-13 16:23:56Z)**_
 
 ```text
 1	# Answer PR #2 question + start a fresh AI log for this session
-2	
+2
 3	## Context
-4	
+4
 5	The user is scoping out what to work on next and wants to (1) get a quick read
 6	on whether "PR #2" is a small change, and (2) make sure this new conversation
 7	gets captured as its own clean SpecStory log under
 8	`ai-logs/sprint0/tigerk9/`, without pulling in any content from earlier
 9	sessions.
-10	
+10
 11	No code changes are involved — this is a research/logging task only.
-12	
+12
 13	## Finding: there is no PR #2
-14	
+14
 15	`CSCI-435-SE/actual-budget` has no pull request #2. There is, however,
 16	**Issue #2**: "Export Account Transactions as CSV" (label: `scope: medium`,
 17	state: open). The user confirmed this is what they meant.
-18	
+18
 19	**Is it small?** No — the issue's own body already answers this: CSV
 20	serialization itself is simple, but for a beginner team the real cost is
 21	locating the right component in an unfamiliar codebase and handling edge
 22	cases (empty account, filtered vs. full transaction list). It's explicitly
 23	labeled `scope: medium`, not small.
-24	
+24
 25	This answer can just be relayed to the user directly — no further action
 26	needed on this part.
-27	
+27
 28	## Time/risk estimate for Issue #2 (read-only code check)
-29	
+29
 30	The user asked how long implementing Issue #2 would take and whether it risks
 31	breaking other things. A read-only Explore pass turned up a bigger finding
 32	than the issue text alone suggested:
-33	
+33
 34	**Per-account CSV export already exists end-to-end** — it's just hidden
 35	inside the account's "⋮" overflow menu instead of a visible toolbar button,
 36	which is almost certainly why the issue author thought it didn't exist.
-37	
+37
 38	- Serialization: `packages/loot-core/src/server/transactions/export/export-to-csv.ts`
 39	  (`exportQueryToCSV`, line 69) — takes an AQL query, runs it, handles split
 40	  transactions, produces CSV via `csv-stringify`. Wired up as the
@@ -4247,9 +4321,9 @@ _**Agent (claude-sonnet-5 2026-09-13 16:23:56Z)**_
 48	  `packages/desktop-client/src/components/accounts/Header.tsx:819` (and 552
 49	  for "all accounts"). Budget-level export (`settings/Export.tsx`) is a
 50	  separate, unrelated zip-file feature — not the same code path.
-51	
+51
 52	**Real remaining work, and the edge case the issue calls out:**
-53	
+53
 54	- The transaction list is a paginated/virtualized query, not an in-memory
 55	  array — export already re-runs the query server-side rather than depending
 56	  on the loaded page, avoiding one obvious pitfall (`Account.tsx:85-86,300,483`).
@@ -4260,9 +4334,9 @@ _**Agent (claude-sonnet-5 2026-09-13 16:23:56Z)**_
 61	  exports the full/rule-filtered account, ignoring the visible search. This
 62	  is exactly the "filtered vs. full account" edge case the issue anticipates,
 63	  and it's a pre-existing gap, not something to build from scratch.
-64	
+64
 65	**Answer to the user's question:**
-66	
+66
 67	- **Time**: small, not medium — the backend, IPC handler, and even the
 68	  account-level trigger already exist and are battle-tested (present since
 69	  the initial open-source commit). The only new work is (a) promoting/adding
@@ -4278,26 +4352,26 @@ _**Agent (claude-sonnet-5 2026-09-13 16:23:56Z)**_
 79	- Worth flagging in the issue/PR that the core ask may already be resolved
 80	  server-side, and the real gap is discoverability (menu vs. toolbar button)
 81	  plus the search-filter consistency bug.
-82	
+82
 83	## Fresh AI log for this conversation
-84	
+84
 85	Existing convention (see `ai-logs/README.md` and prior tigerk9 logs):
-86	
+86
 87	- Logs are exported from the SpecStory VS Code extension's raw capture in
 88	  `.specstory/history/*.md`, then copied into
 89	  `ai-logs/sprint0/tigerk9/YYYY-MM-DD_claude-code_<short-slug>.md`.
 90	- Example precedent: `ai-logs/sprint0/tigerk9/2026-09-13_claude-code_issue-20-account-name-length.md`
 91	  was produced this same way from a `.specstory/history/` file.
-92	
+92
 93	Current state: this conversation is brand new (this message is the first
 94	turn), so SpecStory has **not yet written a history file for it** — the most
 95	recent file in `.specstory/history/` (`2026-09-13_15-07-46Z-i-d-like-to.md`)
 96	belongs to an unrelated earlier session (PR #34 review). Because this is a
 97	fresh session, whatever SpecStory captures for it will inherently start from
 98	this message — nothing from before will be pulled in.
-99	
+99
 100	**Steps to execute** (once approved):
-101	
+101
 102	1. Re-check `.specstory/history/` for a new file corresponding to this
 103	   session (it should appear as the conversation progresses, matching this
 104	   session's Claude Code session ID and today's date).
@@ -4310,12 +4384,12 @@ _**Agent (claude-sonnet-5 2026-09-13 16:23:56Z)**_
 111	3. Verify the copied file's path/filename and that its content starts
 112	   exactly at this conversation's first message (no earlier-session content
 113	   included).
-114	
+114
 115	No other files are touched. This is a copy/export operation, not a code
 116	change.
-117	
+117
 118	## Verification
-119	
+119
 120	- Confirm the new file exists at
 121	  `ai-logs/sprint0/tigerk9/2026-09-13_claude-code_<slug>.md`.
 122	- Confirm its first `_**User**_` block matches this conversation's opening
@@ -4324,6 +4398,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:23:56Z)**_
 125	- Confirm no unrelated/earlier session content is present in the file.
 126
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:24:29Z)**_
@@ -4482,12 +4557,12 @@ change.
   message ("Don't make any changes, don't look at code, I just want to start
   looking at PR #2...").
 - Confirm no unrelated/earlier session content is present in the file.
-
 ```
 
 ```text
 The file /Users/liammclemore/.claude/plans/don-t-make-any-changes-agile-nygaard.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:24:34Z)**_
@@ -4659,6 +4734,7 @@ change.
   looking at PR #2...").
 - Confirm no unrelated/earlier session content is present in the file.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:25:26Z)**_
@@ -4678,6 +4754,7 @@ List all specstory history files
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/history/2026-09-13_13-42-27Z-i-just-worked-with.md
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/history/2026-09-13_15-07-46Z-i-d-like-to.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:25:35Z)**_
@@ -4685,6 +4762,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:25:35Z)**_
 No new SpecStory history file has appeared for this session yet — it hasn't been flushed by the extension. This is expected since we're only a few turns in; it'll show up as `.specstory/history/2026-09-13_*.md` as the conversation continues (or once the session ends/saves).
 
 Summary so far:
+
 - **Issue #2** (CSV export): already implemented end-to-end — not worth pursuing as new work.
 - **Issue #21** (budget month scrolling): small-to-medium, low risk — reuses the existing centralized `_onMonthSelect` path; the only new work is wheel-delta-to-month-step logic with no in-repo pattern to copy.
 - **AI log**: once you're ready to wrap this session, let me know and I'll copy the new `.specstory/history/` file into `ai-logs/sprint0/tigerk9/2026-09-13_claude-code_issue-21-budget-scroll-scoping.md`, matching the existing convention.
@@ -4709,27 +4787,27 @@ _**Agent (claude-sonnet-5 2026-09-13 16:54:37Z)**_
 1	// @ts-strict-ignore
 2	import React, { memo } from 'react';
 3	import type { ComponentProps } from 'react';
-4	
+4
 5	import { View } from '@actual-app/components/view';
-6	
+6
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
-8	
+8
 9	import { MonthPicker } from './MonthPicker';
 10	import { getScrollbarWidth } from './util';
-11	
+11
 12	type BudgetPageHeaderProps = {
 13	  startMonth: string;
 14	  onMonthSelect: (month: string) => void;
 15	  numMonths: number;
 16	  monthBounds: ComponentProps<typeof MonthPicker>['monthBounds'];
 17	};
-18	
+18
 19	export const BudgetPageHeader = memo<BudgetPageHeaderProps>(
 20	  ({ startMonth, onMonthSelect, numMonths, monthBounds }) => {
 21	    const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
 22	    const categoryExpandedState = categoryExpandedStatePref ?? 0;
 23	    const offsetMultipleMonths = numMonths === 1 ? 4 : 0;
-24	
+24
 25	    return (
 26	      <View
 27	        style={{
@@ -4755,10 +4833,11 @@ _**Agent (claude-sonnet-5 2026-09-13 16:54:37Z)**_
 47	    );
 48	  },
 49	);
-50	
+50
 51	BudgetPageHeader.displayName = 'BudgetPageHeader';
 52
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:55:06Z)**_
@@ -4770,6 +4849,7 @@ Locate MonthsProvider definition and usage
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-13 16:54:41Z)**_
@@ -4793,6 +4873,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:43Z)**_
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/MonthsContext.tsx:38:export function MonthsProvider({
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/MonthsContext.tsx:44:}: MonthsProviderProps) {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:45Z)**_
@@ -4805,14 +4886,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:45Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext } from 'react';
 3	import type { ReactNode } from 'react';
-4	
+4
 5	import * as monthUtils from '@actual-app/core/shared/months';
-6	
+6
 7	export type MonthBounds = {
 8	  start: string;
 9	  end: string;
 10	};
-11	
+11
 12	export function getValidMonthBounds(
 13	  bounds: MonthBounds,
 14	  startMonth: undefined | string,
@@ -4823,14 +4904,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:45Z)**_
 19	    end: endMonth > bounds.end ? bounds.end : endMonth,
 20	  };
 21	}
-22	
+22
 23	type MonthsContextProps = {
 24	  months: string[];
 25	  type: string;
 26	};
-27	
+27
 28	export const MonthsContext = createContext<MonthsContextProps>(null);
-29	
+29
 30	type MonthsProviderProps = {
 31	  startMonth: string | undefined;
 32	  numMonths: number;
@@ -4838,7 +4919,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:45Z)**_
 34	  type: string;
 35	  children: ReactNode;
 36	};
-37	
+37
 38	export function MonthsProvider({
 39	  startMonth,
 40	  numMonths,
@@ -4849,7 +4930,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:45Z)**_
 45	  const endMonth = monthUtils.addMonths(startMonth, numMonths - 1);
 46	  const bounds = getValidMonthBounds(monthBounds, startMonth, endMonth);
 47	  const months = monthUtils.rangeInclusive(bounds.start, bounds.end);
-48	
+48
 49	  return (
 50	    <MonthsContext.Provider value={{ months, type }}>
 51	      {children}
@@ -4858,6 +4939,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:45Z)**_
 54	}
 55
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:46Z)**_
@@ -4870,19 +4952,19 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:46Z)**_
 220	  const onToggleHiddenCategories = () => {
 221	    setShowHiddenCategoriesPef(!showHiddenCategories);
 222	  };
-223	
+223
 224	  const toggleHiddenCategories = () => {
 225	    onToggleHiddenCategories();
 226	  };
-227	
+227
 228	  const expandAllCategories = () => {
 229	    onCollapse([]);
 230	  };
-231	
+231
 232	  const collapseAllCategories = () => {
 233	    onCollapse(categoryGroups.map(g => g.id));
 234	  };
-235	
+235
 236	  const _onShowActivity = (id: string, month?: string) => {
 237	    if (scrollContainerRef.current) {
 238	      sessionStorage.setItem(
@@ -4892,9 +4974,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:46Z)**_
 242	    }
 243	    onShowActivity(id, month);
 244	  };
-245	
+245
 246	  const schedulesQuery = useMemo(() => q('schedules').select('*'), []);
-247	
+247
 248	  return (
 249	    <View
 250	      data-testid="budget-table"
@@ -4932,7 +5014,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:46Z)**_
 282	          <BudgetSummaries />
 283	        </MonthsProvider>
 284	      </View>
-285	
+285
 286	      <MonthsProvider
 287	        startMonth={startMonth}
 288	        numMonths={numMonths}
@@ -4985,10 +5067,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:46Z)**_
 335	    </View>
 336	  );
 337	}
-338	
+338
 339	BudgetTable.displayName = 'BudgetTable';
 340
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:50Z)**_
@@ -5028,6 +5111,7 @@ RenderMonths.tsx:18:  const { months } = useContext(MonthsContext);
 goals/CategoryAutomationButton.tsx:21:import { MonthsContext } from '#components/budget/MonthsContext';
 goals/CategoryAutomationButton.tsx:84:  const monthsContext = useContext(MonthsContext);
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:54Z)**_
@@ -5103,6 +5187,7 @@ MonthPicker.tsx:22:type MonthPickerProps = {
 MonthPicker.tsx:30:export const MonthPicker = ({
 MonthPicker.tsx:36:}: MonthPickerProps) => {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:57Z)**_
@@ -5112,7 +5197,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:57Z)**_
  `./packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx`
 
 ```text
-140	
+140
 141	  return (
 142	    <View
 143	      style={{
@@ -5143,6 +5228,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-13 16:54:57Z)**_
 168	      </View>
 169	    </View>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-13 16:55:06Z)**_
@@ -5176,6 +5262,7 @@ Check current branch and working tree status
 ---
 fix/issue-20-account-name-length
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:55:19Z)**_
@@ -5189,9 +5276,9 @@ _**Agent (claude-sonnet-5 2026-09-13 16:55:40Z)**_
 **What should the new branch be named, and should I base it off master (updated) or off the current branch?**
 
 Options:
+
 - **feat/issue-21-budget-month-scroll, from master** - Fetch/update master, then branch off it — keeps this work independent of the in-progress issue-20 branch.
 - **Different name/base** - I'll specify the branch name and/or base branch myself.
-
 
 **Answer:** feat/issue-21-budget-month-scroll, from master
 </details></tool-use>
@@ -5214,6 +5301,7 @@ From https://github.com/CSCI-435-SE/actual-budget
 Already up to date.
 Switched to a new branch 'feat/issue-21-budget-month-scroll'
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:55:50Z)**_
@@ -5246,6 +5334,7 @@ packages/desktop-client/src/components/budget/MonthsContext.tsx:30:type MonthsPr
 packages/desktop-client/src/components/budget/MonthsContext.tsx:38:export function MonthsProvider({
 packages/desktop-client/src/components/budget/MonthsContext.tsx:44:}: MonthsProviderProps) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:56:24Z)**_
@@ -5258,14 +5347,14 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:24Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext } from 'react';
 3	import type { ReactNode } from 'react';
-4	
+4
 5	import * as monthUtils from '@actual-app/core/shared/months';
-6	
+6
 7	export type MonthBounds = {
 8	  start: string;
 9	  end: string;
 10	};
-11	
+11
 12	export function getValidMonthBounds(
 13	  bounds: MonthBounds,
 14	  startMonth: undefined | string,
@@ -5276,14 +5365,14 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:24Z)**_
 19	    end: endMonth > bounds.end ? bounds.end : endMonth,
 20	  };
 21	}
-22	
+22
 23	type MonthsContextProps = {
 24	  months: string[];
 25	  type: string;
 26	};
-27	
+27
 28	export const MonthsContext = createContext<MonthsContextProps>(null);
-29	
+29
 30	type MonthsProviderProps = {
 31	  startMonth: string | undefined;
 32	  numMonths: number;
@@ -5291,7 +5380,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:24Z)**_
 34	  type: string;
 35	  children: ReactNode;
 36	};
-37	
+37
 38	export function MonthsProvider({
 39	  startMonth,
 40	  numMonths,
@@ -5302,7 +5391,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:24Z)**_
 45	  const endMonth = monthUtils.addMonths(startMonth, numMonths - 1);
 46	  const bounds = getValidMonthBounds(monthBounds, startMonth, endMonth);
 47	  const months = monthUtils.rangeInclusive(bounds.start, bounds.end);
-48	
+48
 49	  return (
 50	    <MonthsContext.Provider value={{ months, type }}>
 51	      {children}
@@ -5311,6 +5400,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:24Z)**_
 54	}
 55
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:56:25Z)**_
@@ -5325,9 +5415,9 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:25Z)**_
 242	    }
 243	    onShowActivity(id, month);
 244	  };
-245	
+245
 246	  const schedulesQuery = useMemo(() => q('schedules').select('*'), []);
-247	
+247
 248	  return (
 249	    <View
 250	      data-testid="budget-table"
@@ -5365,7 +5455,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:25Z)**_
 282	          <BudgetSummaries />
 283	        </MonthsProvider>
 284	      </View>
-285	
+285
 286	      <MonthsProvider
 287	        startMonth={startMonth}
 288	        numMonths={numMonths}
@@ -5418,9 +5508,10 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:25Z)**_
 335	    </View>
 336	  );
 337	}
-338	
+338
 339	BudgetTable.displayName = 'BudgetTable';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
@@ -5434,7 +5525,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
 2	import React, { useState } from 'react';
 3	import type { CSSProperties } from 'react';
 4	import { useTranslation } from 'react-i18next';
-5	
+5
 6	import {
 7	  SvgCheveronLeft,
 8	  SvgCheveronRight,
@@ -5444,13 +5535,13 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
 12	import { theme } from '@actual-app/components/theme';
 13	import { View } from '@actual-app/components/view';
 14	import * as monthUtils from '@actual-app/core/shared/months';
-15	
+15
 16	import { Link } from '#components/common/Link';
 17	import { useLocale } from '#hooks/useLocale';
 18	import { useResizeObserver } from '#hooks/useResizeObserver';
-19	
+19
 20	import type { MonthBounds } from './MonthsContext';
-21	
+21
 22	type MonthPickerProps = {
 23	  startMonth: string;
 24	  numDisplayed: number;
@@ -5458,7 +5549,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
 26	  style: CSSProperties;
 27	  onSelect: (month: string) => void;
 28	};
-29	
+29
 30	export const MonthPicker = ({
 31	  startMonth,
 32	  numDisplayed,
@@ -5470,15 +5561,15 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
 38	  const { t } = useTranslation();
 39	  const [hoverId, setHoverId] = useState(null);
 40	  const [targetMonthCount, setTargetMonthCount] = useState(12);
-41	
+41
 42	  const currentMonth = monthUtils.currentMonth();
 43	  const firstSelectedMonth = startMonth;
-44	
+44
 45	  const lastSelectedMonth = monthUtils.addMonths(
 46	    firstSelectedMonth,
 47	    numDisplayed - 1,
 48	  );
-49	
+49
 50	  const range = monthUtils.rangeInclusive(
 51	    monthUtils.subMonths(
 52	      firstSelectedMonth,
@@ -5489,11 +5580,11 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
 57	      Math.floor(targetMonthCount / 2 - numDisplayed / 2),
 58	    ),
 59	  );
-60	
+60
 61	  const firstSelectedIndex =
 62	    Math.floor(range.length / 2) - Math.floor(numDisplayed / 2);
 63	  const lastSelectedIndex = firstSelectedIndex + numDisplayed - 1;
-64	
+64
 65	  const [size, setSize] = useState('small');
 66	  const containerRef = useResizeObserver(rect => {
 67	    setSize(rect.width <= 400 ? 'small' : 'big');
@@ -5501,9 +5592,9 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
 69	      Math.min(Math.max(Math.floor(rect.width / 50), 12), 24),
 70	    );
 71	  });
-72	
+72
 73	  const yearHeadersShown = [];
-74	
+74
 75	  return (
 76	    <View
 77	      style={{
@@ -5562,24 +5653,24 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
 130	          const monthName = monthUtils.format(month, 'MMM', locale);
 131	          const selected =
 132	            idx >= firstSelectedIndex && idx <= lastSelectedIndex;
-133	
+133
 134	          const lastHoverId = hoverId + numDisplayed - 1;
 135	          const hovered =
 136	            hoverId === null ? false : idx >= hoverId && idx <= lastHoverId;
-137	
+137
 138	          const current = currentMonth === month;
 139	          const year = monthUtils.getYear(month);
-140	
+140
 141	          let showYearHeader = false;
-142	
+142
 143	          if (!yearHeadersShown.includes(year)) {
 144	            yearHeadersShown.push(year);
 145	            showYearHeader = true;
 146	          }
-147	
+147
 148	          const isMonthBudgeted =
 149	            month >= monthBounds.start && month <= monthBounds.end;
-150	
+150
 151	          return (
 152	            <View
 153	              key={month}
@@ -5700,6 +5791,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:56:31Z)**_
 268	};
 269
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:57:00Z)**_
@@ -5714,6 +5806,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:57:28Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/MonthPicker.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:57:40Z)**_
@@ -5724,6 +5817,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:57:40Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/MonthPicker.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:58:33Z)**_
@@ -5734,6 +5828,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:58:33Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/MonthPicker.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:58:34Z)**_
@@ -5748,6 +5843,7 @@ _**Agent (claude-sonnet-5 2026-09-13 16:58:41Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/MonthPicker.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:58:44Z)**_
@@ -5761,6 +5857,7 @@ Check View component prop types for onWheel support
 ```text
 23:type ViewProps = Omit<HTMLProps<HTMLDivElement>, 'style'> & {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:58:46Z)**_
@@ -5779,6 +5876,7 @@ Lint and auto-fix the modified file
 Finished in 1686ms on 2297 files using 12 threads.
 [This command modified 1 file you've previously read: ai-logs/sprint0/bennettmatuszewski/2026-09-10_claude-code_issue-25-calendar-icon.md. Call Read before editing.]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:59:06Z)**_
@@ -5794,6 +5892,7 @@ Check what lint:fix modified across the repo
  M ai-logs/sprint0/bennettmatuszewski/2026-09-10_claude-code_issue-25-calendar-icon.md
  M packages/desktop-client/src/components/budget/MonthPicker.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:59:09Z)**_
@@ -5814,9 +5913,9 @@ index c13267a5e..019accae5 100644
 --- a/STUDENTS.md
 +++ b/STUDENTS.md
 @@ -13,11 +13,11 @@ can explore and experiment with it. Everything runs locally in your browser.
- 
+
  Install these once before you start:
- 
+
 -| Tool | Version | Notes |
 -| --- | --- | --- |
 -| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v` |
@@ -5827,49 +5926,51 @@ index c13267a5e..019accae5 100644
 +| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v`                                                                                     |
 +| [Yarn](https://yarnpkg.com/)   | **4.9.1+**      | Comes with Node via Corepack — see below                                                                 |
 +| [Git](https://git-scm.com/)    | any recent      | On **Windows**, install "Git for Windows" — it also provides the `sh` and `bash` shells some scripts use |
- 
+
  > 💡 **New to Yarn workspaces?** Actual Budget uses [Yarn workspaces](https://yarnpkg.com/features/workspaces) to manage multiple packages in a single repo. You mostly run commands from the root — but understanding workspaces helps when something goes wrong in a sub-package.
- 
+
 @@ -46,7 +46,6 @@ cd actual
  yarn install
- ```
- 
--
- > ⚠️ Always run `yarn` commands from the **project root** (the folder with this
- > file in it), never from inside a `packages/…` subfolder.
- 
-@@ -96,13 +95,13 @@ For simply learning and experimenting, `yarn start` is enough.
- 
- Run all of these from the project root:
- 
--| Command | What it does |
--| --- | --- |
--| `yarn start` | Start the app in your browser (main command) |
--| `yarn test` | Run the test suite across all packages |
--| `yarn typecheck` | Check for TypeScript errors |
--| `yarn lint` | Check code style and formatting |
--| `yarn lint:fix` | Auto-fix style and formatting issues |
-+| Command          | What it does                                 |
-+| ---------------- | -------------------------------------------- |
-+| `yarn start`     | Start the app in your browser (main command) |
-+| `yarn test`      | Run the test suite across all packages       |
-+| `yarn typecheck` | Check for TypeScript errors                  |
-+| `yarn lint`      | Check code style and formatting              |
-+| `yarn lint:fix`  | Auto-fix style and formatting issues         |
- 
- If you change code, `yarn typecheck`, `yarn lint`, and `yarn test` are the three
- commands that tell you everything is still healthy.
-@@ -186,11 +185,11 @@ After pushing, GitHub shows a **"Compare & pull request"** banner on the reposit
- 
- **Branch naming:**
- 
--| Prefix | Use for |
--|---|---|
--| `feat/issue-<N>-short-description` | new features |
--| `fix/issue-<N>-short-description` | bug fixes |
--| `chore/short-description` | docs, config, dependency updates |
-+| Prefix                             | Use for                          |
 ```
+
+-
+
+> ⚠️ Always run `yarn` commands from the **project root** (the folder with this
+> file in it), never from inside a `packages/…` subfolder.
+
+@@ -96,13 +95,13 @@ For simply learning and experimenting, `yarn start` is enough.
+
+Run all of these from the project root:
+
+| -   | Command          | What it does                                 |
+| --- | ---------------- | -------------------------------------------- |
+| -   | `yarn start`     | Start the app in your browser (main command) |
+| -   | `yarn test`      | Run the test suite across all packages       |
+| -   | `yarn typecheck` | Check for TypeScript errors                  |
+| -   | `yarn lint`      | Check code style and formatting              |
+| -   | `yarn lint:fix`  | Auto-fix style and formatting issues         |
+| +   | Command          | What it does                                 |
+| +   | ---------------- | -------------------------------------------- |
+| +   | `yarn start`     | Start the app in your browser (main command) |
+| +   | `yarn test`      | Run the test suite across all packages       |
+| +   | `yarn typecheck` | Check for TypeScript errors                  |
+| +   | `yarn lint`      | Check code style and formatting              |
+| +   | `yarn lint:fix`  | Auto-fix style and formatting issues         |
+
+If you change code, `yarn typecheck`, `yarn lint`, and `yarn test` are the three
+commands that tell you everything is still healthy.
+@@ -186,11 +185,11 @@ After pushing, GitHub shows a **"Compare & pull request"** banner on the reposit
+
+**Branch naming:**
+
+| -   | Prefix                             | Use for                          |
+| --- | ---------------------------------- | -------------------------------- |
+| -   | `feat/issue-<N>-short-description` | new features                     |
+| -   | `fix/issue-<N>-short-description`  | bug fixes                        |
+| -   | `chore/short-description`          | docs, config, dependency updates |
+| +   | Prefix                             | Use for                          |
+
+````
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:59:11Z)**_
@@ -5886,7 +5987,8 @@ Revert unintended formatting changes to unrelated files
 
 ```text
  M packages/desktop-client/src/components/budget/MonthPicker.tsx
-```
+````
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:59:39Z)**_
@@ -5913,12 +6015,12 @@ index bdf67d4ae..a051e3bb6 100644
 +import React, { useRef, useState } from 'react';
 +import type { CSSProperties, WheelEvent } from 'react';
  import { useTranslation } from 'react-i18next';
- 
+
  import {
 @@ -19,6 +19,12 @@ import { useResizeObserver } from '#hooks/useResizeObserver';
- 
+
  import type { MonthBounds } from './MonthsContext';
- 
+
 +// How much accumulated wheel delta it takes to step one month, and the
 +// minimum time between steps, so a single scroll gesture changes months at a
 +// readable pace instead of flying through many at once.
@@ -5954,11 +6056,11 @@ index bdf67d4ae..a051e3bb6 100644
 +      state.lastStepAt = now;
 +    }
 +  };
- 
+
    const currentMonth = monthUtils.currentMonth();
    const firstSelectedMonth = startMonth;
 @@ -74,6 +102,7 @@ export const MonthPicker = ({
- 
+
    return (
      <View
 +      onWheel={onWheel}
@@ -5966,6 +6068,7 @@ index bdf67d4ae..a051e3bb6 100644
          flexDirection: 'row',
          alignItems: 'center',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 16:59:42Z)**_
@@ -5986,6 +6089,7 @@ Typecheck the desktop-client workspace
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:00:04Z)**_
@@ -5999,6 +6103,7 @@ Check typecheck script definition for desktop-client
 ```text
 129:    "typecheck": "tsgo -b && tsc-strict"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:00:07Z)**_
@@ -6012,6 +6117,7 @@ Check lint script definitions
 ```text
 package.json:57:    "lint": "oxfmt --check . && oxlint --type-aware --quiet",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:00:15Z)**_
@@ -6029,6 +6135,7 @@ All matched files use the correct format.
 Finished in 29ms on 1 files using 12 threads.
 ---oxlint---
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:00:16Z)**_
@@ -6049,6 +6156,7 @@ Google      921 liammclemore   39u  IPv6 0x4e629ee5121672c6      0t0  TCP localh
 node      97657 liammclemore   17u  IPv6 0x356f309e5931b95b      0t0  TCP *:redwood-broker (LISTEN)
 node      97657 liammclemore   20u  IPv6 0x104f11161446cb7c      0t0  TCP localhost:redwood-broker->localhost:56506 (ESTABLISHED)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:00:45Z)**_
@@ -6062,6 +6170,7 @@ Check if something responds on port 3001
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Why are we running curl here? Usually i run yarn start, which I do in a separate terminal
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:00:50Z)**_
@@ -6101,6 +6210,7 @@ packages/desktop-client/src/components/budget/BudgetSummaries.tsx:21:export func
 packages/desktop-client/src/components/budget/BudgetTable.tsx:20:import { BudgetSummaries } from './BudgetSummaries';
 packages/desktop-client/src/components/budget/BudgetTable.tsx:282:          <BudgetSummaries />
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:04:03Z)**_
@@ -6119,21 +6229,21 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:03Z)**_
 7	  useState,
 8	} from 'react';
 9	import { animated, useSpring } from 'react-spring';
-10	
+10
 11	import { View, viewStyles } from '@actual-app/components/view';
 12	import { addMonths, subMonths } from '@actual-app/core/shared/months';
 13	import { css } from '@emotion/css';
-14	
+14
 15	import { useResizeObserver } from '#hooks/useResizeObserver';
-16	
+16
 17	import { MonthsContext } from './MonthsContext';
-18	
+18
 19	import { useBudgetComponents } from '.';
-20	
+20
 21	export function BudgetSummaries() {
 22	  const { months } = useContext(MonthsContext);
 23	  const [firstMonth] = months;
-24	
+24
 25	  const [widthState, setWidthState] = useState(0);
 26	  const [styles, spring] = useSpring(
 27	    () => ({
@@ -6142,13 +6252,13 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:03Z)**_
 30	    }),
 31	    [],
 32	  );
-33	
+33
 34	  const containerRef = useResizeObserver<HTMLDivElement>(
 35	    useCallback(rect => {
 36	      setWidthState(rect.width);
 37	    }, []),
 38	  );
-39	
+39
 40	  const prevMonth0 = useRef(firstMonth);
 41	  const allMonths = useMemo(() => {
 42	    const all = [...months];
@@ -6157,33 +6267,33 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:03Z)**_
 45	    return all;
 46	  }, [months, firstMonth]);
 47	  const monthWidth = widthState / months.length;
-48	
+48
 49	  useLayoutEffect(() => {
 50	    const prevMonth = prevMonth0.current;
 51	    const reversed = prevMonth > firstMonth;
 52	    const offsetX = monthWidth;
 53	    let from = reversed ? -offsetX * 2 : 0;
-54	
+54
 55	    if (prevMonth !== allMonths[0] && prevMonth !== allMonths[2]) {
 56	      from = -offsetX;
 57	    }
-58	
+58
 59	    const to = -offsetX;
 60	    if (from !== to) {
 61	      void spring.start({ from: { x: from }, to: { x: to } });
 62	    }
 63	  }, [spring, firstMonth, monthWidth, allMonths]);
-64	
+64
 65	  useLayoutEffect(() => {
 66	    prevMonth0.current = firstMonth;
 67	  }, [firstMonth]);
-68	
+68
 69	  useLayoutEffect(() => {
 70	    void spring.start({ to: { x: -monthWidth }, immediate: true });
 71	  }, [spring, monthWidth]);
-72	
+72
 73	  const { SummaryComponent } = useBudgetComponents();
-74	
+74
 75	  return (
 76	    <div
 77	      className={css([
@@ -6224,6 +6334,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:03Z)**_
 112	}
 113
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:04:04Z)**_
@@ -6235,7 +6346,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:04Z)**_
 ```text
 1	import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 2	import type { KeyboardEvent } from 'react';
-3	
+3
 4	import { styles } from '@actual-app/components/styles';
 5	import { theme } from '@actual-app/components/theme';
 6	import { View } from '@actual-app/components/view';
@@ -6244,13 +6355,13 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:04Z)**_
 9	  CategoryEntity,
 10	  CategoryGroupEntity,
 11	} from '@actual-app/core/types/models';
-12	
+12
 13	import type { DropPosition } from '#components/sort';
 14	import { SchedulesProvider } from '#hooks/useCachedSchedules';
 15	import { useCategories } from '#hooks/useCategories';
 16	import { useGlobalPref } from '#hooks/useGlobalPref';
 17	import { useLocalPref } from '#hooks/useLocalPref';
-18	
+18
 19	import { BudgetCategories } from './BudgetCategories';
 20	import { BudgetSummaries } from './BudgetSummaries';
 21	import { BudgetTotals } from './BudgetTotals';
@@ -6262,7 +6373,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:04Z)**_
 27	  getScrollbarWidth,
 28	  separateGroups,
 29	} from './util';
-30	
+30
 31	type BudgetTableProps = {
 32	  type: string;
 33	  prewarmStartMonth: string;
@@ -6292,7 +6403,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:04Z)**_
 57	  onShowActivity: (id: CategoryEntity['id'], month?: string) => void;
 58	  onBudgetAction: (month: string, type: string, args: unknown) => void;
 59	};
-60	
+60
 61	export function BudgetTable(props: BudgetTableProps) {
 62	  const {
 63	    type,
@@ -6311,7 +6422,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:04Z)**_
 76	    onShowActivity,
 77	    onBudgetAction,
 78	  } = props;
-79	
+79
 80	  const { data: { grouped: categoryGroups } = { grouped: [] } } =
 81	    useCategories();
 82	  const [collapsedGroupIds = [], setCollapsedGroupIdsPref] =
@@ -6324,9 +6435,9 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:04Z)**_
 89	  const [editing, setEditing] = useState<{ id: string; cell: string } | null>(
 90	    null,
 91	  );
-92	
+92
 93	  const scrollContainerRef = useRef<HTMLDivElement>(null);
-94	
+94
 95	  useLayoutEffect(() => {
 96	    const savedScrollPosition = sessionStorage.getItem(
 97	      'budget-scroll-position',
@@ -6334,6 +6445,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:04Z)**_
 99	    if (savedScrollPosition != null && scrollContainerRef.current) {
 100	      scrollContainerRef.current.scrollTop = Number(savedScrollPosition);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
@@ -6349,21 +6461,21 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
 4	import { ErrorBoundary } from 'react-error-boundary';
 5	import { useHotkeys } from 'react-hotkeys-hook';
 6	import { AutoSizer } from 'react-virtualized-auto-sizer';
-7	
+7
 8	import { View } from '@actual-app/components/view';
 9	import * as monthUtils from '@actual-app/core/shared/months';
-10	
+10
 11	import { FeatureErrorFallback } from '#components/FeatureErrorFallback';
 12	import { useFeatureFlag } from '#hooks/useFeatureFlag';
 13	import { useGlobalPref } from '#hooks/useGlobalPref';
-14	
+14
 15	import { useBudgetMonthCount } from './BudgetMonthCountContext';
 16	import { BudgetPageHeader } from './BudgetPageHeader';
 17	import { BudgetTable } from './BudgetTable';
-18	
+18
 19	function getNumPossibleMonths(width: number, categoryWidth: number) {
 20	  const estimatedTableWidth = width - categoryWidth;
-21	
+21
 22	  if (estimatedTableWidth < 500) {
 23	    return 1;
 24	  } else if (estimatedTableWidth < 750) {
@@ -6375,15 +6487,15 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
 30	  } else if (estimatedTableWidth < 1500) {
 31	    return 5;
 32	  }
-33	
+33
 34	  return 6;
 35	}
-36	
+36
 37	type DynamicBudgetTableProps = {
 38	  width: number;
 39	  height: number;
 40	} & AutoSizingBudgetTableProps;
-41	
+41
 42	const DynamicBudgetTable = ({
 43	  type,
 44	  width,
@@ -6400,22 +6512,22 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
 55	  const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
 56	  const isGoalTemplatesEnabled = useFeatureFlag('goalTemplatesEnabled');
 57	  const categoryExpandedState = categoryExpandedStatePref ?? 0;
-58	
+58
 59	  const numPossible = getNumPossibleMonths(
 60	    width,
 61	    200 + 100 * categoryExpandedState,
 62	  );
 63	  const numMonths = Math.min(numPossible, maxMonths);
 64	  const maxWidth = 200 + 100 * categoryExpandedState + 500 * numMonths;
-65	
+65
 66	  useEffect(() => {
 67	    setDisplayMax(numPossible);
 68	  }, [setDisplayMax, numPossible]);
-69	
+69
 70	  function getValidMonth(month) {
 71	    const start = monthBounds.start;
 72	    const end = monthUtils.subMonths(monthBounds.end, numMonths - 1);
-73	
+73
 74	    if (month < start) {
 75	      return start;
 76	    } else if (month > end) {
@@ -6423,11 +6535,11 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
 78	    }
 79	    return month;
 80	  }
-81	
+81
 82	  function _onMonthSelect(month) {
 83	    onMonthSelect(getValidMonth(month), numMonths);
 84	  }
-85	
+85
 86	  useHotkeys(
 87	    'left',
 88	    () => {
@@ -6482,7 +6594,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
 137	    },
 138	    [onBudgetAction, startMonth, isGoalTemplatesEnabled],
 139	  );
-140	
+140
 141	  return (
 142	    <View
 143	      style={{
@@ -6514,9 +6626,9 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
 169	    </View>
 170	  );
 171	};
-172	
+172
 173	DynamicBudgetTable.displayName = 'DynamicBudgetTable';
-174	
+174
 175	type AutoSizingBudgetTableProps = Omit<
 176	  ComponentProps<typeof BudgetTable>,
 177	  'numMonths'
@@ -6524,7 +6636,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
 179	  maxMonths: number;
 180	  onMonthSelect: (month: string, numMonths: number) => void;
 181	};
-182	
+182
 183	export const AutoSizingBudgetTable = (props: AutoSizingBudgetTableProps) => {
 184	  return (
 185	    <AutoSizer
@@ -6532,16 +6644,17 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:09Z)**_
 187	        if (width === 0 || height === 0) {
 188	          return null;
 189	        }
-190	
+190
 191	        return <DynamicBudgetTable width={width} height={height} {...props} />;
 192	      }}
 193	    />
 194	  );
 195	};
-196	
+196
 197	AutoSizingBudgetTable.displayName = 'AutoSizingBudgetTable';
 198
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:04:44Z)**_
@@ -6551,9 +6664,9 @@ _**Agent (claude-sonnet-5 2026-09-13 17:04:44Z)**_
 **Should the scroll-to-change-month behavior move from the month picker labels to the BudgetSummaries row, or apply in both places?**
 
 Options:
+
 - **Move it (BudgetSummaries only)** - Remove the wheel handler from MonthPicker.tsx and add it to BudgetSummaries.tsx instead.
 - **Keep both** - Leave the MonthPicker wheel handler as-is, and additionally add the same behavior to BudgetSummaries.
-
 
 **Answer:** Move it (BudgetSummaries only)
 </details></tool-use>
@@ -6573,6 +6686,7 @@ Revert MonthPicker.tsx wheel-handling changes
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:05:26Z)**_
@@ -6583,6 +6697,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:05:26Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:05:28Z)**_
@@ -6597,6 +6712,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:05:34Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:05:40Z)**_
@@ -6607,6 +6723,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:05:40Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:05:48Z)**_
@@ -6617,6 +6734,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:05:48Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:05:51Z)**_
@@ -6647,6 +6765,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:05:51Z)**_
 288	        </MonthsProvider>
 289	      </View>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:05:52Z)**_
@@ -6661,6 +6780,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:06:03Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:06:05Z)**_
@@ -6675,6 +6795,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:06:15Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:06:20Z)**_
@@ -6689,6 +6810,7 @@ Find all usages of BudgetTable component
 packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx:613:              <BudgetTable
 packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx:158:          <BudgetTable
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:06:23Z)**_
@@ -6750,15 +6872,16 @@ _**Agent (claude-sonnet-5 2026-09-13 17:06:23Z)**_
 629	    </Page>
 630	  );
 631	}
-632	
+632
 633	function Banners({ month, onBudgetAction }) {
 634	  const { t } = useTranslation();
 635	  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
-636	
+636
 637	  return (
 638	    <GridList
 639	      aria-label={t('Banners')}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:06:40Z)**_
@@ -6772,6 +6895,7 @@ Format the three changed files only
 ```text
 Finished in 39ms on 3 files using 12 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:06:51Z)**_
@@ -6788,6 +6912,7 @@ Check working tree status and lint the changed files
  M packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx
 ---lint---
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:06:52Z)**_
@@ -6810,6 +6935,7 @@ src/components/budget/index.tsx(225,11): error TS2322: Type '(month: any, numDis
   Type '(month: any, numDisplayed: any) => Promise<void>' is not assignable to type '(month: string) => void'.
     Target signature provides too few arguments. Expected 2 or more, but got 1.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:07:06Z)**_
@@ -6820,7 +6946,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:07:06Z)**_
 
 ```text
 174	DynamicBudgetTable.displayName = 'DynamicBudgetTable';
-175	
+175
 176	type AutoSizingBudgetTableProps = Omit<
 177	  ComponentProps<typeof BudgetTable>,
 178	  'numMonths'
@@ -6830,6 +6956,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:07:06Z)**_
 182	};
 183
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:07:22Z)**_
@@ -6840,6 +6967,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:07:22Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:07:49Z)**_
@@ -6856,6 +6984,7 @@ Re-run typecheck after fixing type conflict
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:07:50Z)**_
@@ -6877,6 +7006,7 @@ Finished in 29ms on 1 files using 12 threads.
  M packages/desktop-client/src/components/budget/BudgetTable.tsx
  M packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:08:04Z)**_
@@ -6898,7 +7028,7 @@ index f2504deaa..efd1ca827 100644
  } from 'react';
 +import type { WheelEvent } from 'react';
  import { animated, useSpring } from 'react-spring';
- 
+
  import { View, viewStyles } from '@actual-app/components/view';
 -import { addMonths, subMonths } from '@actual-app/core/shared/months';
 +import {
@@ -6908,12 +7038,12 @@ index f2504deaa..efd1ca827 100644
 +  subMonths,
 +} from '@actual-app/core/shared/months';
  import { css } from '@emotion/css';
- 
+
  import { useResizeObserver } from '#hooks/useResizeObserver';
 @@ -18,9 +24,45 @@ import { MonthsContext } from './MonthsContext';
- 
+
  import { useBudgetComponents } from '.';
- 
+
 -export function BudgetSummaries() {
 +// How much accumulated wheel delta it takes to step one month, and the
 +// minimum time between steps, so a single scroll gesture changes months at a
@@ -6954,7 +7084,7 @@ index f2504deaa..efd1ca827 100644
 +      state.lastStepAt = now;
 +    }
 +  };
- 
+
    const [widthState, setWidthState] = useState(0);
    const [styles, spring] = useSpring(
 @@ -82,6 +124,7 @@ export function BudgetSummaries() {
@@ -6975,7 +7105,7 @@ index f81877996..750e67181 100644
    onBudgetAction: (month: string, type: string, args: unknown) => void;
 +  onMonthSelect: (month: string) => void;
  };
- 
+
  export function BudgetTable(props: BudgetTableProps) {
 @@ -75,6 +76,7 @@ export function BudgetTable(props: BudgetTableProps) {
      onReorderGroup,
@@ -6983,7 +7113,7 @@ index f81877996..750e67181 100644
      onBudgetAction,
 +    onMonthSelect,
    } = props;
- 
+
    const { data: { grouped: categoryGroups } = { grouped: [] } } =
 @@ -279,7 +281,10 @@ export function BudgetTable(props: BudgetTableProps) {
            monthBounds={monthBounds}
@@ -6996,7 +7126,7 @@ index f81877996..750e67181 100644
 +          />
          </MonthsProvider>
        </View>
- 
+
 diff --git a/packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx b/packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx
 index 21ac27bef..b36ef9d14 100644
 --- a/packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx
@@ -7010,7 +7140,7 @@ index 21ac27bef..b36ef9d14 100644
            />
          </ErrorBoundary>
 @@ -174,7 +175,7 @@ DynamicBudgetTable.displayName = 'DynamicBudgetTable';
- 
+
  type AutoSizingBudgetTableProps = Omit<
    ComponentProps<typeof BudgetTable>,
 -  'numMonths'
@@ -7019,6 +7149,7 @@ index 21ac27bef..b36ef9d14 100644
    maxMonths: number;
    onMonthSelect: (month: string, numMonths: number) => void;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:08:10Z)**_
@@ -7056,7 +7187,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:10:04Z)**_
 8	} from 'react';
 9	import type { WheelEvent } from 'react';
 10	import { animated, useSpring } from 'react-spring';
-11	
+11
 12	import { View, viewStyles } from '@actual-app/components/view';
 13	import {
 14	  addMonths,
@@ -7065,24 +7196,24 @@ _**Agent (claude-sonnet-5 2026-09-13 17:10:04Z)**_
 17	  subMonths,
 18	} from '@actual-app/core/shared/months';
 19	import { css } from '@emotion/css';
-20	
+20
 21	import { useResizeObserver } from '#hooks/useResizeObserver';
-22	
+22
 23	import { MonthsContext } from './MonthsContext';
-24	
+24
 25	import { useBudgetComponents } from '.';
-26	
+26
 27	// How much accumulated wheel delta it takes to step one month, and the
 28	// minimum time between steps, so a single scroll gesture changes months at a
 29	// readable pace instead of flying through many at once.
 30	const WHEEL_STEP_THRESHOLD = 50;
 31	const WHEEL_STEP_COOLDOWN = 150;
-32	
+32
 33	type BudgetSummariesProps = {
 34	  startMonth: string;
 35	  onMonthSelect: (month: string) => void;
 36	};
-37	
+37
 38	export function BudgetSummaries({
 39	  startMonth,
 40	  onMonthSelect,
@@ -7090,17 +7221,17 @@ _**Agent (claude-sonnet-5 2026-09-13 17:10:04Z)**_
 42	  const { months } = useContext(MonthsContext);
 43	  const [firstMonth] = months;
 44	  const wheelState = useRef({ accumulated: 0, lastStepAt: 0 });
-45	
+45
 46	  const onWheel = (e: WheelEvent) => {
 47	    e.preventDefault();
-48	
+48
 49	    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
 50	    const state = wheelState.current;
 51	    state.accumulated += delta;
-52	
+52
 53	    const now = Date.now();
 54	    if (now - state.lastStepAt < WHEEL_STEP_COOLDOWN) return;
-55	
+55
 56	    if (state.accumulated >= WHEEL_STEP_THRESHOLD) {
 57	      onMonthSelect(nextMonth(startMonth));
 58	      state.accumulated = 0;
@@ -7112,6 +7243,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:10:04Z)**_
 64	    }
 65	  };
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:10:24Z)**_
@@ -7122,6 +7254,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:10:24Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:10:25Z)**_
@@ -7149,7 +7282,7 @@ index f2504deaa..d609f2062 100644
  } from 'react';
 +import type { WheelEvent } from 'react';
  import { animated, useSpring } from 'react-spring';
- 
+
  import { View, viewStyles } from '@actual-app/components/view';
 -import { addMonths, subMonths } from '@actual-app/core/shared/months';
 +import {
@@ -7159,12 +7292,12 @@ index f2504deaa..d609f2062 100644
 +  subMonths,
 +} from '@actual-app/core/shared/months';
  import { css } from '@emotion/css';
- 
+
  import { useResizeObserver } from '#hooks/useResizeObserver';
 @@ -18,9 +24,48 @@ import { MonthsContext } from './MonthsContext';
- 
+
  import { useBudgetComponents } from '.';
- 
+
 -export function BudgetSummaries() {
 +// How much accumulated wheel delta it takes to step one month, and the
 +// minimum time between steps, so a single scroll gesture changes months at a
@@ -7208,7 +7341,7 @@ index f2504deaa..d609f2062 100644
 +      state.lastStepAt = now;
 +    }
 +  };
- 
+
    const [widthState, setWidthState] = useState(0);
    const [styles, spring] = useSpring(
 @@ -82,6 +127,7 @@ export function BudgetSummaries() {
@@ -7220,6 +7353,7 @@ index f2504deaa..d609f2062 100644
        <animated.div
          className={viewStyles}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:11:05Z)**_
@@ -7236,6 +7370,7 @@ Typecheck after horizontal-only wheel change
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:11:07Z)**_
@@ -7266,6 +7401,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:16:13Z)**_
 31	const WHEEL_STEP_COOLDOWN = 150;
 32
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:16:17Z)**_
@@ -7320,7 +7456,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:19:01Z)**_
 8	} from 'react';
 9	import type { WheelEvent } from 'react';
 10	import { animated, useSpring } from 'react-spring';
-11	
+11
 12	import { View, viewStyles } from '@actual-app/components/view';
 13	import {
 14	  addMonths,
@@ -7329,24 +7465,24 @@ _**Agent (claude-sonnet-5 2026-09-13 17:19:01Z)**_
 17	  subMonths,
 18	} from '@actual-app/core/shared/months';
 19	import { css } from '@emotion/css';
-20	
+20
 21	import { useResizeObserver } from '#hooks/useResizeObserver';
-22	
+22
 23	import { MonthsContext } from './MonthsContext';
-24	
+24
 25	import { useBudgetComponents } from '.';
-26	
+26
 27	// How much accumulated wheel delta it takes to step one month, and the
 28	// minimum time between steps, so a single scroll gesture changes months at a
 29	// readable pace instead of flying through many at once.
 30	const WHEEL_STEP_THRESHOLD = 50;
 31	const WHEEL_STEP_COOLDOWN = 350;
-32	
+32
 33	type BudgetSummariesProps = {
 34	  startMonth: string;
 35	  onMonthSelect: (month: string) => void;
 36	};
-37	
+37
 38	export function BudgetSummaries({
 39	  startMonth,
 40	  onMonthSelect,
@@ -7354,20 +7490,20 @@ _**Agent (claude-sonnet-5 2026-09-13 17:19:01Z)**_
 42	  const { months } = useContext(MonthsContext);
 43	  const [firstMonth] = months;
 44	  const wheelState = useRef({ accumulated: 0, lastStepAt: 0 });
-45	
+45
 46	  const onWheel = (e: WheelEvent) => {
 47	    // Only step months on a horizontal gesture (trackpad swipe or shift+wheel)
 48	    // so plain vertical scrolling over this row is left alone.
 49	    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-50	
+50
 51	    e.preventDefault();
-52	
+52
 53	    const state = wheelState.current;
 54	    state.accumulated += e.deltaX;
-55	
+55
 56	    const now = Date.now();
 57	    if (now - state.lastStepAt < WHEEL_STEP_COOLDOWN) return;
-58	
+58
 59	    if (state.accumulated >= WHEEL_STEP_THRESHOLD) {
 60	      onMonthSelect(nextMonth(startMonth));
 61	      state.accumulated = 0;
@@ -7378,9 +7514,10 @@ _**Agent (claude-sonnet-5 2026-09-13 17:19:01Z)**_
 66	      state.lastStepAt = now;
 67	    }
 68	  };
-69	
+69
 70	  const [widthState, setWidthState] = useState(0);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:22:31Z)**_
@@ -7391,6 +7528,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:22:31Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:22:38Z)**_
@@ -7404,6 +7542,7 @@ Format and lint the updated file
 ```text
 Finished in 30ms on 1 files using 12 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:22:55Z)**_
@@ -7420,6 +7559,7 @@ Typecheck after gesture-lock rewrite
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:22:58Z)**_
@@ -7453,7 +7593,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:25:59Z)**_
 8	} from 'react';
 9	import type { WheelEvent } from 'react';
 10	import { animated, useSpring } from 'react-spring';
-11	
+11
 12	import { View, viewStyles } from '@actual-app/components/view';
 13	import {
 14	  addMonths,
@@ -7462,25 +7602,25 @@ _**Agent (claude-sonnet-5 2026-09-13 17:25:59Z)**_
 17	  subMonths,
 18	} from '@actual-app/core/shared/months';
 19	import { css } from '@emotion/css';
-20	
+20
 21	import { useResizeObserver } from '#hooks/useResizeObserver';
-22	
+22
 23	import { MonthsContext } from './MonthsContext';
-24	
+24
 25	import { useBudgetComponents } from '.';
-26	
+26
 27	// How much accumulated wheel delta it takes to step one month.
 28	const WHEEL_STEP_THRESHOLD = 50;
 29	// A trackpad swipe keeps firing wheel events with decaying momentum well
 30	// after the fingers lift, so one step per gesture is enforced by locking
 31	// further steps until wheel events actually stop for this long.
 32	const WHEEL_GESTURE_IDLE_MS = 200;
-33	
+33
 34	type BudgetSummariesProps = {
 35	  startMonth: string;
 36	  onMonthSelect: (month: string) => void;
 37	};
-38	
+38
 39	export function BudgetSummaries({
 40	  startMonth,
 41	  onMonthSelect,
@@ -7492,33 +7632,33 @@ _**Agent (claude-sonnet-5 2026-09-13 17:25:59Z)**_
 47	    locked: false,
 48	    idleTimer: null as ReturnType<typeof setTimeout> | null,
 49	  });
-50	
+50
 51	  useLayoutEffect(() => {
 52	    const state = wheelState.current;
 53	    return () => {
 54	      if (state.idleTimer) clearTimeout(state.idleTimer);
 55	    };
 56	  }, []);
-57	
+57
 58	  const onWheel = (e: WheelEvent) => {
 59	    // Only step months on a horizontal gesture (trackpad swipe or shift+wheel)
 60	    // so plain vertical scrolling over this row is left alone.
 61	    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-62	
+62
 63	    e.preventDefault();
-64	
+64
 65	    const state = wheelState.current;
-66	
+66
 67	    if (state.idleTimer) clearTimeout(state.idleTimer);
 68	    state.idleTimer = setTimeout(() => {
 69	      state.accumulated = 0;
 70	      state.locked = false;
 71	    }, WHEEL_GESTURE_IDLE_MS);
-72	
+72
 73	    if (state.locked) return;
-74	
+74
 75	    state.accumulated += e.deltaX;
-76	
+76
 77	    if (state.accumulated >= WHEEL_STEP_THRESHOLD) {
 78	      onMonthSelect(nextMonth(startMonth));
 79	      state.locked = true;
@@ -7527,7 +7667,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:25:59Z)**_
 82	      state.locked = true;
 83	    }
 84	  };
-85	
+85
 86	  const [widthState, setWidthState] = useState(0);
 87	  const [styles, spring] = useSpring(
 88	    () => ({
@@ -7536,13 +7676,13 @@ _**Agent (claude-sonnet-5 2026-09-13 17:25:59Z)**_
 91	    }),
 92	    [],
 93	  );
-94	
+94
 95	  const containerRef = useResizeObserver<HTMLDivElement>(
 96	    useCallback(rect => {
 97	      setWidthState(rect.width);
 98	    }, []),
 99	  );
-100	
+100
 101	  const prevMonth0 = useRef(firstMonth);
 102	  const allMonths = useMemo(() => {
 103	    const all = [...months];
@@ -7551,33 +7691,33 @@ _**Agent (claude-sonnet-5 2026-09-13 17:25:59Z)**_
 106	    return all;
 107	  }, [months, firstMonth]);
 108	  const monthWidth = widthState / months.length;
-109	
+109
 110	  useLayoutEffect(() => {
 111	    const prevMonth = prevMonth0.current;
 112	    const reversed = prevMonth > firstMonth;
 113	    const offsetX = monthWidth;
 114	    let from = reversed ? -offsetX * 2 : 0;
-115	
+115
 116	    if (prevMonth !== allMonths[0] && prevMonth !== allMonths[2]) {
 117	      from = -offsetX;
 118	    }
-119	
+119
 120	    const to = -offsetX;
 121	    if (from !== to) {
 122	      void spring.start({ from: { x: from }, to: { x: to } });
 123	    }
 124	  }, [spring, firstMonth, monthWidth, allMonths]);
-125	
+125
 126	  useLayoutEffect(() => {
 127	    prevMonth0.current = firstMonth;
 128	  }, [firstMonth]);
-129	
+129
 130	  useLayoutEffect(() => {
 131	    void spring.start({ to: { x: -monthWidth }, immediate: true });
 132	  }, [spring, monthWidth]);
-133	
+133
 134	  const { SummaryComponent } = useBudgetComponents();
-135	
+135
 136	  return (
 137	    <div
 138	      className={css([
@@ -7619,11 +7759,12 @@ _**Agent (claude-sonnet-5 2026-09-13 17:25:59Z)**_
 174	}
 175
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:26:04Z)**_
 
-Yes, let's remove it. The real bug: because the idle timer resets on *every* wheel event, your very next swipe's own events kept re-arming the "stay locked" timer before it could ever clear — so back-to-back swipes got merged into one long lock. Simplest fix is to drop the lock/timer entirely and go back to pure accumulate-and-reset — no waiting, ever.
+Yes, let's remove it. The real bug: because the idle timer resets on _every_ wheel event, your very next swipe's own events kept re-arming the "stay locked" timer before it could ever clear — so back-to-back swipes got merged into one long lock. Simplest fix is to drop the lock/timer entirely and go back to pure accumulate-and-reset — no waiting, ever.
 
 _**Agent (claude-sonnet-5 2026-09-13 17:26:18Z)**_
 
@@ -7633,6 +7774,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:26:18Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:26:23Z)**_
@@ -7646,6 +7788,7 @@ Format and lint after removing the timer/lock
 ```text
 Finished in 23ms on 1 files using 12 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:26:39Z)**_
@@ -7662,6 +7805,7 @@ Typecheck after removing timer/lock mechanism
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:26:42Z)**_
@@ -7688,6 +7832,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:30:11Z)**_
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.
 ```
+
 </details></tool-use>
 
 ---
@@ -7725,7 +7870,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:32:56Z)**_
 8	} from 'react';
 9	import type { WheelEvent } from 'react';
 10	import { animated, useSpring } from 'react-spring';
-11	
+11
 12	import { View, viewStyles } from '@actual-app/components/view';
 13	import {
 14	  addMonths,
@@ -7734,25 +7879,25 @@ _**Agent (claude-sonnet-5 2026-09-13 17:32:56Z)**_
 17	  subMonths,
 18	} from '@actual-app/core/shared/months';
 19	import { css } from '@emotion/css';
-20	
+20
 21	import { useResizeObserver } from '#hooks/useResizeObserver';
-22	
+22
 23	import { MonthsContext } from './MonthsContext';
-24	
+24
 25	import { useBudgetComponents } from '.';
-26	
+26
 27	// How much accumulated horizontal wheel delta it takes to step one month.
 28	// Tune this (rather than adding a time-based cooldown) to control feel —
 29	// a cooldown/lock blocks quick consecutive swipes since a trackpad's
 30	// momentum tail keeps generating events after the fingers lift, making it
 31	// impossible to tell "still coasting" from "already swiping again".
 32	const WHEEL_STEP_THRESHOLD = 200;
-33	
+33
 34	type BudgetSummariesProps = {
 35	  startMonth: string;
 36	  onMonthSelect: (month: string) => void;
 37	};
-38	
+38
 39	export function BudgetSummaries({
 40	  startMonth,
 41	  onMonthSelect,
@@ -7760,17 +7905,17 @@ _**Agent (claude-sonnet-5 2026-09-13 17:32:56Z)**_
 43	  const { months } = useContext(MonthsContext);
 44	  const [firstMonth] = months;
 45	  const wheelState = useRef({ accumulated: 0 });
-46	
+46
 47	  const onWheel = (e: WheelEvent) => {
 48	    // Only step months on a horizontal gesture (trackpad swipe or shift+wheel)
 49	    // so plain vertical scrolling over this row is left alone.
 50	    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-51	
+51
 52	    e.preventDefault();
-53	
+53
 54	    const state = wheelState.current;
 55	    state.accumulated += e.deltaX;
-56	
+56
 57	    if (state.accumulated >= WHEEL_STEP_THRESHOLD) {
 58	      onMonthSelect(nextMonth(startMonth));
 59	      state.accumulated = 0;
@@ -7781,6 +7926,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:32:56Z)**_
 64	  };
 65
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:33:39Z)**_
@@ -7791,6 +7937,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:33:39Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:33:44Z)**_
@@ -7804,6 +7951,7 @@ Format and lint after one-step-per-swipe rewrite
 ```text
 Finished in 23ms on 1 files using 12 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:34:01Z)**_
@@ -7820,6 +7968,7 @@ Typecheck after one-step-per-swipe rewrite
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:34:06Z)**_
@@ -7871,7 +8020,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:39:05Z)**_
 8	} from 'react';
 9	import type { WheelEvent } from 'react';
 10	import { animated, useSpring } from 'react-spring';
-11	
+11
 12	import { View, viewStyles } from '@actual-app/components/view';
 13	import {
 14	  addMonths,
@@ -7880,13 +8029,13 @@ _**Agent (claude-sonnet-5 2026-09-13 17:39:05Z)**_
 17	  subMonths,
 18	} from '@actual-app/core/shared/months';
 19	import { css } from '@emotion/css';
-20	
+20
 21	import { useResizeObserver } from '#hooks/useResizeObserver';
-22	
+22
 23	import { MonthsContext } from './MonthsContext';
-24	
+24
 25	import { useBudgetComponents } from '.';
-26	
+26
 27	// How much accumulated horizontal wheel delta it takes to step one month.
 28	const WHEEL_STEP_THRESHOLD = 200;
 29	// The WheelEvent API has no flag for "this is inertial momentum, not the
@@ -7896,12 +8045,12 @@ _**Agent (claude-sonnet-5 2026-09-13 17:39:05Z)**_
 33	// swipe) and tracking resets immediately — no timer, so a new swipe can
 34	// start counting again right away instead of waiting out the tail.
 35	const WHEEL_DECAY_RATIO = 0.5;
-36	
+36
 37	type BudgetSummariesProps = {
 38	  startMonth: string;
 39	  onMonthSelect: (month: string) => void;
 40	};
-41	
+41
 42	export function BudgetSummaries({
 43	  startMonth,
 44	  onMonthSelect,
@@ -7909,29 +8058,30 @@ _**Agent (claude-sonnet-5 2026-09-13 17:39:05Z)**_
 46	  const { months } = useContext(MonthsContext);
 47	  const [firstMonth] = months;
 48	  const wheelState = useRef({ accumulated: 0, peak: 0, stepped: false });
-49	
+49
 50	  const onWheel = (e: WheelEvent) => {
 51	    // Only step months on a horizontal gesture (trackpad swipe or shift+wheel)
 52	    // so plain vertical scrolling over this row is left alone.
 53	    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-54	
+54
 55	    e.preventDefault();
-56	
+56
 57	    const state = wheelState.current;
 58	    const absDelta = Math.abs(e.deltaX);
-59	
+59
 60	    if (absDelta < state.peak * WHEEL_DECAY_RATIO) {
 61	      state.accumulated = 0;
 62	      state.peak = 0;
 63	      state.stepped = false;
 64	      return;
 65	    }
-66	
+66
 67	    state.peak = Math.max(state.peak, absDelta);
 68	    if (state.stepped) return;
-69	
+69
 70	    state.accumulated += e.deltaX;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:39:30Z)**_
@@ -7942,6 +8092,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:39:30Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:39:39Z)**_
@@ -7955,6 +8106,7 @@ Format and lint after fixed-lockout rewrite
 ```text
 Finished in 33ms on 1 files using 12 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:39:55Z)**_
@@ -7971,6 +8123,7 @@ Typecheck after fixed-lockout rewrite
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:39:59Z)**_
@@ -8011,6 +8164,7 @@ Find existing test files in the budget components folder
 packages/desktop-client/src/components/budget/MonthCountSelector.test.tsx
 packages/desktop-client/src/components/budget/goals/validateAutomation.test.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:03Z)**_
@@ -8022,16 +8176,16 @@ _**Agent (claude-sonnet-5 2026-09-13 17:42:03Z)**_
 ```text
 1	import React from 'react';
 2	import { MemoryRouter } from 'react-router';
-3	
+3
 4	import { fireEvent, render, screen } from '@testing-library/react';
-5	
+5
 6	import { useBudgetMonthCount } from './BudgetMonthCountContext';
 7	import { MonthCountSelector } from './MonthCountSelector';
-8	
+8
 9	vi.mock('./BudgetMonthCountContext', () => ({
 10	  useBudgetMonthCount: vi.fn(),
 11	}));
-12	
+12
 13	function renderSelector(maxMonths: number, onChange: (value: number) => void) {
 14	  return render(
 15	    <MemoryRouter>
@@ -8039,31 +8193,31 @@ _**Agent (claude-sonnet-5 2026-09-13 17:42:03Z)**_
 17	    </MemoryRouter>,
 18	  );
 19	}
-20	
+20
 21	describe('MonthCountSelector', () => {
 22	  beforeEach(() => {
 23	    vi.clearAllMocks();
 24	  });
-25	
+25
 26	  test('renders nothing when only one month fits on screen', () => {
 27	    vi.mocked(useBudgetMonthCount).mockReturnValue({
 28	      displayMax: 1,
 29	      setDisplayMax: vi.fn(),
 30	    });
-31	
+31
 32	    const { container } = renderSelector(1, vi.fn());
-33	
+33
 34	    expect(container).toBeEmptyDOMElement();
 35	  });
-36	
+36
 37	  test('renders one calendar button per month that can be displayed', () => {
 38	    vi.mocked(useBudgetMonthCount).mockReturnValue({
 39	      displayMax: 3,
 40	      setDisplayMax: vi.fn(),
 41	    });
-42	
+42
 43	    renderSelector(2, vi.fn());
-44	
+44
 45	    const buttons = screen.getAllByRole('button');
 46	    expect(buttons).toHaveLength(3);
 47	    // Each icon is a real, focusable button so it picks up the app's
@@ -8072,34 +8226,34 @@ _**Agent (claude-sonnet-5 2026-09-13 17:42:03Z)**_
 50	      expect(button.tagName).toBe('BUTTON');
 51	    }
 52	  });
-53	
+53
 54	  test('calls onChange with the 1-based index of the clicked month', () => {
 55	    vi.mocked(useBudgetMonthCount).mockReturnValue({
 56	      displayMax: 3,
 57	      setDisplayMax: vi.fn(),
 58	    });
 59	    const onChange = vi.fn();
-60	
+60
 61	    renderSelector(1, onChange);
-62	
+62
 63	    const buttons = screen.getAllByRole('button');
 64	    fireEvent.click(buttons[2]);
-65	
+65
 66	    expect(onChange).toHaveBeenCalledWith(3);
 67	  });
-68	
+68
 69	  test('highlights months up to maxMonths and dims the rest', () => {
 70	    vi.mocked(useBudgetMonthCount).mockReturnValue({
 71	      displayMax: 3,
 72	      setDisplayMax: vi.fn(),
 73	    });
-74	
+74
 75	    renderSelector(2, vi.fn());
-76	
+76
 77	    const icons = screen
 78	      .getAllByRole('button')
 79	      .map(button => button.querySelector('svg'));
-80	
+80
 81	    expect(icons[0]).toHaveStyle({ color: 'var(--color-pageTextLight)' });
 82	    expect(icons[1]).toHaveStyle({ color: 'var(--color-pageTextLight)' });
 83	    expect(icons[2]).toHaveStyle({ color: 'var(--color-pageTextSubdued)' });
@@ -8107,6 +8261,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:42:03Z)**_
 85	});
 86
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:08Z)**_
@@ -8143,6 +8298,7 @@ export function useResizeObserver<T extends Element>(
   return elementRef;
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:12Z)**_
@@ -8160,6 +8316,7 @@ packages/desktop-client/src/setupTests.ts
 packages/desktop-client/build/ts/src/setupTests.d.ts
 ---vitest config---
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:13Z)**_
@@ -8171,46 +8328,47 @@ _**Agent (claude-sonnet-5 2026-09-13 17:42:13Z)**_
 ```text
 1	import '@testing-library/jest-dom';
 2	import type { ReactNode } from 'react';
-3	
+3
 4	import { resetTestProviders } from './mocks';
-5	
+5
 6	global.IS_TESTING = true;
 7	global.Actual = {} as typeof global.Actual;
-8	
+8
 9	type Size = { height: number; width: number };
-10	
+10
 11	type AutoSizerProps = {
 12	  renderProp?: (size: Size) => ReactNode;
 13	  children?: (size: Size) => ReactNode;
 14	};
-15	
+15
 16	vi.mock('react-virtualized-auto-sizer', () => {
 17	  const AutoSizer = (props: AutoSizerProps) => {
 18	    const render = props.renderProp ?? props.children;
 19	    return render ? render({ height: 1000, width: 600 }) : null;
 20	  };
-21	
+21
 22	  return {
 23	    AutoSizer,
 24	    default: AutoSizer,
 25	  };
 26	});
-27	
+27
 28	global.Date.now = () => 123456789;
-29	
+29
 30	global.__resetWorld = () => {
 31	  resetTestProviders();
 32	};
-33	
+33
 34	process.on('unhandledRejection', (reason: unknown) => {
 35	  console.error('REJECTION', reason);
 36	});
-37	
+37
 38	afterEach(() => {
 39	  global.__resetWorld();
 40	});
 41
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:29Z)**_
@@ -8224,6 +8382,7 @@ Find useBudgetComponents definition and provider
 ```text
 294:export function useBudgetComponents(): BudgetComponents {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:31Z)**_
@@ -8241,12 +8400,12 @@ _**Agent (claude-sonnet-5 2026-09-13 17:42:31Z)**_
 275	  onBudgetAction: (month: string, action: string, arg: unknown) => void;
 276	  onShowActivity: (id: CategoryEntity['id'], month: string) => void;
 277	};
-278	
+278
 279	export type CategoryGroupMonthProps = {
 280	  month: string;
 281	  group: CategoryGroupEntity;
 282	};
-283	
+283
 284	export type BudgetComponents = {
 285	  SummaryComponent: ComponentType<BudgetSummaryProps>;
 286	  ExpenseCategoryComponent: ComponentType<CategoryMonthProps>;
@@ -8256,15 +8415,15 @@ _**Agent (claude-sonnet-5 2026-09-13 17:42:31Z)**_
 290	  BudgetTotalsComponent: ComponentType;
 291	  IncomeHeaderComponent: ComponentType;
 292	};
-293	
+293
 294	export function useBudgetComponents(): BudgetComponents {
 295	  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
 296	  const envelopeComponents = useEnvelopeBudgetComponents();
 297	  const trackingComponents = useTrackingBudgetComponents();
-298	
+298
 299	  return budgetType === 'envelope' ? envelopeComponents : trackingComponents;
 300	}
-301	
+301
 302	function useTrackingBudgetComponents(): BudgetComponents {
 303	  return useMemo(
 304	    () => ({
@@ -8274,6 +8433,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:42:31Z)**_
 308	      IncomeCategoryComponent: trackingBudget.IncomeCategoryMonth,
 309	      IncomeGroupComponent: trackingBudget.IncomeGroupMonth,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:39Z)**_
@@ -8288,6 +8448,7 @@ Look for shared test render/provider utilities
 ---mocks dir---
 connection.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:56Z)**_
@@ -8301,6 +8462,7 @@ Check vite/vitest config for test environment and ResizeObserver setup
 ```text
 (eval):1: no matches found: packages/desktop-client/vitest*.*
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:42:58Z)**_
@@ -8741,6 +8903,7 @@ export default defineConfig(async ({ mode, command }) => {
   };
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:43:11Z)**_
@@ -8769,6 +8932,7 @@ packages/desktop-client/src/hooks/useResizeObserver.ts
 ---check jsdom provides RO---
 undefined
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:43:17Z)**_
@@ -8783,6 +8947,7 @@ Search for ResizeObserver polyfill or mocks anywhere relevant
 ---search all mocks of useResizeObserver---
 ---search global polyfill anywhere in repo---
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:43:20Z)**_
@@ -8796,6 +8961,7 @@ Check if any test renders components that use useResizeObserver
 ```text
 packages/desktop-client/src/components/settings/Themes.test.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:43:28Z)**_
@@ -8818,6 +8984,7 @@ packages/desktop-client/src/components/modals/GoCardlessExternalMsgModal.test.ts
 packages/desktop-client/src/components/modals/GoCardlessExternalMsgModal.test.tsx:12:vi.mock('#hooks/useGoCardlessStatus', () => ({
 packages/desktop-client/src/components/accounts/Reconcile.test.tsx:14:vi.mock('#hooks/useSheetValue', () => ({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:44:08Z)**_
@@ -8835,6 +9002,7 @@ Check desktop-client test script
 ```text
 124:    "test": "vitest --run",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:44:34Z)**_
@@ -8943,6 +9111,7 @@ describe('BudgetSummaries wheel navigation', () => {
 ```text
 File created successfully at: /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.test.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:44:35Z)**_
@@ -8967,6 +9136,7 @@ Run the new BudgetSummaries test file
    Start at  13:44:40
    Duration  1.74s (transform 387ms, setup 919ms, import 228ms, tests 30ms, environment 472ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:44:44Z)**_
@@ -8986,6 +9156,7 @@ Exit code 1
 Finished in 25ms on 1 files using 12 threads.
 packages/desktop-client/src/components/budget/BudgetSummaries.test.tsx:9:34: error eslint(no-empty-function): Unexpected empty function help: Consider removing this function or adding logic to it.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:45:20Z)**_
@@ -8996,6 +9167,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:45:20Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/BudgetSummaries.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:45:25Z)**_
@@ -9010,6 +9182,7 @@ Re-lint the test file after fix
 No files found to lint. Please check your paths and ignore patterns.
 exit=1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:45:31Z)**_
@@ -9025,6 +9198,7 @@ Retry lint with explicit relative path
 No files found to lint. Please check your paths and ignore patterns.
 exit=1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:45:36Z)**_
@@ -9038,6 +9212,7 @@ Lint test file from repo root
 ```text
 exit=0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:45:38Z)**_
@@ -9062,6 +9237,7 @@ Re-run BudgetSummaries tests after lint fix
    Start at  13:45:45
    Duration  1.76s (transform 388ms, setup 928ms, import 226ms, tests 31ms, environment 487ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:45:49Z)**_
@@ -9082,6 +9258,7 @@ Typecheck after adding test file
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:46:54Z)**_
@@ -9153,6 +9330,7 @@ Failed to save payee location: Error: Save failed
    Start at  13:46:09
    Duration  45.01s (transform 5.06s, setup 36.82s, import 14.08s, tests 14.40s, environment 19.18s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:46:56Z)**_
@@ -9178,6 +9356,7 @@ Show overall changes summary
  .../src/components/budget/DynamicBudgetTable.tsx   |  3 +-
  3 files changed, 58 insertions(+), 4 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:46:59Z)**_
@@ -9245,7 +9424,6 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
-
 ---
 
 _**Agent (claude-sonnet-5 2026-09-13 17:48:02Z)**_
@@ -9259,6 +9437,7 @@ Check commit author info to determine GitHub username
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: 'git config' changes are forbidden.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:48:05Z)**_
@@ -9272,6 +9451,7 @@ Check commit author name/email for issue-20 commit
 ```text
 Liam McLemore <wpmclemore@wm.edu>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:48:07Z)**_
@@ -9285,8 +9465,8 @@ _**Agent (claude-sonnet-5 2026-09-13 17:48:07Z)**_
 **What GitHub username should go in the release note's `authors` field?**
 
 Options:
-- **tigerk9** - Matches the ai-logs/sprint0/tigerk9 folder convention used for your AI session logs.
 
+- **tigerk9** - Matches the ai-logs/sprint0/tigerk9 folder convention used for your AI session logs.
 
 ```text
 <tool_use_error>InputValidationError: [
@@ -9306,6 +9486,7 @@ Options:
 
 This call included a question with fewer than 2 options, so it was rejected and the person never saw it. A question with a single option has no decision in it. Do not retry this call and do not invent a filler second option. Instead, state the one path you were going to offer as the approach you are taking, then continue with the task. If this call also contained questions with 2 to 4 options (each with distinct labels), you may re-ask those questions alone in a new call. Ask a question only when the person has at least two genuinely distinct choices.</tool_use_error>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:48:09Z)**_
@@ -9342,6 +9523,7 @@ ai-feat-budget-analysis-report-show-hidden-categories.md
 api-browser-self-contained.md
 api-get-preferences.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:48:47Z)**_
@@ -9356,12 +9538,12 @@ authors: [tigerk9]
 ---
 
 Scroll horizontally over the budget month summaries to change the displayed month
-
 ```
 
 ```text
 File created successfully at: /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/upcoming-release-notes/add-budget-month-scroll.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:48:48Z)**_
@@ -9395,6 +9577,7 @@ _**Agent (claude-sonnet-5 2026-09-13 17:49:56Z)**_
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/upcoming-release-notes/add-budget-month-scroll.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:49:57Z)**_
@@ -9426,6 +9609,7 @@ Check current git status and branch
 ---branch---
 feat/issue-21-budget-month-scroll
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:51:05Z)**_
@@ -9459,6 +9643,7 @@ List specstory history files to find this session's log
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/history/2026-09-13_13-42-27Z-i-just-worked-with.md
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/.specstory/history/2026-09-13_15-07-46Z-i-d-like-to.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:52:11Z)**_
@@ -9502,10 +9687,10 @@ Check specstory project config for sync settings
 
 [logging]
 # Write logs to .specstory/debug/debug.log (default: false)
-# log = true # equivalent to --log        
+# log = true # equivalent to --log
 
 # Debug-level output, requires console or log (default: false)
-# debug = true # equivalent to --debug 
+# debug = true # equivalent to --debug
 
 # Custom output directory for debug data.
 # Default: ./.specstory/debug (relative to the project directory)
@@ -9587,6 +9772,7 @@ Check specstory project config for sync settings
 # Antigravity CLI command
 # antigravity_cmd = "agy"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:53:01Z)**_
@@ -9600,6 +9786,7 @@ Check if specstory CLI is available and see its help
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  I believe the command is just specstory sync, I have the extension added to VS code, but you can run the which specstory etc. Just give me the command I need to give you so you don't have to do which specstory every time I need you to log my ai use
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:53:03Z)**_
@@ -9613,6 +9800,7 @@ Check if specstory CLI is installed and available on PATH
 ```text
 /opt/homebrew/bin/specstory
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-13 17:53:05Z)**_

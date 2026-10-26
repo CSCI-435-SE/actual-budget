@@ -8,7 +8,7 @@ _**User (2026-09-14 22:51:39-0400)**_
 
 <ide_opened_file>The user opened the file /Users/james/actual-budget/packages/desktop-client/src/components/settings/Currency.tsx in the IDE. This may or may not be related to the current task.</ide_opened_file>
 
-Currency formatting doesn't currently exist, but I found @packages/desktop-client/src/components/settings/Currency.tsx  that seems to have some of its functionality. Is this formatting already implemented in the background?
+Currency formatting doesn't currently exist, but I found @packages/desktop-client/src/components/settings/Currency.tsx that seems to have some of its functionality. Is this formatting already implemented in the background?
 
 ---
 
@@ -27,6 +27,7 @@ Find usages of currency prefs
 ```text
 (eval):1: no matches found: --include=*.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:51:47-0400)**_
@@ -114,6 +115,7 @@ packages/desktop-client/src/hooks/useFormat.ts:116:    'currencySpaceBetweenAmou
 packages/desktop-client/src/hooks/useFormat.ts:120:    return getCurrency(defaultCurrencyCodePref || '');
 packages/desktop-client/src/hooks/useFormat.ts:121:  }, [defaultCurrencyCodePref]);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:51:50-0400)**_
@@ -130,7 +132,7 @@ Read useFormat hook
 
 ```text
      1	import { useCallback, useEffect, useMemo } from 'react';
-     2	
+     2
      3	import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
      4	import { getCurrency } from '@actual-app/core/shared/currencies';
      5	import type { Currency } from '@actual-app/core/shared/currencies';
@@ -144,9 +146,9 @@ Read useFormat hook
     13	  setNumberFormat,
     14	} from '@actual-app/core/shared/util';
     15	import type { IntegerAmount } from '@actual-app/core/shared/util';
-    16	
+    16
     17	import { useSyncedPref } from './useSyncedPref';
-    18	
+    18
     19	export type FormatType =
     20	  | 'string'
     21	  | 'number'
@@ -154,7 +156,7 @@ Read useFormat hook
     23	  | 'financial'
     24	  | 'financial-with-sign'
     25	  | 'financial-no-decimals';
-    26	
+    26
     27	export type UseFormatResult = {
     28	  (value: unknown, type?: FormatType): string;
     29	  forEdit: (value: IntegerAmount) => string;
@@ -164,12 +166,12 @@ Read useFormat hook
     33	  ) => IntegerAmount | null;
     34	  currency: Currency;
     35	};
-    36	
+    36
     37	export type FormatResult = {
     38	  numericValue?: number;
     39	  formattedString: string;
     40	};
-    41	
+    41
     42	function format(
     43	  value: unknown,
     44	  type: FormatType,
@@ -179,7 +181,7 @@ Read useFormat hook
     48	  switch (type) {
     49	    case 'string': {
     50	      const val = JSON.stringify(value);
-    51	
+    51
     52	      if (val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
     53	        return { formattedString: val.slice(1, -1) };
     54	      }
@@ -217,13 +219,13 @@ Read useFormat hook
     86	        }
     87	        localValue = parsed;
     88	      }
-    89	
+    89
     90	      if (typeof localValue !== 'number') {
     91	        throw new Error(
     92	          'Value is not a number (' + typeof localValue + '): ' + localValue,
     93	        );
     94	      }
-    95	
+    95
     96	      return {
     97	        numericValue: localValue,
     98	        formattedString: integerToCurrency(
@@ -237,7 +239,7 @@ Read useFormat hook
    106	      throw new Error('Unknown format type: ' + type);
    107	  }
    108	}
-   109	
+   109
    110	export function useFormat(): UseFormatResult {
    111	  const [numberFormatPref] = useSyncedPref('numberFormat');
    112	  const [hideFractionPref] = useSyncedPref('hideFraction');
@@ -246,11 +248,11 @@ Read useFormat hook
    115	  const [spaceEnabledPref] = useSyncedPref(
    116	    'currencySpaceBetweenAmountAndSymbol',
    117	  );
-   118	
+   118
    119	  const activeCurrency = useMemo(() => {
    120	    return getCurrency(defaultCurrencyCodePref || '');
    121	  }, [defaultCurrencyCodePref]);
-   122	
+   122
    123	  const numberFormatConfig = useMemo(
    124	    () =>
    125	      parseNumberFormat({
@@ -259,7 +261,7 @@ Read useFormat hook
    128	      }),
    129	    [numberFormatPref, hideFractionPref],
    130	  );
-   131	
+   131
    132	  // Hack: keep the global number format in sync - update the settings when
    133	  // the underlying configuration changes.
    134	  // This should be patched by moving all number-formatting utilities away from
@@ -267,42 +269,42 @@ Read useFormat hook
    136	  useEffect(() => {
    137	    setNumberFormat(numberFormatConfig);
    138	  }, [numberFormatConfig]);
-   139	
+   139
    140	  const applyCurrencyStyling = useCallback(
    141	    (formattedNumericValue: string, currencySymbol: string): string => {
    142	      if (!currencySymbol) {
    143	        return formattedNumericValue;
    144	      }
-   145	
+   145
    146	      let sign = '';
    147	      let valueWithoutSign = formattedNumericValue;
    148	      if (formattedNumericValue.startsWith('-')) {
    149	        sign = '-';
    150	        valueWithoutSign = formattedNumericValue.slice(1);
    151	      }
-   152	
+   152
    153	      const space = spaceEnabledPref === 'true' ? '\u202F' : '';
    154	      const position = symbolPositionPref || 'before';
-   155	
+   155
    156	      const styledAmount =
    157	        position === 'after'
    158	          ? `${valueWithoutSign}${space}${currencySymbol}`
    159	          : `\u202A${currencySymbol}\u202C${space}${valueWithoutSign}`;
-   160	
+   160
    161	      return sign + styledAmount;
    162	    },
    163	    [symbolPositionPref, spaceEnabledPref],
    164	  );
-   165	
+   165
    166	  const formatDisplay = useCallback(
    167	    (value: unknown, type: FormatType = 'string'): string => {
    168	      const isFinancialType =
    169	        type === 'financial' ||
    170	        type === 'financial-with-sign' ||
    171	        type === 'financial-no-decimals';
-   172	
+   172
    173	      let displayDecimalPlaces: number | undefined;
-   174	
+   174
    175	      if (isFinancialType) {
    176	        if (type === 'financial-no-decimals' || hideFractionPref === 'true') {
    177	          displayDecimalPlaces = 0;
@@ -310,19 +312,19 @@ Read useFormat hook
    179	          displayDecimalPlaces = activeCurrency.decimalPlaces;
    180	        }
    181	      }
-   182	
+   182
    183	      const intlFormatter = getNumberFormat({
    184	        format: numberFormatConfig.format,
    185	        decimalPlaces: displayDecimalPlaces,
    186	      }).formatter;
-   187	
+   187
    188	      const { numericValue, formattedString } = format(
    189	        value,
    190	        type,
    191	        intlFormatter,
    192	        activeCurrency.decimalPlaces,
    193	      );
-   194	
+   194
    195	      let styledValue = formattedString;
    196	      if (isFinancialType && activeCurrency && activeCurrency.code !== '') {
    197	        styledValue = applyCurrencyStyling(
@@ -330,7 +332,7 @@ Read useFormat hook
    199	          activeCurrency.symbol,
    200	        );
    201	      }
-   202	
+   202
    203	      if (
    204	        type === 'financial-with-sign' &&
    205	        numericValue != null &&
@@ -347,17 +349,17 @@ Read useFormat hook
    216	      hideFractionPref,
    217	    ],
    218	  );
-   219	
+   219
    220	  const toAmount = useCallback(
    221	    (value: number) => integerToAmount(value, activeCurrency.decimalPlaces),
    222	    [activeCurrency.decimalPlaces],
    223	  );
-   224	
+   224
    225	  const fromAmount = useCallback(
    226	    (value: number) => amountToInteger(value, activeCurrency.decimalPlaces),
    227	    [activeCurrency.decimalPlaces],
    228	  );
-   229	
+   229
    230	  const forEdit = useCallback(
    231	    (value: IntegerAmount) => {
    232	      const amount = toAmount(value);
@@ -376,7 +378,7 @@ Read useFormat hook
    245	      numberFormatConfig.format,
    246	    ],
    247	  );
-   248	
+   248
    249	  const fromEdit = useCallback(
    250	    (
    251	      value: string,
@@ -385,31 +387,31 @@ Read useFormat hook
    254	      if (value == null) {
    255	        return defaultValue;
    256	      }
-   257	
+   257
    258	      const trimmed = value.trim();
    259	      if (trimmed === '') {
    260	        return defaultValue;
    261	      }
-   262	
+   262
    263	      // strip directional formatting characters and letters
    264	      const normalized = trimmed
    265	        .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '')
    266	        .replace(/\p{L}+/gu, '');
    267	      let numericValue: number | null = evalArithmetic(normalized, null);
-   268	
+   268
    269	      if (numericValue === null || isNaN(numericValue)) {
    270	        numericValue = currencyToAmount(normalized);
    271	      }
-   272	
+   272
    273	      if (numericValue !== null && !isNaN(numericValue)) {
    274	        return fromAmount(numericValue);
    275	      }
-   276	
+   276
    277	      return defaultValue;
    278	    },
    279	    [fromAmount],
    280	  );
-   281	
+   281
    282	  return Object.assign(formatDisplay, {
    283	    forEdit,
    284	    fromEdit,
@@ -417,6 +419,7 @@ Read useFormat hook
    286	  });
    287	}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:51:56-0400)**_
@@ -523,6 +526,7 @@ export const currencies: Currency[] = [
   { code: 'RSD', name: 'Serbian Dinar', symbol: 'дин', decimalPlaces: 2, numberFormat: 'dot-comma', symbolFirst: false },
   { code: 'RUB', name: 'Russian Ruble', symbol: '₽', decimalPlaces: 2, numberFormat: 'space-comma', symbolFirst: false },
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:52:01-0400)**_
@@ -546,6 +550,7 @@ packages/desktop-client/src/components/settings/Currency.tsx:16:export function 
 192:  }, [dispatch, isCurrencyExperimentalEnabled]);
 240:        {isCurrencyExperimentalEnabled && <CurrencySettings />}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:52:05-0400)**_
@@ -565,6 +570,7 @@ packages/loot-core/src/types/prefs.ts:30:    | 'currencySpaceBetweenAmountAndSym
 === experimental UI ===
 packages/desktop-client/src/components/settings/Experimental.tsx:200:              flag="currency"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:52:12-0400)**_
@@ -604,6 +610,7 @@ packages/desktop-client/src/hooks/useFormat.ts
 packages/loot-core/src/server/budget/actions.ts
 packages/loot-core/src/shared/util.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:52:17-0400)**_
@@ -640,6 +647,7 @@ Inspect integerToCurrency
 469-  }
 470-
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:52:32-0400)**_
@@ -708,7 +716,7 @@ index.tsx
      1	// @ts-strict-ignore
      2	import React from 'react';
      3	import { Trans, useTranslation } from 'react-i18next';
-     4	
+     4
      5	import { Select } from '@actual-app/components/select';
      6	import { Text } from '@actual-app/components/text';
      7	import { theme } from '@actual-app/components/theme';
@@ -717,7 +725,7 @@ index.tsx
     10	import { numberFormats } from '@actual-app/core/shared/util';
     11	import type { SyncedPrefs } from '@actual-app/core/types/prefs';
     12	import { css } from '@emotion/css';
-    13	
+    13
     14	import { Checkbox } from '#components/forms';
     15	import { useSidebar } from '#components/sidebar/SidebarProvider';
     16	import { useDateFormat } from '#hooks/useDateFormat';
@@ -725,9 +733,9 @@ index.tsx
     18	import { useSyncedPref } from '#hooks/useSyncedPref';
     19	import { saveSyncedPrefs } from '#prefs/prefsSlice';
     20	import { useDispatch } from '#redux';
-    21	
+    21
     22	import { Column, Setting } from './UI';
-    23	
+    23
     24	const dateFormats: { value: SyncedPrefs['dateFormat']; label: string }[] = [
     25	  { value: 'MM/dd/yyyy', label: 'MM/DD/YYYY' },
     26	  { value: 'dd/MM/yyyy', label: 'DD/MM/YYYY' },
@@ -736,11 +744,11 @@ index.tsx
     29	  { value: 'dd.MM.yyyy', label: 'DD.MM.YYYY' },
     30	  { value: 'dd-MM-yyyy', label: 'DD-MM-YYYY' },
     31	];
-    32	
+    32
     33	export function FormatSettings() {
     34	  const { t } = useTranslation();
     35	  const dispatch = useDispatch();
-    36	
+    36
     37	  const sidebar = useSidebar();
     38	  const [_firstDayOfWeekIdx, setFirstDayOfWeekIdxPref] =
     39	    useSyncedPref('firstDayOfWeekIdx'); // Sunday;
@@ -750,15 +758,15 @@ index.tsx
     43	  const [_numberFormat] = useSyncedPref('numberFormat');
     44	  const numberFormat = _numberFormat || 'comma-dot';
     45	  const [hideFraction, setHideFractionPref] = useSyncedPref('hideFraction');
-    46	
+    46
     47	  const daysOfWeek = useDaysOfWeek();
-    48	
+    48
     49	  const selectButtonClassName = css({
     50	    '&[data-hovered]': {
     51	      backgroundColor: theme.buttonNormalBackgroundHover,
     52	    },
     53	  });
-    54	
+    54
     55	  return (
     56	    <Setting
     57	      primaryAction={
@@ -791,7 +799,7 @@ index.tsx
     84	              ])}
     85	              className={selectButtonClassName}
     86	            />
-    87	
+    87
     88	            <Text style={{ display: 'flex' }}>
     89	              <Checkbox
     90	                id="settings-textDecimal"
@@ -805,7 +813,7 @@ index.tsx
     98	              </label>
     99	            </Text>
    100	          </Column>
-   101	
+   101
    102	          <Column title={t('Dates')}>
    103	            <Select
    104	              value={dateFormat}
@@ -814,7 +822,7 @@ index.tsx
    107	              className={selectButtonClassName}
    108	            />
    109	          </Column>
-   110	
+   110
    111	          <Column title={t('First day of the week')}>
    112	            <Select
    113	              value={firstDayOfWeekIdx}
@@ -836,6 +844,7 @@ index.tsx
    129	  );
    130	}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:54:25-0400)**_
@@ -881,6 +890,7 @@ packages/desktop-client/src/components/budget/util.ts:81:    typeof val === 'num
 packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx:12:  integerToCurrency,
 packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx:56:  const _initialAmount = integerToCurrency(Math.abs(initialAmount ?? 0));
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:54:35-0400)**_
@@ -950,6 +960,7 @@ packages/desktop-client/src/components/reports/reports/CustomReport.tsx
 packages/desktop-client/src/components/reports/reports/Crossover.tsx
 packages/desktop-client/src/components/reports/reports/Summary.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:54:41-0400)**_
@@ -968,6 +979,7 @@ Check reports and loot-core server formatting
 packages/loot-core/src/server/budget/actions.ts:10:import { integerToCurrency, safeNumber } from '#shared/util';
 packages/loot-core/src/server/budget/actions.ts:741:  const displayAmount = integerToCurrency(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:54:52-0400)**_
@@ -1010,6 +1022,7 @@ Inspect server formatting and flag default
 === feature flag defaults ===
 packages/desktop-client/src/hooks/useFeatureFlag.ts:10:  currency: false,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:54:57-0400)**_
@@ -1068,6 +1081,7 @@ packages/desktop-client/e2e/settings.test.ts-snapshots/Settings-checks-the-page-
 packages/desktop-client/e2e/settings.test.ts-snapshots/Settings-checks-the-page-visuals-2-chromium-linux.png
 packages/desktop-client/e2e/settings.test.ts-snapshots/Settings-checks-the-page-visuals-1-chromium-linux.png
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:55:08-0400)**_
@@ -1135,6 +1149,7 @@ export function deserializeTransaction(
 
   let amount: number | null;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:55:27-0400)**_
@@ -1168,6 +1183,7 @@ Check for a global currency config analogous to number format
 510:    (match[0] === getNumberFormat().thousandsSeparator &&
 === any global currency setter? ===
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:55:40-0400)**_
@@ -1186,6 +1202,7 @@ files w/ amountToCurrency (non-test):
 total distinct files:
       13
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:56:08-0400)**_
@@ -1196,7 +1213,7 @@ Here's the scope, split by what's actually independent.
 
 Adding a Currency dropdown alongside Numbers / Dates / First day of the week is genuinely cheap. [Format.tsx](packages/desktop-client/src/components/settings/Format.tsx) already has the exact pattern — three `<Column>` wrappers around `<Select>`. `CurrencySettings` is structurally the same thing in its own `<Setting>` card, so it's either a move into `FormatSettings` as a fourth `<Column>`, or leave it as its own card and just ungate it.
 
-One design snag: [Currency.tsx:105-114](packages/desktop-client/src/components/settings/Currency.tsx#L105-L114) has the currency dropdown *overwrite* `numberFormat` and `hideFraction`. If it sits in the same card as those controls, picking a currency visibly rewrites the two dropdowns next to it. Fine, but you'd want it deliberate.
+One design snag: [Currency.tsx:105-114](packages/desktop-client/src/components/settings/Currency.tsx#L105-L114) has the currency dropdown _overwrite_ `numberFormat` and `hideFraction`. If it sits in the same card as those controls, picking a currency visibly rewrites the two dropdowns next to it. Fine, but you'd want it deliberate.
 
 **~1-2 files.**
 
@@ -1214,7 +1231,7 @@ One design snag: [Currency.tsx:105-114](packages/desktop-client/src/components/s
 
 **Display sites that should gain the symbol (~13 calls, 7 files):** [CategoryAutocomplete.tsx:458,466](packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.tsx#L458), [CloseAccountModal.tsx:174](packages/desktop-client/src/components/modals/CloseAccountModal.tsx#L174), [TransactionsTable.tsx:1845,1943,2050](packages/desktop-client/src/components/transactions/TransactionsTable.tsx#L1845), [BalanceHistoryGraph.tsx:318](packages/desktop-client/src/components/accounts/BalanceHistoryGraph.tsx#L318), [TransactionEdit.tsx:301,313,2204](packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx#L301), [TransactionListItem.tsx:293,308](packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx#L293), [TransactionList.tsx:505](packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx#L505). These are mechanical — swap to `format(value, 'financial')`.
 
-**Edit/serialization sites that must *not* gain a symbol (~17 calls, 6 files):** all the `amountToCurrency` uses in [ImportTransactionsModal/Transaction.tsx](packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx), [CalculatorAmountInput.tsx](packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx), [FocusableAmountInput.tsx](packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx), the four input-value calls in TransactionsTable, plus [table/utils.ts:64-65](packages/desktop-client/src/components/transactions/table/utils.ts#L64-L65) and [CoverMenu.tsx:56](packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx#L56). These want `forEdit`/`fromEdit`, which already exist on the hook. [budget/util.ts:81](packages/desktop-client/src/components/budget/util.ts#L81) is a third thing entirely — it round-trips through a string purely to get a number for a color decision, and a symbol would break `currencyToAmount`; that one should probably just stop calling the formatter.
+**Edit/serialization sites that must _not_ gain a symbol (~17 calls, 6 files):** all the `amountToCurrency` uses in [ImportTransactionsModal/Transaction.tsx](packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx), [CalculatorAmountInput.tsx](packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx), [FocusableAmountInput.tsx](packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx), the four input-value calls in TransactionsTable, plus [table/utils.ts:64-65](packages/desktop-client/src/components/transactions/table/utils.ts#L64-L65) and [CoverMenu.tsx:56](packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx#L56). These want `forEdit`/`fromEdit`, which already exist on the hook. [budget/util.ts:81](packages/desktop-client/src/components/budget/util.ts#L81) is a third thing entirely — it round-trips through a string purely to get a number for a color decision, and a symbol would break `currencyToAmount`; that one should probably just stop calling the formatter.
 
 **The structural blocker:** `table/utils.ts` and `budget/util.ts` are plain modules, not components, so they can't call a hook. `useFormat` handles this today with an acknowledged hack — [lines 132-138](packages/desktop-client/src/hooks/useFormat.ts#L132-L138) push the number format into a module-level global via `setNumberFormat`. There's no equivalent global for currency (I checked — no `setCurrency` in shared). So you either thread `format` down as a parameter, or add a parallel global. That's the one design decision in this whole thing, and it's worth making before touching the 13 files.
 
@@ -1252,7 +1269,7 @@ _**Agent (claude-opus-5 2026-09-14 23:04:00-0400)**_
 <summary>Tool use: **Agent**</summary>
 Explore display call sites
 
-```text
+````text
 Here are my findings.
 
 ## `useFormat` — exact signature and return shape
@@ -1272,9 +1289,10 @@ export type UseFormatResult = {
 };
 
 export function useFormat(): UseFormatResult
-```
+````
 
 Key behaviors relevant to the migration:
+
 - Import alias in current code is `#hooks/useFormat` (post subpath-import migration, e.g. `/Users/james/actual-budget/packages/desktop-client/src/components/spreadsheet/CellValue.tsx:9`).
 - For `'financial'`, it accepts `number | null | undefined | ''` (null/empty coerced to 0) and also strings (legacy path, `useFormat.ts:70-88` — throws on non-numeric strings). So `format(x ?? 0, 'financial')` is the direct replacement for `integerToCurrency(x || 0)`.
 - Currency styling is applied only when `activeCurrency.code !== ''` (`useFormat.ts:196`), and it wraps the symbol in Unicode bidi isolates: `\u202A<symbol>\u202C` plus optional `\u202F` narrow no-break space (`useFormat.ts:153-159`). This matters for anything that string-interpolates the output (see TransactionList finding below).
@@ -1291,10 +1309,11 @@ Key behaviors relevant to the migration:
 Best reference commit: **`37247395e` "feat(currency): add currency display to schedules (#5907)"** — a straight `integerToCurrency(x)` → `format(x, 'financial')` migration with `const format = useFormat();` added to the component. Also `99ca34458` (rules), `9a9de5ee0` (budget), `dc811552b`.
 
 Concrete in-tree references:
+
 - `/Users/james/actual-budget/packages/desktop-client/src/components/accounts/Balance.tsx:37-52` — `useFormat()` + `PrivacyFilter` + `FinancialText`, closest analogue to the display sites.
 - `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/SimpleTransactionsTable.tsx:151-158` — `<FinancialText>{format(transaction.amount, 'financial')}</FinancialText>`.
 - `/Users/james/actual-budget/packages/desktop-client/src/components/schedules/SchedulesTable.tsx:131-144`.
-- **For `Trans` interpolation specifically**: `/Users/james/actual-budget/packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx:165-212` and `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx:729-735` — both call `format(...)` *inline inside the `{{ amount: ... }} as TransObjectLiteral` literal*. So no need to hoist the computation out of JSX; the hook just has to be called at component top.
+- **For `Trans` interpolation specifically**: `/Users/james/actual-budget/packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx:165-212` and `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx:729-735` — both call `format(...)` _inline inside the `{{ amount: ... }} as TransObjectLiteral` literal_. So no need to hoist the computation out of JSX; the hook just has to be called at component top.
 - For `t()` (not `Trans`): `/Users/james/actual-budget/packages/desktop-client/src/components/modals/EnvelopeBudgetSummaryModal.tsx:70-74`.
 
 ---
@@ -1302,6 +1321,7 @@ Concrete in-tree references:
 ## Per-call-site findings
 
 ### 1–2. CategoryAutocomplete — `/Users/james/actual-budget/packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.tsx:458`, `:466`
+
 - **Enclosing**: `CategoryItem` (`:379`) — a real React function component (rendered as `<CategoryItem {...props} />` at `:479`). Already calls `useTranslation`, `useResponsive`, `useSyncedPref`. **Hooks OK.**
 - **useFormat present?** No. **`FinancialText` already imported and already wrapping both sites** (`:29`, `:457-467`).
 - **i18n?** No — plain JSX children.
@@ -1310,6 +1330,7 @@ Concrete in-tree references:
 - No `format` identifier collision in this file.
 
 ### 3. CloseAccountModal — `/Users/james/actual-budget/packages/desktop-client/src/components/modals/CloseAccountModal.tsx:174`
+
 - **Enclosing**: `CloseAccountModal` (`:48`) — React function component; the call site is inside the `<Modal>{({ state }) => ...}` render prop but lexically within the component. **Hooks OK** (add next to `useTranslation()` at `:53`).
 - **useFormat present?** No. No `FinancialText` import.
 - **i18n?** **Yes** — inside `<Trans>` as `{{ balance: integerToCurrency(balance) } as TransObjectLiteral}` (`:170-177`), wrapped in `<strong>`. Follow the `BalanceWithCarryover.tsx:206-210` pattern; inline `format(balance, 'financial')` is fine.
@@ -1319,6 +1340,7 @@ Concrete in-tree references:
 - No `format` collision.
 
 ### 4. TransactionsTable (balance cell) — `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx:1845`
+
 - **Enclosing**: `Transaction = memo(function Transaction({...}))` (`:914`) — React component. **Hooks OK.**
 - **useFormat present?** No (file has zero `useFormat`/`FinancialText`/`PrivacyFilter` imports).
 - **i18n?** No.
@@ -1328,18 +1350,21 @@ Concrete in-tree references:
 - **Name collision**: file imports `format as formatDate` from date-fns (`:78`), so `const format = useFormat()` is safe.
 
 ### 5. TransactionsTable (drag preview) — `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx:1943`
+
 - **Enclosing**: same `Transaction` memo component (`:914`) — inside the `<DragPreview>` render output (`:1895-1946`). **Hooks OK**, shares the same `const format` as site 4.
 - **i18n?** No (adjacent `<Trans>Split (...)</Trans>` is unrelated).
 - **Parsed back?** No.
 
 ### 6. TransactionsTable (split error) — `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx:2050`
+
 - **Enclosing**: `TransactionError` (`:2026`) — a separate plain React function component (rendered at `:2238` and `:2531`). **Hooks OK, but note the body is a `switch (error.type)` with early returns** — `const format = useFormat()` must go on the first line of the function body, before the switch, to avoid a conditional-hook lint error.
 - **useFormat present?** No.
-- **i18n?** Adjacent `<Trans>Amount left:</Trans>` is a *sibling*, not an interpolation — the amount is plain JSX children of a `<Text style={{fontWeight:500}}>`. No `TransObjectLiteral` needed.
+- **i18n?** Adjacent `<Trans>Amount left:</Trans>` is a _sibling_, not an interpolation — the amount is plain JSX children of a `<Text style={{fontWeight:500}}>`. No `TransObjectLiteral` needed.
 - **Parsed back?** No.
-- **Test impact**: `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx:15,523,531` asserts `debit`/`credit` cell text against `integerToCurrency(...)`. Those assertions cover the *edit-path* cells (not migrating), so they should still pass — but verify, since the default currency in tests is `''` (no symbol), which means `format(x,'financial') === integerToCurrency(x)` anyway.
+- **Test impact**: `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx:15,523,531` asserts `debit`/`credit` cell text against `integerToCurrency(...)`. Those assertions cover the _edit-path_ cells (not migrating), so they should still pass — but verify, since the default currency in tests is `''` (no symbol), which means `format(x,'financial') === integerToCurrency(x)` anyway.
 
 ### 7. BalanceHistoryGraph — `/Users/james/actual-budget/packages/desktop-client/src/components/accounts/BalanceHistoryGraph.tsx:318`
+
 - **Enclosing**: `BalanceHistoryGraph` (`:30`) — React function component; the call site is deep inside a Recharts `ResponsiveContainer`-style render callback but lexically inside the component. **Hooks OK** (alongside `useLocale`, `useRechartsAnimation`, `useState` at `:30-45`).
 - **useFormat present?** No. `PrivacyFilter` already imported (`:15`) and already wraps this value (`:317-319`).
 - **i18n?** No.
@@ -1348,6 +1373,7 @@ Concrete in-tree references:
 - Candidate for `<FinancialText>` since it's a right-aligned numeric label.
 
 ### 8–9. TransactionEdit `Footer` — `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:301`, `:313`
+
 - **Enclosing**: `Footer` (`:245`) — plain React function component (rendered at `:1120`). Currently calls **no hooks at all**, so adding `const format = useFormat();` at the top is the first hook in it. **Hooks OK.**
 - **useFormat present?** No.
 - **i18n?** **Yes, both.** Both are `{{ amount: integerToCurrency(...) }}` shorthand inside `<Trans>` (`:299-306` "Add new split - {{amount}} left" and `:311-318` "Amount left: {{amount}}"). Note these two use bare `{{ amount: ... }}` **without** the `as TransObjectLiteral` cast that CloseAccountModal uses — TypeScript may or may not require adding the cast once the expression type changes; both currently return `string`, so likely no change needed.
@@ -1356,11 +1382,13 @@ Concrete in-tree references:
 - **Collision**: file already aliases date-fns as `format as formatDate` (`:69`), and uses `monthUtils.format` namespaced. Safe.
 
 ### 10. TransactionEdit `FillRemainingButton` — `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:2204`
+
 - **Enclosing**: `FillRemainingButton` (`:2180`) — plain React function component (rendered at `:1308`), currently hook-free. **Hooks OK.**
 - **i18n?** **Yes** — `<Trans>Use remaining: {{ amount: integerToCurrency(Math.abs(remaining)) }}</Trans>`.
 - **Parsed back?** No.
 
 ### 11–12. TransactionListItem — `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx:293`, `:308`
+
 - **Enclosing**: `TransactionListItem` (`:80`) — exported React function component with many hooks already (`useTranslation`, `useCategories`, `usePayee`, `useDisplayPayee`, `useAccount`, `useSelector`, `useLongPress`). **Hooks OK.**
 - **useFormat present?** No. No `FinancialText` import, but both sites already spread `...styles.tnum` manually (`:283`, `:299`) — these are prime candidates to switch to `<FinancialText>` instead, since that's exactly what it does.
 - **i18n?** No.
@@ -1368,12 +1396,13 @@ Concrete in-tree references:
 - No `format` collision.
 
 ### 13. TransactionList — `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:505`
+
 - **Enclosing**: `SelectedTransactionsFloatingActionBar` (`:277`) — React function component with existing hooks. The call site sits inside `onMenuSelect` → `onBatchEdit({ onSuccess })`, a nested plain callback. **Hooks OK at component top; reference `format` from the closure.** This is the only one where the value is computed in an event handler rather than during render.
 - **useFormat present?** No.
-- **i18n?** No `Trans`/`t()` — but see below, it *is* string-interpolated.
+- **i18n?** No `Trans`/`t()` — but see below, it _is_ string-interpolated.
 - **Parsed back?** No. But **this site deserves scrutiny**:
   - `displayValue` (`:503-506`) flows into a **markdown-ish notification string**: `` `...to [${String(displayValue)}](#${String(displayValue)}).` `` (`:516`) and is used as an **object key** in `messageActions` (`:518`).
-  - Once `format()` adds a currency symbol plus the bidi control chars `\u202A`/`\u202C`/`\u202F`, that string goes into a markdown link label *and* a link target/key. Worth confirming the notification renderer tolerates `$`, parentheses, and invisible bidi marks in both positions.
+  - Once `format()` adds a currency symbol plus the bidi control chars `\u202A`/`\u202C`/`\u202F`, that string goes into a markdown link label _and_ a link target/key. Worth confirming the notification renderer tolerates `$`, parentheses, and invisible bidi marks in both positions.
   - Also note: the `'amount'` menu item is **currently commented out** (`:1942-1945` region, "Add support later on until we have more user friendly amount input modal") — so this `case 'amount':` branch is presently **dead code**. Low risk either way, but also low value; flag it as such.
   - The message itself is an untranslated raw template literal, so no i18n coupling.
 - No `format` collision (`monthUtils.format` is namespaced at `:223`).
@@ -1382,26 +1411,28 @@ Concrete in-tree references:
 
 ## Summary table
 
-| # | File:line | Enclosing | Hooks OK | Has useFormat | Has FinancialText | In Trans/t() | Edit path |
-|---|---|---|---|---|---|---|---|
-| 1,2 | CategoryAutocomplete.tsx:458,466 | `CategoryItem` | yes | no | **yes, already wraps** | no | no |
-| 3 | CloseAccountModal.tsx:174 | `CloseAccountModal` | yes | no | no | **yes (Trans + TransObjectLiteral)** | no |
-| 4 | TransactionsTable.tsx:1845 | `Transaction` (memo) | yes | no | no | no | no (read-only Cell) |
-| 5 | TransactionsTable.tsx:1943 | `Transaction` (memo) | yes | no | no | no | no |
-| 6 | TransactionsTable.tsx:2050 | `TransactionError` | yes (hoist above `switch`) | no | no | no (sibling Trans only) | no |
-| 7 | BalanceHistoryGraph.tsx:318 | `BalanceHistoryGraph` | yes | no | no (has PrivacyFilter) | no | no |
-| 8,9 | TransactionEdit.tsx:301,313 | `Footer` | yes (first hooks) | no | no | **yes (Trans)** | no |
-| 10 | TransactionEdit.tsx:2204 | `FillRemainingButton` | yes (first hooks) | no | no | **yes (Trans)** | no |
-| 11,12 | TransactionListItem.tsx:293,308 | `TransactionListItem` | yes | no | no (manual `styles.tnum`) | no | no |
-| 13 | TransactionList.tsx:505 | `SelectedTransactionsFloatingActionBar` | yes (closure) | no | no | no (raw template literal) | no |
+| #     | File:line                        | Enclosing                               | Hooks OK                   | Has useFormat | Has FinancialText         | In Trans/t()                         | Edit path           |
+| ----- | -------------------------------- | --------------------------------------- | -------------------------- | ------------- | ------------------------- | ------------------------------------ | ------------------- |
+| 1,2   | CategoryAutocomplete.tsx:458,466 | `CategoryItem`                          | yes                        | no            | **yes, already wraps**    | no                                   | no                  |
+| 3     | CloseAccountModal.tsx:174        | `CloseAccountModal`                     | yes                        | no            | no                        | **yes (Trans + TransObjectLiteral)** | no                  |
+| 4     | TransactionsTable.tsx:1845       | `Transaction` (memo)                    | yes                        | no            | no                        | no                                   | no (read-only Cell) |
+| 5     | TransactionsTable.tsx:1943       | `Transaction` (memo)                    | yes                        | no            | no                        | no                                   | no                  |
+| 6     | TransactionsTable.tsx:2050       | `TransactionError`                      | yes (hoist above `switch`) | no            | no                        | no (sibling Trans only)              | no                  |
+| 7     | BalanceHistoryGraph.tsx:318      | `BalanceHistoryGraph`                   | yes                        | no            | no (has PrivacyFilter)    | no                                   | no                  |
+| 8,9   | TransactionEdit.tsx:301,313      | `Footer`                                | yes (first hooks)          | no            | no                        | **yes (Trans)**                      | no                  |
+| 10    | TransactionEdit.tsx:2204         | `FillRemainingButton`                   | yes (first hooks)          | no            | no                        | **yes (Trans)**                      | no                  |
+| 11,12 | TransactionListItem.tsx:293,308  | `TransactionListItem`                   | yes                        | no            | no (manual `styles.tnum`) | no                                   | no                  |
+| 13    | TransactionList.tsx:505          | `SelectedTransactionsFloatingActionBar` | yes (closure)              | no            | no                        | no (raw template literal)            | no                  |
 
 **All 13 are genuine display paths — none feed a parser.** The real edit paths live elsewhere and should be left alone: `table/utils.ts:60-88` (`serializeTransaction`/`deserializeTransaction` via `integerToCurrencyWithDecimal` + `evalArithmetic`), `budget/envelope/CoverMenu.tsx`, and `budget/util.ts`.
 
 **Three things to watch:**
+
 1. `BalanceHistoryGraph.tsx:12` — `format` already imported from date-fns unaliased; must rename.
 2. `TransactionsTable.tsx:1845` — preserve the `''` empty branch; don't let `format('', 'financial')` turn it into `0.00`.
 3. `TransactionList.tsx:505` — currency symbol + bidi control chars land inside a markdown link label and an object key; the branch is also currently unreachable (amount menu item commented out).
-```
+
+````
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-14 23:00:25-0400)**_
@@ -1443,7 +1474,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 
 ```text
 1	import { useCallback, useEffect, useMemo } from 'react';
-2	
+2
 3	import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 4	import { getCurrency } from '@actual-app/core/shared/currencies';
 5	import type { Currency } from '@actual-app/core/shared/currencies';
@@ -1457,9 +1488,9 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 13	  setNumberFormat,
 14	} from '@actual-app/core/shared/util';
 15	import type { IntegerAmount } from '@actual-app/core/shared/util';
-16	
+16
 17	import { useSyncedPref } from './useSyncedPref';
-18	
+18
 19	export type FormatType =
 20	  | 'string'
 21	  | 'number'
@@ -1467,7 +1498,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 23	  | 'financial'
 24	  | 'financial-with-sign'
 25	  | 'financial-no-decimals';
-26	
+26
 27	export type UseFormatResult = {
 28	  (value: unknown, type?: FormatType): string;
 29	  forEdit: (value: IntegerAmount) => string;
@@ -1477,12 +1508,12 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 33	  ) => IntegerAmount | null;
 34	  currency: Currency;
 35	};
-36	
+36
 37	export type FormatResult = {
 38	  numericValue?: number;
 39	  formattedString: string;
 40	};
-41	
+41
 42	function format(
 43	  value: unknown,
 44	  type: FormatType,
@@ -1492,7 +1523,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 48	  switch (type) {
 49	    case 'string': {
 50	      const val = JSON.stringify(value);
-51	
+51
 52	      if (val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
 53	        return { formattedString: val.slice(1, -1) };
 54	      }
@@ -1530,13 +1561,13 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 86	        }
 87	        localValue = parsed;
 88	      }
-89	
+89
 90	      if (typeof localValue !== 'number') {
 91	        throw new Error(
 92	          'Value is not a number (' + typeof localValue + '): ' + localValue,
 93	        );
 94	      }
-95	
+95
 96	      return {
 97	        numericValue: localValue,
 98	        formattedString: integerToCurrency(
@@ -1550,7 +1581,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 106	      throw new Error('Unknown format type: ' + type);
 107	  }
 108	}
-109	
+109
 110	export function useFormat(): UseFormatResult {
 111	  const [numberFormatPref] = useSyncedPref('numberFormat');
 112	  const [hideFractionPref] = useSyncedPref('hideFraction');
@@ -1559,11 +1590,11 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 115	  const [spaceEnabledPref] = useSyncedPref(
 116	    'currencySpaceBetweenAmountAndSymbol',
 117	  );
-118	
+118
 119	  const activeCurrency = useMemo(() => {
 120	    return getCurrency(defaultCurrencyCodePref || '');
 121	  }, [defaultCurrencyCodePref]);
-122	
+122
 123	  const numberFormatConfig = useMemo(
 124	    () =>
 125	      parseNumberFormat({
@@ -1572,7 +1603,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 128	      }),
 129	    [numberFormatPref, hideFractionPref],
 130	  );
-131	
+131
 132	  // Hack: keep the global number format in sync - update the settings when
 133	  // the underlying configuration changes.
 134	  // This should be patched by moving all number-formatting utilities away from
@@ -1580,42 +1611,42 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 136	  useEffect(() => {
 137	    setNumberFormat(numberFormatConfig);
 138	  }, [numberFormatConfig]);
-139	
+139
 140	  const applyCurrencyStyling = useCallback(
 141	    (formattedNumericValue: string, currencySymbol: string): string => {
 142	      if (!currencySymbol) {
 143	        return formattedNumericValue;
 144	      }
-145	
+145
 146	      let sign = '';
 147	      let valueWithoutSign = formattedNumericValue;
 148	      if (formattedNumericValue.startsWith('-')) {
 149	        sign = '-';
 150	        valueWithoutSign = formattedNumericValue.slice(1);
 151	      }
-152	
+152
 153	      const space = spaceEnabledPref === 'true' ? '\u202F' : '';
 154	      const position = symbolPositionPref || 'before';
-155	
+155
 156	      const styledAmount =
 157	        position === 'after'
 158	          ? `${valueWithoutSign}${space}${currencySymbol}`
 159	          : `\u202A${currencySymbol}\u202C${space}${valueWithoutSign}`;
-160	
+160
 161	      return sign + styledAmount;
 162	    },
 163	    [symbolPositionPref, spaceEnabledPref],
 164	  );
-165	
+165
 166	  const formatDisplay = useCallback(
 167	    (value: unknown, type: FormatType = 'string'): string => {
 168	      const isFinancialType =
 169	        type === 'financial' ||
 170	        type === 'financial-with-sign' ||
 171	        type === 'financial-no-decimals';
-172	
+172
 173	      let displayDecimalPlaces: number | undefined;
-174	
+174
 175	      if (isFinancialType) {
 176	        if (type === 'financial-no-decimals' || hideFractionPref === 'true') {
 177	          displayDecimalPlaces = 0;
@@ -1623,19 +1654,19 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 179	          displayDecimalPlaces = activeCurrency.decimalPlaces;
 180	        }
 181	      }
-182	
+182
 183	      const intlFormatter = getNumberFormat({
 184	        format: numberFormatConfig.format,
 185	        decimalPlaces: displayDecimalPlaces,
 186	      }).formatter;
-187	
+187
 188	      const { numericValue, formattedString } = format(
 189	        value,
 190	        type,
 191	        intlFormatter,
 192	        activeCurrency.decimalPlaces,
 193	      );
-194	
+194
 195	      let styledValue = formattedString;
 196	      if (isFinancialType && activeCurrency && activeCurrency.code !== '') {
 197	        styledValue = applyCurrencyStyling(
@@ -1643,7 +1674,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 199	          activeCurrency.symbol,
 200	        );
 201	      }
-202	
+202
 203	      if (
 204	        type === 'financial-with-sign' &&
 205	        numericValue != null &&
@@ -1660,17 +1691,17 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 216	      hideFractionPref,
 217	    ],
 218	  );
-219	
+219
 220	  const toAmount = useCallback(
 221	    (value: number) => integerToAmount(value, activeCurrency.decimalPlaces),
 222	    [activeCurrency.decimalPlaces],
 223	  );
-224	
+224
 225	  const fromAmount = useCallback(
 226	    (value: number) => amountToInteger(value, activeCurrency.decimalPlaces),
 227	    [activeCurrency.decimalPlaces],
 228	  );
-229	
+229
 230	  const forEdit = useCallback(
 231	    (value: IntegerAmount) => {
 232	      const amount = toAmount(value);
@@ -1689,7 +1720,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 245	      numberFormatConfig.format,
 246	    ],
 247	  );
-248	
+248
 249	  const fromEdit = useCallback(
 250	    (
 251	      value: string,
@@ -1698,31 +1729,31 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 254	      if (value == null) {
 255	        return defaultValue;
 256	      }
-257	
+257
 258	      const trimmed = value.trim();
 259	      if (trimmed === '') {
 260	        return defaultValue;
 261	      }
-262	
+262
 263	      // strip directional formatting characters and letters
 264	      const normalized = trimmed
 265	        .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '')
 266	        .replace(/\p{L}+/gu, '');
 267	      let numericValue: number | null = evalArithmetic(normalized, null);
-268	
+268
 269	      if (numericValue === null || isNaN(numericValue)) {
 270	        numericValue = currencyToAmount(normalized);
 271	      }
-272	
+272
 273	      if (numericValue !== null && !isNaN(numericValue)) {
 274	        return fromAmount(numericValue);
 275	      }
-276	
+276
 277	      return defaultValue;
 278	    },
 279	    [fromAmount],
 280	  );
-281	
+281
 282	  return Object.assign(formatDisplay, {
 283	    forEdit,
 284	    fromEdit,
@@ -1730,7 +1761,8 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:28-0400)**_
 286	  });
 287	}
 288
-```
+````
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:29-0400)**_
@@ -1744,6 +1776,7 @@ Search for FinancialText component
 ```text
 (eval):1: no matches found: --include=*.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:30-0400)**_
@@ -1757,6 +1790,7 @@ List files using integerToCurrency
 ```text
 (eval):1: no matches found: --include=*.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:31-0400)**_
@@ -1770,6 +1804,7 @@ List files using useFormat
 ```text
 (eval):1: no matches found: --include=*.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:32-0400)**_
@@ -1846,6 +1881,7 @@ packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadshee
 packages/desktop-client/src/components/reports/graphs/BudgetAnalysisGraph.tsx:20:import { FinancialText } from '#components/FinancialText';
 packages/desktop-client/src/components/reports/graphs/BudgetAnalysisGraph.tsx:127:                <FinancialText>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:34-0400)**_
@@ -1870,6 +1906,7 @@ packages/desktop-client/src/components/transactions/TransactionsTable.tsx
 packages/desktop-client/src/components/transactions/table/utils.ts
 packages/desktop-client/src/hooks/useFormat.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:35-0400)**_
@@ -1969,6 +2006,7 @@ packages/desktop-client/src/components/util/PercentInput.tsx
 packages/desktop-client/src/hooks/useFormat.ts
 packages/desktop-client/src/hooks/useFormatList.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:36-0400)**_
@@ -2033,6 +2071,7 @@ packages/desktop-client/src/components/spreadsheet/CellValue.tsx
 packages/desktop-client/build/ts/src/components/spreadsheet/CellValue.d.ts.map
 packages/desktop-client/build/ts/src/components/spreadsheet/CellValue.d.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:41-0400)**_
@@ -2048,27 +2087,28 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 ```text
 1	import React from 'react';
 2	import type { ComponentPropsWithoutRef, ElementType } from 'react';
-3	
+3
 4	import { styles } from '@actual-app/components/styles';
 5	import type { CSSProperties } from '@actual-app/components/styles';
 6	import { Text } from '@actual-app/components/text';
-7	
+7
 8	type FinancialTextProps<T extends ElementType = typeof Text> = {
 9	  as?: T;
 10	  style?: CSSProperties;
 11	} & Omit<ComponentPropsWithoutRef<T>, 'style' | 'as'>;
-12	
+12
 13	export function FinancialText<T extends ElementType = typeof Text>({
 14	  as,
 15	  style,
 16	  ...props
 17	}: FinancialTextProps<T>) {
 18	  const Component = as ?? Text;
-19	
+19
 20	  return <Component {...props} style={{ ...style, ...styles.tnum }} />;
 21	}
 22
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
@@ -2081,9 +2121,9 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 1	// @ts-strict-ignore
 2	import React from 'react';
 3	import type { ComponentPropsWithoutRef, CSSProperties, ReactNode } from 'react';
-4	
+4
 5	import { Text } from '@actual-app/components/text';
-6	
+6
 7	import { FinancialText } from '#components/FinancialText';
 8	import { PrivacyFilter } from '#components/PrivacyFilter';
 9	import { useFormat } from '#hooks/useFormat';
@@ -2096,7 +2136,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 16	  SheetNames,
 17	  Spreadsheets,
 18	} from '#spreadsheet';
-19	
+19
 20	type CellValueProps<
 21	  SheetName extends SheetNames,
 22	  FieldName extends SheetFields<SheetName>,
@@ -2113,14 +2153,14 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 33	  binding: Binding<SheetName, FieldName>;
 34	  type?: FormatType;
 35	};
-36	
+36
 37	export function CellValue<
 38	  SheetName extends SheetNames,
 39	  FieldName extends SheetFields<SheetName>,
 40	>({ type, binding, children, ...props }: CellValueProps<SheetName, FieldName>) {
 41	  const { fullSheetName } = useSheetName(binding);
 42	  const sheetValue = useSheetValue(binding);
-43	
+43
 44	  return typeof children === 'function' ? (
 45	    <>{children({ type, name: fullSheetName, value: sheetValue })}</>
 46	  ) : (
@@ -2132,9 +2172,9 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 52	    />
 53	  );
 54	}
-55	
+55
 56	const PRIVACY_FILTER_TYPES = ['financial', 'financial-with-sign'];
-57	
+57
 58	type CellValueTextProps<
 59	  SheetName extends SheetNames,
 60	  FieldName extends SheetFields<SheetName>,
@@ -2148,7 +2188,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 68	    type?: FormatType,
 69	  ) => string;
 70	};
-71	
+71
 72	export function CellValueText<
 73	  SheetName extends SheetNames,
 74	  FieldName extends SheetFields<SheetName>,
@@ -2171,7 +2211,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 91	    'data-cellname': name,
 92	    ...props,
 93	  };
-94	
+94
 95	  if (isFinancial) {
 96	    return (
 97	      <FinancialText
@@ -2189,7 +2229,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 109	      </FinancialText>
 110	    );
 111	  }
-112	
+112
 113	  return (
 114	    <Text {...sharedProps}>
 115	      <PrivacyFilter activationFilters={[PRIVACY_FILTER_TYPES.includes(type)]}>
@@ -2200,6 +2240,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:42-0400)**_
 120	}
 121
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:44-0400)**_
@@ -2273,6 +2314,7 @@ function defaultRenderCategoryItem(
   return <CategoryItem {...props} />;
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:47-0400)**_
@@ -2301,6 +2343,7 @@ Structure of CategoryAutocomplete
 466:                    {integerToCurrency(balance || 0)}
 476:function defaultRenderCategoryItem(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:53-0400)**_
@@ -2339,6 +2382,7 @@ function CategoryItem({
   const balanceBinding =
     budgetType === 'envelope'
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:54-0400)**_
@@ -2466,6 +2510,7 @@ function needsCategory(
                     />
                   </View>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:56-0400)**_
@@ -2480,6 +2525,7 @@ CloseAccountModal structure
 30:function needsCategory(
 48:export function CloseAccountModal({
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:00:57-0400)**_
@@ -2538,6 +2584,7 @@ Read BalanceHistoryGraph
 30:export function BalanceHistoryGraph({
 318:                        <Text>{integerToCurrency(hoveredValue.balance)}</Text>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:03-0400)**_
@@ -2622,6 +2669,7 @@ export function BalanceHistoryGraph({
                     textAlign: 'right',
                     ...styles.verySmallText,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:04-0400)**_
@@ -2638,6 +2686,7 @@ Find sites in TransactionsTable
 1943:              {integerToCurrency(amount)}
 2050:                {integerToCurrency(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:05-0400)**_
@@ -2701,6 +2750,7 @@ TransactionsTable ~1845
                 ? (previewStatus as StatusTypes)
                 : reconciled
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:06-0400)**_
@@ -2815,6 +2865,7 @@ function TransactionError({
       break;
     default:
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:12-0400)**_
@@ -2842,6 +2893,7 @@ TransactionsTable top-level declarations
 2729:export const TransactionTable = forwardRef(
 3522:const getCategoriesById = memoizeOne(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:13-0400)**_
@@ -2873,6 +2925,7 @@ TransactionEdit structure
 2180:function FillRemainingButton({
 2204:            amount: integerToCurrency(Math.abs(remaining)),
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:14-0400)**_
@@ -2899,6 +2952,7 @@ packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:9
 packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:277:function SelectedTransactionsFloatingActionBar({
 packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:505:                          : integerToCurrency(Number(value));
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:20-0400)**_
@@ -2997,6 +3051,7 @@ function Footer({
         >
           <SvgPiggyBank width={17} height={17} />
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:21-0400)**_
@@ -3040,6 +3095,7 @@ function FillRemainingButton({
   );
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:22-0400)**_
@@ -3135,6 +3191,7 @@ type PayeeIconsProps = {
   transferAccount?: AccountEntity;
 };
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:23-0400)**_
@@ -3213,6 +3270,7 @@ TransactionList call site
                               void navigate(`/categories/${String(value)}`);
                               break;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:40-0400)**_
@@ -3241,6 +3299,7 @@ Check useFormat/FinancialText presence in the 7 files
 --- packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx
 --- packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:41-0400)**_
@@ -3295,6 +3354,7 @@ dc811552b feat(currency): Currency-influenced initial number formats (#5797)
 99ca34458 feat(currency): add currency display to rules (#5639)
 148ca9258 Added ARS currency (#5869)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:41-0400)**_
@@ -3492,6 +3552,7 @@ export function makeTemporaryTransactions(
   ];
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:42-0400)**_
@@ -3555,6 +3616,7 @@ const Transaction = memo(function Transaction({
   canDrag = false,
   draggedDate,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:49-0400)**_
@@ -3571,9 +3633,9 @@ Author: Michael Süssemilch <46485857+misu-dev@users.noreply.github.com>
 Date:   Tue Oct 14 21:10:57 2025 +0200
 
     feat(currency): add currency display to schedules (#5907)
-    
+
     * feat(currency): add currency display to schedules
-    
+
     * refactor: useFormat directly in cell
 
  .../src/components/schedules/SchedulesTable.tsx             | 13 +++++++++----
@@ -3586,9 +3648,9 @@ Author: Michael Süssemilch <46485857+misu-dev@users.noreply.github.com>
 Date:   Tue Oct 14 21:10:57 2025 +0200
 
     feat(currency): add currency display to schedules (#5907)
-    
+
     * feat(currency): add currency display to schedules
-    
+
     * refactor: useFormat directly in cell
 
 diff --git a/packages/desktop-client/src/components/schedules/SchedulesTable.tsx b/packages/desktop-client/src/components/schedules/SchedulesTable.tsx
@@ -3601,7 +3663,7 @@ index d25831aeb..31c56f731 100644
  import { getScheduledAmount } from 'loot-core/shared/schedules';
 -import { integerToCurrency } from 'loot-core/shared/util';
  import { type ScheduleEntity } from 'loot-core/types/models';
- 
+
  import { StatusBadge } from './StatusBadge';
 @@ -31,6 +30,7 @@ import { DisplayId } from '@desktop-client/components/util/DisplayId';
  import { useAccounts } from '@desktop-client/hooks/useAccounts';
@@ -3616,12 +3678,12 @@ index d25831aeb..31c56f731 100644
  }) {
    const { t } = useTranslation();
 +  const format = useFormat();
- 
+
    const num = getScheduledAmount(amount);
 -  const currencyAmount = integerToCurrency(Math.abs(num || 0));
 +  const currencyAmount = format(Math.abs(num || 0), 'financial');
    const isApprox = op === 'isapprox' || op === 'isbetween';
- 
+
    return (
 @@ -192,7 +193,10 @@ function ScheduleRow({
    minimal,
@@ -3640,7 +3702,7 @@ index d25831aeb..31c56f731 100644
  }: SchedulesTableProps) {
    const { t } = useTranslation();
 +  const format = useFormat();
- 
+
    const dateFormat = useDateFormat() || 'MM/dd/yyyy';
    const [showCompleted, setShowCompleted] = useState(false);
 @@ -342,7 +347,7 @@ export function SchedulesTable({
@@ -3653,6 +3715,7 @@ index d25831aeb..31c56f731 100644
          ? monthUtilFormat(schedule.next_date, dateFormat)
          : null;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:51-0400)**_
@@ -3738,6 +3801,7 @@ type SelectedBalanceProps = {
     }
   }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:52-0400)**_
@@ -3771,6 +3835,7 @@ table.tsx useFormat usage
 761:      formatter={value =>
 762:        props.formatter ? props.formatter(value, type) : format(value, type)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:01:54-0400)**_
@@ -3788,6 +3853,7 @@ packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:1
 packages/desktop-client/src/components/transactions/TransactionsTable.tsx:2238:          <TransactionError
 packages/desktop-client/src/components/transactions/TransactionsTable.tsx:2531:            <TransactionError
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:09-0400)**_
@@ -3871,6 +3937,7 @@ TransactionList displayValue consumption
           >
             <SvgDotsHorizontalTriple
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:10-0400)**_
@@ -3907,6 +3974,7 @@ function SelectedTransactionsFloatingActionBar({
 
   const buttonProps = useMemo(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:12-0400)**_
@@ -3922,6 +3990,7 @@ Test usage of integerToCurrency
 523:          integerToCurrency(-transaction.amount),
 531:          integerToCurrency(transaction.amount),
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:12-0400)**_
@@ -3988,6 +4057,7 @@ TransactionsTable DragPreview context
       </DragPreview>
     </View>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:19-0400)**_
@@ -4041,6 +4111,7 @@ Test expectations
 
     input = await editField(container, 'payee', 2);
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:21-0400)**_
@@ -4102,6 +4173,7 @@ SimpleTransactionsTable and PostsOffline patterns
 90:              <Trans>Decide later</Trans>
 100:              <Trans>Post transactions</Trans>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:22-0400)**_
@@ -4115,6 +4187,7 @@ Find Trans + format() interpolation examples
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:23-0400)**_
@@ -4187,6 +4260,7 @@ packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx-210-     
 packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx-211-              </div>
 packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx-212-            </Trans>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:31-0400)**_
@@ -4216,6 +4290,7 @@ Check for format identifier collisions
 --- packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx
 1
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:31-0400)**_
@@ -4231,6 +4306,7 @@ Check format identifier usage
 === TT ===
 78:import { format as formatDate, parseISO } from 'date-fns';
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:35-0400)**_
@@ -4248,6 +4324,7 @@ format usage in BalanceHistoryGraph and TransactionList
 === TransactionList format ===
 223:                  {monthUtils.format(section.date, 'MMMM dd, yyyy', locale)}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:02:44-0400)**_
@@ -4293,6 +4370,7 @@ export function CloseAccountModal({
 
   const onSelectCategory = catId => {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:00-0400)**_
@@ -4305,20 +4383,28 @@ Here are my findings.
 
 ```ts
 export type FormatType =
-  | 'string' | 'number' | 'percentage'
-  | 'financial' | 'financial-with-sign' | 'financial-no-decimals';
+  | 'string'
+  | 'number'
+  | 'percentage'
+  | 'financial'
+  | 'financial-with-sign'
+  | 'financial-no-decimals';
 
 export type UseFormatResult = {
-  (value: unknown, type?: FormatType): string;   // default type is 'string'
+  (value: unknown, type?: FormatType): string; // default type is 'string'
   forEdit: (value: IntegerAmount) => string;
-  fromEdit: (value: string, defaultValue?: number | null) => IntegerAmount | null;
+  fromEdit: (
+    value: string,
+    defaultValue?: number | null,
+  ) => IntegerAmount | null;
   currency: Currency;
 };
 
-export function useFormat(): UseFormatResult
+export function useFormat(): UseFormatResult;
 ```
 
 Key behaviors relevant to the migration:
+
 - Import alias in current code is `#hooks/useFormat` (post subpath-import migration, e.g. `/Users/james/actual-budget/packages/desktop-client/src/components/spreadsheet/CellValue.tsx:9`).
 - For `'financial'`, it accepts `number | null | undefined | ''` (null/empty coerced to 0) and also strings (legacy path, `useFormat.ts:70-88` — throws on non-numeric strings). So `format(x ?? 0, 'financial')` is the direct replacement for `integerToCurrency(x || 0)`.
 - Currency styling is applied only when `activeCurrency.code !== ''` (`useFormat.ts:196`), and it wraps the symbol in Unicode bidi isolates: `\u202A<symbol>\u202C` plus optional `\u202F` narrow no-break space (`useFormat.ts:153-159`). This matters for anything that string-interpolates the output (see TransactionList finding below).
@@ -4335,10 +4421,11 @@ Key behaviors relevant to the migration:
 Best reference commit: **`37247395e` "feat(currency): add currency display to schedules (#5907)"** — a straight `integerToCurrency(x)` → `format(x, 'financial')` migration with `const format = useFormat();` added to the component. Also `99ca34458` (rules), `9a9de5ee0` (budget), `dc811552b`.
 
 Concrete in-tree references:
+
 - `/Users/james/actual-budget/packages/desktop-client/src/components/accounts/Balance.tsx:37-52` — `useFormat()` + `PrivacyFilter` + `FinancialText`, closest analogue to the display sites.
 - `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/SimpleTransactionsTable.tsx:151-158` — `<FinancialText>{format(transaction.amount, 'financial')}</FinancialText>`.
 - `/Users/james/actual-budget/packages/desktop-client/src/components/schedules/SchedulesTable.tsx:131-144`.
-- **For `Trans` interpolation specifically**: `/Users/james/actual-budget/packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx:165-212` and `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx:729-735` — both call `format(...)` *inline inside the `{{ amount: ... }} as TransObjectLiteral` literal*. So no need to hoist the computation out of JSX; the hook just has to be called at component top.
+- **For `Trans` interpolation specifically**: `/Users/james/actual-budget/packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx:165-212` and `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/budget/BudgetPage.tsx:729-735` — both call `format(...)` _inline inside the `{{ amount: ... }} as TransObjectLiteral` literal_. So no need to hoist the computation out of JSX; the hook just has to be called at component top.
 - For `t()` (not `Trans`): `/Users/james/actual-budget/packages/desktop-client/src/components/modals/EnvelopeBudgetSummaryModal.tsx:70-74`.
 
 ---
@@ -4346,6 +4433,7 @@ Concrete in-tree references:
 ## Per-call-site findings
 
 ### 1–2. CategoryAutocomplete — `/Users/james/actual-budget/packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.tsx:458`, `:466`
+
 - **Enclosing**: `CategoryItem` (`:379`) — a real React function component (rendered as `<CategoryItem {...props} />` at `:479`). Already calls `useTranslation`, `useResponsive`, `useSyncedPref`. **Hooks OK.**
 - **useFormat present?** No. **`FinancialText` already imported and already wrapping both sites** (`:29`, `:457-467`).
 - **i18n?** No — plain JSX children.
@@ -4354,6 +4442,7 @@ Concrete in-tree references:
 - No `format` identifier collision in this file.
 
 ### 3. CloseAccountModal — `/Users/james/actual-budget/packages/desktop-client/src/components/modals/CloseAccountModal.tsx:174`
+
 - **Enclosing**: `CloseAccountModal` (`:48`) — React function component; the call site is inside the `<Modal>{({ state }) => ...}` render prop but lexically within the component. **Hooks OK** (add next to `useTranslation()` at `:53`).
 - **useFormat present?** No. No `FinancialText` import.
 - **i18n?** **Yes** — inside `<Trans>` as `{{ balance: integerToCurrency(balance) } as TransObjectLiteral}` (`:170-177`), wrapped in `<strong>`. Follow the `BalanceWithCarryover.tsx:206-210` pattern; inline `format(balance, 'financial')` is fine.
@@ -4363,6 +4452,7 @@ Concrete in-tree references:
 - No `format` collision.
 
 ### 4. TransactionsTable (balance cell) — `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx:1845`
+
 - **Enclosing**: `Transaction = memo(function Transaction({...}))` (`:914`) — React component. **Hooks OK.**
 - **useFormat present?** No (file has zero `useFormat`/`FinancialText`/`PrivacyFilter` imports).
 - **i18n?** No.
@@ -4372,18 +4462,21 @@ Concrete in-tree references:
 - **Name collision**: file imports `format as formatDate` from date-fns (`:78`), so `const format = useFormat()` is safe.
 
 ### 5. TransactionsTable (drag preview) — `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx:1943`
+
 - **Enclosing**: same `Transaction` memo component (`:914`) — inside the `<DragPreview>` render output (`:1895-1946`). **Hooks OK**, shares the same `const format` as site 4.
 - **i18n?** No (adjacent `<Trans>Split (...)</Trans>` is unrelated).
 - **Parsed back?** No.
 
 ### 6. TransactionsTable (split error) — `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx:2050`
+
 - **Enclosing**: `TransactionError` (`:2026`) — a separate plain React function component (rendered at `:2238` and `:2531`). **Hooks OK, but note the body is a `switch (error.type)` with early returns** — `const format = useFormat()` must go on the first line of the function body, before the switch, to avoid a conditional-hook lint error.
 - **useFormat present?** No.
-- **i18n?** Adjacent `<Trans>Amount left:</Trans>` is a *sibling*, not an interpolation — the amount is plain JSX children of a `<Text style={{fontWeight:500}}>`. No `TransObjectLiteral` needed.
+- **i18n?** Adjacent `<Trans>Amount left:</Trans>` is a _sibling_, not an interpolation — the amount is plain JSX children of a `<Text style={{fontWeight:500}}>`. No `TransObjectLiteral` needed.
 - **Parsed back?** No.
-- **Test impact**: `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx:15,523,531` asserts `debit`/`credit` cell text against `integerToCurrency(...)`. Those assertions cover the *edit-path* cells (not migrating), so they should still pass — but verify, since the default currency in tests is `''` (no symbol), which means `format(x,'financial') === integerToCurrency(x)` anyway.
+- **Test impact**: `/Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx:15,523,531` asserts `debit`/`credit` cell text against `integerToCurrency(...)`. Those assertions cover the _edit-path_ cells (not migrating), so they should still pass — but verify, since the default currency in tests is `''` (no symbol), which means `format(x,'financial') === integerToCurrency(x)` anyway.
 
 ### 7. BalanceHistoryGraph — `/Users/james/actual-budget/packages/desktop-client/src/components/accounts/BalanceHistoryGraph.tsx:318`
+
 - **Enclosing**: `BalanceHistoryGraph` (`:30`) — React function component; the call site is deep inside a Recharts `ResponsiveContainer`-style render callback but lexically inside the component. **Hooks OK** (alongside `useLocale`, `useRechartsAnimation`, `useState` at `:30-45`).
 - **useFormat present?** No. `PrivacyFilter` already imported (`:15`) and already wraps this value (`:317-319`).
 - **i18n?** No.
@@ -4392,6 +4485,7 @@ Concrete in-tree references:
 - Candidate for `<FinancialText>` since it's a right-aligned numeric label.
 
 ### 8–9. TransactionEdit `Footer` — `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:301`, `:313`
+
 - **Enclosing**: `Footer` (`:245`) — plain React function component (rendered at `:1120`). Currently calls **no hooks at all**, so adding `const format = useFormat();` at the top is the first hook in it. **Hooks OK.**
 - **useFormat present?** No.
 - **i18n?** **Yes, both.** Both are `{{ amount: integerToCurrency(...) }}` shorthand inside `<Trans>` (`:299-306` "Add new split - {{amount}} left" and `:311-318` "Amount left: {{amount}}"). Note these two use bare `{{ amount: ... }}` **without** the `as TransObjectLiteral` cast that CloseAccountModal uses — TypeScript may or may not require adding the cast once the expression type changes; both currently return `string`, so likely no change needed.
@@ -4400,11 +4494,13 @@ Concrete in-tree references:
 - **Collision**: file already aliases date-fns as `format as formatDate` (`:69`), and uses `monthUtils.format` namespaced. Safe.
 
 ### 10. TransactionEdit `FillRemainingButton` — `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:2204`
+
 - **Enclosing**: `FillRemainingButton` (`:2180`) — plain React function component (rendered at `:1308`), currently hook-free. **Hooks OK.**
 - **i18n?** **Yes** — `<Trans>Use remaining: {{ amount: integerToCurrency(Math.abs(remaining)) }}</Trans>`.
 - **Parsed back?** No.
 
 ### 11–12. TransactionListItem — `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx:293`, `:308`
+
 - **Enclosing**: `TransactionListItem` (`:80`) — exported React function component with many hooks already (`useTranslation`, `useCategories`, `usePayee`, `useDisplayPayee`, `useAccount`, `useSelector`, `useLongPress`). **Hooks OK.**
 - **useFormat present?** No. No `FinancialText` import, but both sites already spread `...styles.tnum` manually (`:283`, `:299`) — these are prime candidates to switch to `<FinancialText>` instead, since that's exactly what it does.
 - **i18n?** No.
@@ -4412,12 +4508,13 @@ Concrete in-tree references:
 - No `format` collision.
 
 ### 13. TransactionList — `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:505`
+
 - **Enclosing**: `SelectedTransactionsFloatingActionBar` (`:277`) — React function component with existing hooks. The call site sits inside `onMenuSelect` → `onBatchEdit({ onSuccess })`, a nested plain callback. **Hooks OK at component top; reference `format` from the closure.** This is the only one where the value is computed in an event handler rather than during render.
 - **useFormat present?** No.
-- **i18n?** No `Trans`/`t()` — but see below, it *is* string-interpolated.
+- **i18n?** No `Trans`/`t()` — but see below, it _is_ string-interpolated.
 - **Parsed back?** No. But **this site deserves scrutiny**:
   - `displayValue` (`:503-506`) flows into a **markdown-ish notification string**: `` `...to [${String(displayValue)}](#${String(displayValue)}).` `` (`:516`) and is used as an **object key** in `messageActions` (`:518`).
-  - Once `format()` adds a currency symbol plus the bidi control chars `\u202A`/`\u202C`/`\u202F`, that string goes into a markdown link label *and* a link target/key. Worth confirming the notification renderer tolerates `$`, parentheses, and invisible bidi marks in both positions.
+  - Once `format()` adds a currency symbol plus the bidi control chars `\u202A`/`\u202C`/`\u202F`, that string goes into a markdown link label _and_ a link target/key. Worth confirming the notification renderer tolerates `$`, parentheses, and invisible bidi marks in both positions.
   - Also note: the `'amount'` menu item is **currently commented out** (`:1942-1945` region, "Add support later on until we have more user friendly amount input modal") — so this `case 'amount':` branch is presently **dead code**. Low risk either way, but also low value; flag it as such.
   - The message itself is an untranslated raw template literal, so no i18n coupling.
 - No `format` collision (`monthUtils.format` is namespaced at `:223`).
@@ -4426,22 +4523,23 @@ Concrete in-tree references:
 
 ## Summary table
 
-| # | File:line | Enclosing | Hooks OK | Has useFormat | Has FinancialText | In Trans/t() | Edit path |
-|---|---|---|---|---|---|---|---|
-| 1,2 | CategoryAutocomplete.tsx:458,466 | `CategoryItem` | yes | no | **yes, already wraps** | no | no |
-| 3 | CloseAccountModal.tsx:174 | `CloseAccountModal` | yes | no | no | **yes (Trans + TransObjectLiteral)** | no |
-| 4 | TransactionsTable.tsx:1845 | `Transaction` (memo) | yes | no | no | no | no (read-only Cell) |
-| 5 | TransactionsTable.tsx:1943 | `Transaction` (memo) | yes | no | no | no | no |
-| 6 | TransactionsTable.tsx:2050 | `TransactionError` | yes (hoist above `switch`) | no | no | no (sibling Trans only) | no |
-| 7 | BalanceHistoryGraph.tsx:318 | `BalanceHistoryGraph` | yes | no | no (has PrivacyFilter) | no | no |
-| 8,9 | TransactionEdit.tsx:301,313 | `Footer` | yes (first hooks) | no | no | **yes (Trans)** | no |
-| 10 | TransactionEdit.tsx:2204 | `FillRemainingButton` | yes (first hooks) | no | no | **yes (Trans)** | no |
-| 11,12 | TransactionListItem.tsx:293,308 | `TransactionListItem` | yes | no | no (manual `styles.tnum`) | no | no |
-| 13 | TransactionList.tsx:505 | `SelectedTransactionsFloatingActionBar` | yes (closure) | no | no | no (raw template literal) | no |
+| #     | File:line                        | Enclosing                               | Hooks OK                   | Has useFormat | Has FinancialText         | In Trans/t()                         | Edit path           |
+| ----- | -------------------------------- | --------------------------------------- | -------------------------- | ------------- | ------------------------- | ------------------------------------ | ------------------- |
+| 1,2   | CategoryAutocomplete.tsx:458,466 | `CategoryItem`                          | yes                        | no            | **yes, already wraps**    | no                                   | no                  |
+| 3     | CloseAccountModal.tsx:174        | `CloseAccountModal`                     | yes                        | no            | no                        | **yes (Trans + TransObjectLiteral)** | no                  |
+| 4     | TransactionsTable.tsx:1845       | `Transaction` (memo)                    | yes                        | no            | no                        | no                                   | no (read-only Cell) |
+| 5     | TransactionsTable.tsx:1943       | `Transaction` (memo)                    | yes                        | no            | no                        | no                                   | no                  |
+| 6     | TransactionsTable.tsx:2050       | `TransactionError`                      | yes (hoist above `switch`) | no            | no                        | no (sibling Trans only)              | no                  |
+| 7     | BalanceHistoryGraph.tsx:318      | `BalanceHistoryGraph`                   | yes                        | no            | no (has PrivacyFilter)    | no                                   | no                  |
+| 8,9   | TransactionEdit.tsx:301,313      | `Footer`                                | yes (first hooks)          | no            | no                        | **yes (Trans)**                      | no                  |
+| 10    | TransactionEdit.tsx:2204         | `FillRemainingButton`                   | yes (first hooks)          | no            | no                        | **yes (Trans)**                      | no                  |
+| 11,12 | TransactionListItem.tsx:293,308  | `TransactionListItem`                   | yes                        | no            | no (manual `styles.tnum`) | no                                   | no                  |
+| 13    | TransactionList.tsx:505          | `SelectedTransactionsFloatingActionBar` | yes (closure)              | no            | no                        | no (raw template literal)            | no                  |
 
 **All 13 are genuine display paths — none feed a parser.** The real edit paths live elsewhere and should be left alone: `table/utils.ts:60-88` (`serializeTransaction`/`deserializeTransaction` via `integerToCurrencyWithDecimal` + `evalArithmetic`), `budget/envelope/CoverMenu.tsx`, and `budget/util.ts`.
 
 **Three things to watch:**
+
 1. `BalanceHistoryGraph.tsx:12` — `format` already imported from date-fns unaliased; must rename.
 2. `TransactionsTable.tsx:1845` — preserve the `''` empty branch; don't let `format('', 'financial')` turn it into `0.00`.
 3. `TransactionList.tsx:505` — currency symbol + bidi control chars land inside a markdown link label and an object key; the branch is also currently unreachable (amount menu item commented out).
@@ -4464,6 +4562,7 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: /private/tmp/claude-501/-Users-james-actual-budget/11fa3c83-ba9c-4e18-9c40-473e6d36b7d7/tasks/ac0d438df617693d8.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-14 23:04:37-0400)**_
@@ -4480,7 +4579,10 @@ The hook `useFormat()` at packages/desktop-client/src/hooks/useFormat.ts is the 
 type UseFormatResult = {
   (value: unknown, type?: FormatType): string;
   forEdit: (value: IntegerAmount) => string;
-  fromEdit: (value: string, defaultValue?: number|null) => IntegerAmount | null;
+  fromEdit: (
+    value: string,
+    defaultValue?: number | null,
+  ) => IntegerAmount | null;
   currency: Currency;
 };
 // FormatType = 'string'|'number'|'percentage'|'financial'|'financial-with-sign'|'financial-no-decimals'
@@ -4492,16 +4594,9 @@ The global `integerToCurrency(integerAmount, formatter?, decimalPlaces = 2)` in 
 
 ## The 13 sites (all confirmed genuine display paths, none feed a parser)
 
-1-2. autocomplete/CategoryAutocomplete.tsx:458,466 — in `CategoryItem` component, already wrapped in `<FinancialText>`. Plain swap.
-3. modals/CloseAccountModal.tsx:174 — in `CloseAccountModal`, inside `<Trans>` as `{{ balance: ... } as TransObjectLiteral}`. File is `// @ts-strict-ignore`.
-4. transactions/TransactionsTable.tsx:1845 — in `Transaction` memo component, read-only balance `<Cell>`. Expression is a ternary whose other branch is `''` — MUST preserve the empty branch, `format('', 'financial')` returns "0.00".
-5. transactions/TransactionsTable.tsx:1943 — same `Transaction` component, DragPreview.
-6. transactions/TransactionsTable.tsx:2050 — in `TransactionError` component whose body is a `switch` with early returns; hook must be hoisted above the switch.
-7. accounts/BalanceHistoryGraph.tsx:318 — in `BalanceHistoryGraph`, hover tooltip, already wrapped in `<PrivacyFilter>`. NAME COLLISION: line 12 imports `format` from date-fns unaliased and uses it at line 133.
-8-9. mobile/transactions/TransactionEdit.tsx:301,313 — in `Footer` component (currently hook-free), both inside `<Trans>` as bare `{{ amount: ... }}` without TransObjectLiteral cast.
-10. mobile/transactions/TransactionEdit.tsx:2204 — in `FillRemainingButton` (currently hook-free), inside `<Trans>`.
-11-12. mobile/transactions/TransactionListItem.tsx:293,308 — in `TransactionListItem`, both manually spread `...styles.tnum` (candidates for `<FinancialText>`).
-13. mobile/transactions/TransactionList.tsx:505 — in `SelectedTransactionsFloatingActionBar`, inside an `onSuccess` event callback (closure over component-level hook). The value flows into a markdown-ish notification string as BOTH a link label and a link target `#...`, and as an object key in `messageActions`. The enclosing `case 'amount':` branch is currently DEAD CODE (the menu item is commented out).
+1-2. autocomplete/CategoryAutocomplete.tsx:458,466 — in `CategoryItem` component, already wrapped in `<FinancialText>`. Plain swap. 3. modals/CloseAccountModal.tsx:174 — in `CloseAccountModal`, inside `<Trans>` as `{{ balance: ... } as TransObjectLiteral}`. File is `// @ts-strict-ignore`. 4. transactions/TransactionsTable.tsx:1845 — in `Transaction` memo component, read-only balance `<Cell>`. Expression is a ternary whose other branch is `''` — MUST preserve the empty branch, `format('', 'financial')` returns "0.00". 5. transactions/TransactionsTable.tsx:1943 — same `Transaction` component, DragPreview. 6. transactions/TransactionsTable.tsx:2050 — in `TransactionError` component whose body is a `switch` with early returns; hook must be hoisted above the switch. 7. accounts/BalanceHistoryGraph.tsx:318 — in `BalanceHistoryGraph`, hover tooltip, already wrapped in `<PrivacyFilter>`. NAME COLLISION: line 12 imports `format` from date-fns unaliased and uses it at line 133.
+8-9. mobile/transactions/TransactionEdit.tsx:301,313 — in `Footer` component (currently hook-free), both inside `<Trans>` as bare `{{ amount: ... }}` without TransObjectLiteral cast. 10. mobile/transactions/TransactionEdit.tsx:2204 — in `FillRemainingButton` (currently hook-free), inside `<Trans>`.
+11-12. mobile/transactions/TransactionListItem.tsx:293,308 — in `TransactionListItem`, both manually spread `...styles.tnum` (candidates for `<FinancialText>`). 13. mobile/transactions/TransactionList.tsx:505 — in `SelectedTransactionsFloatingActionBar`, inside an `onSuccess` event callback (closure over component-level hook). The value flows into a markdown-ish notification string as BOTH a link label and a link target `#...`, and as an object key in `messageActions`. The enclosing `case 'amount':` branch is currently DEAD CODE (the menu item is commented out).
 
 Reference pattern to follow: commit 37247395e "feat(currency): add currency display to schedules", and in-tree examples at components/accounts/Balance.tsx:37-52, components/transactions/SimpleTransactionsTable.tsx:151-158, components/budget/BalanceWithCarryover.tsx:165-212 (Trans interpolation — format() called inline inside the {{ }} literal is fine).
 
@@ -4544,6 +4639,7 @@ b10a5c217 Merge pull request #32 from CSCI-435-SE/feat/issue-9-limit-budget-cate
 a3e631e70 Merge pull request #34 from CSCI-435-SE/issue-10-notes-character-limit
 264168c8e Merge pull request #36 from CSCI-435-SE/ai-log/review-pr-34
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
@@ -4554,7 +4650,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 
 ```text
 1	import { useCallback, useEffect, useMemo } from 'react';
-2	
+2
 3	import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 4	import { getCurrency } from '@actual-app/core/shared/currencies';
 5	import type { Currency } from '@actual-app/core/shared/currencies';
@@ -4568,9 +4664,9 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 13	  setNumberFormat,
 14	} from '@actual-app/core/shared/util';
 15	import type { IntegerAmount } from '@actual-app/core/shared/util';
-16	
+16
 17	import { useSyncedPref } from './useSyncedPref';
-18	
+18
 19	export type FormatType =
 20	  | 'string'
 21	  | 'number'
@@ -4578,7 +4674,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 23	  | 'financial'
 24	  | 'financial-with-sign'
 25	  | 'financial-no-decimals';
-26	
+26
 27	export type UseFormatResult = {
 28	  (value: unknown, type?: FormatType): string;
 29	  forEdit: (value: IntegerAmount) => string;
@@ -4588,12 +4684,12 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 33	  ) => IntegerAmount | null;
 34	  currency: Currency;
 35	};
-36	
+36
 37	export type FormatResult = {
 38	  numericValue?: number;
 39	  formattedString: string;
 40	};
-41	
+41
 42	function format(
 43	  value: unknown,
 44	  type: FormatType,
@@ -4603,7 +4699,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 48	  switch (type) {
 49	    case 'string': {
 50	      const val = JSON.stringify(value);
-51	
+51
 52	      if (val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
 53	        return { formattedString: val.slice(1, -1) };
 54	      }
@@ -4641,13 +4737,13 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 86	        }
 87	        localValue = parsed;
 88	      }
-89	
+89
 90	      if (typeof localValue !== 'number') {
 91	        throw new Error(
 92	          'Value is not a number (' + typeof localValue + '): ' + localValue,
 93	        );
 94	      }
-95	
+95
 96	      return {
 97	        numericValue: localValue,
 98	        formattedString: integerToCurrency(
@@ -4661,7 +4757,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 106	      throw new Error('Unknown format type: ' + type);
 107	  }
 108	}
-109	
+109
 110	export function useFormat(): UseFormatResult {
 111	  const [numberFormatPref] = useSyncedPref('numberFormat');
 112	  const [hideFractionPref] = useSyncedPref('hideFraction');
@@ -4670,11 +4766,11 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 115	  const [spaceEnabledPref] = useSyncedPref(
 116	    'currencySpaceBetweenAmountAndSymbol',
 117	  );
-118	
+118
 119	  const activeCurrency = useMemo(() => {
 120	    return getCurrency(defaultCurrencyCodePref || '');
 121	  }, [defaultCurrencyCodePref]);
-122	
+122
 123	  const numberFormatConfig = useMemo(
 124	    () =>
 125	      parseNumberFormat({
@@ -4683,7 +4779,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 128	      }),
 129	    [numberFormatPref, hideFractionPref],
 130	  );
-131	
+131
 132	  // Hack: keep the global number format in sync - update the settings when
 133	  // the underlying configuration changes.
 134	  // This should be patched by moving all number-formatting utilities away from
@@ -4691,42 +4787,42 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 136	  useEffect(() => {
 137	    setNumberFormat(numberFormatConfig);
 138	  }, [numberFormatConfig]);
-139	
+139
 140	  const applyCurrencyStyling = useCallback(
 141	    (formattedNumericValue: string, currencySymbol: string): string => {
 142	      if (!currencySymbol) {
 143	        return formattedNumericValue;
 144	      }
-145	
+145
 146	      let sign = '';
 147	      let valueWithoutSign = formattedNumericValue;
 148	      if (formattedNumericValue.startsWith('-')) {
 149	        sign = '-';
 150	        valueWithoutSign = formattedNumericValue.slice(1);
 151	      }
-152	
+152
 153	      const space = spaceEnabledPref === 'true' ? '\u202F' : '';
 154	      const position = symbolPositionPref || 'before';
-155	
+155
 156	      const styledAmount =
 157	        position === 'after'
 158	          ? `${valueWithoutSign}${space}${currencySymbol}`
 159	          : `\u202A${currencySymbol}\u202C${space}${valueWithoutSign}`;
-160	
+160
 161	      return sign + styledAmount;
 162	    },
 163	    [symbolPositionPref, spaceEnabledPref],
 164	  );
-165	
+165
 166	  const formatDisplay = useCallback(
 167	    (value: unknown, type: FormatType = 'string'): string => {
 168	      const isFinancialType =
 169	        type === 'financial' ||
 170	        type === 'financial-with-sign' ||
 171	        type === 'financial-no-decimals';
-172	
+172
 173	      let displayDecimalPlaces: number | undefined;
-174	
+174
 175	      if (isFinancialType) {
 176	        if (type === 'financial-no-decimals' || hideFractionPref === 'true') {
 177	          displayDecimalPlaces = 0;
@@ -4734,19 +4830,19 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 179	          displayDecimalPlaces = activeCurrency.decimalPlaces;
 180	        }
 181	      }
-182	
+182
 183	      const intlFormatter = getNumberFormat({
 184	        format: numberFormatConfig.format,
 185	        decimalPlaces: displayDecimalPlaces,
 186	      }).formatter;
-187	
+187
 188	      const { numericValue, formattedString } = format(
 189	        value,
 190	        type,
 191	        intlFormatter,
 192	        activeCurrency.decimalPlaces,
 193	      );
-194	
+194
 195	      let styledValue = formattedString;
 196	      if (isFinancialType && activeCurrency && activeCurrency.code !== '') {
 197	        styledValue = applyCurrencyStyling(
@@ -4754,7 +4850,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 199	          activeCurrency.symbol,
 200	        );
 201	      }
-202	
+202
 203	      if (
 204	        type === 'financial-with-sign' &&
 205	        numericValue != null &&
@@ -4771,17 +4867,17 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 216	      hideFractionPref,
 217	    ],
 218	  );
-219	
+219
 220	  const toAmount = useCallback(
 221	    (value: number) => integerToAmount(value, activeCurrency.decimalPlaces),
 222	    [activeCurrency.decimalPlaces],
 223	  );
-224	
+224
 225	  const fromAmount = useCallback(
 226	    (value: number) => amountToInteger(value, activeCurrency.decimalPlaces),
 227	    [activeCurrency.decimalPlaces],
 228	  );
-229	
+229
 230	  const forEdit = useCallback(
 231	    (value: IntegerAmount) => {
 232	      const amount = toAmount(value);
@@ -4800,7 +4896,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 245	      numberFormatConfig.format,
 246	    ],
 247	  );
-248	
+248
 249	  const fromEdit = useCallback(
 250	    (
 251	      value: string,
@@ -4809,31 +4905,31 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 254	      if (value == null) {
 255	        return defaultValue;
 256	      }
-257	
+257
 258	      const trimmed = value.trim();
 259	      if (trimmed === '') {
 260	        return defaultValue;
 261	      }
-262	
+262
 263	      // strip directional formatting characters and letters
 264	      const normalized = trimmed
 265	        .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '')
 266	        .replace(/\p{L}+/gu, '');
 267	      let numericValue: number | null = evalArithmetic(normalized, null);
-268	
+268
 269	      if (numericValue === null || isNaN(numericValue)) {
 270	        numericValue = currencyToAmount(normalized);
 271	      }
-272	
+272
 273	      if (numericValue !== null && !isNaN(numericValue)) {
 274	        return fromAmount(numericValue);
 275	      }
-276	
+276
 277	      return defaultValue;
 278	    },
 279	    [fromAmount],
 280	  );
-281	
+281
 282	  return Object.assign(formatDisplay, {
 283	    forEdit,
 284	    fromEdit,
@@ -4842,6 +4938,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:40-0400)**_
 287	}
 288
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:46-0400)**_
@@ -4946,6 +5043,7 @@ export const currencies: Currency[] = [
   { code: 'RSD', name: 'Serbian Dinar', symbol: 'дин', decimalPlaces: 2, numberFormat: 'dot-comma', symbolFirst: false },
   { code: 'RUB', name: 'Russian Ruble', symbol: '₽', decimalPlaces: 2, numberFormat: 'space-comma', symbolFirst: false },
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:46-0400)**_
@@ -4999,6 +5097,7 @@ function defaultRenderCategoryItem(
   return <CategoryItem {...props} />;
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:50-0400)**_
@@ -5133,6 +5232,7 @@ function CategoryItem({
             display: !showBalances ? 'none' : undefined,
             marginLeft: 5,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:51-0400)**_
@@ -5148,6 +5248,7 @@ Find FinancialText definition and usages
 === def ===
 packages/desktop-client/src/components/FinancialText.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:53-0400)**_
@@ -5159,27 +5260,28 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:53-0400)**_
 ```text
 1	import React from 'react';
 2	import type { ComponentPropsWithoutRef, ElementType } from 'react';
-3	
+3
 4	import { styles } from '@actual-app/components/styles';
 5	import type { CSSProperties } from '@actual-app/components/styles';
 6	import { Text } from '@actual-app/components/text';
-7	
+7
 8	type FinancialTextProps<T extends ElementType = typeof Text> = {
 9	  as?: T;
 10	  style?: CSSProperties;
 11	} & Omit<ComponentPropsWithoutRef<T>, 'style' | 'as'>;
-12	
+12
 13	export function FinancialText<T extends ElementType = typeof Text>({
 14	  as,
 15	  style,
 16	  ...props
 17	}: FinancialTextProps<T>) {
 18	  const Component = as ?? Text;
-19	
+19
 20	  return <Component {...props} style={{ ...style, ...styles.tnum }} />;
 21	}
 22
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:54-0400)**_
@@ -5242,6 +5344,7 @@ packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadshee
 packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx:226:                <FinancialText>{format(income, 'financial')}</FinancialText>
 packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx:232:                <FinancialText>{format(expense, 'financial')}</FinancialText>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:04:55-0400)**_
@@ -5262,6 +5365,7 @@ Check whether FinancialText is lint-enforced
 packages/eslint-plugin-actual/lib/rules/typography.js
 packages/eslint-plugin-actual/lib/rules/__tests__/typography.test.js
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:04:58-0400)**_
@@ -5313,6 +5417,7 @@ module.exports = {
       const originalRawText = rawText;
       if (strip) rawText = rawText.slice(1, -1);
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:04:59-0400)**_
@@ -5355,6 +5460,7 @@ export const Text = forwardRef<HTMLSpanElement, TextProps>((props, ref) => {
 
 Text.displayName = 'Text';
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:00-0400)**_
@@ -5454,6 +5560,7 @@ type SelectedBalanceProps = {
     </Row>
   );
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:04-0400)**_
@@ -5470,9 +5577,9 @@ Author: Michael Süssemilch <46485857+misu-dev@users.noreply.github.com>
 Date:   Tue Oct 14 21:10:57 2025 +0200
 
     feat(currency): add currency display to schedules (#5907)
-    
+
     * feat(currency): add currency display to schedules
-    
+
     * refactor: useFormat directly in cell
 
  .../src/components/schedules/SchedulesTable.tsx             | 13 +++++++++----
@@ -5485,9 +5592,9 @@ Author: Michael Süssemilch <46485857+misu-dev@users.noreply.github.com>
 Date:   Tue Oct 14 21:10:57 2025 +0200
 
     feat(currency): add currency display to schedules (#5907)
-    
+
     * feat(currency): add currency display to schedules
-    
+
     * refactor: useFormat directly in cell
 
 diff --git a/packages/desktop-client/src/components/schedules/SchedulesTable.tsx b/packages/desktop-client/src/components/schedules/SchedulesTable.tsx
@@ -5500,7 +5607,7 @@ index d25831aeb..31c56f731 100644
  import { getScheduledAmount } from 'loot-core/shared/schedules';
 -import { integerToCurrency } from 'loot-core/shared/util';
  import { type ScheduleEntity } from 'loot-core/types/models';
- 
+
  import { StatusBadge } from './StatusBadge';
 @@ -31,6 +30,7 @@ import { DisplayId } from '@desktop-client/components/util/DisplayId';
  import { useAccounts } from '@desktop-client/hooks/useAccounts';
@@ -5515,12 +5622,12 @@ index d25831aeb..31c56f731 100644
  }) {
    const { t } = useTranslation();
 +  const format = useFormat();
- 
+
    const num = getScheduledAmount(amount);
 -  const currencyAmount = integerToCurrency(Math.abs(num || 0));
 +  const currencyAmount = format(Math.abs(num || 0), 'financial');
    const isApprox = op === 'isapprox' || op === 'isbetween';
- 
+
    return (
 @@ -192,7 +193,10 @@ function ScheduleRow({
    minimal,
@@ -5539,7 +5646,7 @@ index d25831aeb..31c56f731 100644
  }: SchedulesTableProps) {
    const { t } = useTranslation();
 +  const format = useFormat();
- 
+
    const dateFormat = useDateFormat() || 'MM/dd/yyyy';
    const [showCompleted, setShowCompleted] = useState(false);
 @@ -342,7 +347,7 @@ export function SchedulesTable({
@@ -5557,11 +5664,11 @@ index 43fbb021f..d70de5fb1 100644
 +++ b/packages/desktop-client/src/components/transactions/SimpleTransactionsTable.tsx
 @@ -17,7 +17,6 @@ import {
  } from 'date-fns';
- 
+
  import * as monthUtils from 'loot-core/shared/months';
 -import { integerToCurrency } from 'loot-core/shared/util';
  import { type TransactionEntity } from 'loot-core/types/models';
- 
+
  import {
 @@ -31,6 +30,7 @@ import { DisplayId } from '@desktop-client/components/util/DisplayId';
  import { useAccount } from '@desktop-client/hooks/useAccount';
@@ -5577,7 +5684,7 @@ index 43fbb021f..d70de5fb1 100644
    selected: boolean;
 +  format: (value: unknown, type: FormatType) => string;
  };
- 
+
  const TransactionRow = memo(function TransactionRow({
    transaction,
    fields,
@@ -5585,7 +5692,7 @@ index 43fbb021f..d70de5fb1 100644
 +  format,
  }: TransactionRowProps) {
    const { t } = useTranslation();
- 
+
 @@ -157,7 +159,7 @@ const TransactionRow = memo(function TransactionRow({
                  width={75}
                  style={{ textAlign: 'right', ...styles.tnum }}
@@ -5614,7 +5721,7 @@ index 43fbb021f..d70de5fb1 100644
 -    [memoFields, selectedItems],
 +    [memoFields, selectedItems, format],
    );
- 
+
    return (
 diff --git a/upcoming-release-notes/5907.md b/upcoming-release-notes/5907.md
 new file mode 100644
@@ -5629,6 +5736,7 @@ index 000000000..9f40fa4e0
 +
 +Adds currency display to the schedules
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:06-0400)**_
@@ -5647,6 +5755,7 @@ const formatter = useFormat:
 other:
   91 format
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:05:08-0400)**_
@@ -5701,6 +5810,7 @@ import { useRechartsAnimation } from '#components/reports/chart-theme';
             </View>
           );
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:12-0400)**_
@@ -5721,6 +5831,7 @@ Check current SimpleTransactionsTable format usage
 198:          format={format}
 203:    [memoFields, selectedItems, format],
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:13-0400)**_
@@ -5738,6 +5849,7 @@ Find integerToCurrency in TransactionsTable
 1943:              {integerToCurrency(amount)}
 2050:                {integerToCurrency(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:05:16-0400)**_
@@ -5756,6 +5868,7 @@ Confirm naming conventions
 === other namings ===
   91 format
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:17-0400)**_
@@ -5771,6 +5884,7 @@ Count date-fns format aliasing conventions
    3 monthUtilFormat <- @actual-app/core/shared/months
    1 formatDate <- @actual-app/core/shared/months
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:18-0400)**_
@@ -5854,6 +5968,7 @@ Read TransactionsTable 1800-1870
                 ? (previewStatus as StatusTypes)
                 : reconciled
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:21-0400)**_
@@ -5883,6 +5998,7 @@ Find hideFraction usage in TransactionsTable
 2604:              hideFraction={props.hideFraction}
 2690:  hideFraction: boolean;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:22-0400)**_
@@ -5986,6 +6102,7 @@ function NotesCell({
       innerRef={cellRef}
       width="flex"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:05:24-0400)**_
@@ -6014,6 +6131,7 @@ transactions.test.ts-snapshots
 === unit tests referencing these components ===
 packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:33-0400)**_
@@ -6128,6 +6246,7 @@ Read Transaction component props and hooks
   const onUpdate: TransactionUpdateFunction = async (name, value) => {
     // Had some issues with this is called twice which is a problem now that we are showing a warning
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:34-0400)**_
@@ -6211,6 +6330,7 @@ type NewTransactionProps = {
   editingTransaction: TransactionEntity['id'];
   focusedField: string;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:05:36-0400)**_
@@ -6289,6 +6409,7 @@ Trace hideFraction prop source
   onCloseAddTransaction: () => void;
   onAdd: (transactions: TransactionEntity[]) => void;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:42-0400)**_
@@ -6305,6 +6426,7 @@ packages/desktop-client/src/components/accounts/Account.tsx:1914:               
 packages/desktop-client/src/components/accounts/Account.tsx:2079:            hideFraction={String(hideFraction) === 'true'}
 packages/desktop-client/src/components/reports/reports/Calendar.tsx:668:                    hideFraction={false}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:45-0400)**_
@@ -6326,6 +6448,7 @@ packages/desktop-client/src/components/transactions/TransactionList.tsx:311:  hi
 packages/desktop-client/src/components/transactions/TransactionList.tsx:750:        hideFraction={hideFraction}
 packages/desktop-client/src/components/reports/reports/Calendar.tsx:668:                    hideFraction={false}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:06:48-0400)**_
@@ -6335,16 +6458,17 @@ _**Agent (claude-opus-5 2026-09-14 23:06:48-0400)**_
 **Sites 11-12 (TransactionListItem) manually spread `...styles.tnum`, which is exactly what the `FinancialText` component does. Should this PR also switch those to `<FinancialText>`?**
 
 Options:
+
 - **Pure format() swap only (Recommended)** - Keep the PR to one mechanical change: integerToCurrency → format(x, 'financial'). FinancialText adoption becomes a separate follow-up. Easiest to review, smallest diff, no DOM changes so VRT snapshots stay untouched.
 - **Also adopt FinancialText** - Migrate sites 11-12 (and optionally 3 and 7) to <FinancialText> in the same PR. Fewer total PRs and aligns with the AGENTS.md typography convention, but changes rendered DOM and may require regenerating VRT snapshots.
 
 **Site 13 (TransactionList.tsx:505) sits in a `case 'amount':` branch whose menu item is currently commented out — it's dead code. Its formatted value also gets used as a markdown link target and an object key, where a currency symbol and bidi control chars could corrupt it. What should happen to it?**
 
 Options:
+
 - **Migrate it anyway (Recommended)** - Swap it like the others so the branch is correct if it's ever re-enabled, and note the markdown/bidi risk in the PR description for the reviewer. Keeps the migration complete — no straggler left calling the old util.
 - **Skip it, leave a comment** - Leave the call as-is with a TODO explaining it needs the bidi/markdown question resolved before migrating. Avoids shipping an unverifiable change, but leaves one integerToCurrency straggler.
 - **Delete the dead branch** - Remove the unreachable `case 'amount':` entirely along with the commented-out menu item. Cleanest result, but it's unrelated cleanup that widens the PR beyond the migration.
-
 
 **Answer:** Pure format() swap only (Recommended), Migrate it anyway (Recommended)
 </details></tool-use>
@@ -6390,6 +6514,7 @@ Check Calendar hideFraction context
                       </View>
                     )}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:54-0400)**_
@@ -6436,6 +6561,7 @@ Check amountStyle and global number format
 476:        ...numberFormatConfig,
 495:    ...numberFormatConfig,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:58-0400)**_
@@ -6504,6 +6630,7 @@ export function getNumberFormat({
       locale = 'de-DE';
       thousandsSeparator = '.';
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:05:59-0400)**_
@@ -6662,6 +6789,7 @@ type CloseAccountModalProps = Extract<
                                 modal: {
                                   name: 'account-autocomplete',
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:03-0400)**_
@@ -6783,6 +6911,7 @@ export function BalanceHistoryGraph({
   );
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:09-0400)**_
@@ -6801,6 +6930,7 @@ Find sites in TransactionEdit
 2180:function FillRemainingButton({
 2204:            amount: integerToCurrency(Math.abs(remaining)),
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:11-0400)**_
@@ -6924,6 +7054,7 @@ function Footer({
               marginLeft: 6,
             }}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:12-0400)**_
@@ -6977,6 +7108,7 @@ function FillRemainingButton({
   );
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:15-0400)**_
@@ -7045,6 +7177,7 @@ Read BalanceWithCarryover Trans reference
           <GoalTooltipRow>
             {longGoalValue !== 1 ? (
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:16-0400)**_
@@ -7139,6 +7272,7 @@ function PayeeIcons({ transaction, transferAccount }: PayeeIconsProps) {
 300:                  ...styles.tnum,
 308:                {integerToCurrency(runningBalance)}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:26-0400)**_
@@ -7312,6 +7446,7 @@ Read mobile TransactionList site 13
                 {
                   name: 'category',
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:30-0400)**_
@@ -7365,6 +7500,7 @@ Read rest of menu items
               getItemStyle={getMenuItemStyle}
               style={{ backgroundColor: theme.floatingActionBarBackground }}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:32-0400)**_
@@ -7378,6 +7514,7 @@ Find messageActions rendering
 ```text
 (eval):1: no matches found: --include=*
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:34-0400)**_
@@ -7399,6 +7536,7 @@ packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:6
 packages/desktop-client/src/components/reports/Overview.tsx:237:          messageActions: {
 packages/desktop-client/src/notifications/notificationsSlice.ts:24:  messageActions?: Record<string, () => void> | undefined;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:37-0400)**_
@@ -7475,6 +7613,7 @@ Read Notifications message compiling
 packages/desktop-client/src/components/Notifications.tsx:33:function compileMessage(
 packages/desktop-client/src/components/Notifications.tsx:134:      compileMessage(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:39-0400)**_
@@ -7494,14 +7633,14 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:39-0400)**_
 40	    <SpaceBetween direction="vertical" gap={10}>
 41	      {message.split(/\n\n/).map((paragraph, idx) => {
 42	        const parts = paragraph.split(/(\[[^\]]*\]\([^)]*\))/g);
-43	
+43
 44	        return (
 45	          <Text key={idx} style={{ lineHeight: '1.4em' }}>
 46	            {parts.map((part, idx) => {
 47	              const match = part.match(/\[([^\]]*)\]\(([^)]*)\)/);
 48	              if (match) {
 49	                const [_, text, href] = match;
-50	
+50
 51	                if (href[0] === '#') {
 52	                  const actionName = href.slice(1);
 53	                  return (
@@ -7521,7 +7660,7 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:39-0400)**_
 67	                    </Link>
 68	                  );
 69	                }
-70	
+70
 71	                return (
 72	                  <Link
 73	                    variant="external"
@@ -7541,10 +7680,11 @@ _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:39-0400)**_
 87	    </SpaceBetween>
 88	  );
 89	}
-90	
+90
 91	function Notification({
 92	  notification,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:50-0400)**_
@@ -7560,6 +7700,7 @@ packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx:1
 packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx:523:          integerToCurrency(-transaction.amount),
 packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx:531:          integerToCurrency(transaction.amount),
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:51-0400)**_
@@ -7581,6 +7722,7 @@ useTransactionRowContextActions.ts
 === mobile tests ===
 packages/desktop-client/src/components/mobile/payees/MobilePayeesPage.test.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:06:54-0400)**_
@@ -7604,6 +7746,7 @@ Check hideFraction prop threading
 2604:              hideFraction={props.hideFraction}
 2690:  hideFraction: boolean;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:06:56-0400)**_
@@ -7660,6 +7803,7 @@ Read TransactionsTable test assertions
 1255:        starting_balance_flag: null,
 1270:        starting_balance_flag: null,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:06:58-0400)**_
@@ -7702,6 +7846,7 @@ Check TransactionsTable test assertions
 
     // Enter/tab goes down/right
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:03-0400)**_
@@ -7836,6 +7981,7 @@ describe('Transactions', () => {
         _amountOp: 'is',
         _date: '2017-01-01',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:07:06-0400)**_
@@ -7848,9 +7994,9 @@ Check how to enable the currency flag locally
 
 ```text
      1	import type { FeatureFlag } from '@actual-app/core/types/prefs';
-     2	
+     2
      3	import { useSyncedPref } from './useSyncedPref';
-     4	
+     4
      5	const DEFAULT_FEATURE_FLAG_STATE: Record<FeatureFlag, boolean> = {
      6	  goalTemplatesEnabled: false,
      7	  goalTemplatesUIEnabled: false,
@@ -7867,10 +8013,10 @@ Check how to enable the currency flag locally
     18	  akahuBankSync: false,
     19	  mobileCalculator: false,
     20	};
-    21	
+    21
     22	export function useFeatureFlag(name: FeatureFlag): boolean {
     23	  const [value] = useSyncedPref(`flags.${name}`);
-    24	
+    24
     25	  return value === undefined
     26	    ? DEFAULT_FEATURE_FLAG_STATE[name] || false
     27	    : String(value) === 'true';
@@ -7900,6 +8046,7 @@ Check how to enable the currency flag locally
             <FeatureToggle
               flag="sankeyReport"
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:07-0400)**_
@@ -8033,6 +8180,7 @@ function renderTransactions(extraProps?: Partial<LiveTransactionTableProps>) {
     categoryGroups,
     currentAccountId: accounts[0].id,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:10-0400)**_
@@ -8091,6 +8239,7 @@ function queryField(
 ) {
   const field = container.querySelectorAll(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:12-0400)**_
@@ -8107,6 +8256,7 @@ packages/desktop-client/src/mocks/connection.ts
 ===
 (eval):1: no matches found: packages/desktop-client/src/mocks/*.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:07:14-0400)**_
@@ -8121,7 +8271,7 @@ Check release note rules
 
 `grep -n -A 30 -i "release note" packages/docs/docs/contributing/index.md | head -60`
 
-```text
+````text
 104:- Add a release note. These notes get used when generating the full release note at the next release.
 105-- Once your PR is ready for maintainers to review, remove the `[WIP]` label from the PR title.
 106-- Sometimes it can take some time for the maintainers to review your PR for approval. Please keep your PR up to date with the current master branch by merging or rebasing until your PR gets merged.
@@ -8166,7 +8316,8 @@ Check release note rules
 145-The settings screen needs to also remain a place where core settings lives, we don't really want to have a myriad of options in here for each and every setting within the UI, doing that makes the code un-manageable for future contributors and clutters up and confuses things for the users of Actual Budget.
 146-
 147-## Additional Resources
-```
+````
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:17-0400)**_
@@ -8205,6 +8356,7 @@ Read TestProviders
 55-  );
 56-}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:17-0400)**_
@@ -8246,6 +8398,7 @@ export function useSyncedPref<K extends keyof SyncedPrefs>(
   return [pref, setPref];
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:22-0400)**_
@@ -8265,6 +8418,7 @@ Read getCurrency
 77-  return getCurrency(currencyCode)?.decimalPlaces ?? 2;
 78-}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:23-0400)**_
@@ -8344,6 +8498,7 @@ packages/desktop-client/e2e/payees.test.ts-snapshots
 packages/desktop-client/e2e/accounts.mobile.test.ts-snapshots
 packages/desktop-client/e2e/transactions.mobile.test.ts-snapshots
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:07:26-0400)**_
@@ -8472,6 +8627,7 @@ Transactions-filters-transactions-by-payee-7-chromium-linux.png
 Transactions-filters-transactions-by-payee-8-chromium-linux.png
 Transactions-filters-transactions-by-payee-9-chromium-linux.png
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:43-0400)**_
@@ -8532,6 +8688,7 @@ Read tnum style and makeAmountFullStyle
 135-    return { targetId };
 136-  } else {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:44-0400)**_
@@ -8570,6 +8727,7 @@ packages/desktop-client/e2e/transactions.test.ts-52-      // Assert that there a
 packages/desktop-client/e2e/transactions.test.ts-53-      await expect(accountPage.transactionTable).toHaveText('No transactions');
 packages/desktop-client/e2e/transactions.test.ts-54-      await expect(page).toMatchThemeScreenshots();
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:49-0400)**_
@@ -8610,6 +8768,7 @@ export function useFeatureFlag(name: FeatureFlag): boolean {
     : String(value) === 'true';
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:50-0400)**_
@@ -8704,6 +8863,7 @@ export function CurrencySettings() {
     'currencySymbolPosition',
   );
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:53-0400)**_
@@ -8751,6 +8911,7 @@ packages/desktop-client/src/components/settings/Currency.tsx:16:export function 
 packages/desktop-client/src/components/settings/index.tsx:32:import { CurrencySettings } from './Currency';
 packages/desktop-client/src/components/settings/index.tsx:240:        {isCurrencyExperimentalEnabled && <CurrencySettings />}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:54-0400)**_
@@ -8765,6 +8926,7 @@ Check e2e for currency feature
 packages/desktop-client/e2e/budget.mobile.test.ts:4:  currencyToAmount,
 packages/desktop-client/e2e/budget.mobile.test.ts:84:    amounts.push(currencyToAmount(spent) ?? 0);
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:07:57-0400)**_
@@ -8775,7 +8937,7 @@ Read release notes rules
 
 `grep -n -i "release note" -A 25 packages/docs/docs/contributing/index.md | head -70`
 
-```text
+````text
 104:- Add a release note. These notes get used when generating the full release note at the next release.
 105-- Once your PR is ready for maintainers to review, remove the `[WIP]` label from the PR title.
 106-- Sometimes it can take some time for the maintainers to review your PR for approval. Please keep your PR up to date with the current master branch by merging or rebasing until your PR gets merged.
@@ -8815,7 +8977,8 @@ Read release notes rules
 140-
 141-### The Design Strategy Of Actual
 142-
-```
+````
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:00-0400)**_
@@ -8885,6 +9048,7 @@ authors: [matt-fidd]
 
 Fix release note generation script to resolve links in cherry-picked changes
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:05-0400)**_
@@ -8927,6 +9091,7 @@ dc811552b feat(currency): Currency-influenced initial number formats (#5797)
 99ca34458 feat(currency): add currency display to rules (#5639)
 148ca9258 Added ARS currency (#5869)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:06-0400)**_
@@ -8952,6 +9117,7 @@ fd2a38f34 [AI] Limit notes to 1800 characters with a warning near the limit
 --- d349354c9 :bug:  fix number formatter not listening to state changes (#1423)
  upcoming-release-notes/1423.md                     |  6 +++
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:11-0400)**_
@@ -8992,6 +9158,7 @@ authors: [matt-fidd]
 
 Fix reconciliation when experimental currency support is enabled
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:08:19-0400)**_
@@ -9105,8 +9272,7 @@ Component `BalanceHistoryGraph` (~line 30). Line ~318, hover tooltip, already in
 `<PrivacyFilter>`.
 
 **Name collision — the only one.** Line 12 is
-`import { eachMonthOfInterval, format, subMonths } from 'date-fns';` and `format` is used at line
-133. Alias it to `formatDate` and update line 133, matching the convention in the other 15 files.
+`import { eachMonthOfInterval, format, subMonths } from 'date-fns';` and `format` is used at line 133. Alias it to `formatDate` and update line 133, matching the convention in the other 15 files.
 
 ### 5. [TransactionEdit.tsx](packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx) — 3 sites
 
@@ -9129,7 +9295,7 @@ Component `TransactionListItem` (~line 80), already hook-heavy. Lines ~293 (row 
 Component `SelectedTransactionsFloatingActionBar` (~line 277). Line ~505 sits in an `onSuccess`
 callback — declare the hook at component top and reference it through the closure.
 
-Call out in the PR description: `displayValue` flows into a markdown link label *and* a `#` link
+Call out in the PR description: `displayValue` flows into a markdown link label _and_ a `#` link
 target at ~line 516, and is used as an object key in `messageActions` at ~518. Once a symbol and
 `‪`/`‬`/` ` are present, those are no longer plain digits. The branch is currently
 unreachable (the `'amount'` menu item is commented out), so nothing breaks today, but a reviewer
@@ -9200,12 +9366,12 @@ manually:
   Generate with `yarn generate:release-notes`.
 - Worth stating in the description: this is step 1 of 3, the 0-decimal bug is the motivation, and
   site 13's markdown/bidi caveat.
-
 ````
 
 ```text
 File created successfully at: /Users/james/.claude/plans/make-a-plan-to-shiny-blum.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:24-0400)**_
@@ -9220,6 +9386,7 @@ Find release notes script
 (eval):1: no matches found: packages/scripts/*release*
 package.json:47:    "generate:release-notes": "node ./bin/release-note-generator.mts",
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:25-0400)**_
@@ -9238,6 +9405,7 @@ packages/desktop-client/src/index.tsx:125:      window.__actionsForMenu.closeBud
 packages/desktop-client/src/index.tsx:135:        window.__actionsForMenu.redo();
 packages/desktop-client/src/index.tsx:138:        window.__actionsForMenu.undo();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:08:26-0400)**_
@@ -9255,6 +9423,7 @@ _**Agent (claude-opus-5 2026-09-14 23:08:26-0400)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:08:59-0400)**_
@@ -9262,7 +9431,7 @@ _**Agent (claude-opus-5 2026-09-14 23:08:59-0400)**_
 <tool-use data-tool-type="generic" data-tool-name="ExitPlanMode"><details>
 <summary>Tool use: **ExitPlanMode**</summary>
 
-```text
+````text
 User has approved your plan. You can now start coding. Start with updating your todo list if applicable
 
 Your plan has been saved to: /Users/james/.claude/plans/make-a-plan-to-shiny-blum.md
@@ -9321,7 +9490,7 @@ Applied identically at every site:
    ...
 -  {integerToCurrency(amount)}
 +  {format(amount, 'financial')}
-```
+````
 
 Conventions, both unanimous in the codebase:
 
@@ -9468,7 +9637,8 @@ manually:
   Generate with `yarn generate:release-notes`.
 - Worth stating in the description: this is step 1 of 3, the 0-decimal bug is the motivation, and
   site 13's markdown/bidi caveat.
-```
+
+````
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:30-0400)**_
@@ -9525,7 +9695,8 @@ root.render(
     </Provider>
   </QueryClientProvider>,
 );
-```
+````
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:30-0400)**_
@@ -9542,6 +9713,7 @@ Check valid release note categories
 46:        { title: '🐛 Bugfixes', value: 'Bugfixes' },
 47:        { title: '⚙️  Maintenance', value: 'Maintenance' },
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:34-0400)**_
@@ -9588,6 +9760,7 @@ Read saveSyncedPrefs thunk
 229-  setPrefs,
 230-} = actions;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:41-0400)**_
@@ -9638,6 +9811,7 @@ packages/desktop-client/e2e/page-models/settings-page.ts:44:  async enableExperi
 packages/desktop-client/e2e/page-models/settings-page.ts:51:    await this.experimentalSettingsButton.waitFor({
 packages/desktop-client/e2e/page-models/settings-page.ts:55:    await this.experimentalSettingsButton.click();
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:41-0400)**_
@@ -9648,7 +9822,7 @@ Read AGENTS.md
 
 `cat AGENTS.md 2>/dev/null | head -80`
 
-```text
+````text
 # AGENTS.md - Guide for AI Agents Working with Actual Budget
 
 This guide provides comprehensive information for AI agents (like Cursor) working with the Actual Budget codebase.
@@ -9685,7 +9859,7 @@ yarn start:server-dev
 
 # Start desktop app development
 yarn start:desktop
-```
+````
 
 ### Important Rules
 
@@ -9729,7 +9903,8 @@ The core application logic that runs on any platform.
 
 - Business logic, database operations, and calculations
 - Platform-agnostic code
-```
+
+````
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:48-0400)**_
@@ -9863,7 +10038,8 @@ import { useSelector } from '#redux';
               }
             : {
                 backgroundColor: theme.tableBackground,
-```
+````
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:53-0400)**_
@@ -9896,6 +10072,7 @@ Read getTextStyle
 152-      <Button
 153-        {...itemProps}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:08:55-0400)**_
@@ -9969,6 +10146,7 @@ Read SelectedTransactionsFloatingActionBar head
 336-  const navigate = useNavigate();
 337-  const { data: accounts = [] } = useAccounts();
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:09:02-0400)**_
@@ -10010,6 +10188,7 @@ packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx:56:  const 
 packages/desktop-client/src/hooks/useFormat.ts:11:  integerToCurrency,
 packages/desktop-client/src/hooks/useFormat.ts:98:        formattedString: integerToCurrency(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:08-0400)**_
@@ -10026,7 +10205,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:09-0400)**_
 375	  embedded?: boolean;
 376	  showBalances?: boolean;
 377	};
-378	
+378
 379	function CategoryItem({
 380	  item,
 381	  className,
@@ -10046,7 +10225,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:09-0400)**_
 395	      }
 396	    : {};
 397	  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
-398	
+398
 399	  const balanceBinding =
 400	    budgetType === 'envelope'
 401	      ? envelopeBudget.catBalance(item.id)
@@ -10055,10 +10234,10 @@ _**Agent (claude-opus-5 2026-09-14 23:09:09-0400)**_
 404	    'envelope-budget' | 'tracking-budget',
 405	    typeof balanceBinding
 406	  >(balanceBinding);
-407	
+407
 408	  const isToBudgetItem = item.id === 'to-budget';
 409	  const toBudget = useEnvelopeSheetValue(envelopeBudget.toBudget);
-410	
+410
 411	  return (
 412	    <button
 413	      type="button"
@@ -10124,6 +10303,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:09-0400)**_
 473	  );
 474	}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:09:09-0400)**_
@@ -10173,6 +10353,7 @@ export function makeBalanceAmountStyle(
     onClose();
   }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:09:10-0400)**_
@@ -10186,6 +10367,7 @@ Check Transaction memoization
 ```text
 914:const Transaction = memo(function Transaction({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:12-0400)**_
@@ -10223,6 +10405,7 @@ Inspect imports in CategoryAutocomplete
 458:                    {integerToCurrency(toBudget || 0)}
 466:                    {integerToCurrency(balance || 0)}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:19-0400)**_
@@ -10233,6 +10416,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:19-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:23-0400)**_
@@ -10243,6 +10427,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:23-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:09:26-0400)**_
@@ -10261,6 +10446,7 @@ fix(privacy): hide currency symbols in redacted overlay (#6438)
  2 files changed, 40 insertions(+), 2 deletions(-)
 === PrivacyFilter core ===
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:27-0400)**_
@@ -10271,6 +10457,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:27-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:09:59-0400)**_
@@ -10292,6 +10479,7 @@ Count hooks in Transaction component
 67:  const [transaction, setTransaction] = useState(() =>
 254:  const { schedules = [] } = useCachedSchedules();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:31-0400)**_
@@ -10302,6 +10490,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:31-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:34-0400)**_
@@ -10312,6 +10501,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:34-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:37-0400)**_
@@ -10330,7 +10520,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:38-0400)**_
 3	import type { CSSProperties, FormEvent } from 'react';
 4	import { Form } from 'react-aria-components';
 5	import { Trans, useTranslation } from 'react-i18next';
-6	
+6
 7	import { Button } from '@actual-app/components/button';
 8	import { FormError } from '@actual-app/components/form-error';
 9	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
@@ -10342,7 +10532,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:38-0400)**_
 15	import { integerToCurrency } from '@actual-app/core/shared/util';
 16	import type { AccountEntity } from '@actual-app/core/types/models';
 17	import type { TransObjectLiteral } from '@actual-app/core/types/util';
-18	
+18
 19	import { useCloseAccountMutation } from '#accounts';
 20	import { AccountAutocomplete } from '#components/autocomplete/AccountAutocomplete';
 21	import { CategoryAutocomplete } from '#components/autocomplete/CategoryAutocomplete';
@@ -10353,7 +10543,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:38-0400)**_
 26	import { pushModal } from '#modals/modalsSlice';
 27	import type { Modal as ModalType } from '#modals/modalsSlice';
 28	import { useDispatch } from '#redux';
-29	
+29
 30	function needsCategory(
 31	  account: AccountEntity,
 32	  currentTransfer: string,
@@ -10361,17 +10551,17 @@ _**Agent (claude-opus-5 2026-09-14 23:09:38-0400)**_
 34	) {
 35	  const acct = accounts.find(a => a.id === currentTransfer);
 36	  const isOffBudget = acct && acct.offbudget === 1;
-37	
+37
 38	  // The user must select a category if transferring from a budgeted
 39	  // account to an off budget account
 40	  return account.offbudget === 0 && isOffBudget;
 41	}
-42	
+42
 43	type CloseAccountModalProps = Extract<
 44	  ModalType,
 45	  { name: 'close-account' }
 46	>['options'];
-47	
+47
 48	export function CloseAccountModal({
 49	  account,
 50	  balance,
@@ -10386,6 +10576,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:38-0400)**_
 59	      list: [],
 60	    },
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:42-0400)**_
@@ -10417,10 +10608,11 @@ _**Agent (claude-opus-5 2026-09-14 23:09:42-0400)**_
 179	                      transfer this balance to:
 180	                    </Trans>
 181	                  </Paragraph>
-182	
+182
 183	                  <View style={{ marginBottom: 15 }}>
 184	                    <AccountAutocomplete
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:48-0400)**_
@@ -10431,6 +10623,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:48-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/CloseAccountModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:53-0400)**_
@@ -10441,6 +10634,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:53-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/CloseAccountModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:09:58-0400)**_
@@ -10451,6 +10645,7 @@ _**Agent (claude-opus-5 2026-09-14 23:09:58-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/CloseAccountModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:02-0400)**_
@@ -10467,14 +10662,14 @@ Author: Stephen Brown II <Stephen.Brown2@gmail.com>
 Date:   Tue Jan 13 17:19:19 2026 -0500
 
     fix(privacy): hide currency symbols in redacted overlay (#6438)
-    
+
     * fix(privacy): hide currency symbols in redacted overlay
-    
+
     Add RedactedContent component that uses useLayoutEffect to walk the DOM
     and replace non-alphanumeric characters (like currency symbols) with spaces.
     This ensures characters not rendered by Redacted Script font are hidden,
     regardless of how deeply nested they are in the component tree.
-    
+
     * refactor: simplify RedactedContent text node processing loop
 
 diff --git a/packages/desktop-client/src/components/PrivacyFilter.tsx b/packages/desktop-client/src/components/PrivacyFilter.tsx
@@ -10491,12 +10686,12 @@ index 1053ce0ce..f2968e5eb 100644
 +  useLayoutEffect,
 +  useRef,
  } from 'react';
- 
+
  import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 @@ -67,6 +69,36 @@ export function PrivacyFilter({
    );
  }
- 
+
 +type RedactedContentProps = {
 +  children: ReactNode;
 +};
@@ -10523,6 +10718,7 @@ index 1053ce0ce..f2968e5eb 100644
 +      }
 +    }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:07-0400)**_
@@ -10533,6 +10729,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:07-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/CloseAccountModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:09-0400)**_
@@ -10585,6 +10782,7 @@ import { CategoryAutocomplete } from '#components/autocomplete/CategoryAutocompl
 128:import { useSplitsExpanded } from '#hooks/useSplitsExpanded';
 129:import type { SplitsExpandedContextValue } from '#hooks/useSplitsExpanded';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:15-0400)**_
@@ -10595,6 +10793,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:15-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:16-0400)**_
@@ -10630,6 +10829,7 @@ packages/desktop-client/e2e/accounts.test.ts-63-    await expect(menu.getByRole(
 packages/desktop-client/e2e/accounts.test.ts-64-  });
 packages/desktop-client/e2e/accounts.test.ts-65-
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:18-0400)**_
@@ -10658,6 +10858,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:18-0400)**_
 124	import { useProperFocus } from '#hooks/useProperFocus';
 125	import { useSelectedDispatch, useSelectedItems } from '#hooks/useSelected';
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:19-0400)**_
@@ -10674,6 +10875,7 @@ packages/desktop-client/src/components/sidebar/Account.tsx:328:            <Bala
 packages/desktop-client/src/components/accounts/Header.tsx:55:import { BalanceHistoryGraph } from './BalanceHistoryGraph';
 packages/desktop-client/src/components/accounts/Header.tsx:328:          <BalanceHistoryGraph
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:23-0400)**_
@@ -10684,6 +10886,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:23-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:25-0400)**_
@@ -10694,7 +10897,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:25-0400)**_
 
 ```text
 912	};
-913	
+913
 914	const Transaction = memo(function Transaction({
 915	  allTransactions,
 916	  transaction: originalTransaction,
@@ -10724,6 +10927,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:25-0400)**_
 940	  onBatchDelete,
 941	  onBatchDuplicate,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:26-0400)**_
@@ -10745,6 +10949,7 @@ Read styles.text
 106-      '100%': { opacity: 1 },
 107-    }),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:27-0400)**_
@@ -10767,24 +10972,25 @@ _**Agent (claude-opus-5 2026-09-14 23:10:27-0400)**_
 970	  index,
 971	}: TransactionProps) {
 972	  const { t } = useTranslation();
-973	
+973
 974	  const dispatch = useDispatch();
 975	  const dispatchSelected = useSelectedDispatch();
 976	  const triggerRef = useRef(null);
-977	
+977
 978	  const [prevShowZero, setPrevShowZero] = useState(showZeroInDeposit);
 979	  const [prevTransaction, setPrevTransaction] = useState(originalTransaction);
 980	  const [transaction, setTransaction] = useState(() =>
 981	    serializeTransaction(originalTransaction, showZeroInDeposit),
 982	  );
 983	  const isPreview = isPreviewId(transaction.id);
-984	
+984
 985	  if (
 986	    originalTransaction !== prevTransaction ||
 987	    showZeroInDeposit !== prevShowZero
 988	  ) {
 989	    setTransaction(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:39-0400)**_
@@ -10820,6 +11026,7 @@ Confirm hook import alias convention per file
 47:import { usePayees } from '#hooks/usePayees';
 48:import { useScrollListener } from '#hooks/useScrollListener';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:40-0400)**_
@@ -10830,6 +11037,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:40-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:43-0400)**_
@@ -10845,6 +11053,7 @@ Check existing useFormat usage in the two big files
 973:  const format = useFormat();
 === TransactionEdit ===
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:43-0400)**_
@@ -10856,7 +11065,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:43-0400)**_
 ```text
 1836	          }}
 1837	        />
-1838	
+1838
 1839	        {showBalance && (
 1840	          <Cell
 1841	            /* Balance field for all transactions */
@@ -10873,6 +11082,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:43-0400)**_
 1852	                  : theme.numberPositive,
 1853	            }}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:48-0400)**_
@@ -10911,6 +11121,7 @@ Find existing format usage inside Transaction
 845:            // reformat value so since we might have kept decimals
 874:                : format(runningBalance, 'financial')
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:48-0400)**_
@@ -10921,6 +11132,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:48-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:50-0400)**_
@@ -10953,6 +11165,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:50-0400)**_
 1950	  );
 1951	});
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:54-0400)**_
@@ -10963,6 +11176,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:54-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:56-0400)**_
@@ -10974,7 +11188,7 @@ Recheck the runningBalance line
 `sed -n '1838,1850p' packages/desktop-client/src/components/transactions/TransactionsTable.tsx | cat -n && echo "=== grep again ===" && grep -n "integerToCurrency\|format(runningBalance" packages/desktop-client/src/components/transactions/TransactionsTable.tsx && echo "=== git diff ===" && git diff --stat`
 
 ```text
-     1	
+     1
      2	        {showBalance && (
      3	          <Cell
      4	            /* Balance field for all transactions */
@@ -10996,6 +11210,7 @@ Recheck the runningBalance line
  .../src/components/transactions/TransactionsTable.tsx              | 7 ++++---
  3 files changed, 11 insertions(+), 8 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:10:57-0400)**_
@@ -11009,7 +11224,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:57-0400)**_
  `./packages/desktop-client/src/components/transactions/TransactionsTable.tsx`
 
 ```text
-2018	
+2018
 2019	type TransactionErrorProps = {
 2020	  error: NonNullable<TransactionEntity['error']>;
 2021	  isDeposit: boolean;
@@ -11017,7 +11232,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:57-0400)**_
 2023	  onDistributeRemainder: () => void;
 2024	  style?: CSSProperties;
 2025	};
-2026	
+2026
 2027	function TransactionError({
 2028	  error,
 2029	  isDeposit,
@@ -11060,6 +11275,7 @@ _**Agent (claude-opus-5 2026-09-14 23:10:57-0400)**_
 2066	              style={{ padding: '4px 10px' }}
 2067	              onPress={onAddSplit}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:10:59-0400)**_
@@ -11128,7 +11344,7 @@ index 867f961b2..8d448bd22 100644
 -import { integerToCurrency } from '@actual-app/core/shared/util';
  import type { AccountEntity } from '@actual-app/core/types/models';
  import type { TransObjectLiteral } from '@actual-app/core/types/util';
- 
+
 @@ -23,6 +22,7 @@ import { Link } from '#components/common/Link';
  import { Modal, ModalCloseButton, ModalHeader } from '#components/common/Modal';
  import { useAccounts } from '#hooks/useAccounts';
@@ -11179,7 +11395,7 @@ index 635053162..1d1dc2e95 100644
  }: TransactionProps) {
    const { t } = useTranslation();
 +  const format = useFormat();
- 
+
    const dispatch = useDispatch();
    const dispatchSelected = useSelectedDispatch();
 @@ -1842,7 +1843,7 @@ const Transaction = memo(function Transaction({
@@ -11201,6 +11417,7 @@ index 635053162..1d1dc2e95 100644
            </View>
          )}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:02-0400)**_
@@ -11211,6 +11428,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:02-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:07-0400)**_
@@ -11221,6 +11439,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:07-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:11:07-0400)**_
@@ -11235,6 +11454,7 @@ Verify broken reference in TransactionsTable
 Exit code 1
 ### BUILD-BREAKING CHECK ###
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:09-0400)**_
@@ -11254,6 +11474,7 @@ Find all format references in BalanceHistoryGraph
 133:      }).map(m => format(m, 'yyyy-MM'));
 187:              date: monthUtils.format(t.date, 'MMM yyyy', locale),
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:11:10-0400)**_
@@ -11290,6 +11511,7 @@ packages/desktop-client/src/components/budget/util.ts:81:    typeof val === 'num
 packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx:12:  integerToCurrency,
 packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx:56:  const _initialAmount = integerToCurrency(Math.abs(initialAmount ?? 0));
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:15-0400)**_
@@ -11300,6 +11522,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:15-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/accounts/BalanceHistoryGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:11:15-0400)**_
@@ -11339,6 +11562,7 @@ Review TransactionError hook placement
                </Text>
              </Text>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:17-0400)**_
@@ -11351,7 +11575,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:17-0400)**_
 1	import React, { useEffect, useMemo, useState } from 'react';
 2	import type { CSSProperties, Ref } from 'react';
 3	import { AutoSizer } from 'react-virtualized-auto-sizer';
-4	
+4
 5	import { SpaceBetween } from '@actual-app/components/space-between';
 6	import { styles } from '@actual-app/components/styles';
 7	import { Text } from '@actual-app/components/text';
@@ -11360,22 +11584,22 @@ _**Agent (claude-opus-5 2026-09-14 23:11:17-0400)**_
 10	import * as monthUtils from '@actual-app/core/shared/months';
 11	import { eachMonthOfInterval, format as formatDate, subMonths } from 'date-fns';
 12	import { Area, AreaChart, Tooltip as RechartsTooltip, YAxis } from 'recharts';
-13	
+13
 14	import { PrivacyFilter } from '#components/PrivacyFilter';
 15	import { useRechartsAnimation } from '#components/reports/chart-theme';
 16	import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 17	import { useLocale } from '#hooks/useLocale';
 18	import * as query from '#queries';
 19	import { liveQuery } from '#queries/liveQuery';
-20	
+20
 21	const LABEL_WIDTH = 70;
-22	
+22
 23	type BalanceHistoryGraphProps = {
 24	  accountId?: string;
 25	  style?: CSSProperties;
 26	  ref?: Ref<HTMLDivElement>;
 27	};
-28	
+28
 29	export function BalanceHistoryGraph({
 30	  accountId,
 31	  style,
@@ -11389,6 +11613,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:17-0400)**_
 39	  const [loading, setLoading] = useState(true);
 40	  const [hoveredValue, setHoveredValue] = useState<{
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:21-0400)**_
@@ -11399,6 +11624,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:21-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/accounts/BalanceHistoryGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:27-0400)**_
@@ -11409,6 +11635,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:27-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/accounts/BalanceHistoryGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:11:56-0400)**_
@@ -11441,6 +11668,7 @@ packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx
 packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx
 packages/desktop-client/src/components/budget/tracking/budgetsummary/BudgetTotal.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:34-0400)**_
@@ -11455,6 +11683,7 @@ Locate remaining format references
 134:      }).map(m => format(m, 'yyyy-MM'));
 319:                        <Text>{integerToCurrency(hoveredValue.balance)}</Text>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:11:35-0400)**_
@@ -11468,6 +11697,7 @@ Find unit tests rendering the affected components
 ```text
 Exit code 1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:50-0400)**_
@@ -11478,6 +11708,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:50-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/accounts/BalanceHistoryGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:54-0400)**_
@@ -11488,6 +11719,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:54-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/accounts/BalanceHistoryGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:11:56-0400)**_
@@ -11502,7 +11734,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:57-0400)**_
 
 ```text
 243	};
-244	
+244
 245	function Footer({
 246	  transactions,
 247	  isAdding,
@@ -11527,7 +11759,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:57-0400)**_
 266	      }
 267	    }
 268	  };
-269	
+269
 270	  return (
 271	    <View
 272	      data-testid="transaction-form-footer"
@@ -11582,6 +11814,7 @@ _**Agent (claude-opus-5 2026-09-14 23:11:57-0400)**_
 321	          </Text>
 322	        </Button>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:12-0400)**_
@@ -11598,6 +11831,7 @@ import {
   memo,
 packages/loot-core/src/types/models/transaction.ts:33:    type: 'SplitTransactionError';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:14-0400)**_
@@ -11625,6 +11859,7 @@ Read transaction error type
   _ruleErrors?: string[];
 };
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:23-0400)**_
@@ -11639,6 +11874,7 @@ _**Agent (claude-opus-5 2026-09-14 23:12:27-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:12:32-0400)**_
@@ -11653,6 +11889,7 @@ Find running balance pref
 packages/desktop-client/src/components/mobile/accounts/AccountPage.tsx:142:  const [showRunningBalances, setShowRunningBalances] = useSyncedPref(
 packages/desktop-client/src/components/mobile/accounts/AccountTransactions.tsx:60:  const [showRunningBalances] = useSyncedPref(`show-balances-${account.id}`);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:33-0400)**_
@@ -11663,6 +11900,7 @@ _**Agent (claude-opus-5 2026-09-14 23:12:33-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:12:36-0400)**_
@@ -11690,6 +11928,7 @@ packages/desktop-client/src/components/mobile/transactions/TransactionListItem.t
 packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:35:import { groupById, integerToCurrency } from '@actual-app/core/shared/util';
 packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:505:                          : integerToCurrency(Number(value));
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:38-0400)**_
@@ -11700,6 +11939,7 @@ _**Agent (claude-opus-5 2026-09-14 23:12:38-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:12:39-0400)**_
@@ -11723,7 +11963,7 @@ index bba9bed37..bba55015f 100644
 -import { eachMonthOfInterval, format, subMonths } from 'date-fns';
 +import { eachMonthOfInterval, format as formatDate, subMonths } from 'date-fns';
  import { Area, AreaChart, Tooltip as RechartsTooltip, YAxis } from 'recharts';
- 
+
  import { PrivacyFilter } from '#components/PrivacyFilter';
  import { useRechartsAnimation } from '#components/reports/chart-theme';
  import { LoadingIndicator } from '#components/reports/LoadingIndicator';
@@ -11745,7 +11985,7 @@ index bba9bed37..bba55015f 100644
          end: endDate,
 -      }).map(m => format(m, 'yyyy-MM'));
 +      }).map(m => formatDate(m, 'yyyy-MM'));
- 
+
        function processData(
          startingBalanceValue: number,
 @@ -315,7 +316,7 @@ export function BalanceHistoryGraph({
@@ -11758,6 +11998,7 @@ index bba9bed37..bba55015f 100644
                      </View>
                    )}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:41-0400)**_
@@ -11805,6 +12046,7 @@ function FillRemainingButton({
   );
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:46-0400)**_
@@ -11815,6 +12057,7 @@ _**Agent (claude-opus-5 2026-09-14 23:12:46-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:50-0400)**_
@@ -11825,6 +12068,7 @@ _**Agent (claude-opus-5 2026-09-14 23:12:50-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:52-0400)**_
@@ -11870,6 +12114,7 @@ import type {
 102:import { useTagCSS } from '#hooks/useTagCSS';
 103:import { useFilteredTags } from '#hooks/useTags';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:12:58-0400)**_
@@ -11880,6 +12125,7 @@ _**Agent (claude-opus-5 2026-09-14 23:12:58-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:02-0400)**_
@@ -11890,6 +12136,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:02-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:04-0400)**_
@@ -11939,6 +12186,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:05-0400)**_
 311	          </View>
 312	        </View>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:10-0400)**_
@@ -11982,6 +12230,7 @@ export function TransactionListItem({
     state => state.transactions.newTransactions,
   );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:13-0400)**_
@@ -11999,6 +12248,7 @@ import { integerToCurrency } from '@actual-app/core/shared/util';
 import type { IntegerAmount } from '@actual-app/core/shared/util';
 import type {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:18-0400)**_
@@ -12009,6 +12259,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:18-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:23-0400)**_
@@ -12019,6 +12270,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:23-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:28-0400)**_
@@ -12029,6 +12281,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:28-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:40-0400)**_
@@ -12039,6 +12292,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:40-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:43-0400)**_
@@ -12049,6 +12303,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:43-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:45-0400)**_
@@ -12086,7 +12341,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:46-0400)**_
 511	                        displayValue = value;
 512	                        break;
 513	                    }
-514	
+514
 515	                    showUndoNotification({
 516	                      message: `Successfully updated ${name} of ${ids.length} transaction${ids.length > 1 ? 's' : ''} to [${String(displayValue)}](#${String(displayValue)}).`,
 517	                      messageActions: {
@@ -12103,6 +12358,7 @@ _**Agent (claude-opus-5 2026-09-14 23:13:46-0400)**_
 528	                              break;
 529	                            default:
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:13:50-0400)**_
@@ -12154,6 +12410,7 @@ function SelectedTransactionsFloatingActionBar({
 
   const buttonProps = useMemo(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:14:02-0400)**_
@@ -12164,6 +12421,7 @@ _**Agent (claude-opus-5 2026-09-14 23:14:02-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5 2026-09-14 23:14:05-0400)**_
@@ -12178,18 +12436,18 @@ I have everything I need. Here is the plan and the answers.
 
 While I was exploring, the working tree changed under me. Current state (`git diff --stat`):
 
-| Site | File:line | Status |
-|---|---|---|
-| 1–2 | `CategoryAutocomplete.tsx:457,465` | **done** |
-| 3 | `CloseAccountModal.tsx:175` | **done** |
-| 4–5 | `TransactionsTable.tsx:1846,1944` | **done** |
-| 6 | `TransactionsTable.tsx:2053` | **done** |
-| 7 | `BalanceHistoryGraph.tsx:319` | **done** (with `formatDate` alias) |
-| 8 | `TransactionEdit.tsx:~303` | **done** |
-| 9 | `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:315` | remaining |
-| 10 | `.../TransactionEdit.tsx:2206` | remaining |
-| 11–12 | `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx:293,308` | remaining |
-| 13 | `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:505` | remaining |
+| Site  | File:line                                                                                                               | Status                             |
+| ----- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| 1–2   | `CategoryAutocomplete.tsx:457,465`                                                                                      | **done**                           |
+| 3     | `CloseAccountModal.tsx:175`                                                                                             | **done**                           |
+| 4–5   | `TransactionsTable.tsx:1846,1944`                                                                                       | **done**                           |
+| 6     | `TransactionsTable.tsx:2053`                                                                                            | **done**                           |
+| 7     | `BalanceHistoryGraph.tsx:319`                                                                                           | **done** (with `formatDate` alias) |
+| 8     | `TransactionEdit.tsx:~303`                                                                                              | **done**                           |
+| 9     | `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:315`         | remaining                          |
+| 10    | `.../TransactionEdit.tsx:2206`                                                                                          | remaining                          |
+| 11–12 | `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx:293,308` | remaining                          |
+| 13    | `/Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx:505`         | remaining                          |
 
 I reviewed sites 1–8 as landed and they are correct — including the two non-obvious ones: the `''` branch is preserved at `TransactionsTable.tsx:1844-1846`, and `useFormat()` is hoisted above the `switch` at `TransactionsTable.tsx:2034`.
 
@@ -12210,7 +12468,7 @@ Then remove `integerToCurrency` from the multi-name import block at `:58` (leave
 
 ### B. `TransactionListItem.tsx` (sites 11, 12)
 
-**Hook placement is the trap here.** The component has an early `return null` at `:119` (`if (!transaction) { return null; }`). `useFormat()` must go with the other hooks *above* it — put it next to `useCategories()`/`usePayee()`/etc. in the block starting at `:~70`, not after the destructuring at `:123`.
+**Hook placement is the trap here.** The component has an early `return null` at `:119` (`if (!transaction) { return null; }`). `useFormat()` must go with the other hooks _above_ it — put it next to `useCategories()`/`usePayee()`/etc. in the block starting at `:~70`, not after the destructuring at `:123`.
 
 Then two plain swaps at `:293` and `:308`. Leave the `...styles.tnum` spreads alone (see Q1). Drop the import at `:25`.
 
@@ -12240,8 +12498,8 @@ That has nothing to do with the decimal-places bug this PR fixes.
 
 **Would it break VRT/tests?**
 
-- **Sites 11–12: no, it's pixel-safe but zero-value.** Those spans already spread `styles.tnum` manually (`TransactionListItem.tsx:284,300`). `Text` is a bare `<span>` + emotion class (`/Users/james/actual-budget/packages/component-library/src/Text.tsx:15-23`), so `<FinancialText>` yields the *same* `<span>`, not a nested one. The only ordering difference is that `FinancialText` puts `tnum` **last** while the current code puts it first/middle — and the co-spread objects are `makeAmountFullStyle()` (returns `{ color }` only, `/Users/james/actual-budget/packages/desktop-client/src/components/budget/util.ts:119-126`) and `getTextStyle()` (`fontSize`/`fontStyle`/`color`, `TransactionListItem.tsx:50-63`). No `fontFeatureSettings` collision → identical computed CSS → identical pixels. Only the emotion hash changes, and nothing queries by class.
-- **Sites 3 and 7: yes, this would churn snapshots.** Neither is tnum today. Site 3 sits inside `<Trans>`/`<strong>` prose and site 7 inside `<PrivacyFilter>`. Introducing tabular figures changes digit advance widths, which *will* shift `Accounts-closes-an-account-1..6-chromium-linux.png`. Pure cost, no correctness benefit.
+- **Sites 11–12: no, it's pixel-safe but zero-value.** Those spans already spread `styles.tnum` manually (`TransactionListItem.tsx:284,300`). `Text` is a bare `<span>` + emotion class (`/Users/james/actual-budget/packages/component-library/src/Text.tsx:15-23`), so `<FinancialText>` yields the _same_ `<span>`, not a nested one. The only ordering difference is that `FinancialText` puts `tnum` **last** while the current code puts it first/middle — and the co-spread objects are `makeAmountFullStyle()` (returns `{ color }` only, `/Users/james/actual-budget/packages/desktop-client/src/components/budget/util.ts:119-126`) and `getTextStyle()` (`fontSize`/`fontStyle`/`color`, `TransactionListItem.tsx:50-63`). No `fontFeatureSettings` collision → identical computed CSS → identical pixels. Only the emotion hash changes, and nothing queries by class.
+- **Sites 3 and 7: yes, this would churn snapshots.** Neither is tnum today. Site 3 sits inside `<Trans>`/`<strong>` prose and site 7 inside `<PrivacyFilter>`. Introducing tabular figures changes digit advance widths, which _will_ shift `Accounts-closes-an-account-1..6-chromium-linux.png`. Pure cost, no correctness benefit.
 
 **So:** the free change (11–12) is not worth widening the diff; the non-free change (3, 7) is actively harmful here. There are **34 manual `styles.tnum` spreads across 18 files** in `desktop-client` — this is its own mechanical, repo-wide cleanup PR, reviewable on its own terms with a single deliberate snapshot-update commit.
 
@@ -12252,15 +12510,15 @@ That has nothing to do with the decimal-places bug this PR fixes.
 **The corruption fear doesn't materialize.** `compileMessage` (`/Users/james/actual-budget/packages/desktop-client/src/components/Notifications.tsx:42,47`) uses:
 
 ```js
-paragraph.split(/(\[[^\]]*\]\([^)]*\))/g)
-part.match(/\[([^\]]*)\]\(([^)]*)\)/)
+paragraph.split(/(\[[^\]]*\]\([^)]*\))/g);
+part.match(/\[([^\]]*)\]\(([^)]*)\)/);
 ```
 
-The label class is `[^\]]*` and the href class is `[^)]*`. U+202A / U+202C / U+202F are neither `]` nor `)`, so the link still parses. And the action lookup is `actions[href.slice(1)]` (`:52,59`) against the key `[String(displayValue)]` — both derive from the *same* string, so they stay in sync. No currency symbol in `/Users/james/actual-budget/packages/loot-core/src/shared/currencies.ts` contains a bracket or paren.
+The label class is `[^\]]*` and the href class is `[^)]*`. U+202A / U+202C / U+202F are neither `]` nor `)`, so the link still parses. And the action lookup is `actions[href.slice(1)]` (`:52,59`) against the key `[String(displayValue)]` — both derive from the _same_ string, so they stay in sync. No currency symbol in `/Users/james/actual-budget/packages/loot-core/src/shared/currencies.ts` contains a bracket or paren.
 
 **Why migrate rather than delete:** the swap is a runtime no-op today (dead branch), so regression risk is zero; it removes the file's last `integerToCurrency` reference so the import can go, which is the actual point of the PR; and if the menu item is ever uncommented, currency-correct is what you want. Deleting the branch is the tempting-but-wrong move — the commented-out menu item at `:563-567` documents deliberate intent ("Add support later on until we have more user friendly amount input modal"), and silently removing its handler would make re-enabling it produce a raw integer.
 
-Two genuinely pre-existing problems worth a **separate** issue, not this PR: (a) the notification message at `:515` is an untranslated template literal; (b) using the display value as both link label and href fragment is fragile for *every* case — the `notes` branch at `:507` already interpolates arbitrary user text that can contain `]` or `)`.
+Two genuinely pre-existing problems worth a **separate** issue, not this PR: (a) the notification message at `:515` is an untranslated template literal; (b) using the display value as both link label and href fragment is fragile for _every_ case — the `notes` branch at `:507` already interpolates arbitrary user text that can contain `]` or `)`.
 
 ## 3. Site 4 `hideFraction` — cannot diverge; not a behavior change
 
@@ -12300,8 +12558,11 @@ Site 4's balance `<Cell>` is gated on `showBalance`, and `showBalances` is absen
 **Fast path (recommended).** `yarn start`, open a budget, then in the browser console:
 
 ```js
-await window.$send('preferences/save', { id: 'flags.currency',        value: 'true' });
-await window.$send('preferences/save', { id: 'defaultCurrencyCode',   value: 'JPY'  });
+await window.$send('preferences/save', { id: 'flags.currency', value: 'true' });
+await window.$send('preferences/save', {
+  id: 'defaultCurrencyCode',
+  value: 'JPY',
+});
 location.reload();
 ```
 
@@ -12313,18 +12574,18 @@ location.reload();
 
 **Per-site click path:**
 
-| Site | How to reach it |
-|---|---|
-| 1–2 | Any category autocomplete with balances shown (transaction category cell) |
-| 3 | Account → Close Account, on an account with nonzero balance |
-| 4 | Account page → enable "Show running balance" → Balance column |
-| 5 | Drag a transaction row (drag preview) |
-| 6 | Create a split whose children don't sum to the parent → "Amount left:" popover |
-| 7 | Sidebar: hover an account name → hover the sparkline |
-| 8–9 | Narrow viewport → open a transaction → split it → footer button |
-| 10 | Same, then focus a split amount field → "Use remaining:" |
+| Site  | How to reach it                                                                                                                  |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 1–2   | Any category autocomplete with balances shown (transaction category cell)                                                        |
+| 3     | Account → Close Account, on an account with nonzero balance                                                                      |
+| 4     | Account page → enable "Show running balance" → Balance column                                                                    |
+| 5     | Drag a transaction row (drag preview)                                                                                            |
+| 6     | Create a split whose children don't sum to the parent → "Amount left:" popover                                                   |
+| 7     | Sidebar: hover an account name → hover the sparkline                                                                             |
+| 8–9   | Narrow viewport → open a transaction → split it → footer button                                                                  |
+| 10    | Same, then focus a split amount field → "Use remaining:"                                                                         |
 | 11–12 | Mobile account page transaction list; for 12 toggle the `show-balances-<accountId>` pref (`mobile/accounts/AccountPage.tsx:142`) |
-| 13 | Dead — verify by inspection, or temporarily uncomment `TransactionList.tsx:563-567` |
+| 13    | Dead — verify by inspection, or temporarily uncomment `TransactionList.tsx:563-567`                                              |
 
 **Regression sweep:** flip `defaultCurrencyCode` back to `None` and confirm every site returns to the plain 2-decimal string. Then `yarn typecheck && yarn lint && yarn test`.
 
@@ -12333,6 +12594,7 @@ location.reload();
 **One PR.** It's ~7 files, one mechanical transform, one reviewable claim ("these were the last display-path `integerToCurrency` calls"). Splitting desktop/mobile would leave the tree in a half-migrated state with no independent value, and a reviewer can't verify "these are the last 13" from a partial diff. The commit precedent is exactly this shape: `9a9de5ee0` (budget), `37247395e` (schedules), `99ca34458` (rules) each did one surface-area sweep in one PR.
 
 Do make the PR body state the two scope exclusions explicitly, since a reviewer's first instinct will be "you missed some":
+
 - `/Users/james/actual-budget/packages/desktop-client/src/components/budget/util.ts:81` — `currencyToAmount(integerToCurrency(val))`, a round-trip that feeds a parser, not a display.
 - `/Users/james/actual-budget/packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx:56` — seeds `useState` for a text input later read by `evalArithmetic` (`:60`).
 
@@ -12346,11 +12608,12 @@ upcoming-release-notes/5639.md → category: Features / "Adds currency display t
 
 Valid categories per `/Users/james/actual-budget/bin/release-note-generator.mts:44-47` are `Features` / `Enhancements` / `Bugfixes` / `Maintenance` (note: the script says **`Bugfixes`**, while `packages/docs/docs/contributing/index.md:134` says `Bugfix` — the script wins).
 
-I'd use **`Features`** to match the sibling PRs, phrased as a command per `index.md:139`, e.g. *"Add currency display to transaction tables, lists and modals"*. `Maintenance` would be defensible on "internal refactor" grounds but is wrong: for JPY/KRW/IRR users this fixes a visibly wrong number, which is user-facing. Run `yarn generate:release-notes` rather than hand-writing the file. Per the repo's AI rules, the PR title and every commit message need the `[AI]` prefix.
+I'd use **`Features`** to match the sibling PRs, phrased as a command per `index.md:139`, e.g. _"Add currency display to transaction tables, lists and modals"_. `Maintenance` would be defensible on "internal refactor" grounds but is wrong: for JPY/KRW/IRR users this fixes a visibly wrong number, which is user-facing. Run `yarn generate:release-notes` rather than hand-writing the file. Per the repo's AI rules, the PR title and every commit message need the `[AI]` prefix.
 
 ---
 
 ### Critical Files for Implementation
+
 - /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx
 - /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionListItem.tsx
 - /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx
@@ -12365,6 +12628,7 @@ _**Agent (claude-opus-5 2026-09-14 23:14:07-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:14:16-0400)**_
@@ -12379,6 +12643,7 @@ _**Agent (claude-opus-5 2026-09-14 23:14:19-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:14:26-0400)**_
@@ -12389,6 +12654,7 @@ _**Agent (claude-opus-5 2026-09-14 23:14:26-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionList.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:14:28-0400)**_
@@ -12447,6 +12713,7 @@ Verify hook is above the early return
     category: categoryId,
     cleared: isCleared,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:14:33-0400)**_
@@ -12474,6 +12741,7 @@ echo "=== remaining integerToCurrency in the 7 migrated files ===" && grep -n "i
 === remaining integerToCurrency in the 7 migrated files ===
 NONE — clean
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:16:22-0400)**_
@@ -12516,6 +12784,7 @@ worker restarts: 0, max worker memory usage: 48.62 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 37.83s to complete.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:16:24-0400)**_
@@ -12533,6 +12802,7 @@ Run lint with autofix
 ```text
 Finished in 11429ms on 2310 files using 8 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:17:07-0400)**_
@@ -12562,6 +12832,7 @@ Check lint did not alter files unexpectedly
  .../components/transactions/TransactionsTable.tsx  |   12 +-
  16 files changed, 3258 insertions(+), 1928 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:17:12-0400)**_
@@ -12595,6 +12866,7 @@ Revert unrelated markdown reformatting
  .../components/transactions/TransactionsTable.tsx  |   12 +-
  16 files changed, 3258 insertions(+), 1928 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:17:18-0400)**_
@@ -12633,6 +12905,7 @@ ai-logs/sprint0/bennettmatuszewski/2026-09-13_claude-code_issue-10-test-fixes.md
 ai-logs/sprint0/tigerk9/2026-09-13_claude-code_issue-21-budget-month-scroll.md
 ai-logs/sprint0/tigerk9/2026-09-13_claude-code_review-pr-34.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:17:34-0400)**_
@@ -12652,6 +12925,7 @@ Revert unrelated files (correct path)
  M packages/desktop-client/src/components/modals/CloseAccountModal.tsx
  M packages/desktop-client/src/components/transactions/TransactionsTable.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:17:40-0400)**_
@@ -12692,6 +12966,7 @@ This ensures that you're testing the behavior the user would see in the browser.
    Start at  23:17:45
    Duration  24.52s (transform 7.73s, setup 1.95s, import 10.05s, tests 11.18s, environment 1.13s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:22:17-0400)**_
@@ -12724,6 +12999,7 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 3m 48.05s to complete.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:22:21-0400)**_
@@ -12768,6 +13044,7 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 Dropped refs/stash@{0} (1bb37d49802b363f671ab15cdb1c409e0e5beab0)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:22:41-0400)**_
@@ -12824,7 +13101,6 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
-
 ARGUMENTS: Add a release note for migrating 13 currency display sites from integerToCurrency to the useFormat hook, so amounts render with the configured currency symbol and correct decimal places (fixes wrong amounts for 0-decimal currencies like JPY/KRW/IRR). Behind the experimental currency feature flag.
 
 ---
@@ -12852,6 +13128,7 @@ Verify valid categories and precedent
 === sibling currency notes ===
 upcoming-release-notes/api-get-preferences.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:22:59-0400)**_
@@ -12885,6 +13162,7 @@ authors: [misu-dev]
 
 Adds currency display to the rules
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:23:03-0400)**_
@@ -12902,6 +13180,7 @@ Determine GitHub username
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: 'git config' changes are forbidden.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:23:11-0400)**_
@@ -12923,6 +13202,7 @@ Reese Bryan <reesebryan04@gmail.com>
 === gh ===
 gh not authed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:23:15-0400)**_
@@ -12937,6 +13217,7 @@ Look up user identity in git config file
 --- commits by jmleonard ---
 James Leonard <james@Jamess-MacBook-Air.local>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:23:23-0400)**_
@@ -12950,6 +13231,7 @@ Check STUDENTS.md for GitHub username
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:23:25-0400)**_
@@ -12960,7 +13242,7 @@ Read STUDENTS.md
 
 `head -40 STUDENTS.md`
 
-```text
+````text
 # Getting Started (for Students)
 
 This is a short guide to running **Actual Budget** on your own computer so you
@@ -12990,7 +13272,7 @@ Enable the correct Yarn version (only needed once):
 
 ```bash
 corepack enable
-```
+````
 
 Yarn will then automatically use the version this project expects.
 
@@ -13001,7 +13283,8 @@ Yarn will then automatically use the version this project expects.
 Clone the project and install everything. `yarn install` downloads all the
 dependencies into a local `node_modules` folder (which is **not** stored in Git —
 that's why you install it yourself).
-```
+
+````
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:23:40-0400)**_
@@ -13021,11 +13304,12 @@ authors: [REPLACE_WITH_GITHUB_USERNAME]
 
 Add currency display to transaction tables, transaction lists and account modals
 
-```
+````
 
 ```text
 File created successfully at: /Users/james/actual-budget/upcoming-release-notes/currency-display-transactions.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:23:46-0400)**_
@@ -13049,7 +13333,7 @@ index bba9bed37..bba55015f 100644
 -import { eachMonthOfInterval, format, subMonths } from 'date-fns';
 +import { eachMonthOfInterval, format as formatDate, subMonths } from 'date-fns';
  import { Area, AreaChart, Tooltip as RechartsTooltip, YAxis } from 'recharts';
- 
+
  import { PrivacyFilter } from '#components/PrivacyFilter';
  import { useRechartsAnimation } from '#components/reports/chart-theme';
  import { LoadingIndicator } from '#components/reports/LoadingIndicator';
@@ -13071,7 +13355,7 @@ index bba9bed37..bba55015f 100644
          end: endDate,
 -      }).map(m => format(m, 'yyyy-MM'));
 +      }).map(m => formatDate(m, 'yyyy-MM'));
- 
+
        function processData(
          startingBalanceValue: number,
 @@ -315,7 +316,7 @@ export function BalanceHistoryGraph({
@@ -13122,6 +13406,7 @@ index 00e2919f9..60e27a2de 100644
                        case 'notes':
                          displayValue = `${mode} with ${String(value)}`;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:23:49-0400)**_
@@ -13147,6 +13432,7 @@ packages/desktop-client/src/components/budget/util.ts:81:    typeof val === 'num
 packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx:12:  integerToCurrency,
 packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx:56:  const _initialAmount = integerToCurrency(Math.abs(initialAmount ?? 0));
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 23:24:05-0400)**_
@@ -13154,6 +13440,7 @@ _**Agent (claude-opus-5 2026-09-14 23:24:05-0400)**_
 Done. All 13 display sites migrated across 7 files.
 
 **Verification results:**
+
 - `yarn typecheck` — clean
 - `yarn lint:fix` — clean
 - `TransactionsTable.test.tsx` — 27 passed, 1 skipped
@@ -13182,32 +13469,30 @@ _**User (2026-09-14 23:26:16-0400)**_
 Stop hook feedback:
 ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/check-on-stop.sh"]: Stop check found failures in touched workspaces:
 [tests failed: @actual-app/web]
-    129|
-    130|     await result.current.mutateAsync({ category: newCategory(tooLongNa…
-       |                          ^
-    131|
-    132|     expect(createCategoryHandler).not.toHaveBeenCalled();
+129|
+130| await result.current.mutateAsync({ category: newCategory(tooLongNa…
+| ^
+131|
+132| expect(createCategoryHandler).not.toHaveBeenCalled();
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
 
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
+FAIL src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
 TypeError: Cannot read properties of null (reading 'mutateAsync')
- ❯ src/budget/mutations.test.tsx:150:26
-    148|     });
-    149|
-    150|     await result.current.mutateAsync({ category: newCategory(maxLength…
-       |                          ^
-    151|
-    152|     await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
+❯ src/budget/mutations.test.tsx:150:26
+148| });
+149|
+150| await result.current.mutateAsync({ category: newCategory(maxLength…
+| ^
+151|
+152| await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
 
-
- Test Files  1 failed | 56 passed (57)
-      Tests  4 failed | 784 passed | 1 skipped (789)
-   Start at  23:24:27
-   Duration  108.79s (transform 15.27s, setup 88.65s, import 37.46s, tests 32.94s, environment 45.37s)
-
+Test Files 1 failed | 56 passed (57)
+Tests 4 failed | 784 passed | 1 skipped (789)
+Start at 23:24:27
+Duration 108.79s (transform 15.27s, setup 88.65s, import 37.46s, tests 32.94s, environment 45.37s)
 
 ---
 
@@ -13237,6 +13522,7 @@ Run failing test file on current tree
  Test Files  1 failed (1)
       Tests  4 failed (4)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 00:10:47-0400)**_
@@ -13277,6 +13563,7 @@ Untracked files:
 no changes added to commit (use "git add" and/or "git commit -a")
 Dropped refs/stash@{0} (981ddf3566f2c3fc7364772512026568bf5817bd)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 00:10:55-0400)**_
@@ -13335,6 +13622,7 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 
  FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 00:12:14-0400)**_
@@ -13348,6 +13636,7 @@ Find when the failing test was added
 ```text
 87937c19b [AI] test: add coverage for the 50-character category name limit
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 00:12:23-0400)**_
@@ -13396,32 +13685,32 @@ _**Agent (claude-opus-5 2026-09-15 14:00:41-0400)**_
 11	  TransactionEntity,
 12	} from '@actual-app/core/types/models';
 13	import { isValid as isDateValid, parseISO } from 'date-fns';
-14	
+14
 15	export type SerializedTransaction = Omit<TransactionEntity, 'date'> & {
 16	  date: string;
 17	  debit: CurrencyAmount;
 18	  credit: CurrencyAmount;
 19	};
-20	
+20
 21	export type TransactionEditFunction = (
 22	  id: TransactionEntity['id'],
 23	  name: string,
 24	) => void;
-25	
+25
 26	export type TransactionUpdateFunction = <T extends keyof SerializedTransaction>(
 27	  name: T,
 28	  value: SerializedTransaction[T],
 29	) => void;
-30	
+30
 31	export function serializeTransaction(
 32	  transaction: TransactionEntity,
 33	  showZeroInDeposit?: boolean,
 34	): SerializedTransaction {
 35	  const { amount, date: originalDate } = transaction;
-36	
+36
 37	  let debit = amount < 0 ? -amount : null;
 38	  let credit = amount > 0 ? amount : null;
-39	
+39
 40	  if (amount === 0) {
 41	    if (showZeroInDeposit) {
 42	      credit = 0;
@@ -13429,7 +13718,7 @@ _**Agent (claude-opus-5 2026-09-15 14:00:41-0400)**_
 44	      debit = 0;
 45	    }
 46	  }
-47	
+47
 48	  let date = originalDate;
 49	  // Validate the date format
 50	  if (!isDateValid(parseISO(date))) {
@@ -13441,7 +13730,7 @@ _**Agent (claude-opus-5 2026-09-15 14:00:41-0400)**_
 56	    // TODO: the fact that the date type is not nullable but we are setting it to null needs to be changed
 57	    date = null as unknown as string;
 58	  }
-59	
+59
 60	  // Convert with decimals here so the value doesn't lose decimals and formatter will show or hide them.
 61	  return {
 62	    ...transaction,
@@ -13450,13 +13739,13 @@ _**Agent (claude-opus-5 2026-09-15 14:00:41-0400)**_
 65	    credit: credit != null ? integerToCurrencyWithDecimal(credit) : '',
 66	  };
 67	}
-68	
+68
 69	export function deserializeTransaction(
 70	  transaction: SerializedTransaction,
 71	  originalTransaction: TransactionEntity,
 72	) {
 73	  const { debit, credit, date: originalDate, ...realTransaction } = transaction;
-74	
+74
 75	  let amount: number | null;
 76	  if (debit !== '') {
 77	    const parsed = evalArithmetic(debit, null);
@@ -13464,21 +13753,22 @@ _**Agent (claude-opus-5 2026-09-15 14:00:41-0400)**_
 79	  } else {
 80	    amount = evalArithmetic(credit, null);
 81	  }
-82	
+82
 83	  amount =
 84	    amount != null ? amountToInteger(amount) : originalTransaction.amount;
 85	  let date = originalDate;
 86	  if (date == null) {
 87	    date = originalTransaction.date || currentDay();
 88	  }
-89	
+89
 90	  return { ...realTransaction, date, amount };
 91	}
-92	
+92
 93	export function isLastChild(
 94	  transactions: readonly TransactionEntity[],
 95	  index: number,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:00:50-0400)**_
@@ -13527,6 +13817,7 @@ packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:2
 548-
 549-export function integerToAmount(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:01:02-0400)**_
@@ -13544,13 +13835,13 @@ _**Agent (claude-opus-5 2026-09-15 14:01:03-0400)**_
 61	    categoryGroups.find(g => g.is_income),
 62	  ] as const;
 63	}
-64	
+64
 65	export function makeAmountGrey(value: number | string | null): CSSProperties {
 66	  return value === 0 || value === '0' || value === '' || value == null
 67	    ? { color: theme.budgetNumberZero }
 68	    : null;
 69	}
-70	
+70
 71	export function makeBalanceAmountStyle(
 72	  value: number,
 73	  goalValue?: number | null,
@@ -13559,16 +13850,16 @@ _**Agent (claude-opus-5 2026-09-15 14:01:03-0400)**_
 76	  // Converts an integer currency value to a normalized decimal amount.
 77	  // First converts the integer to currency format, then to a decimal amount.
 78	  // Uses integerToCurrency to display the value correctly according to user prefs.
-79	
+79
 80	  const normalizeIntegerValue = (val: number | null | undefined) =>
 81	    typeof val === 'number' ? currencyToAmount(integerToCurrency(val)) : 0;
-82	
+82
 83	  const currencyValue = normalizeIntegerValue(value);
-84	
+84
 85	  if (currencyValue < 0) {
 86	    return { color: theme.budgetNumberNegative };
 87	  }
-88	
+88
 89	  if (goalValue == null) {
 90	    const greyed = makeAmountGrey(currencyValue);
 91	    if (greyed) {
@@ -13578,14 +13869,14 @@ _**Agent (claude-opus-5 2026-09-15 14:01:03-0400)**_
 95	  } else {
 96	    const budgetedAmount = normalizeIntegerValue(budgetedValue);
 97	    const goalAmount = normalizeIntegerValue(goalValue);
-98	
+98
 99	    if (budgetedAmount < goalAmount) {
 100	      return { color: theme.templateNumberUnderFunded };
 101	    }
 102	    return { color: theme.templateNumberFunded };
 103	  }
 104	}
-105	
+105
 106	export function makeAmountFullStyle(
 107	  value: number,
 108	  colors?: {
@@ -13608,9 +13899,10 @@ _**Agent (claude-opus-5 2026-09-15 14:01:03-0400)**_
 125	          : positiveColorToUse,
 126	  };
 127	}
-128	
+128
 129	export function findSortDown<T extends { id: string }>(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:01:19-0400)**_
@@ -13666,6 +13958,7 @@ function serializeTransaction(
   };
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:01:27-0400)**_
@@ -13753,6 +14046,7 @@ packages/desktop-client/src/hooks/useFormulaExecution.ts:590:    return integerT
 packages/desktop-client/src/hooks/useFormulaExecution.ts:649:      return integerToAmount(balances[intervals[0]]?.start || 0, 2);
 packages/desktop-client/src/hooks/useFormulaExecution.ts:651:    return integerToAmount(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:02:08-0400)**_
@@ -13764,7 +14058,7 @@ The next step is PR 2 (the edit/serialization paths), and the good news is its o
 I'd flagged "non-hook modules can't call `useFormat`" as needing either a new global or threading the `format` function. Neither is necessary — there's already an established pattern. About a dozen files in [budget/goals/editor/](packages/desktop-client/src/components/budget/goals/editor/) thread `format.currency.decimalPlaces` as a plain number:
 
 ```ts
-amountToInteger(template.amount, format.currency.decimalPlaces)
+amountToInteger(template.amount, format.currency.decimalPlaces);
 ```
 
 `useFormat()` exposes `.currency`, so any component that has the hook can pass the number (or code) down into a plain module function. And [`integerToCurrencyWithDecimal`](packages/loot-core/src/shared/util.ts#L458-L461) already accepts an optional `currencyCode`. So PR 2 is parameter-threading against existing precedent — no global, no architecture change.

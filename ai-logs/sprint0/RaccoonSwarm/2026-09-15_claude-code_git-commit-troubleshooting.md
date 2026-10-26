@@ -23,6 +23,7 @@ Check current git status
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:35Z)**_
@@ -36,6 +37,7 @@ List local branches with tracking info
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:35Z)**_
@@ -49,6 +51,7 @@ Show configured remotes
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:37Z)**_
@@ -62,6 +65,7 @@ Check current git status
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:40Z)**_
@@ -89,6 +93,7 @@ Changes not staged for commit:
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:42Z)**_
@@ -106,6 +111,7 @@ List local branches with tracking info
   fix/issue-16-budget-name-dropdown a3e631e70 Merge pull request #34 from CSCI-435-SE/issue-10-notes-character-limit
 * master                            64123f0ac [origin/master: ahead 2] Merge branch 'master' of github.com:CSCI-435-SE/actual-budget
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:46Z)**_
@@ -118,6 +124,7 @@ Show configured remotes
 origin	git@github.com:CSCI-435-SE/actual-budget.git (fetch)
 origin	git@github.com:CSCI-435-SE/actual-budget.git (push)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:47Z)**_
@@ -154,6 +161,7 @@ b09574146 [AI] Scope the notes warning id per field instead of dropping it
 d5d40a37c Merge branch 'master' into issue-10-notes-character-limit
 512f406c2 [AI] Add AI logs and ignore SpecStory artifacts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:54Z)**_
@@ -172,6 +180,7 @@ List remote-tracking branches
   origin/fix/issue-28-dropdown-cursor
   origin/master
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:12:56Z)**_
@@ -193,6 +202,7 @@ a3e631e70 Merge pull request #34 from CSCI-435-SE/issue-10-notes-character-limit
 b09574146 [AI] Scope the notes warning id per field instead of dropping it
 d5d40a37c Merge branch 'master' into issue-10-notes-character-limit
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:13:01Z)**_
@@ -211,6 +221,7 @@ d5d40a37c Merge branch 'master' into issue-10-notes-character-limit
 9f2a24849 [AI] Scope notes length warning toasts to each note field
 18309a546 [AI] Add AI log for PR #34 review
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:13:02Z)**_
@@ -222,6 +233,7 @@ Diff local branch against its remote counterpart
 ```text
 (PowerShell completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:13:04Z)**_
@@ -234,6 +246,7 @@ Check what local branch has that master doesn't
 ---diverge---
 a3e631e70727881425a3c8a00849777afab364c9
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:13:20Z)**_
@@ -253,6 +266,7 @@ Show summary of unstaged working tree changes
  .../tigerk9/2026-09-13_claude-code_review-pr-34.md |  488 +++++----
  8 files changed, 2296 insertions(+), 1360 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:13:22Z)**_
@@ -270,6 +284,7 @@ b10a5c217 Merge pull request #32 from CSCI-435-SE/feat/issue-9-limit-budget-cate
 64123f0ac Merge branch 'master' of github.com:CSCI-435-SE/actual-budget
 7b6f7b7f1 fix: budget name dropdown (#16)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:13:23Z)**_
@@ -288,6 +303,7 @@ e8468123d test commit
 686c09334 [AI] Format install snippet in STUDENTS.md
 f684cf9fe Setup done for 'Actual project'
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:13:56Z)**_
@@ -297,16 +313,17 @@ _**Agent (claude-sonnet-5 2026-09-15 03:13:56Z)**_
 Check whether GitHub CLI is available
 
 ```text
-gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
 spelling of the name, or if a path was included, verify that the path is correct and try again.
 At line:1 char:302
 + ... y { $PSStyle.OutputRendering = 'PlainText' } catch {} } }; gh --versi ...
 +                                                                ~~
     + CategoryInfo          : ObjectNotFound: (gh:String) [], CommandNotFoundException
     + FullyQualifiedErrorId : CommandNotFoundException
- 
+
 gh not available
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:13:57Z)**_
@@ -320,10 +337,10 @@ _**Agent (claude-sonnet-5 2026-09-15 03:14:07Z)**_
 **Which branch did you push to GitHub that shows up empty (no files)?**
 
 Options:
+
 - **fix/issue-16-budget-name-dropdown** - Exists on origin, but it's an old branch — it's actually an ancestor of master already (identical to commit a3e631e70), so it doesn't contain your new work.
 - **agents/checkout-pull-request-35** - Also exists locally but has no upstream tracking branch shown — same old commit (a3e631e70).
 - **Something else / not sure** - I'll help you figure out which branch it is.
-
 
 **Answer:** fix/issue-16-budget-name-dropdown
 </details></tool-use>
@@ -339,6 +356,7 @@ Inspect nature of STUDENTS.md diff
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:14:17Z)**_
@@ -353,9 +371,9 @@ index c13267a5e..019accae5 100644
 --- a/STUDENTS.md
 +++ b/STUDENTS.md
 @@ -13,11 +13,11 @@ can explore and experiment with it. Everything runs locally in your browser.
- 
+
  Install these once before you start:
- 
+
 -| Tool | Version | Notes |
 -| --- | --- | --- |
 -| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v` |
@@ -366,29 +384,31 @@ index c13267a5e..019accae5 100644
 +| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v`                                                                                     |
 +| [Yarn](https://yarnpkg.com/)   | **4.9.1+**      | Comes with Node via Corepack — see below                                                                 |
 +| [Git](https://git-scm.com/)    | any recent      | On **Windows**, install "Git for Windows" — it also provides the `sh` and `bash` shells some scripts use |
- 
+
  > 💡 **New to Yarn workspaces?** Actual Budget uses [Yarn workspaces](https://yarnpkg.com/features/workspaces) to manage multiple packages in a single repo. You mostly run commands from the root — but understanding workspaces helps when something goes wrong in a sub-package.
- 
+
 @@ -46,7 +46,6 @@ cd actual
  yarn install
- ```
- 
--
- > ⚠️ Always run `yarn` commands from the **project root** (the folder with this
- > file in it), never from inside a `packages/…` subfolder.
- 
-@@ -96,13 +95,13 @@ For simply learning and experimenting, `yarn start` is enough.
- 
- Run all of these from the project root:
- 
--| Command | What it does |
--| --- | --- |
--| `yarn start` | Start the app in your browser (main command) |
--| `yarn test` | Run the test suite across all packages |
--| `yarn typecheck` | Check for TypeScript errors |
--| `yarn lint` | Check code style and formatting |
--| `yarn lint:fix` | Auto-fix style and formatting issues |
 ```
+
+-
+
+> ⚠️ Always run `yarn` commands from the **project root** (the folder with this
+> file in it), never from inside a `packages/…` subfolder.
+
+@@ -96,13 +95,13 @@ For simply learning and experimenting, `yarn start` is enough.
+
+Run all of these from the project root:
+
+| -   | Command          | What it does                                 |
+| --- | ---------------- | -------------------------------------------- |
+| -   | `yarn start`     | Start the app in your browser (main command) |
+| -   | `yarn test`      | Run the test suite across all packages       |
+| -   | `yarn typecheck` | Check for TypeScript errors                  |
+| -   | `yarn lint`      | Check code style and formatting              |
+| -   | `yarn lint:fix`  | Auto-fix style and formatting issues         |
+
+````
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:14:19Z)**_
@@ -426,7 +446,8 @@ Date:   Mon Sep 14 23:10:25 2026 -0400
  .../src/components/budget/DynamicBudgetTable.tsx   |    3 +-
  upcoming-release-notes/add-budget-month-scroll.md  |    6 +
  6 files changed, 9785 insertions(+), 4 deletions(-)
-```
+````
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:14:45Z)**_
@@ -434,7 +455,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:14:45Z)**_
 Now I have the full picture:
 
 - Commit `7b6f7b7f1` "fix: budget name dropdown (#16)" is your real fix (SidebarProvider changes, tests, release note, AI log) — but it only exists on your local `master`, never pushed anywhere.
-- The `fix/issue-16-budget-name-dropdown` branch you pushed to GitHub was created *before* that fix commit, so it's stuck at an old commit (`a3e631e70`) that's already an ancestor of `master` — it has none of your new work, which is why it looks empty on GitHub.
+- The `fix/issue-16-budget-name-dropdown` branch you pushed to GitHub was created _before_ that fix commit, so it's stuck at an old commit (`a3e631e70`) that's already an ancestor of `master` — it has none of your new work, which is why it looks empty on GitHub.
 - Separately, there are 8 files with uncommitted, whitespace/table-reformatting-only changes (STUDENTS.md + 7 AI-log files) sitting in your working tree — unrelated to the issue-16 fix.
 
 One more thing to confirm before finalizing the plan:
@@ -446,10 +467,10 @@ _**Agent (claude-sonnet-5 2026-09-15 03:15:23Z)**_
 **There are 8 files with uncommitted, whitespace/markdown-table reformatting changes (STUDENTS.md + 7 AI-log files) unrelated to the issue-16 fix. What should happen to them?**
 
 Options:
+
 - **Leave them uncommitted (Recommended)** - Don't touch them — they stay as local uncommitted changes on master, untouched by the issue-16 PR work.
 - **Discard them** - Revert these files back to their committed state, removing the reformatting entirely.
 - **Include them in the PR** - Commit these reformatting changes together with the issue-16 fix in the same PR.
-
 
 **Answer:** Leave them uncommitted (Recommended)
 </details></tool-use>
@@ -467,6 +488,7 @@ Check if the stale branch tip is an ancestor of origin/master
 ```text
 a3e631e70 IS an ancestor of origin/master (fast-forward possible)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:16:28Z)**_
@@ -478,6 +500,7 @@ Show the exact fix commit message
 ```text
 fix: budget name dropdown (#16)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:16:32Z)**_
@@ -493,7 +516,7 @@ At line:1 char:302
 +                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (From github.com...E/actual-budget:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
- 
+
  = [up to date]          master                 -> origin/master
    b8a26bf37..e1bda399f  feat/issue-27-change-calendar-icons -> origin/feat/issue-27-change-calendar-icons
  * [new branch]          feature/filter_keybind -> origin/feature/filter_keybind
@@ -501,6 +524,7 @@ At line:1 char:302
  = [up to date]          fix/issue-20-account-name-length -> origin/fix/issue-20-account-name-length
  = [up to date]          fix/issue-28-dropdown-cursor -> origin/fix/issue-28-dropdown-cursor
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:17:09Z)**_
@@ -519,9 +543,9 @@ it shows no file changes and VS Code's Source Control tab still shows
 
 - Your actual fix for issue #16 (`SidebarProvider.tsx`/`index.tsx` changes,
   tests, release note, AI log) is a real local commit — `7b6f7b7f1 "fix:
-  budget name dropdown (#16)"` — but it only exists on your local `master`.
+budget name dropdown (#16)"` — but it only exists on your local `master`.
   It was **never pushed anywhere**.
-- The `fix/issue-16-budget-name-dropdown` branch you *did* push was created
+- The `fix/issue-16-budget-name-dropdown` branch you _did_ push was created
   **before** that fix commit, so both locally and on GitHub it's stuck at an
   old commit (`a3e631e70`) that's already an ancestor of `master`. That's why
   it looks empty — it has none of your new work.
@@ -598,12 +622,12 @@ follow-up, not part of this task.
 There's also a leftover local branch `agents/checkout-pull-request-35` at the
 same stale commit — unrelated agent artifact, no action needed unless you
 want it deleted.
-
 ```
 
 ```text
 File created successfully at: C:\Users\reese\.claude\plans\i-committed-and-pushed-rustling-wall.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:17:11Z)**_
@@ -621,6 +645,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:17:11Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:18:53Z)**_
@@ -725,6 +750,7 @@ There's also a leftover local branch `agents/checkout-pull-request-35` at the
 same stale commit — unrelated agent artifact, no action needed unless you
 want it deleted.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:19:01Z)**_
@@ -736,6 +762,7 @@ Stash unrelated formatting changes
 ```text
 Saved working directory and index state On master: wip: doc/log formatting
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:19:09Z)**_
@@ -748,6 +775,7 @@ Reset feature branch onto current origin/master
 Switched to and reset branch 'fix/issue-16-budget-name-dropdown'
 branch 'fix/issue-16-budget-name-dropdown' set up to track 'origin/master'.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:19:16Z)**_
@@ -765,6 +793,7 @@ Cherry-pick the real issue-16 fix commit onto the fresh branch
  create mode 100644 packages/desktop-client/src/components/sidebar/index.test.tsx
  create mode 100644 upcoming-release-notes/fix-issue-16-budget-name-dropdown.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:19:17Z)**_
@@ -786,6 +815,7 @@ Reword commit message to add required [AI] prefix
  create mode 100644 packages/desktop-client/src/components/sidebar/index.test.tsx
  create mode 100644 upcoming-release-notes/fix-issue-16-budget-name-dropdown.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:19:31Z)**_
@@ -795,13 +825,14 @@ _**Agent (claude-sonnet-5 2026-09-15 03:19:31Z)**_
 Push the fixed branch to origin (fast-forward)
 
 ```text
-remote: 
-remote: GitHub found 75 vulnerabilities on CSCI-435-SE/actual-budget's default branch (38 high, 31 moderate, 6 low). To find out more, visit:        
-remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
-remote: 
+remote:
+remote: GitHub found 75 vulnerabilities on CSCI-435-SE/actual-budget's default branch (38 high, 31 moderate, 6 low). To find out more, visit:
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot
+remote:
 To github.com:CSCI-435-SE/actual-budget.git
    a3e631e70..c76a045b7  fix/issue-16-budget-name-dropdown -> fix/issue-16-budget-name-dropdown
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:19:33Z)**_
@@ -817,6 +848,7 @@ Point local branch tracking at its actual remote counterpart
 ```text
 branch 'fix/issue-16-budget-name-dropdown' set up to track 'origin/fix/issue-16-budget-name-dropdown'.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:19:52Z)**_
@@ -830,6 +862,7 @@ Switched to branch 'master'
 Your branch is ahead of 'origin/master' by 2 commits.
   (use "git push" to publish your local commits)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:19:57Z)**_
@@ -858,6 +891,7 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 Dropped refs/stash@{0} (4b699b08d2643d6c1b7ac707f950b22cdf920121)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:20:00Z)**_
@@ -865,6 +899,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:20:00Z)**_
 Everything's restored exactly as it was — `master` back with the same 8 unstaged formatting changes and still 2 commits ahead of `origin/master`.
 
 **Done:**
+
 - `origin/fix/issue-16-budget-name-dropdown` now has commit `c76a045b7` — `[AI] fix: budget name dropdown (#16)` — with the real SidebarProvider/index.tsx changes, tests, and release note.
 - Your uncommitted STUDENTS.md/AI-log formatting changes are untouched, still sitting on `master`.
 

@@ -1,6 +1,6 @@
 ## What did you implement so far in the sprint, and what remains?
 
-So far in the sprint I have closed 3 small issues.  My main priorities haven't been on specific features, but rather getting the codebase to a more stable and up to date state. I fixed broken mutation tests as part of issue #94 and fixed other tests that have been broken since the start of our project in issue #98. I also synced the codebase upstream, as the original repository released a new version. What I thought would be a simple merge, this task ending up requiring me to have to fix many merge conflicts and perform lots of merges. I still need to finish issue #24 which is allowing color customization for accounts, which I will work on over the next week or so.
+So far in the sprint I have closed 3 small issues. My main priorities haven't been on specific features, but rather getting the codebase to a more stable and up to date state. I fixed broken mutation tests as part of issue #94 and fixed other tests that have been broken since the start of our project in issue #98. I also synced the codebase upstream, as the original repository released a new version. What I thought would be a simple merge, this task ending up requiring me to have to fix many merge conflicts and perform lots of merges. I still need to finish issue #24 which is allowing color customization for accounts, which I will work on over the next week or so.
 
 ## What is one thing you learned about the codebase or about software engineering practice?
 

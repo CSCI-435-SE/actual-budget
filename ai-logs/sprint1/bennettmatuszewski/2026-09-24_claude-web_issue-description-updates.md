@@ -3,30 +3,34 @@
 **Created:** 9/24/2026 18:10:02  
 **Updated:** 9/24/2026 18:20:05  
 **Exported:** 9/24/2026 18:27:00  
-**Link:** [https://claude.ai/chat/99d46150-946d-4ec2-a774-5603e46b78f5](https://claude.ai/chat/99d46150-946d-4ec2-a774-5603e46b78f5)  
+**Link:** [https://claude.ai/chat/99d46150-946d-4ec2-a774-5603e46b78f5](https://claude.ai/chat/99d46150-946d-4ec2-a774-5603e46b78f5)
 
 ## User:
 
 > 9/24/2026 18:10:06
 
-Look at this existing ticket, write detailed  acceptance criteria, out of scope, and open questions.
+Look at this existing ticket, write detailed acceptance criteria, out of scope, and open questions.
 
 **User Story**
 
 As a user who just imported 80 credit card transactions, I want to select all "Uncategorized" entries and assign them a category in one action so that I don't have to click into each transaction one by one.
 
 ## User Scenario
+
 When users import a large batch of transactions — say, three months of credit card statements — they often need to recategorize dozens of entries at once. Currently, each transaction must be edited individually. A multi-select checkbox on the transactions list plus a bulk-action toolbar (set category, set payee, add/replace notes, delete) would dramatically reduce the time cost of keeping a budget up to date after an import.
 
 ## Acceptance Criteria
-1. 
-2. 
-3. 
+
+1.
+2.
+3.
 
 ## Out of Scope
+
 - ...
 
 ## Open Questions
+
 - ...
 
 **Rough Scope**
@@ -55,6 +59,7 @@ Here's the filled-out ticket:
 As a user who just imported 80 credit card transactions, I want to select all "Uncategorized" entries and assign them a category in one action so that I don't have to click into each transaction one by one.
 
 ## User Scenario
+
 When users import a large batch of transactions — say, three months of credit card statements — they often need to recategorize dozens of entries at once. Currently, each transaction must be edited individually. A multi-select checkbox on the transactions list plus a bulk-action toolbar (set category, set payee, add/replace notes, delete) would dramatically reduce the time cost of keeping a budget up to date after an import.
 
 ## Acceptance Criteria

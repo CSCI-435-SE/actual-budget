@@ -12,18 +12,18 @@ Description
 This PR makes small changes to the behavior of the unpinned floating sidebar in preparation for a revamp of how a shared container handles the main layout sizing when the sidebar is unpinned. Mostly contains small preparations required to start issue #69, and an audit of the current behavior.
 
 <pasted_content id="9582">
+
 ## Code Review
 
-| Criterion | Score (1–10) | Notes |
-|---|---|---|
-| Correctness — does the change do what the issue asked? | | |
-| Test coverage — are tests present and meaningful? | | |
-| Code quality — consistent style, clear naming, no unnecessary duplication | | |
-| Documentation — inline comments and PR description are clear | | |
-| AI transparency — if AI was used, is there evidence of human verification? | | |
-| Overall — would you merge this as-is? | | |
-</pasted_content id="9582">
-
+| Criterion                                                                  | Score (1–10) | Notes |
+| -------------------------------------------------------------------------- | ------------ | ----- |
+| Correctness — does the change do what the issue asked?                     |              |       |
+| Test coverage — are tests present and meaningful?                          |              |       |
+| Code quality — consistent style, clear naming, no unnecessary duplication  |              |       |
+| Documentation — inline comments and PR description are clear               |              |       |
+| AI transparency — if AI was used, is there evidence of human verification? |              |       |
+| Overall — would you merge this as-is?                                      |              |       |
+| </pasted_content id="9582">                                                |
 
 ---
 
@@ -45,6 +45,7 @@ b66cef08e Add ai-log for Sprint 1 issue #39, #56, #57
  .../src/components/sidebar/index.tsx               |    6 +-
  5 files changed, 2556 insertions(+), 15 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:32:28Z)**_
@@ -63,16 +64,16 @@ index 5ed7223ee..de4fa78cd 100644
 @@ -3,8 +3,6 @@ import { fireEvent, render } from '@testing-library/react';
  import { beforeEach, describe, expect, it, vi } from 'vitest';
  import type { Mock } from 'vitest';
- 
+
 -import { useGlobalPref } from '#hooks/useGlobalPref';
 -
  import { useSidebar } from './SidebarProvider';
- 
+
  import { FloatableSidebar } from './index';
 @@ -13,10 +11,6 @@ vi.mock('@actual-app/components/hooks/useResponsive', () => ({
    useResponsive: vi.fn(),
  }));
- 
+
 -vi.mock('#hooks/useGlobalPref', () => ({
 -  useGlobalPref: vi.fn(),
 -}));
@@ -98,21 +99,21 @@ index bf0b72188..ff28fa6b3 100644
 @@ -3,18 +3,14 @@ import React from 'react';
  import { useResponsive } from '@actual-app/components/hooks/useResponsive';
  import { View } from '@actual-app/components/view';
- 
+
 -import { useGlobalPref } from '#hooks/useGlobalPref';
 -
  import { Sidebar } from './Sidebar';
  import { useSidebar } from './SidebarProvider';
- 
+
  export function FloatableSidebar() {
 -  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 -
    const sidebar = useSidebar();
    const { isNarrowWidth } = useResponsive();
- 
+
 -  const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
 +  const sidebarShouldFloat = sidebar.floating;
- 
+
    return isNarrowWidth ? null : (
      <View
 ai-logs/sprint1/jamesleonard3rd/2026-09-29_19-05-52Z-pull-issue-hash-39.md
@@ -121,6 +122,7 @@ ai-logs/sprint1/jamesleonard3rd/2026-10-04_20-59-56Z-make-a-plan-to.md
 packages/desktop-client/src/components/sidebar/index.test.tsx
 packages/desktop-client/src/components/sidebar/index.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:32:31Z)**_
@@ -353,6 +355,7 @@ export function useSidebar() {
   );
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:32:40Z)**_
@@ -514,6 +517,7 @@ _**Agent (claude-opus-5-5 2026-10-04 21:00:02Z)**_
 <tool-use data-tool-type="unknown" data-tool-name="ToolSearch"><details>
 <summary>Tool use: **ToolSearch**</summary>
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:32:44Z)**_
@@ -586,22 +590,22 @@ Inspect plan log for issue scope and verification
 958:   Duration  4.40s (transform 1.53s, setup 4.18s, import 1.11s, tests 107ms, environment 2.81s)
 968:`cd /Users/james/ActualBudget/actual-budget && yarn typecheck 2>&1 | tail -8; npx oxlint packages/desktop-client/src/components/sidebar/index.tsx packages/desktop-client/src/components/sidebar/index.test.tsx 2>&1 | tail -5; npx oxfmt --check packages/desktop-client/src/components/sidebar/index.tsx packages/desktop-client/src/components/sidebar/index.test.tsx 2>&1 | tail -3`
 
-            
-  EXAMPLES  
-            
-    # Sync all agents with activity                                       
-    specstory sync                                                        
-                                                                          
-    # Sync specific agent                                                 
-    specstory sync antigravity                                            
-    specstory sync claude                                                 
-    specstory sync codex                                                  
-    specstory sync copilotide                                             
-    specstory sync cursor                                                 
-    specstory sync cursoride                                              
-    specstory sync deepseek                                               
-    specstory sync droid                                                  
-    specstory sync gemini                                                 
+
+  EXAMPLES
+
+    # Sync all agents with activity
+    specstory sync
+
+    # Sync specific agent
+    specstory sync antigravity
+    specstory sync claude
+    specstory sync codex
+    specstory sync copilotide
+    specstory sync cursor
+    specstory sync cursoride
+    specstory sync deepseek
+    specstory sync droid
+    specstory sync gemini
     specstory sync muse
 ```
 </details></tool-use>
@@ -667,6 +671,7 @@ You may also want to delete the empty `actual-budget/.specstory/` so it doesn't 
 
 Want me to run the sync now?
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:32:47Z)**_
@@ -798,6 +803,7 @@ In [sidebar/index.test.tsx](packages/desktop-client/src/components/sidebar/index
 
 ```text
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:33:47Z)**_
@@ -817,6 +823,7 @@ Run sidebar unit tests
    Start at  14:32:54
    Duration  51.37s (transform 5.96s, setup 26.74s, import 15.75s, tests 221ms, environment 58.23s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:33:52Z)**_
@@ -841,6 +848,7 @@ List user turns in AI logs
 2026-10-04_20-59-56Z-make-a-plan-to.md:1039:_**User (2026-10-04 21:11:52Z)**_
 7
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:33:56Z)**_
@@ -853,7 +861,7 @@ Read verification section of AI log
 
 ````text
 Typecheck, lint and format-check changes
-`cd /Users/james/ActualBudget/actual-budget && yarn typecheck 2>&1 | tail -8; npx oxlint packages/desktop-client/src/components/sidebar/index.tsx packages/desktop-client/src/components/sidebar/index.test.tsx 2>&1 | tail 
+`cd /Users/james/ActualBudget/actual-budget && yarn typecheck 2>&1 | tail -8; npx oxlint packages/desktop-client/src/components/sidebar/index.tsx packages/desktop-client/src/components/sidebar/index.test.tsx 2>&1 | tail
 ```text
 @actual-app/ci-actions typecheck success, took 2.34s, queued for 0.00s
 desktop-electron typecheck success, took 6.68s, queued for 0.00s
@@ -862,7 +870,7 @@ plugins-service typecheck success, took 7.73s, queued for 5.41s
 success: 10, skipped: 0, pending: 0, aborted: 0, failed: 0
 worker restarts: 0, max worker memory usage: 37.10 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈�
-Took a total of 1m 27.26s to complete. 
+Took a total of 1m 27.26s to complete.
 npm notice
 npm notice New major version of npm available! 10.9.4 -> 12.2.0
 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
@@ -910,6 +918,7 @@ _**User (2026-10-04 21:11:52Z)**_
 why isn't specstory working to log this conversation
 ---
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:34:29Z)**_
@@ -927,14 +936,14 @@ I reviewed the branch against master. It's 2 commits: [sidebar/index.tsx](packag
 
 ## Code Review
 
-| Criterion | Score (1–10) | Notes |
-|---|---|---|
-| Correctness — does the change do what the issue asked? | 6 | The refactor is correct and changes no behavior: `sidebar.floating` is the same value the component used to compute itself. But it doesn't meet #68's main criterion (one shared layout context, since absolute positioning is put off to #69) or the "audit findings documented" criterion. It's preparation work, not a fix for the issue. Other places still compute "floating" their own way, so the provider isn't yet the only place it's decided: [Titlebar.tsx:298](packages/desktop-client/src/components/Titlebar.tsx#L298), [settings/index.tsx:191](packages/desktop-client/src/components/settings/index.tsx#L191) and [banksync/index.tsx:96](packages/desktop-client/src/components/banksync/index.tsx#L96). Leaving them is fine for scope, but worth a follow-up issue. |
-| Test coverage — are tests present and meaningful? | 5 | The `useGlobalPref` mock was removed correctly, and the 3 existing tests still pass. No test was added for the change itself. `useSidebar` is fully mocked, and the test setup copies the provider's `floatingSidebar \|\| alwaysFloats` logic ([index.test.tsx:41](packages/desktop-client/src/components/sidebar/index.test.tsx#L41)), so nothing checks the component against the real provider. There's also no test for `alwaysFloats: true` with `floatingSidebar: false`, which should still float. |
-| Code quality — consistent style, clear naming, no unnecessary duplication | 8 | The diff is small and clean, and it removes duplicated logic. Minor point: `sidebarShouldFloat` ([index.tsx:13](packages/desktop-client/src/components/sidebar/index.tsx#L13)) is now just another name for `sidebar.floating` and could be dropped, though keeping it makes the diff smaller. The `floatingSidebar`/`alwaysFloats` options on the test's `setup()` are left over from the old code; a single `floating` option would be clearer. |
-| Documentation — inline comments and PR description are clear | 4 | The description says the PR changes behavior, which isn't true. It mentions #69 but not #68, and it doesn't include the audit it promises. The commit message says "background", which doesn't match the change. There's no release note in `upcoming-release-notes/`, if your team follows the upstream rule that every PR needs one. |
-| AI transparency — if AI was used, is there evidence of human verification? | 6 | Good: the logs are included, and they show a person steering the work: "avoid the absolute positioning change… regression… push to #69", "keep it small". Gaps: <br>• No evidence of manual testing, and the log itself says the app wasn't checked. <br>• The commits lack the `[AI]` prefix. <br>• The log commit says "#39, #56, #57", but the logs cover #39 and #68. The #39 log (Sep 29) has nothing to do with this PR. <br>• The end of the #68 log is unrelated SpecStory troubleshooting. |
-| Overall — would you merge this as-is? | 6 | **Not as-is, but close.** Fix the description: say it's a refactor with no behavior change, add the #68 audit findings, and link #68 and say whether it closes it. Reword the commits with `[AI]`, do the manual checks from the plan and note them, and optionally add the `alwaysFloats`-only test. After that, it's an easy approve. |
+| Criterion                                                                  | Score (1–10) | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Correctness — does the change do what the issue asked?                     | 6            | The refactor is correct and changes no behavior: `sidebar.floating` is the same value the component used to compute itself. But it doesn't meet #68's main criterion (one shared layout context, since absolute positioning is put off to #69) or the "audit findings documented" criterion. It's preparation work, not a fix for the issue. Other places still compute "floating" their own way, so the provider isn't yet the only place it's decided: [Titlebar.tsx:298](packages/desktop-client/src/components/Titlebar.tsx#L298), [settings/index.tsx:191](packages/desktop-client/src/components/settings/index.tsx#L191) and [banksync/index.tsx:96](packages/desktop-client/src/components/banksync/index.tsx#L96). Leaving them is fine for scope, but worth a follow-up issue. |
+| Test coverage — are tests present and meaningful?                          | 5            | The `useGlobalPref` mock was removed correctly, and the 3 existing tests still pass. No test was added for the change itself. `useSidebar` is fully mocked, and the test setup copies the provider's `floatingSidebar \|\| alwaysFloats` logic ([index.test.tsx:41](packages/desktop-client/src/components/sidebar/index.test.tsx#L41)), so nothing checks the component against the real provider. There's also no test for `alwaysFloats: true` with `floatingSidebar: false`, which should still float.                                                                                                                                                                                                                                                                               |
+| Code quality — consistent style, clear naming, no unnecessary duplication  | 8            | The diff is small and clean, and it removes duplicated logic. Minor point: `sidebarShouldFloat` ([index.tsx:13](packages/desktop-client/src/components/sidebar/index.tsx#L13)) is now just another name for `sidebar.floating` and could be dropped, though keeping it makes the diff smaller. The `floatingSidebar`/`alwaysFloats` options on the test's `setup()` are left over from the old code; a single `floating` option would be clearer.                                                                                                                                                                                                                                                                                                                                        |
+| Documentation — inline comments and PR description are clear               | 4            | The description says the PR changes behavior, which isn't true. It mentions #69 but not #68, and it doesn't include the audit it promises. The commit message says "background", which doesn't match the change. There's no release note in `upcoming-release-notes/`, if your team follows the upstream rule that every PR needs one.                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| AI transparency — if AI was used, is there evidence of human verification? | 6            | Good: the logs are included, and they show a person steering the work: "avoid the absolute positioning change… regression… push to #69", "keep it small". Gaps: <br>• No evidence of manual testing, and the log itself says the app wasn't checked. <br>• The commits lack the `[AI]` prefix. <br>• The log commit says "#39, #56, #57", but the logs cover #39 and #68. The #39 log (Sep 29) has nothing to do with this PR. <br>• The end of the #68 log is unrelated SpecStory troubleshooting.                                                                                                                                                                                                                                                                                      |
+| Overall — would you merge this as-is?                                      | 6            | **Not as-is, but close.** Fix the description: say it's a refactor with no behavior change, add the #68 audit findings, and link #68 and say whether it closes it. Reword the commits with `[AI]`, do the manual checks from the plan and note them, and optionally add the `alwaysFloats`-only test. After that, it's an easy approve.                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ---
 
@@ -971,7 +980,6 @@ No regressions to existing navigation or budget functionality.
 Findings from the audit are written up in the issue or PR for reviewers.
 </pasted_content id="9582">
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-10-05 18:35:59Z)**_
@@ -999,6 +1007,7 @@ sidebar/SidebarProvider.tsx:38:  const alwaysFloats = width < 668;
 201:          <SidebarProvider>
 236:          </SidebarProvider>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 18:36:11Z)**_
@@ -1013,18 +1022,19 @@ Yes, it raises three scores: Documentation, Correctness and Overall. I checked t
   - Acceptance criterion: "The panel opens and closes exactly as before, with no change to … styling."
 
   Taking the floating panel out of `position: absolute` would change how it opens and closes. So putting it off to #69 and documenting why is a reasonable choice, not a gap.
+
 - **One criterion is still only partly met.** "The panel and main content live in the same layout context" is true in docked mode. In floating mode the panel is a child of the shared flex row but is taken out of the flow. That's fine as long as #68 says so: either leave #68 open, or edit it to say the floating case moves to #69, so it doesn't get closed as fully done.
 
 ## Updated scores
 
-| Criterion | Before | Now | Notes |
-|---|---|---|---|
-| Correctness | 6 | **7** | The structure was already in place, panel state now comes from one source, and putting off the absolute-positioning change is explained. Floating mode still sits outside the flow, so the first criterion is only partly met. |
-| Test coverage | 5 | 5 | No change. The provider is still fully mocked, and there's still no `alwaysFloats`-only test. |
-| Code quality | 8 | 8 | No change. |
-| Documentation | 4 | **7** | The audit is clear, accurate, and links to #69. Still left: the "background" commit message, and the description saying it changes behavior (if that wording is still in the PR). |
-| AI transparency | 6 | 6 | No change. There's still no record of a person testing docked, floating, under-668px and mobile in the running app. |
-| Overall | 6 | **7** | Close to mergeable. |
+| Criterion       | Before | Now   | Notes                                                                                                                                                                                                                          |
+| --------------- | ------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Correctness     | 6      | **7** | The structure was already in place, panel state now comes from one source, and putting off the absolute-positioning change is explained. Floating mode still sits outside the flow, so the first criterion is only partly met. |
+| Test coverage   | 5      | 5     | No change. The provider is still fully mocked, and there's still no `alwaysFloats`-only test.                                                                                                                                  |
+| Code quality    | 8      | 8     | No change.                                                                                                                                                                                                                     |
+| Documentation   | 4      | **7** | The audit is clear, accurate, and links to #69. Still left: the "background" commit message, and the description saying it changes behavior (if that wording is still in the PR).                                              |
+| AI transparency | 6      | 6     | No change. There's still no record of a person testing docked, floating, under-668px and mobile in the running app.                                                                                                            |
+| Overall         | 6      | **7** | Close to mergeable.                                                                                                                                                                                                            |
 
 ## Still blocking or worth fixing
 
@@ -1047,30 +1057,32 @@ Written for: the PR author (James) and other reviewers on the team, to paste as 
 
 It starts with 🤖 because the repo's rules require that prefix on anything AI-written that goes on GitHub. It's in a code block so the table and backticks paste cleanly.
 
-````markdown
+```markdown
 🤖 ## Code Review
 
 **Summary:** This is a small refactor that keeps behavior the same: `FloatableSidebar` now reads `sidebar.floating` from `SidebarProvider` instead of recomputing `floatingSidebar || alwaysFloats` from the global pref, so panel state comes from one place. I checked the audit against the source and it's accurate. Putting off the `position: absolute` change to #69 makes sense, because #68 also requires that the panel "opens and closes exactly as before."
 
-| Criterion | Score (1–10) | Notes |
-|---|---|---|
-| Correctness — does the change do what the issue asked? | 7 | The refactor is correct and keeps behavior the same; `SidebarProvider` already computes the same value. Panel state now has one source, and the audit is written up. "Panel and main content live in the same layout context" is only partly met: in floating mode the panel is still `position: absolute`, outside the flow. That's deliberate and explained, but #68 should either stay open or say the floating case moves to #69. |
-| Test coverage — are tests present and meaningful? | 5 | The `useGlobalPref` mock was removed correctly, and all 9 sidebar tests pass. No new coverage: `useSidebar` is fully mocked, and the test setup copies the provider's `floatingSidebar \|\| alwaysFloats` logic, so nothing tests the component against the real provider. There's no case for `alwaysFloats: true` with the pref off. |
-| Code quality — consistent style, clear naming, no unnecessary duplication | 8 | The diff is small and clean and removes duplicated logic. Nits: `sidebarShouldFloat` is now just another name for `sidebar.floating`, and the `floatingSidebar`/`alwaysFloats` options on the test's `setup()` could be one `floating` option. |
-| Documentation — inline comments and PR description are clear | 7 | The audit is clear, accurate, and links to #69. The commit message "Change sidebar floating background functionality" doesn't match the change, which has nothing to do with a background and changes no behavior. In the audit, `<FloatableSidebar />` was hidden by GitHub's markdown ("containing and the main content"); wrapping it in backticks fixes it. |
-| AI transparency — if AI was used, is there evidence of human verification? | 6 | AI logs are included, and they show a person steering the work (putting off the absolute-positioning change to avoid a regression, keeping the change small). But the log says "I haven't checked it in the running app," and nothing shows a manual check afterwards. The commits are missing the required `[AI]` prefix. The log commit mentions #39/#56/#57, but the logs cover #39 and #68, and the #39 log has nothing to do with this PR. |
-| Overall — would you merge this as-is? | 7 | Close. Approve once the required items below are done. |
+| Criterion                                                                  | Score (1–10) | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Correctness — does the change do what the issue asked?                     | 7            | The refactor is correct and keeps behavior the same; `SidebarProvider` already computes the same value. Panel state now has one source, and the audit is written up. "Panel and main content live in the same layout context" is only partly met: in floating mode the panel is still `position: absolute`, outside the flow. That's deliberate and explained, but #68 should either stay open or say the floating case moves to #69.           |
+| Test coverage — are tests present and meaningful?                          | 5            | The `useGlobalPref` mock was removed correctly, and all 9 sidebar tests pass. No new coverage: `useSidebar` is fully mocked, and the test setup copies the provider's `floatingSidebar \|\| alwaysFloats` logic, so nothing tests the component against the real provider. There's no case for `alwaysFloats: true` with the pref off.                                                                                                          |
+| Code quality — consistent style, clear naming, no unnecessary duplication  | 8            | The diff is small and clean and removes duplicated logic. Nits: `sidebarShouldFloat` is now just another name for `sidebar.floating`, and the `floatingSidebar`/`alwaysFloats` options on the test's `setup()` could be one `floating` option.                                                                                                                                                                                                  |
+| Documentation — inline comments and PR description are clear               | 7            | The audit is clear, accurate, and links to #69. The commit message "Change sidebar floating background functionality" doesn't match the change, which has nothing to do with a background and changes no behavior. In the audit, `<FloatableSidebar />` was hidden by GitHub's markdown ("containing and the main content"); wrapping it in backticks fixes it.                                                                                 |
+| AI transparency — if AI was used, is there evidence of human verification? | 6            | AI logs are included, and they show a person steering the work (putting off the absolute-positioning change to avoid a regression, keeping the change small). But the log says "I haven't checked it in the running app," and nothing shows a manual check afterwards. The commits are missing the required `[AI]` prefix. The log commit mentions #39/#56/#57, but the logs cover #39 and #68, and the #39 log has nothing to do with this PR. |
+| Overall — would you merge this as-is?                                      | 7            | Close. Approve once the required items below are done.                                                                                                                                                                                                                                                                                                                                                                                          |
 
 ### Required before merge
+
 - [ ] Confirm the change was checked in the running app (`yarn start` → View demo): docked sidebar and resizing, floating show/hide on hover, a window under 668px (always floats), and narrow/mobile (no sidebar).
 - [ ] Reword both commits with the `[AI]` prefix, and change the "background" wording.
 - [ ] Make the PR description say this is a refactor with no behavior change, and say whether it closes #68 or only partly covers it.
 
 ### Optional / follow-up
+
 - Add a test for `alwaysFloats: true` with `floatingSidebar: false`.
 - Open a follow-up issue for the remaining places that compute "floating" themselves: `Titlebar.tsx:298`, `settings/index.tsx:191`, `banksync/index.tsx:96`.
 - Fix the `<FloatableSidebar />` text in the audit.
-````
+```
 
 ---
 
@@ -1099,6 +1111,7 @@ b66cef08e James Leonard Add ai-log for Sprint 1 issue #39, #56, #57
  .../src/components/sidebar/index.tsx               |    6 +-
  5 files changed, 2567 insertions(+), 15 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 20:14:39Z)**_
@@ -1123,7 +1136,7 @@ index de4fa78cd..1f9eb29f1 100644
 @@ -60,6 +60,17 @@ describe('FloatableSidebar', () => {
      expect(setHoveringSidebar).toHaveBeenCalledWith(false);
    });
- 
+
 +  it('attaches hover handlers when the sidebar always floats, even if the floating pref is off', () => {
 +    const { getByTestId } = setup({
 +      floatingSidebar: false,
@@ -1320,6 +1333,7 @@ describe('SidebarProvider', () => {
   });
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 20:14:47Z)**_
@@ -1343,6 +1357,7 @@ Mutation test: break provider floating, run tests, revert
    Start at  16:14:57
    Duration  7.98s (transform 3.92s, setup 9.43s, import 1.83s, tests 191ms, environment 3.61s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-05 20:15:26Z)**_
@@ -1371,6 +1386,7 @@ Test Files  2 passed (2)
 Then I reverted the change; the working tree is clean. **Nothing in the test suite checks how `floating` is computed.** That matters because this PR's whole point is making that value the one source of truth.
 
 Smaller issues with the same test:
+
 - **Misleading name.** "even if the floating pref is off" describes something `FloatableSidebar` can no longer see, since it doesn't read the pref after this PR.
 - **Only half checked.** It tests `mouseOver` but not `mouseLeave`.
 
@@ -1402,13 +1418,13 @@ Smaller issues with the same test:
 
 ## Updated scores
 
-| Criterion | Score | Change |
-|---|---|---|
-| Correctness | 7 | — |
-| Test coverage | **5** | No change. The new test passes no matter what the provider does, so it adds a test but no coverage. |
-| Code quality | 7 | Down from 8: the test helper now copies the provider's logic, and two tests are effectively the same. |
-| Documentation | 7 | — |
-| AI transparency | 6 | — No sign yet of a manual check in the running app, and no `[AI]` prefix on any commit, including the new one. |
-| Overall | 7 | Still close. Swapping in the provider test and doing the remaining items from the last review would make this an approve. |
+| Criterion       | Score | Change                                                                                                                    |
+| --------------- | ----- | ------------------------------------------------------------------------------------------------------------------------- |
+| Correctness     | 7     | —                                                                                                                         |
+| Test coverage   | **5** | No change. The new test passes no matter what the provider does, so it adds a test but no coverage.                       |
+| Code quality    | 7     | Down from 8: the test helper now copies the provider's logic, and two tests are effectively the same.                     |
+| Documentation   | 7     | —                                                                                                                         |
+| AI transparency | 6     | — No sign yet of a manual check in the running app, and no `[AI]` prefix on any commit, including the new one.            |
+| Overall         | 7     | Still close. Swapping in the provider test and doing the remaining items from the last review would make this an approve. |
 
 I can update the final review comment with these test findings if you want to post it.

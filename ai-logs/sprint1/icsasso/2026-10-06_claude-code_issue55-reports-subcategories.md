@@ -6,13 +6,11 @@
 
 _**User (2026-10-06 02:38:47Z)**_
 
-
-
 <pasted_content id="1ce0">
 Please come up with a plan to help me solve the following issue and answer the open question as you go:
 
 Add subcategory section to reports
-On the main budget page, the user can create a new category that is nested under a parent category (i.e. create restaurants subcategory under food category). When creating it, the user names the subcategory and a portion of the parent category's budget is allocated to the child category. The user also wants to be able to see these subcategories in the expense reports so they can clearly see where all their money went at the end of a month. The subcategories should be shown under wherever their parent is shown and included in reports. 
+On the main budget page, the user can create a new category that is nested under a parent category (i.e. create restaurants subcategory under food category). When creating it, the user names the subcategory and a portion of the parent category's budget is allocated to the child category. The user also wants to be able to see these subcategories in the expense reports so they can clearly see where all their money went at the end of a month. The subcategories should be shown under wherever their parent is shown and included in reports.
 
 Acceptance Criteria:
 Subcategories (children) can be made under a larger supercategory (parents).
@@ -23,7 +21,6 @@ The subcategories are clearly shown on reports under their supercategories
 It is clear how much money, if any, from the parent was allocated to the child and how the child's spending compared to the budgeted amount
 The subcategories can be accessed wherever the parents can be and are shown on reports.
 
-
 Out of Scope:
 Having separate reports for specific categories.
 Providing options for potential/starter subcategories for common supercategories
@@ -31,7 +28,6 @@ Providing options for potential/starter subcategories for common supercategories
 Open Question:
 What is one non-trivial design decision that might need to be made either before or during implementation?
 </pasted_content id="1ce0">
-
 
 ---
 
@@ -119,6 +115,7 @@ packages/desktop-client/src/components/accounts/Balance.tsx
 packages/desktop-client/src/components/budget/BudgetCategories.tsx
 packages/desktop-client/src/components/budget/BudgetTable.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:38:58Z)**_
@@ -213,6 +210,7 @@ util.ts
 1780606215001_add_performance_indexes.sql
 1780700000000_add_category_parent.sql
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:39:01Z)**_
@@ -224,6 +222,7 @@ _**Agent (claude-opus-5-5 2026-10-06 02:39:01Z)**_
 ```text
 File content (816.3KB) exceeds maximum allowed size (256KB). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:39:06Z)**_
@@ -261,7 +260,7 @@ index 46781455c..5ce21ccbb 100644
 @@ -51,6 +52,57 @@ export function removeCategoriesFromGroups(
      .filter(group => group.categories?.length);
  }
- 
+
 +// For pickers whose money comes from "To Budget", which can't fund a
 +// subcategory directly.
 +export function removeSubcategoriesFromGroups(
@@ -319,7 +318,7 @@ index 46781455c..5ce21ccbb 100644
 @@ -170,6 +222,51 @@ export function findSortDown<T extends { id: string }>(
    }
  }
- 
+
 +// Where `dragged` lands when dropped on the row of `targetId` in `group`,
 +// or null when that drop isn't allowed. Uses the same nesting the rows
 +// show:
@@ -374,7 +373,7 @@ index 261326224..e7b24f198 100644
 +++ b/packages/desktop-client/src/spreadsheet/bindings.ts
 @@ -170,6 +170,7 @@ export const envelopeBudget = {
    groupBalance: envelopeParametrizedField('group-leftover'),
- 
+
    catBudgeted: envelopeParametrizedField('budget'),
 +  catParentTotal: envelopeParametrizedField('parent-total-budget'),
    catSumAmount: envelopeParametrizedField('sum-amount'),
@@ -382,7 +381,7 @@ index 261326224..e7b24f198 100644
    catCarryover: envelopeParametrizedField('carryover'),
 @@ -194,6 +195,7 @@ export const trackingBudget = {
    groupBalance: trackingParametrizedField('group-leftover'),
- 
+
    catBudgeted: trackingParametrizedField('budget'),
 +  catParentTotal: trackingParametrizedField('parent-total-budget'),
    catSumAmount: trackingParametrizedField('sum-amount'),
@@ -438,7 +437,7 @@ index f2dae017a..c30145248 100644
      };
    });
  }
- 
+
 +// Lists each subcategory right after its parent so the flat list still
 +// reads top-down like the tree the budget page shows.
 +function orderSubcategories(categories: CategoryEntity[]) {
@@ -470,7 +469,7 @@ index 71daf0107..e8ee4a121 100644
 @@ -152,6 +152,69 @@ export function setBudget({
    });
  }
- 
+
 +function getParentCategoryId(
 +  category: CategoryEntity['id'],
 +): CategoryEntity['id'] | null {
@@ -545,7 +544,7 @@ index 71daf0107..e8ee4a121 100644
 +    await setCategoryBudget({ category, month, amount: newAmount });
    });
  }
- 
+
 @@ -327,7 +390,7 @@ export async function set12MonthAvg({
        if (cat.is_income === 1 && !isTrackingBudget()) {
          continue;
@@ -564,7 +563,7 @@ index 71daf0107..e8ee4a121 100644
      }
    });
  }
- 
+
 -export async function setNMonthAvg({
 +// Budgets a single category, so a subcategory's average comes out of its
 +// parent. The bulk averages write every category (parents included) and
@@ -593,7 +592,7 @@ index 71daf0107..e8ee4a121 100644
 @@ -381,7 +457,11 @@ export async function setNMonthAvg({
        avg *= -1;
      }
- 
+
 -    void setBudget({ category, month, amount: avg });
 +    if (fromParent) {
 +      await setCategoryBudget({ category, month, amount: avg });
@@ -602,7 +601,7 @@ index 71daf0107..e8ee4a121 100644
 +    }
    });
  }
- 
+
 @@ -528,6 +608,10 @@ export async function coverOverspending({
    amount?: IntegerAmount;
    currencyCode: string;
@@ -633,9 +632,9 @@ index 71daf0107..e8ee4a121 100644
 +
    const sheetName = monthUtils.sheetForMonth(month);
    const fromBudgeted = await getSheetValue(sheetName, 'budget-' + from);
- 
+
 @@ -696,7 +786,7 @@ export async function copyUntilYearEnd({
- 
+
    await batchMessages(async () => {
      for (const futureMonth of futureMonths) {
 -      void setBudget({ category, month: futureMonth, amount });
@@ -652,13 +651,13 @@ index 4e10a6f8c..4e23fa47a 100644
  import * as envelopeBudget from './envelope';
  import * as trackingBudget from './tracking';
 +import { sumAmounts as sumCellAmounts } from './util';
- 
+
  export function getBudgetType() {
    const meta = sheet.get().meta();
 @@ -70,7 +71,14 @@ function getSumAmountsByMonth(
    return sums;
  }
- 
+
 -export function createCategory(cat, sheetName, prevSheetName, start, end) {
 +export function createCategory(
 +  cat,
@@ -713,7 +712,7 @@ index 4e10a6f8c..4e23fa47a 100644
 +    }
 +  });
  }
- 
+
  function handleAccountChange(months, oldValue, newValue) {
 @@ -218,6 +263,7 @@ export function triggerBudgetChanges(oldValues, newValues) {
                newValue,
@@ -726,7 +725,7 @@ index 4e10a6f8c..4e23fa47a 100644
 @@ -271,6 +317,15 @@ export async function createBudget(months) {
    );
    const categories = groups.flatMap(group => group.categories);
- 
+
 +  const childIdsByParent = new Map<string, string[]>();
 +  for (const cat of categories) {
 +    if (cat.parent_id) {
@@ -808,6 +807,7 @@ index 000000000..b6a10c979
 +  return category.parent_id != null;
 +}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:39:09Z)**_
@@ -1005,6 +1005,7 @@ spreadsheets/sankey-spreadsheet.test.ts:510:        categoryGroup: string;
 spreadsheets/sankey-spreadsheet.test.ts:511:        categoryGroupId: string;
 spreadsheets/sankey-spreadsheet.test.ts:523:        categoryGroupsMap: new Map(),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:39:14Z)**_
@@ -1295,6 +1296,7 @@ ReportTableTotals.tsx
 70:                {item.categories && (
 73:                      {item.categories.map(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:39:22Z)**_
@@ -1375,6 +1377,7 @@ spreadsheets/sankey-spreadsheet.ts:277:              existingGroup.categories.pu
 ../../components/budget/SidebarCategoryButtons.tsx
 ../../components/budget/tracking/TrackingBudgetComponents.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:39:51Z)**_
@@ -1382,12 +1385,14 @@ _**Agent (claude-opus-5-5 2026-10-06 02:39:51Z)**_
 I read through the code: issue #54 (merged into `master`) already covers the budget side of this issue. Reports have no idea subcategories exist yet, so this issue is really "make reports aware of subcategories."
 
 ## What #54 already covers (acceptance criteria 1–4)
+
 - **Data model:** `categories.parent_id` ([migration](packages/loot-core/migrations/1780700000000_add_category_parent.sql)). There's one level of nesting, a parent can have many children, and a child must be in its parent's group.
 - **Funding only through the parent:** `setCategoryBudget` and `assertNotSubcategory` in [actions.ts](packages/loot-core/src/server/budget/actions.ts) move money out of the parent and block funding a child from To Budget.
 - **Allocating is optional:** a parent's `budget-<id>` cell holds whatever it hasn't passed down, and nothing forces it to allocate.
 - **Helpers you can reuse:** `nestCategories()` in [shared/categories.ts](packages/loot-core/src/shared/categories.ts), plus a display-only `parent-total-budget-<id>` cell (parent plus children).
 
 ## The gap in reports today
+
 - Every report treats a subcategory as an ordinary sibling of its parent within the group.
 - [budgetDataQuery.ts:236](packages/desktop-client/src/components/reports/spreadsheets/budgetDataQuery.ts#L236) reads `budget-<id>`. For a parent, that's now only the **unallocated remainder**, so a parent's "Budgeted" shrinks every time it funds a child. That's misleading.
 - Spending is booked to whichever category a transaction uses. So a parent's "Spent" leaves out what its children spent.
@@ -1395,6 +1400,7 @@ I read through the code: issue #54 (merged into `master`) already covers the bud
 ## Plan
 
 **1. Shared roll-up helper (loot-core, unit-tested)**
+
 - Add a function next to `nestCategories` that takes report rows for each category and returns, for each parent:
   - its own numbers
   - each child's numbers
@@ -1407,6 +1413,7 @@ I read through the code: issue #54 (merged into `master`) already covers the bud
   - an orphaned child (it falls back to top level, as `nestCategories` already does)
 
 **2. Custom reports, the main one (table + bar/stacked graphs grouped by Category)**
+
 - In [grouped-spreadsheet.ts](packages/desktop-client/src/components/reports/spreadsheets/grouped-spreadsheet.ts), build each group's `categories` from `nestCategories`. Each parent gets a nested `subcategories: GroupedEntity[]`.
 - Extend `GroupedEntity` in loot-core types to match.
 - In [ReportTableList.tsx](packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTableList.tsx), render children indented under their parent. Mirror the budget page's indent styling from `SidebarCategory`.
@@ -1414,15 +1421,18 @@ I read through the code: issue #54 (merged into `master`) already covers the bud
 - Make sure group totals and the report totals row add up **top-level rows only**, so nothing is counted twice.
 
 **3. Budget Analysis report**
+
 - [budget-analysis-spreadsheet.ts](packages/desktop-client/src/components/reports/spreadsheets/budget-analysis-spreadsheet.ts) compares budgeted with spent for each category, which is exactly AC 6.
 - Add child rows under the parent, and use the same roll-up rule for the parent row.
 
 **4. "Accessible wherever parents are" (AC 7)**
+
 - [CategorySelector.tsx](packages/desktop-client/src/components/reports/CategorySelector.tsx): indent children, and make selecting a parent also select its children.
 - Filter conditions on `category` in the Spending, Sankey and Budget Analysis reports: decide whether "category is Food" also matches Food's subcategories. I'd say yes, as an "includes subcategories" behaviour.
 - Check the category autocomplete in transaction entry. It already gets parent-then-child ordering from `orderSubcategories`, but probably not indentation.
 
 **5. Tests and wrap-up**
+
 - Unit tests for the helper and for both spreadsheets.
 - Extend the e2e test in `e2e/reports.test.ts`, reusing the page-model helpers from #54. Expect visual-regression (VRT) snapshot updates.
 - Write the release note with the `writing-release-notes` skill.
@@ -1432,12 +1442,13 @@ I read through the code: issue #54 (merged into `master`) already covers the bud
 
 **What should a parent's row show in reports: only its own numbers, or the total including its subcategories?**
 
-Since #54, a parent's budget cell holds only what it *didn't* pass down, and spending is booked to whichever category a transaction uses.
+Since #54, a parent's budget cell holds only what it _didn't_ pass down, and spending is booked to whichever category a transaction uses.
 
 - **Own numbers only** is simple and never double-counts. But a "Food" row showing $50 budgeted and $30 spent, when Food really had $400 and $380 was spent across Food and Restaurants, is confusing. It also fails the "see where all the money went" goal.
 - **Totals including subcategories** reads naturally. But every total above the parent (group totals, report totals, graph series, CSV/PDF exports from issues #56/#60/#61) then has to add up only top-level rows, or the children get counted twice.
 
 That decision drives a set of follow-ups:
+
 - Bar and donut graphs: does a parent with children appear as one bar or several?
 - Filtering: does "category is Food" pull in its subcategories?
 - Overspending: a child that goes over is reported against what it was given, while the parent rolls up the combined overspend.
@@ -1591,6 +1602,7 @@ export function recalculate({
   };
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:52:24Z)**_
@@ -2042,6 +2054,7 @@ export function createCustomSpreadsheet({
   };
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:52:26Z)**_
@@ -2217,6 +2230,7 @@ export function ReportTableList({
 179:        data={data}
 184:        renderTotals={renderTotals}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:52:50Z)**_
@@ -2399,6 +2413,7 @@ Read budget analysis spreadsheet output
 129:            return matchesRegex?.test(textValue) ?? false;
 131:          return false;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:53:17Z)**_
@@ -2671,6 +2686,7 @@ export function RenderTableRow({
   );
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:53:25Z)**_
@@ -2904,6 +2920,7 @@ export const ReportTableRow = memo(
                       ...(colorized && {
                         color: getAmountColor(item.totalAssets),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:53:27Z)**_
@@ -3123,6 +3140,7 @@ describe('showActivity', () => {
 ./graphs/tableGraph/ReportTableRow.tsx:265:                      showActivity({
 ./graphs/tableGraph/ReportTableRow.tsx:312:              showActivity({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:54:08Z)**_
@@ -3263,6 +3281,7 @@ export function filterEmptyRows({
   return !showEmpty ? showHide : true;
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:54:23Z)**_
@@ -3405,6 +3424,7 @@ export const groupBySelections = (
 ./spreadsheets/sankey-spreadsheet.test.ts
 ./spreadsheets/spending-spreadsheet.test.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:54:30Z)**_
@@ -3512,12 +3532,12 @@ export function hideSubcategoriesOfHiddenParents(
       : row,
   );
 }
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:55:54Z)**_
@@ -3571,6 +3591,7 @@ Read QueryDataEntity and UncategorizedEntity types
 320-};
 321-
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:55:56Z)**_
@@ -3585,6 +3606,7 @@ _**Agent (claude-opus-5-5 2026-10-06 02:57:36Z)**_
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Please further explain this change
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:57:42Z)**_
@@ -3603,6 +3625,7 @@ const topLevelItems = groupByList.filter(item => !nestedIds.has(item.id));
 ```
 
 Both versions give the same answer, including the edge cases:
+
 - A subcategory whose parent was deleted or sits in another group is never put in the map, so it stays a top-level row and still gets counted once.
 - The "Uncategorized", "Transfers" and "Off budget" rows have an empty id and never match.
 
@@ -3620,7 +3643,6 @@ Stop hook feedback:
 src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its corresponding type declarations.
 src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding type declarations.
 src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its corresponding type declarations.
-
 
 ---
 
@@ -3644,6 +3666,7 @@ ls: cannot access 'node_modules/jspdf': No such file or directory
 ls: cannot access 'node_modules/jspdf-autotable': No such file or directory
 ls: cannot access 'packages/desktop-client/node_modules/jspdf': No such file or directory
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 02:58:13Z)**_
@@ -3670,6 +3693,7 @@ Install missing workspace dependencies
 node_modules/jspdf
 node_modules/jspdf-autotable
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:04:32Z)**_
@@ -3686,6 +3710,7 @@ Re-run desktop-client typecheck
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:04:36Z)**_
@@ -3710,6 +3735,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:06:43Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:06:45Z)**_
@@ -3724,6 +3750,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:09:14Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\types\models\reports.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:09:32Z)**_
@@ -3734,6 +3761,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:09:32Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\recalculate.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:10:10Z)**_
@@ -3744,6 +3772,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:10:10Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\recalculate.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:10:27Z)**_
@@ -3754,6 +3783,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:10:27Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\recalculate.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:10:30Z)**_
@@ -3827,6 +3857,7 @@ grep -n "fetchRows\|hideSub" fetchSpreadsheetQueryData.ts
 57:    debts: hideSubcategoriesOfHiddenParents(debts, categoryGroups),
 61:async function fetchRows({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:11:07Z)**_
@@ -3847,14 +3878,14 @@ _**Agent (claude-opus-5-5 2026-10-06 03:11:08Z)**_
 5	  RuleConditionEntity,
 6	} from '@actual-app/core/types/models';
 7	import type { SyncedPrefs } from '@actual-app/core/types/prefs';
-8	
+8
 9	import type { QueryDataEntity } from '#components/reports/ReportOptions';
 10	import { aqlQuery } from '#queries/aqlQuery';
-11	
+11
 12	import { fetchBudgetData } from './budgetDataQuery';
 13	import { makeQuery } from './makeQuery';
 14	import { hideSubcategoriesOfHiddenParents } from './subcategories';
-15	
+15
 16	export async function fetchSpreadsheetQueryData({
 17	  balanceTypeOp,
 18	  startDate,
@@ -3893,13 +3924,13 @@ _**Agent (claude-opus-5-5 2026-10-06 03:11:08Z)**_
 51	    filters,
 52	    budgetType,
 53	  });
-54	
+54
 55	  return {
 56	    assets: hideSubcategoriesOfHiddenParents(assets, categoryGroups),
 57	    debts: hideSubcategoriesOfHiddenParents(debts, categoryGroups),
 58	  };
 59	}
-60	
+60
 61	async function fetchRows({
 62	  balanceTypeOp,
 63	  startDate,
@@ -3928,9 +3959,10 @@ _**Agent (claude-opus-5-5 2026-10-06 03:11:08Z)**_
 86	      budgetType,
 87	    });
 88	  }
-89	
+89
 90	  const [assets, debts] = await Promise.all([
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:11:48Z)**_
@@ -3941,6 +3973,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:11:48Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\fetchSpreadsheetQueryData.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:12:04Z)**_
@@ -3951,6 +3984,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:12:04Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\fetchSpreadsheetQueryData.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:12:08Z)**_
@@ -3965,6 +3999,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:13:13Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\custom-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:15:23Z)**_
@@ -3975,6 +4010,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:15:23Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\custom-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:16:34Z)**_
@@ -3985,6 +4021,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:16:34Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\custom-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:16:47Z)**_
@@ -3995,6 +4032,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:16:47Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\custom-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:17:02Z)**_
@@ -4005,6 +4043,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:17:02Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\custom-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:17:12Z)**_
@@ -4015,6 +4054,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:17:12Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\custom-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:17:16Z)**_
@@ -4032,6 +4072,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:18:41Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\grouped-spreadsheet.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:19:46Z)**_
@@ -4042,6 +4083,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:19:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\grouped-spreadsheet.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:20:08Z)**_
@@ -4052,6 +4094,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:20:08Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\grouped-spreadsheet.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:20:16Z)**_
@@ -4062,6 +4105,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:20:16Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\grouped-spreadsheet.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:20:18Z)**_
@@ -4076,6 +4120,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:22:52Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\trimIntervals.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:22:53Z)**_
@@ -4089,6 +4134,7 @@ Check rest of trimIntervals and its tests
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:22:56Z)**_
@@ -4304,6 +4350,7 @@ export function ReportTable({
             style={{
               fontWeight: 600,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:23:02Z)**_
@@ -4327,6 +4374,7 @@ Check budget-page subcategory indent styling
 103:          name: 'add-subcategory',
 168:export function Cell({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:23:04Z)**_
@@ -4354,6 +4402,7 @@ See how the budget page applies the indent
 237-        inputProps={{
 238-          placeholder: !temporary
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:23:07Z)**_
@@ -4383,9 +4432,9 @@ _**Agent (claude-opus-5-5 2026-10-06 03:23:07Z)**_
 185	}: CellProps) {
 186	  const mouseCoords = useRef(null);
 187	  const viewRef = useRef(null);
-188	
+188
 189	  useProperFocus(viewRef, focused !== undefined ? focused : exposed);
-190	
+190
 191	  const widthStyle: CSSProperties =
 192	    width === 'flex' ? { flex: 1, flexBasis: 0 } : { width };
 193	  const cellStyle: CSSProperties = {
@@ -4397,7 +4446,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:23:07Z)**_
 199	    borderColor: theme.tableBorder,
 200	    alignItems,
 201	  };
-202	
+202
 203	  const conditionalPrivacyFilter = useMemo(
 204	    () => (
 205	      <ConditionalPrivacyFilter
@@ -4465,15 +4514,16 @@ _**Agent (claude-opus-5-5 2026-10-06 03:23:07Z)**_
 267	      formatter,
 268	    ],
 269	  );
-270	
+270
 271	  const mergedRef = useMergedRefs(viewRef, viewProps.ref, viewProps.innerRef);
-272	
+272
 273	  return (
 274	    <View
 275	      style={{ ...widthStyle, ...cellStyle, ...style }}
 276	      {...viewProps}
 277	      innerRef={mergedRef}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:23:14Z)**_
@@ -4511,6 +4561,7 @@ graphs/DonutGraph.tsx:680:                      showActivity({
 graphs/DonutGraph.tsx:691:                        field: groupBy.toLowerCase(),
 graphs/DonutGraph.tsx:692:                        id: item.id,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:23:17Z)**_
@@ -4525,6 +4576,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:24:25Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\showActivity.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:25:09Z)**_
@@ -4535,6 +4587,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:25:09Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\showActivity.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:25:28Z)**_
@@ -4545,6 +4598,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:25:28Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\showActivity.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:25:30Z)**_
@@ -4559,6 +4613,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:25:53Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\showActivity.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:25:53Z)**_
@@ -4605,10 +4660,11 @@ _**Agent (claude-opus-5-5 2026-10-06 03:25:53Z)**_
 94	            value: id,
 95	            type: 'id',
 96	          };
-97	
+97
 98	  const filterConditions = [
 99	    ...filters,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:26:22Z)**_
@@ -4619,6 +4675,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:26:22Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\showActivity.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:26:39Z)**_
@@ -4629,6 +4686,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:26:39Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\showActivity.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:27:09Z)**_
@@ -4639,6 +4697,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:27:09Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\tableGraph\ReportTableRow.tsx has been updated. All occurrences were successfully replaced.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:27:11Z)**_
@@ -4729,6 +4788,7 @@ git diff --stat
  packages/loot-core/src/types/models/reports.ts     |  8 ++
  9 files changed, 210 insertions(+), 78 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:27:33Z)**_
@@ -4743,6 +4803,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:28:26Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\tableGraph\ReportTableList.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:28:28Z)**_
@@ -4765,6 +4826,7 @@ Typecheck web package and lint changed dirs
 packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx:197:19: warning jsx-a11y(control-has-associated-label): A control must be associated with a text label. help: Add a text label to the control element. This can be done by adding text content, an `aria-label` attribute, or an `aria-labelledby` attribute.
 packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx:205:21: warning jsx-a11y(control-has-associated-label): A control must be associated with a text label. help: Add a text label to the control element. This can be done by adding text content, an `aria-label` attribute, or an `aria-labelledby` attribute.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:30:25Z)**_
@@ -4854,6 +4916,7 @@ describe('getSpendingBudgetFilters', () => {
   });
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:30:41Z)**_
@@ -4867,6 +4930,7 @@ Find existing mocks of send and aqlQuery
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:30:44Z)**_
@@ -4919,6 +4983,7 @@ describe('filterCategoriesByConditions', () => {
       'cat-rent',
       'cat-electric',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:30:55Z)**_
@@ -4971,6 +5036,7 @@ export type CategoryEntity = {
 336-  inclusive = false,
 337-): string[] {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:31:03Z)**_
@@ -5020,6 +5086,7 @@ Check which cells the month endpoints return
 45:256-          value(`goal-${cat.id}`),
 46:257-          value(`long-goal-${cat.id}`),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:31:07Z)**_
@@ -5193,7 +5260,10 @@ describe('subcategory helpers', () => {
   it('treats a subcategory whose parent is in another group as top-level', () => {
     const { grouped } = makeCategories({ restaurants: { group: 'g-bills' } });
     grouped[1].categories.push(
-      grouped[0].categories.splice(1, 1)[0] as (typeof grouped)[1]['categories'][0],
+      grouped[0].categories.splice(
+        1,
+        1,
+      )[0] as (typeof grouped)[1]['categories'][0],
     );
 
     expect(getSubcategoryIdsByParent(grouped)).toEqual(
@@ -5245,7 +5315,11 @@ describe('reports with subcategories', () => {
 
     // Under the parent: each subcategory, then what the parent spent itself.
     expect(
-      foodRow?.subcategories?.map(c => [c.name, c.totalDebts, !!c.isUnallocated]),
+      foodRow?.subcategories?.map(c => [
+        c.name,
+        c.totalDebts,
+        !!c.isUnallocated,
+      ]),
     ).toEqual([
       ['Groceries', -5000, false],
       ['Restaurants', -3000, false],
@@ -5278,13 +5352,13 @@ describe('reports with subcategories', () => {
 
     expect(foodGroup.totalBudgeted).toBe(40000);
     expect(foodRow?.totalBudgeted).toBe(40000);
-    expect(
-      foodRow?.subcategories?.map(c => [c.name, c.totalBudgeted]),
-    ).toEqual([
-      ['Groceries', 20000],
-      ['Restaurants', 15000],
-      ['Unallocated', 5000],
-    ]);
+    expect(foodRow?.subcategories?.map(c => [c.name, c.totalBudgeted])).toEqual(
+      [
+        ['Groceries', 20000],
+        ['Restaurants', 15000],
+        ['Unallocated', 5000],
+      ],
+    );
   });
 
   it('leaves a category without subcategories as it was', async () => {
@@ -5315,9 +5389,7 @@ describe('reports with subcategories', () => {
     const categories = makeCategories({ food: { hidden: true } });
     vi.mocked(aqlQuery).mockImplementation((async (type: unknown) => ({
       data:
-        type === 'debts'
-          ? [row(food, -1000, true), ...spending.slice(1)]
-          : [],
+        type === 'debts' ? [row(food, -1000, true), ...spending.slice(1)] : [],
     })) as typeof aqlQuery);
 
     const data = await runCustom(categories);
@@ -5326,12 +5398,12 @@ describe('reports with subcategories', () => {
     expect(data?.data?.map(c => c.id)).toEqual(['rent']);
   });
 });
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.test.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:32:30Z)**_
@@ -5425,6 +5497,7 @@ undefined
    Start at  23:33:46
    Duration  59.20s (transform 6.21s, setup 55.21s, import 14.26s, tests 3.62s, environment 36.91s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:34:49Z)**_
@@ -5470,6 +5543,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:34:50Z)**_
 259-      ],
 260-    );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:34:52Z)**_
@@ -5482,7 +5556,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:34:52Z)**_
 155	    ]);
 156	    expect(getRolledUpCategoryIds('rent', map)).toBeUndefined();
 157	  });
-158	
+158
 159	  it('treats a subcategory whose parent is in another group as top-level', () => {
 160	    const { grouped } = makeCategories({ restaurants: { group: 'g-bills' } });
 161	    grouped[1].categories.push(
@@ -5491,15 +5565,16 @@ _**Agent (claude-opus-5-5 2026-10-06 03:34:52Z)**_
 164	        1,
 165	      )[0] as (typeof grouped)[1]['categories'][0],
 166	    );
-167	
+167
 168	    expect(getSubcategoryIdsByParent(grouped)).toEqual(
 169	      new Map([['food', ['groceries']]]),
 170	    );
 171	  });
-172	
+172
 173	  it('hides the subcategories of a hidden parent', () => {
 174	    const { grouped } = makeCategories({ food: { hidden: true } });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:35:34Z)**_
@@ -5510,6 +5585,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:35:34Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:35:45Z)**_
@@ -5520,6 +5596,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:35:45Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:36:01Z)**_
@@ -5530,6 +5607,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:36:01Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:37:16Z)**_
@@ -5540,6 +5618,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:37:16Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:38:50Z)**_
@@ -5554,6 +5633,7 @@ Run the new subcategory report tests
  ✓ src/components/reports/spreadsheets/subcategories.test.ts (8 tests) 32ms
       Tests  8 passed (8)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:38:52Z)**_
@@ -5610,6 +5690,7 @@ Read end of showActivity tests
   });
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:40:52Z)**_
@@ -5708,6 +5789,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && yarn workspace @actual-app/web 
  ✓ src/components/reports/graphs/showActivity.test.ts (7 tests) 14ms
       Tests  7 passed (7)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:40:55Z)**_
@@ -5728,7 +5810,7 @@ desktop-electron typecheck success, took 9.46s, queued for 0.00s
 success: 6, skipped: 4, pending: 0, aborted: 0, failed: 0
 worker restarts: 0, max worker memory usage: 46.67 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-Took a total of 2m 10.55s to complete. 
+Took a total of 2m 10.55s to complete.
 Checking formatting...
 
 All matched files use the correct format.
@@ -5736,6 +5818,7 @@ Finished in 395ms on 13 files using 12 threads.
  Test Files  18 passed (18)
       Tests  180 passed (180)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:44:37Z)**_
@@ -5767,6 +5850,7 @@ Run oxlint on changed files and show exit code
 ?? packages/desktop-client/src/components/reports/spreadsheets/subcategories.ts
 exit=0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:45:03Z)**_
@@ -5822,7 +5906,6 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-10-06 03:47:15Z)**_
@@ -5837,12 +5920,12 @@ authors: [icsasso]
 ---
 
 Show subcategories under their parent category in custom reports, with the parent's totals including them
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\upcoming-release-notes\show-subcategories-in-reports.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 03:47:29Z)**_
@@ -5850,6 +5933,7 @@ _**Agent (claude-opus-5-5 2026-10-06 03:47:29Z)**_
 Subcategories now show up in custom reports grouped by Category, and each subcategory's money is counted exactly once. Typecheck, lint, formatting and all 180 report tests pass. I haven't opened the app to look at the table, and nothing is committed yet.
 
 **What a custom report shows now (grouped by Category):**
+
 - **Parent rows** show the parent's own amount plus all of its subcategories, matching the parent total on the budget page.
 - **Subcategories** appear as rows indented under their parent, by 16px like on the budget page.
 - **The parent's own amount** gets its own line under the subcategories. It reads "Unallocated" in Budgeted mode and "Not in a subcategory" in the spending modes, since "unallocated" doesn't fit spending.
@@ -5858,6 +5942,7 @@ Subcategories now show up in custom reports grouped by Category, and each subcat
 - **Hidden parents** hide their subcategories too, the same as on the budget page.
 
 **How double counting is prevented:**
+
 - Subcategories never get a row of their own in anything that's added up. Every amount belongs to exactly one top-level row, and the parent's row is where its subcategories are counted.
 - The indented rows are kept in a separate display-only list that no total, graph or chart reads. The type definition has a comment saying never to add it into a total.
 - Group totals were already worked out from the transactions themselves, so they count each transaction once either way.
@@ -5869,6 +5954,7 @@ Subcategories now show up in custom reports grouped by Category, and each subcat
   - the click-through filters
 
 **Things to know:**
+
 - **Acceptance criterion 6 is only partly met.** A custom report shows one measure at a time: Budgeted shows what each subcategory was given, Payment shows what it spent. No single view puts budgeted, spent and remaining side by side. That would need a new column, which I left as a follow-up.
 - **No end-to-end or screenshot tests yet.** The screenshot (VRT) tests for reports will probably need updating once someone has looked at the table.
 - **Budget Analysis report is unchanged.** It only shows overall totals, and it already counts each category once.
@@ -5876,6 +5962,7 @@ Subcategories now show up in custom reports grouped by Category, and each subcat
 **Before this, I fixed your local setup:** the earlier typecheck failure came from the PDF export packages (`jspdf`, `jspdf-autotable`) never being installed. Running `yarn install` fixed it.
 
 **Changes:**
+
 - **New:** [subcategories.ts](packages/desktop-client/src/components/reports/spreadsheets/subcategories.ts) holds the shared helpers, and [subcategories.test.ts](packages/desktop-client/src/components/reports/spreadsheets/subcategories.test.ts) has the tests.
 - **Updated:**
   - the custom and grouped report calculations
@@ -5903,6 +5990,7 @@ Not all of it is done. The custom report table works, but several criteria are o
 ## Not done
 
 **1. Budgeted vs. spent side by side (acceptance criterion 6).** This is the biggest gap. A custom report shows one measure at a time, so you can see what a subcategory was given (Budgeted) or what it spent (Payment), but never both together with what's left. Two options:
+
 - Add "Spent" and "Remaining" columns to the custom report table when grouped by Category. This touches the table layout and fetches both budget and transaction data.
 - Give Budget Analysis a per-category breakdown. Right now it only shows overall totals.
 
@@ -5911,6 +5999,7 @@ Not all of it is done. The custom report table works, but several criteria are o
 **3. Filtering by a parent.** A report filter like "Category is Food" matches only Food's own transactions, so its subcategories drop out. That makes the parent row smaller than its true total, which works against the new design. The filter probably should include subcategories.
 
 **4. Other reports:**
+
 - **Sankey:** builds its own category list from the budget data, so subcategories most likely appear as flat siblings there. I haven't confirmed this in its code or in the app.
 - **Two-ring donut (Category+Group):** shows parents with their subcategories rolled in, but gives subcategories no slice of their own.
 - **Budget Analysis:** counts correctly, but it never shows categories individually.
@@ -5918,11 +6007,13 @@ Not all of it is done. The custom report table works, but several criteria are o
 **5. Other places categories appear.** I haven't checked whether transaction entry, rules or schedules show subcategories under their parents. #54 orders them parent-first, but probably without an indent.
 
 ## Verification still owed
+
 - **Look at it in the app.** Nobody has seen the indented rows or the "Unallocated" line in the real report yet.
 - **End-to-end test** in `e2e/reports.test.ts`, reusing the subcategory page helpers from #54.
 - **Screenshot (VRT) updates** for the reports, if the table changes them.
 
 ## Wrap-up
+
 - **Commit and PR:** nothing is committed. Title will be `[AI] …`, with the PR template left blank.
 - **AI log:** an `ai-logs/sprint1/icsasso/` entry for this session, if your team wants one like the earlier issues have.
 
@@ -5991,6 +6082,7 @@ Check Sankey and CategorySelector category handling
 66:                  <Trans>Show unchecked</Trans>
 89:                  <Trans>Hide unchecked</Trans>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:19:58Z)**_
@@ -5998,11 +6090,14 @@ _**Agent (claude-opus-5-5 2026-10-06 16:19:58Z)**_
 Here's the plan to finish every acceptance criterion within this issue. Steps 2–5 are the remaining work, in the order I'd do them.
 
 ## Step 1: Check what's built, then commit it
+
 - Open the app on the demo budget, add a subcategory, and look at a custom report grouped by Category.
 - Commit the work so far as a checkpoint, so each later step can be reviewed on its own.
 
 ## Step 2: Show budgeted, spent and remaining together (criterion 6)
+
 This is the main gap, and the data for it is already being fetched.
+
 - **Where the numbers come from:** Budgeted mode already loads each month's budget values, and those include each category's spending (`sum-amount-<id>`). So "Spent" costs no extra query.
 - **Calculation:** carry "spent" alongside "budgeted" for each category, and add the two to get remaining.
 - **Rows with no budget:** keep a row that has spending but no budget. Today those rows are skipped, which would hide an overspent subcategory that was given nothing.
@@ -6011,17 +6106,20 @@ This is the main gap, and the data for it is already being fetched.
 - **Tests:** a subcategory that's under budget, one that's over budget, and one that was given nothing.
 
 ## Step 3: Make a parent filter include its subcategories (criterion 7)
+
 - Add one helper that expands "Category is / is one of / is not Food" to also cover Food's subcategories.
 - Run report conditions through it before they're used: custom report, Spending, Budget Analysis and Sankey.
 - Add tests for each operator.
 
 ## Step 4: Show subcategories wherever parents appear (criteria 5 and 7)
+
 - **Report category picker:** list each subcategory indented under its parent, and make ticking a parent tick its children.
 - **Sankey:** keep subcategories as their own flows, which can't double count. Place each one right after its parent and label it "Food › Restaurants" so it clearly belongs to Food.
 - **Category dropdowns elsewhere** (transaction entry, rules, schedules): subcategories can already be picked there. Add an indent if it's missing, to match the budget page.
 - **Graphs:** no change needed, since parents already include their subcategories there, as you decided earlier. The subcategory breakdown lives in the table and Sankey.
 
 ## Step 5: Verify and wrap up
+
 - **End-to-end test:** create a subcategory, then check that the report shows it indented under its parent with the right budgeted, spent and remaining amounts.
 - **Screenshot (VRT) updates** for any report views that change.
 - **Checks:** run typecheck, lint and tests, then use the app once more.
@@ -6097,14 +6195,14 @@ Pick the row closest to your project. Each example walks through
 launch + first interaction; ignore any trailing "write the skill"
 section - you're using the recipe, not authoring one.
 
-| Project type | Handle | Example |
-|---|---|---|
-| CLI tool | direct invocation, exit code, stdin/stdout | [examples/cli.md](examples/cli.md) |
-| Web server / API | background launch + `curl` smoke | [examples/server.md](examples/server.md) |
-| TUI / interactive terminal | tmux `send-keys` / `capture-pane` | [examples/tui.md](examples/tui.md) |
-| Electron / desktop GUI | Playwright `_electron` REPL under xvfb | [examples/electron.md](examples/electron.md) |
-| Browser-driven | dev server + `chromium-cli` script | [examples/playwright.md](examples/playwright.md) |
-| Library / SDK | import-and-call smoke script at the package boundary | [examples/library.md](examples/library.md) |
+| Project type               | Handle                                               | Example                                          |
+| -------------------------- | ---------------------------------------------------- | ------------------------------------------------ |
+| CLI tool                   | direct invocation, exit code, stdin/stdout           | [examples/cli.md](examples/cli.md)               |
+| Web server / API           | background launch + `curl` smoke                     | [examples/server.md](examples/server.md)         |
+| TUI / interactive terminal | tmux `send-keys` / `capture-pane`                    | [examples/tui.md](examples/tui.md)               |
+| Electron / desktop GUI     | Playwright `_electron` REPL under xvfb               | [examples/electron.md](examples/electron.md)     |
+| Browser-driven             | dev server + `chromium-cli` script                   | [examples/playwright.md](examples/playwright.md) |
+| Library / SDK              | import-and-call smoke script at the package boundary | [examples/library.md](examples/library.md)       |
 
 If nothing fits, start from the closest match and adapt. For a web
 app, [examples/playwright.md](examples/playwright.md) - drive it with
@@ -6128,7 +6226,6 @@ If the fallback pattern didn't work out of the box - you had to
 install packages, set env vars, patch config, or write a driver -
 recommend `/run-skill-generator` in your report so that work gets
 captured as a project skill. If it just worked, don't.
-
 
 ## User Request
 
@@ -6160,6 +6257,7 @@ playwright-core
 playwright-core.cmd
 playwright.cmd
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:32:39Z)**_
@@ -6236,7 +6334,7 @@ index 4ae461f1b..740cbe0fa 100644
 @@ -247,6 +247,65 @@ export class BudgetPage {
        .click({ button: 'right' });
    }
- 
+
 +  #parseAmount(text: string | null, description: string) {
 +    if (text == null) {
 +      throw new Error(`Failed to get ${description}.`);
@@ -6332,6 +6430,7 @@ schedule-edit-modal.ts
 schedules-page.ts
 settings-page.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:33:00Z)**_
@@ -6480,6 +6579,7 @@ test.describe('Reports', () => {
 196-        .getByTestId('parent-total-hint')
 197-        .first(),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:33:07Z)**_
@@ -6559,6 +6659,7 @@ page-models/navigation.ts:196:  async rightClickBudgetName() {
 330:            options={ReportOptions.balanceType.map(option => [
 367:              customReportItems.balanceType === 'Budgeted'
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:33:13Z)**_
@@ -6640,6 +6741,7 @@ e2e/accounts.test.ts:81:      name: 'Range Select',
 e2e/command-bar.test.ts:69:    await page.keyboard.press('ArrowDown'); // Select second suggestion - Schedules
 e2e/transactions.test.ts:48:      // Select "is xxxxx"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:33:17Z)**_
@@ -6674,6 +6776,7 @@ Find report toolbar button titles and demo account name
 84:      accountPage = await navigation.goToAccountPage('Capital One Checking');
 119:      accountPage = await navigation.goToAccountPage('Capital One Checking');
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:33:55Z)**_
@@ -6694,7 +6797,9 @@ const OUT =
 
 test('subcategory report smoke', async ({ browser }) => {
   test.setTimeout(180_000);
-  const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
+  const page = await browser.newPage({
+    viewport: { width: 1400, height: 1000 },
+  });
   const navigation = new Navigation(page);
 
   await page.goto('/');
@@ -6735,12 +6840,12 @@ test('subcategory report smoke', async ({ browser }) => {
   await page.waitForTimeout(1500);
   await page.screenshot({ path: `${OUT}/4-report-bar.png` });
 });
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\e2e\zz-subcategory-report-smoke.test.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:33:59Z)**_
@@ -6762,6 +6867,7 @@ Confirm helper method names exist
 119-  }
 120-
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:34:28Z)**_
@@ -6804,6 +6910,7 @@ Running 1 test using 1 worker
 [1A[2K  1 failed
     e2e\zz-subcategory-report-smoke.test.ts:11:5 › subcategory report smoke ────────────────────────
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:34:30Z)**_
@@ -6821,6 +6928,7 @@ Download Playwright headless Chromium
 ```text
 {"resultType":"task","taskId":"bcjsm2jgk","status":"working","statusMessage":"Command did not complete within its 600s timeout and was moved to the background (ID: bcjsm2jgk). Output is being written to: C:\\Users\\icsab\\AppData\\Local\\Temp\\claude\\c--Users-icsab-actual-budget-actual-budget\\6a4eba52-c679-4135-9f71-8e062e65d374\\tasks\\bcjsm2jgk.output. You will be notified when it completes. To check interim output, use Read on that file path. When it finishes, its result is delivered to you automatically — between your tool calls if you are still working, or by starting a new turn if you have already replied — so there is no need to check whether it is done or to sleep; if that result is all you are waiting for, end your turn."}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 16:45:01Z)**_
@@ -6839,6 +6947,7 @@ _**Agent (claude-opus-5-5 2026-10-06 16:45:15Z)**_
 Step 1 isn't finished yet. Nothing is committed, and I haven't seen the report in the app yet. Playwright's Chromium browser wasn't installed on your machine, so it's downloading in the background. It's slow, and I can't see progress because the output only appears at the end.
 
 Once it's done I'll run a throwaway script that:
+
 1. Loads the demo budget.
 2. Gives Food $400 and adds a "Dining Out" subcategory with $150.
 3. Adds a $42.50 Dining Out transaction.
@@ -6849,6 +6958,7 @@ If the screenshots look right, I'll delete the script and commit. The script is 
 ## How to test it by hand
 
 **Setup**
+
 1. Run `yarn start` from the repo root and open http://localhost:3001.
 2. Choose **Don't use a server**, then **View demo**.
 3. On the budget page for this month:
@@ -6860,32 +6970,37 @@ If the screenshots look right, I'll delete the script and commit. The script is 
 
 **Custom report table:** go to Reports, then Add new widget, then New custom report. Set Split to Category, choose Data Table, then Total.
 
-| Check | What you should see |
-|---|---|
-| Rows | Food, then Dining Out and Snacks indented under it, then a **Not in a subcategory** line |
-| Payment, Food row | Food's own spending + $42.50 + Snacks (0) |
-| Payment, indented rows | They add up to the Food row |
-| Payment, Food group row | The same as the Food row, as long as Food is the only category in its group (otherwise the group also includes the others) |
-| Type → **Budgeted**, this month | Food **400**, Dining Out **150**, Snacks **50**, **Unallocated 200** |
-| Totals row at the bottom | Doesn't change when you add or remove a subcategory. The money only moved within Food, so nothing is counted twice. |
-| Show empty rows off | A subcategory with no activity disappears. Snacks shows up in Budgeted but not in Payment. |
+| Check                           | What you should see                                                                                                        |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Rows                            | Food, then Dining Out and Snacks indented under it, then a **Not in a subcategory** line                                   |
+| Payment, Food row               | Food's own spending + $42.50 + Snacks (0)                                                                                  |
+| Payment, indented rows          | They add up to the Food row                                                                                                |
+| Payment, Food group row         | The same as the Food row, as long as Food is the only category in its group (otherwise the group also includes the others) |
+| Type → **Budgeted**, this month | Food **400**, Dining Out **150**, Snacks **50**, **Unallocated 200**                                                       |
+| Totals row at the bottom        | Doesn't change when you add or remove a subcategory. The money only moved within Food, so nothing is counted twice.        |
+| Show empty rows off             | A subcategory with no activity disappears. Snacks shows up in Budgeted but not in Payment.                                 |
 
 **Click-throughs**
+
 - Click the Food row's amount (Payment mode). The transaction list should include the $42.50 Dining Out transaction.
 - Click the **Not in a subcategory** amount. It should show only the $10 Food transaction.
 
 **Graphs**
+
 - Switch to Bar Graph and Donut Graph. Food should appear once, at its full amount. Dining Out and Snacks shouldn't have their own bars or slices.
 
 **Hidden parent**
+
 - Hide Food on the budget page, then go back to the report with **Show hidden categories** off. Food, Dining Out and Snacks should all disappear, and the totals should drop by Food's full amount.
 - Turn the option on and they all come back.
 
 **Not affected (should look the same as before)**
+
 - Split by Group, Payee or Account.
 - Any category without subcategories (e.g. Bills).
 
 **Not built yet (expected, Steps 2–4)**
+
 - No Spent or Remaining columns in Budgeted mode.
 - The category filter doesn't include subcategories.
 - The category picker isn't indented.
@@ -6926,6 +7041,7 @@ packages/loot-core/src/server/db/index.test.ts
 packages/loot-core/src/server/db/index.ts
 packages/loot-core/src/server/importers/ynab4-types.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:21:24Z)**_
@@ -6957,6 +7073,7 @@ List each drilldown call and its flags
 66:331-                type: 'totals',
 71:336-                uncategorizedId: item.uncategorizedId,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:21:34Z)**_
@@ -6974,6 +7091,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:22:54Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\tableGraph\ReportTableRow.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:22:57Z)**_
@@ -6995,6 +7113,7 @@ Look for existing table component tests and helpers
 ./components/autocomplete/PayeeAutocomplete.test.tsx
 ./components/FatalError.test.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:23:02Z)**_
@@ -7067,6 +7186,7 @@ describe('SelectedBalance – normal transactions', () => {
     vi.mocked(useCachedSchedules).mockReturnValue(mockedSchedules([]));
   });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:23:08Z)**_
@@ -7189,6 +7309,7 @@ describe('ReportTableRow drilldown', () => {
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\tableGraph\ReportTableRow.test.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:24:59Z)**_
@@ -7203,6 +7324,7 @@ Run the new table row drilldown test
  ✓ src/components/reports/graphs/tableGraph/ReportTableRow.test.tsx (3 tests) 124ms
       Tests  3 passed (3)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:25:00Z)**_
@@ -7237,6 +7359,7 @@ yarn workspace @actual-app/web run vitest --run src/components/reports/graphs/ta
  1 file changed, 12 insertions(+), 1 deletion(-)
 4
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:26:49Z)**_
@@ -7260,6 +7383,7 @@ Finished in 558ms on 143 files using 12 threads.
  Test Files  19 passed (19)
       Tests  183 passed (183)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:30:37Z)**_
@@ -7271,6 +7395,7 @@ I've fixed it. Clicking the **Not in a subcategory** amount now opens only Food'
 **Fix:** added the missing setting in [ReportTableRow.tsx:337](packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTableRow.tsx#L337).
 
 **Regression test:** the new [ReportTableRow.test.tsx](packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTableRow.test.tsx) renders a row and clicks every amount in both the Total and Time views. It checks that:
+
 - an "Unallocated"/"Not in a subcategory" row opens only the parent's own transactions;
 - a normal parent row includes its subcategories.
 
@@ -7332,7 +7457,6 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-10-06 17:40:22Z)**_
@@ -7369,6 +7493,7 @@ M  packages/loot-core/src/types/models/reports.ts
 A  upcoming-release-notes/show-subcategories-in-reports.md
 ?? ai-logs/sprint1/icsasso/2026-09-29_claude-web_splittingup-issue23.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:41:13Z)**_
@@ -7400,6 +7525,7 @@ exit=0
 ad09f7d54 Merge pull request #73 from CSCI-435-SE/feat/issue-54-mainbudgetpage-subcategories
 ?? ai-logs/sprint1/icsasso/2026-09-29_claude-web_splittingup-issue23.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:41:17Z)**_
@@ -7445,6 +7571,7 @@ ReportTableTotals.tsx:83:    totalTotals: data.totalTotals,
 ReportTableTotals.tsx:84:    totalBudgeted: data.totalBudgeted,
 ReportTableRow.tsx:193:            : ['totalTotals', 'totalBudgeted'].includes(balanceTypeOp) && (
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:43:28Z)**_
@@ -7661,6 +7788,7 @@ Read header, totals, and total/average cells
 
 ReportTableRow.displayName = 'ReportTableRow';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:43:55Z)**_
@@ -7707,6 +7835,7 @@ Read IntervalEntity type and budget row creation
 242:      const amount = Number(budgetCell?.value) || 0;
 243:      if (amount === 0) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:44:03Z)**_
@@ -7820,6 +7949,7 @@ sed -n 228,275p packages/desktop-client/src/components/reports/spreadsheets/budg
   return { assets, debts };
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:44:42Z)**_
@@ -7830,6 +7960,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:44:42Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\budgetDataQuery.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:44:50Z)**_
@@ -7840,6 +7971,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:44:50Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\budgetDataQuery.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:44:53Z)**_
@@ -7865,11 +7997,11 @@ _**Agent (claude-opus-5-5 2026-10-06 17:44:54Z)**_
 49	      ? categoryIds.includes(row.category)
 50	      : row[groupByLabel] === (item.id ?? null) ||
 51	        (item.uncategorized_id && groupsByCategory);
-52	
+52
 53	  const intervalData = intervals.reduce(
 54	    (arr: IntervalEntity[], intervalItem, index) => {
 55	      const last = arr.length === 0 ? null : arr[arr.length - 1];
-56	
+56
 57	      const intervalAssets = filterHiddenItems(
 58	        item,
 59	        assets,
@@ -7881,7 +8013,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:44:54Z)**_
 65	        .filter(asset => asset.date === intervalItem && matchesItem(asset))
 66	        .reduce((a, v) => a + v.amount, 0);
 67	      totalAssets += intervalAssets;
-68	
+68
 69	      const intervalDebts = filterHiddenItems(
 70	        item,
 71	        debts,
@@ -7893,11 +8025,11 @@ _**Agent (claude-opus-5-5 2026-10-06 17:44:54Z)**_
 77	        .filter(debt => debt.date === intervalItem && matchesItem(debt))
 78	        .reduce((a, v) => a + v.amount, 0);
 79	      totalDebts += intervalDebts;
-80	
+80
 81	      const intervalTotals = intervalAssets + intervalDebts;
-82	
+82
 83	      const change = last ? intervalTotals - last.totalTotals : 0;
-84	
+84
 85	      arr.push({
 86	        date: intervalItem,
 87	        totalAssets: intervalAssets,
@@ -7913,14 +8045,14 @@ _**Agent (claude-opus-5-5 2026-10-06 17:44:54Z)**_
 97	            ? endDate
 98	            : monthUtils.subDays(intervals[index + 1], 1),
 99	      });
-100	
+100
 101	      return arr;
 102	    },
 103	    [],
 104	  );
-105	
+105
 106	  const totalTotals = totalAssets + totalDebts;
-107	
+107
 108	  return {
 109	    id: item.id || '',
 110	    name: item.name,
@@ -7936,6 +8068,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:44:54Z)**_
 120	}
 121
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:45:46Z)**_
@@ -8038,6 +8171,7 @@ grep -n "perIntervalTotals\|let netDebts\|totalBudgeted: perIntervalTotals\|tota
 280:          totalBudgeted: perIntervalTotals,
 353:      totalBudgeted: totalAssets + totalDebts,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
@@ -8052,15 +8186,15 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
 
 ```text
 172	          ](startDate, endDate);
-173	
+173
 174	    let totalAssets = 0;
 175	    let totalDebts = 0;
 176	    let netAssets = 0;
 177	    let netDebts = 0;
-178	
+178
 179	    const groupsByCategory =
 180	      groupByLabel === 'category' || groupByLabel === 'categoryGroup';
-181	
+181
 182	    const intervalData = intervals.reduce(
 183	      (arr: IntervalEntity[], intervalItem, index) => {
 184	        let perIntervalAssets = 0;
@@ -8069,7 +8203,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
 187	        let perIntervalNetDebts = 0;
 188	        let perIntervalTotals = 0;
 189	        const stacked: Record<string, number> = {};
-190	
+190
 191	        rowItems.map(item => {
 192	          let stackAmounts = 0;
 193	          const categoryIds = getRolledUpCategoryIds(
@@ -8081,7 +8215,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
 199	              ? categoryIds.includes(row.category)
 200	              : row[groupByLabel] === (item.id ?? null) ||
 201	                (item.uncategorized_id && groupsByCategory);
-202	
+202
 203	          const intervalAssets = filterHiddenItems(
 204	            item,
 205	            assets,
@@ -8093,7 +8227,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
 211	            .filter(asset => asset.date === intervalItem && matchesItem(asset))
 212	            .reduce((a, v) => a + v.amount, 0);
 213	          perIntervalAssets += intervalAssets;
-214	
+214
 215	          const intervalDebts = filterHiddenItems(
 216	            item,
 217	            debts,
@@ -8105,9 +8239,9 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
 223	            .filter(debt => debt.date === intervalItem && matchesItem(debt))
 224	            .reduce((a, v) => a + v.amount, 0);
 225	          perIntervalDebts += intervalDebts;
-226	
+226
 227	          const netAmounts = intervalAssets + intervalDebts;
-228	
+228
 229	          if (balanceTypeOp === 'totalAssets') {
 230	            stackAmounts += intervalAssets;
 231	          }
@@ -8126,12 +8260,12 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
 244	          ) {
 245	            stackAmounts += netAmounts;
 246	          }
-247	
+247
 248	          // Use id as key to prevent collisions when categories have the same name
 249	          stacked[item.id || item.name] = stackAmounts;
-250	
+250
 251	          perIntervalTotals += netAmounts;
-252	
+252
 253	          return null;
 254	        });
 255	        perIntervalNetAssets = perIntervalTotals > 0 ? perIntervalTotals : 0;
@@ -8140,7 +8274,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
 258	        totalDebts += perIntervalDebts;
 259	        netAssets += perIntervalNetAssets;
 260	        netDebts += perIntervalNetDebts;
-261	
+261
 262	        arr.push({
 263	          date: d.format(
 264	            d.parseISO(intervalItem),
@@ -8161,12 +8295,13 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:49Z)**_
 279	          totalTotals: perIntervalTotals,
 280	          totalBudgeted: perIntervalTotals,
 281	        });
-282	
+282
 283	        return arr;
 284	      },
 285	      [],
 286	    );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:45:53Z)**_
@@ -8184,7 +8319,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:54Z)**_
 
 ```text
 286	    );
-287	
+287
 288	    const calcData: GroupedEntity[] = rowItems.map(item => {
 289	      const calc = recalculate({
 290	        item,
@@ -8201,12 +8336,12 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:54Z)**_
 301	      });
 302	      return { ...calc };
 303	    });
-304	
+304
 305	    // First, filter rows so trimming reflects the visible dataset
 306	    const calcDataFiltered = calcData.filter(i =>
 307	      filterEmptyRows({ showEmpty, data: i, balanceTypeOp }),
 308	    );
-309	
+309
 310	    // Determine interval range across filtered groups and main intervalData
 311	    const { startIndex, endIndex } = determineIntervalRange(
 312	      calcDataFiltered,
@@ -8214,21 +8349,21 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:54Z)**_
 314	      trimIntervals,
 315	      balanceTypeOp,
 316	    );
-317	
+317
 318	    // Trim only if enabled
 319	    const trimmedIntervalData = trimIntervals
 320	      ? trimIntervalDataToRange(intervalData, startIndex, endIndex)
 321	      : intervalData;
-322	
+322
 323	    if (trimIntervals) {
 324	      // Keep group data in sync with the trimmed range
 325	      trimIntervalsToRange(calcDataFiltered, startIndex, endIndex);
 326	    }
-327	
+327
 328	    const sortedCalcDataFiltered = [...calcDataFiltered].sort(
 329	      sortData({ balanceTypeOp, sortByOp }),
 330	    );
-331	
+331
 332	    const legend = calculateLegend(
 333	      trimmedIntervalData,
 334	      sortedCalcDataFiltered,
@@ -8236,7 +8371,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:54Z)**_
 336	      graphType,
 337	      balanceTypeOp,
 338	    );
-339	
+339
 340	    setData({
 341	      data: sortedCalcDataFiltered,
 342	      intervalData: trimmedIntervalData,
@@ -8256,6 +8391,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:45:54Z)**_
 356	}
 357
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:46:43Z)**_
@@ -8266,6 +8402,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:46:43Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\custom-spreadsheet.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:47:06Z)**_
@@ -8276,6 +8413,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:47:06Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\custom-spreadsheet.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:47:13Z)**_
@@ -8286,6 +8424,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:47:13Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\filterEmptyRows.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:47:20Z)**_
@@ -8300,6 +8439,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:47:53Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\tableGraph\ReportTableList.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:48:00Z)**_
@@ -8310,6 +8450,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:48:00Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\graphs\tableGraph\ReportTableTotals.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:48:01Z)**_
@@ -8337,6 +8478,7 @@ Check header props and translation imports
 38:  mode,
 40:  const { t } = useTranslation();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:48:03Z)**_
@@ -8402,6 +8544,7 @@ grep -n "compact" ReportTableHeader.tsx | head -4
 35:  compact,
 37:  compactStyle,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:48:21Z)**_
@@ -8529,6 +8672,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && yarn workspace @actual-app/web 
 - Compiling with strict mode...
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:50:03Z)**_
@@ -8542,9 +8686,9 @@ _**Agent (claude-opus-5-5 2026-10-06 17:50:04Z)**_
  `./packages/desktop-client/src/components/reports/spreadsheets/subcategories.test.ts`
 
 ```text
-112	
+112
 113	const spreadsheet = {} as ReturnType<typeof useSpreadsheet>;
-114	
+114
 115	async function runGrouped(
 116	  categories: ReturnType<typeof makeCategories>,
 117	  balanceTypeOp: 'totalDebts' | 'totalBudgeted' = 'totalDebts',
@@ -8557,7 +8701,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:50:04Z)**_
 124	  })(spreadsheet, data => (result = data));
 125	  return result;
 126	}
-127	
+127
 128	async function runCustom(categories: ReturnType<typeof makeCategories>) {
 129	  let result: DataEntity | undefined;
 130	  await createCustomSpreadsheet({
@@ -8568,11 +8712,12 @@ _**Agent (claude-opus-5-5 2026-10-06 17:50:04Z)**_
 135	  })(spreadsheet, data => (result = data));
 136	  return result;
 137	}
-138	
+138
 139	function byId(rows: GroupedEntity[] | undefined, id: string) {
 140	  return rows?.find(r => r.id === id && !r.isUnallocated);
 141	}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:50:05Z)**_
@@ -8585,7 +8730,7 @@ _**Agent (claude-opus-5-5 2026-10-06 17:50:05Z)**_
 232	    );
 233	    expect(shownUnderParent).toBe(foodRow?.totalDebts);
 234	  });
-235	
+235
 236	  it('labels what a parent kept as unallocated when showing budgets', async () => {
 237	    vi.mocked(send).mockImplementation((async (name: string) => {
 238	      if (name === 'make-filters-from-conditions') {
@@ -8600,10 +8745,10 @@ _**Agent (claude-opus-5-5 2026-10-06 17:50:05Z)**_
 247	        { name: 'budget202609!budget-rent', value: 100000 },
 248	      ];
 249	    }) as typeof send);
-250	
+250
 251	    const [foodGroup] = await runGrouped(makeCategories(), 'totalBudgeted');
 252	    const foodRow = byId(foodGroup.categories, 'food');
-253	
+253
 254	    expect(foodGroup.totalBudgeted).toBe(40000);
 255	    expect(foodRow?.totalBudgeted).toBe(40000);
 256	    expect(foodRow?.subcategories?.map(c => [c.name, c.totalBudgeted])).toEqual(
@@ -8614,15 +8759,16 @@ _**Agent (claude-opus-5-5 2026-10-06 17:50:05Z)**_
 261	      ],
 262	    );
 263	  });
-264	
+264
 265	  it('leaves a category without subcategories as it was', async () => {
 266	    const [, billsGroup] = await runGrouped(makeCategories());
 267	    const rentRow = byId(billsGroup.categories, 'rent');
-268	
+268
 269	    expect(rentRow?.totalDebts).toBe(-10000);
 270	    expect(rentRow?.subcategories).toBeUndefined();
 271	  });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:51:12Z)**_
@@ -8735,6 +8881,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && yarn workspace @actual-app/web 
  ✓ src/components/reports/spreadsheets/subcategories.test.ts (12 tests) 40ms
       Tests  12 passed (12)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 17:51:15Z)**_
@@ -8841,6 +8988,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && yarn workspace @actual-app/web 
 ```text
 {"resultType":"task","taskId":"b5z0qc8gq","status":"working","statusMessage":"Command did not complete within its 600s timeout and was moved to the background (ID: b5z0qc8gq). Output is being written to: C:\\Users\\icsab\\AppData\\Local\\Temp\\claude\\c--Users-icsab-actual-budget-actual-budget\\6a4eba52-c679-4135-9f71-8e062e65d374\\tasks\\b5z0qc8gq.output. You will be notified when it completes. To check interim output, use Read on that file path.\nSession cwd remains C:\\Users\\icsab\\actual-budget\\actual-budget; directory changes made by the backgrounded command do not apply to subsequent commands. When it finishes, its result is delivered to you automatically — between your tool calls if you are still working, or by starting a new turn if you have already replied — so there is no need to check whether it is done or to sleep; if that result is all you are waiting for, end your turn."}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 21:03:15Z)**_
@@ -8848,6 +8996,7 @@ _**Agent (claude-opus-5-5 2026-10-06 21:03:15Z)**_
 Step 2's Budgeted, Spent and Remaining columns are written and typecheck cleanly, but I can't call them working yet. The full report test run has gone past 10 minutes and is now running in the background. Earlier runs took about a minute, so the machine is probably slowed down by the Chromium download that's still going.
 
 **What changed**
+
 - **New columns:** in a Budgeted report on the Total view, the table now shows **Budgeted | Spent | Remaining | Average**, replacing Deposits/Payments. The interval-by-interval (Time) view is unchanged.
 - **Every row gets them**, including each subcategory, its parent, the group and the bottom totals row:
   - Spent is the category's spending for the period.
@@ -8857,6 +9006,7 @@ Step 2's Budgeted, Spent and Remaining columns are written and typecheck cleanly
 - **Clicking Spent** opens the category's transactions for the period: its subcategories too, or only the parent's own transactions from the "Unallocated" row. Remaining isn't clickable.
 
 **New tests**
+
 - In [subcategories.test.ts](packages/desktop-client/src/components/reports/spreadsheets/subcategories.test.ts), these cover:
   - Each subcategory's budgeted and spent, including one that spent with no budget.
   - The parent and group totals.
@@ -8907,6 +9057,7 @@ Run the three subcategory-related test files
  Test Files  3 passed (3)
       Tests  25 passed (25)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 21:07:35Z)**_
@@ -8945,6 +9096,7 @@ Count report test files and re-run full suite
  ✓ src/components/reports/spreadsheets/subcategories.test.ts
  ✓ src/components/reports/useEscapeToReportsOverview.test.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 21:09:07Z)**_
@@ -8980,6 +9132,7 @@ Format issues found in above 1 files. Run without `--check` to fix.
 Finished in 353ms on 12 files using 12 threads.
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 21:10:46Z)**_
@@ -9006,6 +9159,7 @@ Apply formatter and recheck
  12 files changed, 293 insertions(+), 17 deletions(-)
 Finished in 306ms on 12 files using 12 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 21:10:48Z)**_
@@ -9024,12 +9178,12 @@ authors: [icsasso]
 ---
 
 Show subcategories under their parent category in custom reports, with budgeted, spent and remaining amounts side by side
-
 ```
 
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\upcoming-release-notes\show-subcategories-in-reports.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 21:13:13Z)**_
@@ -9039,6 +9193,7 @@ Step 2 is built and passes every automated check. It's ready for you to test bef
 **Checks:** all 190 report tests pass, including 9 new ones for Step 2, and typecheck and lint are clean. The very slow earlier test run had only covered 17 of the 19 test files; the rerun covered all of them. The release note now mentions the budgeted, spent and remaining columns.
 
 ## How to test Step 2 by hand
+
 Refresh the app; your demo budget from before still works.
 
 1. **Setup** (on the budget page for this month):
@@ -9047,20 +9202,21 @@ Refresh the app; your demo budget from before still works.
    - Add a subcategory **Coffee** with **no budget** and a $5 transaction.
 2. **Open the report:** custom report, Split **Category**, Type **Budgeted**, **Data Table**, **Total**, date range covering this month.
 
-| Check | What you should see |
-|---|---|
-| Columns | **Budgeted \| Spent \| Remaining \| Average** (no Deposits/Payments) |
-| Dining Out | 150.00 \| -162.50 \| **-12.50** |
-| Coffee | 0.00 \| -5.00 \| -5.00. It still appears even with no budget. |
-| Unallocated | 200.00 \| Food's own spending \| what's left of the 200 |
-| Food row | Its Budgeted, Spent and Remaining each equal the sum of the indented rows below it |
-| Totals row | Spent changes only by the new transactions. Adding a subcategory doesn't change it, so nothing is counted twice. |
-| Click a Spent amount | Opens the transactions: Food's includes Dining Out, Snacks and Coffee; Unallocated's shows only Food's own |
-| Switch to **Time** | Interval columns only; no Spent or Remaining |
-| Switch Type to **Payment** | Same as before Step 2 |
-| Split by **Group** | Each group shows Budgeted, Spent and Remaining too |
+| Check                      | What you should see                                                                                              |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Columns                    | **Budgeted \| Spent \| Remaining \| Average** (no Deposits/Payments)                                             |
+| Dining Out                 | 150.00 \| -162.50 \| **-12.50**                                                                                  |
+| Coffee                     | 0.00 \| -5.00 \| -5.00. It still appears even with no budget.                                                    |
+| Unallocated                | 200.00 \| Food's own spending \| what's left of the 200                                                          |
+| Food row                   | Its Budgeted, Spent and Remaining each equal the sum of the indented rows below it                               |
+| Totals row                 | Spent changes only by the new transactions. Adding a subcategory doesn't change it, so nothing is counted twice. |
+| Click a Spent amount       | Opens the transactions: Food's includes Dining Out, Snacks and Coffee; Unallocated's shows only Food's own       |
+| Switch to **Time**         | Interval columns only; no Spent or Remaining                                                                     |
+| Switch Type to **Payment** | Same as before Step 2                                                                                            |
+| Split by **Group**         | Each group shows Budgeted, Spent and Remaining too                                                               |
 
 **Things to know:**
+
 - Remaining covers only the report's date range. It leaves out money carried over from earlier months, so it can differ from the balance on the budget page.
 - If you set the range to several months, each column adds up across them. The Average column is still the average budgeted per month.
 
@@ -9118,6 +9274,7 @@ db35b08d6 [AI] Compare budgeted, spent and remaining in Budgeted reports (#55)
 8b5a9dba8 [AI] Show subcategories under their parent in custom reports (#55)
 ad09f7d54 Merge pull request #73 from CSCI-435-SE/feat/issue-54-mainbudgetpage-subcategories
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:17:46Z)**_
@@ -9130,10 +9287,12 @@ Step 2 is committed as `db35b08d6` on `feat/issue-55-report-subcategories`, and 
 - **Not pushed** to GitHub yet.
 
 **Branch so far:**
+
 1. `8b5a9dba8`: subcategories shown under their parent in custom reports, with no double counting.
 2. `db35b08d6`: Budgeted, Spent and Remaining side by side.
 
 **Still to do:**
+
 - **Step 3:** a filter on a parent category (e.g. "Category is Food") also includes its subcategories, in all reports.
 - **Step 4:**
   - Indent subcategories in the report category picker, and make ticking a parent tick its children.
@@ -9185,6 +9344,7 @@ Find all callers of the filter builder
 ./loot-core/src/server/main.ts:59:handlers['make-filters-from-conditions'] = async function ({
 ./loot-core/src/types/server-handlers.ts:7:  'make-filters-from-conditions': (arg: {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:19:10Z)**_
@@ -9222,6 +9382,7 @@ Check category availability in each report calc
 189:      conditions,
 190:      conditionsOp,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:21:09Z)**_
@@ -9275,6 +9436,7 @@ server/budget/app.ts:148:app.method('get-categories', getCategories);
 202-  return {
 203-    grouped: categoryGroups,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:21:14Z)**_
@@ -9316,6 +9478,7 @@ Read category condition ops and group fetch
 441-  }));
 442-}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:21:16Z)**_
@@ -9356,6 +9519,7 @@ type BaseConditionEntity<
   queryFilter?: Record<string, { $oneof: string[] }>;
 };
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:21:28Z)**_
@@ -9447,6 +9611,7 @@ src/components/reports/spreadsheets/subcategories.ts(112,39): error TS2345: Argu
 src/components/reports/spreadsheets/subcategories.ts(118,35): error TS2322: Type 'string | string[]' is not assignable to type 'string'.
 src/components/reports/spreadsheets/subcategories.ts(122,50): error TS2345: Argument of type 'string | string[]' is not assignable to parameter of type 'string[]'.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:22:34Z)**_
@@ -9464,6 +9629,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:24:06Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:25:33Z)**_
@@ -9477,6 +9643,7 @@ Typecheck after helper fix
 ```text
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:25:35Z)**_
@@ -9634,6 +9801,7 @@ Show how each report uses conditions
 402:// Helper: Evaluate category conditions to get matching categories
 405:  conditions: RuleConditionEntity[],
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:26:00Z)**_
@@ -9834,6 +10002,7 @@ export async function buildFilteredTransactionsQuery(
 392:function extractCategoryConditions(
 521:  const categoryConditions = extractCategoryConditions(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:26:12Z)**_
@@ -9947,6 +10116,7 @@ async function extractQueryCategories(
     return {
       total: 0,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:26:26Z)**_
@@ -9986,6 +10156,7 @@ Check formula and sankey condition handling
 30:423-    if (op === 'notOneOf') return !Array.isArray(value) || !value.includes(id);
 31:424-    if (op === 'contains') {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:27:30Z)**_
@@ -10099,6 +10270,7 @@ git diff --stat
  .../reports/spreadsheets/subcategories.ts          | 56 +++++++++++++++++++++-
  9 files changed, 95 insertions(+), 15 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:27:33Z)**_
@@ -10174,6 +10346,7 @@ hooks/useFormulaExecution.ts:27:import { useFormat } from './useFormat';
 hooks/useFormulaExecution.ts:28:import { useGlobalPref } from './useGlobalPref';
 hooks/useFormulaExecution.ts:29:import { useLocale } from './useLocale';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:30:10Z)**_
@@ -10310,6 +10483,7 @@ grep -n "^import" components/reports/reports/Calendar.tsx | grep "#components/re
 42:import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 43:import { calculateTimeRange } from '#components/reports/reportRanges';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:32:21Z)**_
@@ -10334,6 +10508,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && files=$(git status --porcelain 
 🎉 All files passed
 lint exit=0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:32:29Z)**_
@@ -10372,6 +10547,7 @@ echo ok
 ```text
 ok
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:34:01Z)**_
@@ -10572,6 +10748,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && npx oxfmt packages/desktop-clie
  ✓ src/components/reports/spreadsheets/subcategories.test.ts (20 tests) 44ms
       Tests  28 passed (28)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:35:04Z)**_
@@ -10665,6 +10842,7 @@ describe('createBudgetAnalysisSpreadsheet', () => {
   });
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:35:08Z)**_
@@ -10720,6 +10898,7 @@ export function createBudgetAnalysisSpreadsheet({
   endDate,
   showHiddenCategories = false,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:37:22Z)**_
@@ -10773,6 +10952,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && npx oxfmt packages/desktop-clie
  ✓ src/components/reports/spreadsheets/subcategories.test.ts (21 tests) 46ms
       Tests  21 passed (21)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:37:24Z)**_
@@ -10797,6 +10977,7 @@ Finished in 106ms on 16 files using 12 threads.
  Test Files  1 failed | 25 passed (26)
       Tests  1 failed | 262 passed (263)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:40:05Z)**_
@@ -10846,6 +11027,7 @@ Ignored nodes: comments, script, style
 126:      'make-filters-from-conditions': async ({ conditions }) => {
 127:        const ruleConditions = Array.isArray(conditions) ? conditions : [];
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
@@ -10866,30 +11048,30 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 9	} from '@actual-app/core/types/models';
 10	import { renderHook, waitFor } from '@testing-library/react';
 11	import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-12	
+12
 13	import { TestProviders } from '#mocks';
-14	
+14
 15	import {
 16	  buildFilteredTransactionsQuery,
 17	  useFormulaExecution,
 18	} from './useFormulaExecution';
-19	
+19
 20	vi.mock(
 21	  '@actual-app/core/platform/client/connection',
 22	  () => import('#mocks/connection'),
 23	);
-24	
+24
 25	type SerializedQuery = {
 26	  filterExpressions: ReadonlyArray<Record<string, unknown>>;
 27	  tableOptions?: Record<string, unknown>;
 28	};
-29	
+29
 30	type QueryConfig = {
 31	  conditions?: RuleConditionEntity[];
 32	  conditionsOp?: 'and' | 'or';
 33	  timeFrame?: Partial<TimeFrame>;
 34	};
-35	
+35
 36	function categoryCondition(value: string) {
 37	  return {
 38	    field: 'category',
@@ -10898,7 +11080,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 41	    type: 'id',
 42	  } satisfies RuleConditionEntity;
 43	}
-44	
+44
 45	function queryHasCategory(query: SerializedQuery, categoryId: string) {
 46	  return query.filterExpressions.some(filterExpression => {
 47	    const filters = filterExpression.$and;
@@ -10914,7 +11096,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 57	    );
 58	  });
 59	}
-60	
+60
 61	function findQueryByCategory(
 62	  queryPayloads: SerializedQuery[],
 63	  categoryId: string,
@@ -10927,7 +11109,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 70	  }
 71	  return query;
 72	}
-73	
+73
 74	function expectQueryDateRange(
 75	  queryPayloads: SerializedQuery[],
 76	  categoryId: string,
@@ -10940,7 +11122,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 83	    $and: [{ date: { $gte: startDate } }, { date: { $lte: endDate } }],
 84	  });
 85	}
-86	
+86
 87	const formulaQueries: Record<string, QueryConfig> = {
 88	  Income: {
 89	    conditions: [categoryCondition('income-cat')],
@@ -10961,11 +11143,11 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 104	    },
 105	  },
 106	};
-107	
+107
 108	describe('formula query timeframes', () => {
 109	  let previousCurrentMonth: typeof global.currentMonth;
 110	  let queryPayloads: SerializedQuery[];
-111	
+111
 112	  beforeEach(() => {
 113	    previousCurrentMonth = global.currentMonth;
 114	    queryPayloads = [];
@@ -10982,7 +11164,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 125	      }),
 126	      'make-filters-from-conditions': async ({ conditions }) => {
 127	        const ruleConditions = Array.isArray(conditions) ? conditions : [];
-128	
+128
 129	        return {
 130	          filters: ruleConditions.map(condition => {
 131	            const { field, value } = condition as RuleConditionEntity;
@@ -10996,12 +11178,12 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 139	      },
 140	    });
 141	  });
-142	
+142
 143	  afterEach(async () => {
 144	    global.currentMonth = previousCurrentMonth;
 145	    await clearServer();
 146	  });
-147	
+147
 148	  it('applies default bounds for partial static query timeframes', async () => {
 149	    const query = await buildFilteredTransactionsQuery({
 150	      timeFrame: {
@@ -11009,7 +11191,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 152	        start: '2016-10',
 153	      },
 154	    });
-155	
+155
 156	    expect(query.serialize().filterExpressions).toEqual([
 157	      {
 158	        $and: [
@@ -11019,18 +11201,19 @@ _**Agent (claude-opus-5-5 2026-10-07 01:40:56Z)**_
 162	      },
 163	    ]);
 164	  });
-165	
+165
 166	  it('applies preset query timeframe modes through calculateTimeRange', async () => {
 167	    const query = await buildFilteredTransactionsQuery({
 168	      timeFrame: {
 169	        mode: 'lastMonth',
 170	      },
 171	    });
-172	
+172
 173	    expect(query.serialize().filterExpressions).toEqual([
 174	      {
 175	        $and: [
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:41:01Z)**_
@@ -11048,6 +11231,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:42:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\hooks\useFormulaExecution.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:42:46Z)**_
@@ -11065,9 +11249,10 @@ _**Agent (claude-opus-5-5 2026-10-07 01:42:46Z)**_
 445	    vi.mocked(aqlQuery).mockImplementation((async () => ({
 446	      data: [],
 447	    })) as typeof aqlQuery);
-448	
+448
 449	    await runGrouped(makeCategories(), 'totalDebts', [
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:45:12Z)**_
@@ -11078,6 +11263,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:45:12Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:47:48Z)**_
@@ -11095,6 +11281,7 @@ Finished in 147ms on 17 files using 12 threads.
  Test Files  26 passed (26)
       Tests  263 passed (263)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 01:48:00Z)**_
@@ -11102,6 +11289,7 @@ _**Agent (claude-opus-5-5 2026-10-07 01:48:00Z)**_
 Step 3 is built: a report filter on a parent category now also covers its subcategories. Typecheck, lint and formatting pass, and all 263 tests in reports and hooks pass. Nothing is committed yet.
 
 **How it works**
+
 - A filter like **"Category is Food"** now matches Food and all its subcategories. "Is one of" works the same way. **"Category is not Food"** leaves out the whole family, and so does "is not one of".
 - Filters on a category's name ("contains", "matches"), on groups, and on subcategories themselves are unchanged.
 - **Where it applies:** every report and dashboard card:
@@ -11120,6 +11308,7 @@ Step 3 is built: a report filter on a parent category now also covers its subcat
 - **Your saved filters stay as you set them.** The filter chip still reads "Category is Food"; the expansion happens behind the scenes. On the transaction list you reach by clicking an amount, it does show as "is one of Food, Dining Out…", which accurately describes what's listed.
 
 **Tests:**
+
 - Each operator.
 - Filters that shouldn't change.
 - Spending and Budgeted custom reports.
@@ -11129,18 +11318,19 @@ Step 3 is built: a report filter on a parent category now also covers its subcat
 One existing formula-card test also needed a small update: its fake server now returns an empty category list, which the real app always provides.
 
 ## How to test Step 3 by hand
+
 Use your demo budget with Food → Dining Out / Snacks / Coffee.
 
-| Where | Filter | What you should see |
-|---|---|---|
-| Custom report, Category, **Payment** | Category **is** Food | Food row plus all its subcategories, with the same amounts as unfiltered. Other categories disappear. |
-| Same, Type **Budgeted** | Category **is** Food | Food's Budgeted/Spent/Remaining include Dining Out, Snacks and Coffee |
-| Same | Category **is not** Food | Food and all its subcategories disappear; everything else stays |
-| Same | Category **is** Dining Out | Only Dining Out's amounts, shown under Food |
-| Click Food's amount with "is Food" applied | n/a | The list includes the Dining Out transactions |
-| **Spending** report | Category is Food | The spending line includes subcategory transactions |
-| **Budget Analysis** | Category is Food | Budgeted equals Food + Dining Out + Snacks + Coffee (400 this month) |
-| **Cash Flow** or **Net Worth** | Category is Food | Includes the subcategory transactions |
+| Where                                      | Filter                     | What you should see                                                                                   |
+| ------------------------------------------ | -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Custom report, Category, **Payment**       | Category **is** Food       | Food row plus all its subcategories, with the same amounts as unfiltered. Other categories disappear. |
+| Same, Type **Budgeted**                    | Category **is** Food       | Food's Budgeted/Spent/Remaining include Dining Out, Snacks and Coffee                                 |
+| Same                                       | Category **is not** Food   | Food and all its subcategories disappear; everything else stays                                       |
+| Same                                       | Category **is** Dining Out | Only Dining Out's amounts, shown under Food                                                           |
+| Click Food's amount with "is Food" applied | n/a                        | The list includes the Dining Out transactions                                                         |
+| **Spending** report                        | Category is Food           | The spending line includes subcategory transactions                                                   |
+| **Budget Analysis**                        | Category is Food           | Budgeted equals Food + Dining Out + Snacks + Coffee (400 this month)                                  |
+| **Cash Flow** or **Net Worth**             | Category is Food           | Includes the subcategory transactions                                                                 |
 
 Once you've confirmed, I'll commit Step 3 and move on to Step 4: the category picker, Sankey labels and the other category dropdowns.
 
@@ -11193,6 +11383,7 @@ echo "exit=$?"; git log --oneline -1
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.
 ```
+
 </details></tool-use>
 
 ---
@@ -11223,7 +11414,7 @@ _**Agent (claude-opus-5-5 2026-10-07 02:15:44Z)**_
 1	// @ts-strict-ignore
 2	import React, { Fragment, useMemo, useState } from 'react';
 3	import { Trans, useTranslation } from 'react-i18next';
-4	
+4
 5	import { Button } from '@actual-app/components/button';
 6	import {
 7	  SvgCheckAll,
@@ -11237,18 +11428,18 @@ _**Agent (claude-opus-5-5 2026-10-07 02:15:44Z)**_
 15	  CategoryEntity,
 16	  CategoryGroupEntity,
 17	} from '@actual-app/core/types/models';
-18	
+18
 19	import { Checkbox } from '#components/forms';
-20	
+20
 21	import { GraphButton } from './GraphButton';
-22	
+22
 23	type CategorySelectorProps = {
 24	  categoryGroups: Array<CategoryGroupEntity>;
 25	  selectedCategories: CategoryEntity[];
 26	  setSelectedCategories: (selectedCategories: CategoryEntity[]) => void;
 27	  showHiddenCategories?: boolean;
 28	};
-29	
+29
 30	export function CategorySelector({
 31	  categoryGroups,
 32	  selectedCategories,
@@ -11262,29 +11453,29 @@ _**Agent (claude-opus-5-5 2026-10-07 02:15:44Z)**_
 40	      return showHiddenCategories || !f.hidden ? true : false;
 41	    });
 42	  };
-43	
+43
 44	  const selectAll: CategoryEntity[] = [];
 45	  categoryGroups.map(categoryGroup =>
 46	    filteredGroup(categoryGroup).map(category => selectAll.push(category)),
 47	  );
-48	
+48
 49	  if (selectedCategories === undefined) {
 50	    selectedCategories = categoryGroups.flatMap(cg => cg.categories);
 51	  }
-52	
+52
 53	  const selectedCategoryMap = useMemo(
 54	    () => selectedCategories.map(selected => selected.id),
 55	    [selectedCategories],
 56	  );
-57	
+57
 58	  const allCategoriesSelected = selectAll.every(category =>
 59	    selectedCategoryMap.includes(category.id),
 60	  );
-61	
+61
 62	  const allCategoriesUnselected = !selectAll.some(category =>
 63	    selectedCategoryMap.includes(category.id),
 64	  );
-65	
+65
 66	  return (
 67	    <View>
 68	      <View
@@ -11362,7 +11553,7 @@ _**Agent (claude-opus-5-5 2026-10-07 02:15:44Z)**_
 140	          </GraphButton>
 141	        </View>
 142	      </View>
-143	
+143
 144	      <ul
 145	        style={{
 146	          listStyle: 'none',
@@ -11492,6 +11683,7 @@ _**Agent (claude-opus-5-5 2026-10-07 02:15:44Z)**_
 270	}
 271
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:15:45Z)**_
@@ -11571,6 +11763,7 @@ const defaultProps = {
   showHiddenCategories: true,
 };
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:15:57Z)**_
@@ -11720,6 +11913,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && npx oxfmt packages/desktop-clie
  ✓ src/components/reports/CategorySelector.test.tsx (5 tests) 440ms
       Tests  5 passed (5)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:17:08Z)**_
@@ -11801,6 +11995,7 @@ describe('CategorySelector', () => {
   });
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:17:52Z)**_
@@ -11919,6 +12114,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && npx oxfmt packages/desktop-clie
  ✓ src/components/reports/CategorySelector.test.tsx (10 tests) 1384ms
       Tests  10 passed (10)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:17:54Z)**_
@@ -12003,6 +12199,7 @@ Outline Sankey functions and name usage
 1541:    name: data.labelKey
 1543:      : (data.name ?? key),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:18:00Z)**_
@@ -12191,6 +12388,7 @@ export function sortGraph(
             )
           : Array.from(graph)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:18:08Z)**_
@@ -12432,6 +12630,7 @@ export function buildSankeyData(
 
 export function moveNodeToEnd(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:18:19Z)**_
@@ -12474,6 +12673,7 @@ Check Sankey node keys and names
 861-}
 862-
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:18:22Z)**_
@@ -12583,6 +12783,7 @@ grep -n "type NodeData\|^type NodeData\|NodeData = {" sankey-spreadsheet.ts | he
 93:export type NodeData = {
 🎉 All files passed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:20:56Z)**_
@@ -12626,6 +12827,7 @@ reports/Sankey.tsx:564:    useCategories();
 reports/SankeyCard.tsx:31:import { useCategories } from '#hooks/useCategories';
 reports/SankeyCard.tsx:51:    useCategories();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:21:01Z)**_
@@ -12723,6 +12925,7 @@ Read Sankey sortGraph test setup
 624-
 625-      const sorted = sortGraph(graph, 'per-group', []);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:25:23Z)**_
@@ -12829,6 +13032,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && npx oxfmt packages/desktop-clie
 import {  addNode,  addPercentageLabels,  addValueToLink,  buildSankeyData,  cleanUpNodes,  convertToSankeyData,  createBudgetGraph,  createTransactionsGraph,  deleteLink,  filterCategoryGroups,  filterGraphByLayers,  getCategoryGroup,  getLayer,  getNodeValue,  GraphLayers,  hasChild,  hasParent,  isGraphLayer,  moveNodeToEnd,  moveNodeToStart,  nodesInLayer,  sortGraph,} from './sankey-spreadsheet';
       Tests  51 passed (51)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:25:27Z)**_
@@ -12858,6 +13062,7 @@ Check category autocomplete for subcategory handling
 ./transactions/TransactionsTable.tsx
 ./util/GenericInput.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:25:30Z)**_
@@ -12925,6 +13130,7 @@ filterCategorySuggestions.ts
 441-          {item.hidden || item.group?.hidden ? ' ' + t('(hidden)') : ''}
 442-        </TextOneLine>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:25:34Z)**_
@@ -12937,13 +13143,13 @@ _**Agent (claude-opus-5-5 2026-10-07 02:25:34Z)**_
 360	    </View>
 361	  );
 362	}
-363	
+363
 364	function defaultRenderSplitTransactionButton(
 365	  props: SplitTransactionButtonProps,
 366	): ReactElement<typeof SplitTransactionButton> {
 367	  return <SplitTransactionButton {...props} />;
 368	}
-369	
+369
 370	type CategoryItemProps = {
 371	  item: CategoryAutocompleteItem;
 372	  className?: string;
@@ -12952,7 +13158,7 @@ _**Agent (claude-opus-5-5 2026-10-07 02:25:34Z)**_
 375	  embedded?: boolean;
 376	  showBalances?: boolean;
 377	};
-378	
+378
 379	function CategoryItem({
 380	  item,
 381	  className,
@@ -12973,7 +13179,7 @@ _**Agent (claude-opus-5-5 2026-10-07 02:25:34Z)**_
 396	      }
 397	    : {};
 398	  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
-399	
+399
 400	  const balanceBinding =
 401	    budgetType === 'envelope'
 402	      ? envelopeBudget.catBalance(item.id)
@@ -12982,10 +13188,10 @@ _**Agent (claude-opus-5-5 2026-10-07 02:25:34Z)**_
 405	    'envelope-budget' | 'tracking-budget',
 406	    typeof balanceBinding
 407	  >(balanceBinding);
-408	
+408
 409	  const isToBudgetItem = item.id === 'to-budget';
 410	  const toBudget = useEnvelopeSheetValue(envelopeBudget.toBudget);
-411	
+411
 412	  return (
 413	    <button
 414	      type="button"
@@ -13005,6 +13211,7 @@ _**Agent (claude-opus-5-5 2026-10-07 02:25:34Z)**_
 428	          borderRadius: embedded ? 4 : 0,
 429	          border: 'none',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:25:38Z)**_
@@ -13030,6 +13237,7 @@ Check autocomplete item type
 46-    item: CategoryAutocompleteItem;
 47-  }) => Partial<ComponentProps<typeof View>>;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:31:53Z)**_
@@ -13069,6 +13277,7 @@ grep -rn "category-item\|CategoryAutocomplete" --include=*.test.tsx ../.. | head
 ../../components/transactions/TransactionsTable.test.tsx:729:      .querySelectorAll('[data-testid$="category-item"]');
 ../../components/transactions/TransactionsTable.test.tsx:768:      .querySelectorAll('[data-testid$="category-item"]');
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:31:57Z)**_
@@ -13136,6 +13345,7 @@ Read dropdown test and category fixtures
 147:  categoryGroups: CategoryGroupEntity[];
 255:      grouped: categoryGroups,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:32:04Z)**_
@@ -13200,6 +13410,7 @@ export function CategoryAutocomplete({
 18:import { PayeeAutocomplete } from './PayeeAutocomplete';
 19:import type { PayeeAutocompleteProps } from './PayeeAutocomplete';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:32:09Z)**_
@@ -13215,6 +13426,7 @@ See how payee autocomplete test renders it
 175:    render(
 184:              embedded={false}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:33:59Z)**_
@@ -13272,6 +13484,7 @@ describe('CategoryAutocomplete', () => {
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\autocomplete\CategoryAutocomplete.test.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:36:39Z)**_
@@ -13289,6 +13502,7 @@ Error: useSpreadsheet must be used within a SpreadsheetProvider
      16|     throw new Error('useSpreadsheet must be used within a SpreadsheetP…
       Tests  1 failed (1)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:36:40Z)**_
@@ -13313,6 +13527,7 @@ Find spreadsheet provider usage in tests
 ./components/accounts/Reconcile.test.tsx:9:import { useSheetValue } from '#hooks/useSheetValue';
 ./components/accounts/Reconcile.test.tsx:14:vi.mock('#hooks/useSheetValue', () => ({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:36:44Z)**_
@@ -13337,6 +13552,7 @@ Find sheet hook imports in the dropdown
 410-
 411-  const isToBudgetItem = item.id === 'to-budget';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:38:34Z)**_
@@ -13372,6 +13588,7 @@ cd /c/Users/icsab/actual-budget/actual-budget && npx oxfmt packages/desktop-clie
      ✓ indents subcategories under their parent  349ms
       Tests  1 passed (1)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:38:37Z)**_
@@ -13395,6 +13612,7 @@ Finished in 125ms on 22 files using 12 threads.
  Test Files  39 passed (39)
       Tests  407 passed | 1 skipped (408)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:42:34Z)**_
@@ -13438,6 +13656,7 @@ lint exit=0
  Test Files  2 passed (2)
       Tests  61 passed (61)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:43:35Z)**_
@@ -13447,22 +13666,26 @@ Step 4 is built, so subcategories now show up under their parents everywhere a p
 **Not committed:** Steps 3 and 4 are both still uncommitted. Since you declined the earlier commit, I'll wait for you to say when.
 
 **Report category picker** (custom report sidebar and Crossover report)
+
 - Each subcategory is listed under its parent, indented 16px, the same as the budget page.
 - Ticking a parent ticks its subcategories too, and unticking it unticks them all.
 - A subcategory can still be ticked on its own.
 - With hidden categories off, a hidden parent hides its subcategories.
 
 **Sankey**
+
 - Subcategory flows are labeled with their parent, e.g. "Food › Dining Out".
 - Each one sits right after its parent in all three sort orders, with siblings keeping their value order.
 - If the parent isn't in the chart, the subcategory stays where it was. They remain separate flows, so nothing is counted twice.
 
 **Category dropdowns everywhere else**
+
 - This covers transaction entry, rules, schedules, cover/transfer menus and other category pickers.
 - Subcategories are indented under their parent.
 - They could already be picked there; only the indent is new.
 
 **Tests added:**
+
 - **Picker:**
   - order and indent
   - ticking and unticking a parent
@@ -13475,20 +13698,22 @@ Step 4 is built, so subcategories now show up under their parents everywhere a p
 - **Dropdown:** the indent.
 
 ## How to test Step 4 by hand
+
 Use your demo budget with Food → Dining Out / Snacks / Coffee.
 
-| Where | What to do | What you should see |
-|---|---|---|
-| Custom report sidebar → category list | Open it | Dining Out, Snacks and Coffee indented under Food |
-| Same | Untick **Food** | Food and all three subcategories untick |
-| Same | Tick **Food** again, then untick **Dining Out** | Only Dining Out unticks |
-| Same, Show hidden categories off | Hide Food on the budget page | Food and its subcategories disappear from the list |
-| **Crossover** report → category list | Open it | Same nesting as the custom report |
-| **Sankey** (Spent and Budgeted) | Try each sort option | Flows read "Food › Dining Out" etc. and sit right after Food |
-| Transaction entry → Category | Open the dropdown | Subcategories indented under Food; picking one still works |
-| Rule editor → Category condition or action | Open the dropdown | Same indent |
+| Where                                      | What to do                                      | What you should see                                          |
+| ------------------------------------------ | ----------------------------------------------- | ------------------------------------------------------------ |
+| Custom report sidebar → category list      | Open it                                         | Dining Out, Snacks and Coffee indented under Food            |
+| Same                                       | Untick **Food**                                 | Food and all three subcategories untick                      |
+| Same                                       | Tick **Food** again, then untick **Dining Out** | Only Dining Out unticks                                      |
+| Same, Show hidden categories off           | Hide Food on the budget page                    | Food and its subcategories disappear from the list           |
+| **Crossover** report → category list       | Open it                                         | Same nesting as the custom report                            |
+| **Sankey** (Spent and Budgeted)            | Try each sort option                            | Flows read "Food › Dining Out" etc. and sit right after Food |
+| Transaction entry → Category               | Open the dropdown                               | Subcategories indented under Food; picking one still works   |
+| Rule editor → Category condition or action | Open the dropdown                               | Same indent                                                  |
 
 **Step 5 is next:**
+
 - An end-to-end test covering the report table, filters and picker.
 - Screenshot (VRT) updates.
 - The AI log.
@@ -13528,6 +13753,7 @@ desktop-client/src/components/reports/Overview.tsx:300:        height: type === 
 desktop-client/src/components/reports/Overview.tsx:643:                                    name: 'sankey-card' as const,
 desktop-client/src/components/reports/Overview.tsx:911:                        ) : widget.type === 'sankey-card' &&
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:57:30Z)**_
@@ -13576,6 +13802,7 @@ Read Sankey menu entry and settings toggle labels
 744:    const name = newName || t('Sankey');
 756:  const title = widget?.meta?.name || t('Sankey');
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:57:33Z)**_
@@ -13593,6 +13820,7 @@ Find how to reveal experimental settings
 25:        </Trans>
 UI.tsx:96:      <Trans>Show advanced settings</Trans>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 02:57:40Z)**_
@@ -13600,28 +13828,32 @@ _**Agent (claude-opus-5-5 2026-10-07 02:57:40Z)**_
 The Sankey report is an **experimental feature that's off by default**, which is why you couldn't find it. Turning it on only affects your local demo budget.
 
 ## Turn it on
+
 1. Open **Settings** (sidebar, or the budget name menu → Settings).
 2. At the bottom, click **Show advanced settings**.
 3. In **Experimental features**, click **I understand the risks, show experimental features**.
 4. Tick **Sankey report**.
 
 ## Add the report
+
 1. Go to **Reports**.
 2. Click **Add new widget** → **Sankey card**.
 3. Click the new card to open the full report.
 
 ## What to check
+
 Use your demo budget with Food → Dining Out / Snacks / Coffee.
 
-| What to do | What you should see |
-|---|---|
-| **Spent** view (top of the report) | Subcategory flows are labeled **"Food › Dining Out"**, **"Food › Snacks"** and **"Food › Coffee"**, and sit right below **Food** |
-| **Budgeted** view | Same labels and placement. A subcategory with no budget (Coffee) has no flow, which is expected. |
-| Sort menu: **Sort per group**, **Sort all**, **Sort as budget** | In all three, the subcategories stay right after Food. Among themselves they're ordered by amount, except in "Sort as budget". |
-| Add a filter **Category is Food** (Step 3) | Food and all its subcategory flows stay; other categories disappear |
+| What to do                                                              | What you should see                                                                                                                     |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Spent** view (top of the report)                                      | Subcategory flows are labeled **"Food › Dining Out"**, **"Food › Snacks"** and **"Food › Coffee"**, and sit right below **Food**        |
+| **Budgeted** view                                                       | Same labels and placement. A subcategory with no budget (Coffee) has no flow, which is expected.                                        |
+| Sort menu: **Sort per group**, **Sort all**, **Sort as budget**         | In all three, the subcategories stay right after Food. Among themselves they're ordered by amount, except in "Sort as budget".          |
+| Add a filter **Category is Food** (Step 3)                              | Food and all its subcategory flows stay; other categories disappear                                                                     |
 | Reduce the number of categories shown so Food gets grouped into "Other" | Its subcategories either appear on their own (still labeled "Food › …") or fall into "Other" too. Either way, nothing is counted twice. |
 
 **Two things to know:**
+
 - **Only categories with activity get a flow.** If a subcategory had no spending in the date range, it won't show in Spent; with no budget, it won't show in Budgeted.
 - **If a label looks cut off,** hover the flow to see the full name in the tooltip.
 
@@ -13712,6 +13944,7 @@ Read Sankey top-N grouping and default
 710:            topNcategories,
 844:            <TopNSelector value={topNcategories} onChange={settopNcategories} />
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:13:57Z)**_
@@ -13755,6 +13988,7 @@ Find the top-N control label and Other node naming
 30:1051-        graph.get(key)?.to.keys() ?? [],
 31:1052-      ).find(k => graph.get(k)?.type === GraphLayers.IncomeCategory);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:14:02Z)**_
@@ -13805,6 +14039,7 @@ function displayN(n: number, t: TFunction): string {
   );
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:14:11Z)**_
@@ -13818,12 +14053,15 @@ Sankey shows at most **15 categories** by default, and fewer if the window is sh
 Without a filter, the demo budget has more than 15 categories. Dining Out, Snacks and Coffee have small amounts, so they're among the first merged into "Other" and you don't see them. With "Category is Food", only Food's family is left, everything fits, and you see the labels and order. So that test actually confirmed both behaviors; the unfiltered view was just hiding them inside "Other".
 
 ## How to test without a filter
+
 1. In the Sankey toolbar, click the **"Show up to 15"** button (it has the "Change category limit" tooltip). Choose **"Show up to All"**.
 2. Make the browser window as tall as you can. The height limit still applies even with "All".
 3. You should now see **"Food › Dining Out"**, **"Food › Snacks"** and **"Food › Coffee"** right below **Food**. Coffee only appears in **Spent**, since it has no budget. Check all three sort options.
 
 ## Clearer version of the "Other" check
+
 This checks that subcategories merged into "Other" still say which parent they belong to:
+
 1. Remove any filter and set the limit back to **"Show up to 10"**.
 2. Hover the **Other** flow in the Food group. The tooltip lists the merged categories, and the subcategories should appear there as **"Food › Dining Out"** etc.
 3. The Other flow's amount should equal the sum of the categories listed, so nothing is counted twice.
@@ -13867,6 +14105,7 @@ Read height-based Sankey node limit
 7f4a0e7d6 [AI] Move i18n usage outside of loot-core (#8027)
 218a3c68d Various sankey improvements and bugfixes (#7682)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:22:54Z)**_
@@ -13876,7 +14115,9 @@ Sankey also limits how many flows it shows by the chart's height: one flow per *
 This was already there before my changes. The height limit is in `Sankey.tsx`, which I haven't touched; my Sankey changes are only in the labeling and ordering code.
 
 ## How to see more flows anyway
+
 Zooming the browser out gives the chart more room:
+
 1. With the Sankey report open, zoom out with **Ctrl + −** (**Cmd + −** on Mac) down to **50%**. That roughly doubles the number of flows that fit, to about 16–22.
 2. Set **"Show up to All"**.
 3. Look for **"Food › Dining Out"**, **"Food › Snacks"** and **"Food › Coffee"** right after **Food**. Coffee only appears in **Spent**, since it has no budget. Try each sort option.
@@ -13885,9 +14126,11 @@ Zooming the browser out gives the chart more room:
 If they still end up in "Other" at 50%, try 33%. Or give them bigger amounts on the budget page so they rank higher. Or use the **"Category is Food"** filter, which you've already confirmed shows the right labels and order.
 
 ## The "Other" check
+
 At normal zoom, hover the **Other** flow under Food. The tooltip should list the merged subcategories as **"Food › Dining Out"** etc.
 
 ## Optional
+
 The labeling and ordering are also covered by the Sankey tests I added. If you'd like the "Show up to…" choice to work regardless of chart height, that's a change to Sankey's existing behavior, separate from subcategories. I'd suggest leaving it out of this issue unless you want it.
 
 ---
@@ -13903,10 +14146,12 @@ _**Agent (claude-opus-5-5 2026-10-07 03:26:31Z)**_
 Here's the plan for Step 5. It wraps up the issue, and nothing here adds features. Steps 3 and 4 are confirmed but still uncommitted.
 
 ## 1. Commit Steps 3 and 4
+
 - Two commits, one per step, each with an `[AI] …` message, and hooks are never skipped.
 - I'll commit only when you say. You declined my last commit attempt, so I won't do it unprompted.
 
 ## 2. End-to-end test
+
 - **File:** a new `e2e/report-subcategories.test.ts`. It reuses #54's helpers for adding subcategories and setting budgets, and the existing report helpers.
 - **Setup:** demo budget, Food set to 400, a Dining Out subcategory with 150, and one Dining Out transaction.
 - **Checks:**
@@ -13918,18 +14163,22 @@ Here's the plan for Step 5. It wraps up the issue, and nothing here adds feature
 - **Sankey:** I'll leave it out of the end-to-end test. It's behind an experimental setting, its unit tests already cover the labeling and ordering, and the height limit makes it unreliable in a browser test.
 
 ## 3. Screenshot (VRT) tests
+
 - I'll check whether the existing reports screenshots change. Budgeted custom reports now show different columns, so some may.
 - **These screenshots must be generated in Docker (`yarn vrt:docker`)** to match CI's Linux rendering. Screenshots taken on Windows won't match. If Docker isn't available, I'll leave screenshot updates to CI or the PR and say so.
 
 ## 4. Final checks
+
 - Run `yarn typecheck`, `yarn lint` and `yarn test` from the root, across the whole repo.
 - Make sure the release note matches everything that shipped.
 
 ## 5. AI log
+
 - Add a log for this session in `ai-logs/sprint1/icsasso/`, in the same format as your earlier issue logs.
 - The untracked log from the other session stays out unless you say otherwise.
 
 ## 6. Push and open the PR
+
 - **Only when you say:** push `feat/issue-55-report-subcategories` and open a PR into `master`.
 - **Title:** for example `[AI] Add subcategory section to reports`.
 - **Body:** the repo's PR template left completely blank, for you to fill in, followed by the Claude Code line.
@@ -13982,6 +14231,7 @@ List uncommitted changes
 ?? ai-logs/sprint1/icsasso/2026-09-29_claude-web_splittingup-issue23.md
 ?? packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.test.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:36:50Z)**_
@@ -13999,6 +14249,7 @@ Show the unexpected stylesheet diff
 ```text
 warning: in the working copy of 'packages/desktop-client/src/components/reports/overview.scss', LF will be replaced by CRLF the next time Git touches it
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:36:53Z)**_
@@ -14016,6 +14267,7 @@ Restore the stylesheet's original line endings
 ```text
 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:37:13Z)**_
@@ -14095,6 +14347,7 @@ M  packages/desktop-client/src/hooks/useFormulaExecution.ts
 ?? ai-logs/sprint1/icsasso/2026-09-29_claude-web_splittingup-issue23.md
 ?? packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.test.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:37:48Z)**_
@@ -14135,6 +14388,7 @@ exit=0
 ?? packages/desktop-client/src/components/autocomplete/CategoryAutocomplete.test.tsx
 4
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:37:58Z)**_
@@ -14172,6 +14426,7 @@ db35b08d6 [AI] Compare budgeted, spent and remaining in Budgeted reports (#55)
 ad09f7d54 Merge pull request #73 from CSCI-435-SE/feat/issue-54-mainbudgetpage-subcategories
 ?? ai-logs/sprint1/icsasso/2026-09-29_claude-web_splittingup-issue23.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:38:20Z)**_
@@ -14186,6 +14441,7 @@ _**Agent (claude-opus-5-5 2026-10-07 03:38:20Z)**_
 ```text
 {"taskId":"bcjsm2jgk","status":"working","statusMessage":"Still running. Output is being written to C:\\Users\\icsab\\AppData\\Local\\Temp\\claude\\c--Users-icsab-actual-budget-actual-budget\\6a4eba52-c679-4135-9f71-8e062e65d374\\tasks\\bcjsm2jgk.output; use Read on that path for interim output. Do not call GetTask again for this task: when the command finishes, its result is delivered to you automatically — between your tool calls if you are still working, or by starting a new turn if you have already replied (usually as a GetTask result, otherwise as a task notification). If that result is all you are waiting for, end your turn; otherwise continue with other work.","createdAt":"2026-10-06T16:35:00.363Z","lastUpdatedAt":"2026-10-06T16:35:00.363Z"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:38:28Z)**_
@@ -14200,6 +14456,7 @@ Check installed Playwright browsers
 __dirlock
 chromium_headless_shell-1217
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:38:29Z)**_
@@ -14227,6 +14484,7 @@ node.exe                     22912 Console                    1     45,604 K
 node.exe                      2268 Console                    1     46,432 K
 node.exe                     29348 Console                    1     43,488 K
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:38:41Z)**_
@@ -14248,6 +14506,7 @@ _**Agent (claude-opus-5-5 2026-10-07 03:38:41Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:38:42Z)**_
@@ -14258,6 +14517,7 @@ _**Agent (claude-opus-5-5 2026-10-07 03:38:42Z)**_
 ```text
 {"message":"Successfully stopped task: bcjsm2jgk (yarn playwright install chromium --only-shell 2>&1 | tail -4)","task_id":"bcjsm2jgk","task_type":"local_bash","command":"yarn playwright install chromium --only-shell 2>&1 | tail -4"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:38:44Z)**_
@@ -14275,6 +14535,7 @@ Retry Playwright Chromium download
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Is it absolutely required to download Chromium? If not, do not continue trying to download it
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:39:49Z)**_
@@ -14296,6 +14557,7 @@ Check for Edge and remove partial download
 ls: cannot access '/c/Program Files/Microsoft/Edge/Application/msedge.exe': No such file or directory
 /c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:40:04Z)**_
@@ -14316,6 +14578,7 @@ Find test selectors for report table and sidebar
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:40:08Z)**_
@@ -14364,6 +14627,7 @@ e2e/page-models/custom-report-page.ts:26:    await this.pageContent.getByRole('b
 e2e/page-models/custom-report-page.ts:33:          .getByRole('button', { name: 'Total', exact: true })
 e2e/page-models/custom-report-page.ts:38:          .getByRole('button', { name: 'Time', exact: true })
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:40:13Z)**_
@@ -14413,6 +14677,7 @@ Read default report config and Select markup
 50-  defaultLabel = '',
 67:      <Button
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:40:26Z)**_
@@ -14473,6 +14738,7 @@ Read when the sidebar shows the picker
   );
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:40:36Z)**_
@@ -14553,6 +14819,7 @@ test.describe('Budget subcategories', () => {
 203-    await expect(transaction.debit).toHaveText('12.34');
 204-    await expect(transaction.credit).toHaveText('');
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:40:39Z)**_
@@ -14567,6 +14834,7 @@ _**Agent (claude-opus-5-5 2026-10-07 03:42:22Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\e2e\page-models\custom-report-page.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:42:23Z)**_
@@ -14682,12 +14950,12 @@ test.describe('Subcategories in reports', () => {
     await expect(diningOut).toBeChecked();
   });
 });
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\e2e\report-subcategories.test.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:42:51Z)**_
@@ -14706,19 +14974,20 @@ import base from 'C:/Users/icsab/actual-budget/actual-budget/packages/desktop-cl
 
 export default {
   ...base,
-  testDir: 'C:/Users/icsab/actual-budget/actual-budget/packages/desktop-client/e2e',
+  testDir:
+    'C:/Users/icsab/actual-budget/actual-budget/packages/desktop-client/e2e',
   outputDir:
     'C:/Users/icsab/AppData/Local/Temp/claude/c--Users-icsab-actual-budget-actual-budget/6a4eba52-c679-4135-9f71-8e062e65d374/scratchpad/pw-results',
   reporter: [['list']],
   retries: 0,
   use: { ...base.use, channel: 'msedge' },
 };
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\6a4eba52-c679-4135-9f71-8e062e65d374\scratchpad\pw-edge.config.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:43:31Z)**_
@@ -14745,7 +15014,7 @@ dev server: 200
     ..\..\..\..\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\6a4eba52-c679-4135-9f71-8e062e65d374\scratchpad\pw-results\report-subcategories-Subca-92964-der-its-parent-counted-once\test-failed-1.png
     ────────────────────────────────────────────────────────────────────────────────────────────────
     Error Context: ..\..\..\..\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\6a4eba52-c679-4135-9f71-8e062e65d374\scratchpad\pw-results\report-subcategories-Subca-92964-der-its-parent-counted-once\error-context.md
-  2) e2e\report-subcategories.test.ts:75:7 › Subcategories in reports › compares what a subcategory was given with what it spent 
+  2) e2e\report-subcategories.test.ts:75:7 › Subcategories in reports › compares what a subcategory was given with what it spent
     Error: expect(**received).**toEqual(**expected) // deep equality**
     - Expected  - 5
     + Received  + 1
@@ -14768,10 +15037,11 @@ dev server: 200
     ────────────────────────────────────────────────────────────────────────────────────────────────
     Error Context: ..\..\..\..\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\6a4eba52-c679-4135-9f71-8e062e65d374\scratchpad\pw-results\report-subcategories-Subca-690ac-as-given-with-what-it-spent\error-context.md
   2 failed
-    e2e\report-subcategories.test.ts:52:7 › Subcategories in reports › lists a subcategory under its parent, counted once 
-    e2e\report-subcategories.test.ts:75:7 › Subcategories in reports › compares what a subcategory was given with what it spent 
+    e2e\report-subcategories.test.ts:52:7 › Subcategories in reports › lists a subcategory under its parent, counted once
+    e2e\report-subcategories.test.ts:75:7 › Subcategories in reports › compares what a subcategory was given with what it spent
   1 passed (19.3s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:43:34Z)**_
@@ -14828,6 +15098,7 @@ Read page snapshot around the subcategory rows
 477:  26  |     await budgetPage.addSubcategory('Food', 'Dining Out');
 478:  27  |     await budgetPage.setBudgetedAmount('Dining Out', '150');
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:43:43Z)**_
@@ -14845,6 +15116,7 @@ _**Agent (claude-opus-5-5 2026-10-07 03:44:03Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\e2e\page-models\custom-report-page.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:44:41Z)**_
@@ -14858,6 +15130,7 @@ Re-run the e2e test in Edge
 ```text
   3 passed (18.2s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:44:42Z)**_
@@ -14875,6 +15148,7 @@ Repeat e2e run to check for flakiness
 ```text
   6 passed (31.5s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:45:42Z)**_
@@ -14944,6 +15218,7 @@ command-bar.test.ts-snapshots
 help-menu.test.ts-snapshots
 onboarding.test.ts-snapshots
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:45:51Z)**_
@@ -14965,7 +15240,7 @@ Run repo-wide typecheck and lint
 success: 6, skipped: 4, pending: 0, aborted: 0, failed: 0
 worker restarts: 0, max worker memory usage: 26.90 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-Took a total of 50.76s to complete. 
+Took a total of 50.76s to complete.
 === LINT
 upcoming-release-notes/simplefin-secrets-tweak.md (13ms)
 upcoming-release-notes/skip-ynab-transfer-payees.md (5ms)
@@ -14976,6 +15251,7 @@ yarn.config.cjs (11ms)
 Format issues found in above 476 files. Run without `--check` to fix.
 Finished in 4197ms on 2384 files using 12 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:47:16Z)**_
@@ -14996,6 +15272,7 @@ Check format and lint on this branch's files only
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: 'git config' changes are forbidden.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:47:19Z)**_
@@ -15019,6 +15296,7 @@ oxlint exit=0
 upcoming-release-notes/simplefin-secrets-tweak.md:       ASCII text, with CRLF line terminators
 upcoming-release-notes/show-subcategories-in-reports.md: ASCII text
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:47:58Z)**_
@@ -15042,6 +15320,7 @@ packages/sync-server/src/app-pluggyai/app-pluggyai.js:65:9: warning eslint(no-ex
 packages/sync-server/src/app-pluggyai/app-pluggyai.js:133:9: warning eslint(no-extra-boolean-cast): Redundant double negation help: Remove the double negation as it will already be coerced to a boolean
 packages/desktop-client/src/browser-preload.js:8:8: warning import(default): No default export found in imported module "./shared-browser-server.ts?sharedworker" help: Does "./shared-browser-server.ts?sharedworker" have the default export?
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:48:45Z)**_
@@ -15059,6 +15338,7 @@ Run repo's exact oxlint command
 ```text
 exit=0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:49:13Z)**_
@@ -15076,6 +15356,7 @@ Run the full repo test suite
 ```text
 {"resultType":"task","taskId":"bczw2s99a","status":"working","statusMessage":"Command running in background with ID: bczw2s99a. Output is being written to: C:\\Users\\icsab\\AppData\\Local\\Temp\\claude\\c--Users-icsab-actual-budget-actual-budget\\6a4eba52-c679-4135-9f71-8e062e65d374\\tasks\\bczw2s99a.output. You will be notified when it completes. To check interim output, use Read on that file path. When it finishes, its result is delivered to you automatically — between your tool calls if you are still working, or by starting a new turn if you have already replied — so there is no need to check whether it is done or to sleep; if that result is all you are waiting for, end your turn."}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:49:49Z)**_
@@ -15093,6 +15374,7 @@ _**Agent (claude-opus-5-5 2026-10-07 03:50:01Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\upcoming-release-notes\show-subcategories-in-reports.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:50:09Z)**_
@@ -15100,6 +15382,7 @@ _**Agent (claude-opus-5-5 2026-10-07 03:50:09Z)**_
 The full test suite is still running in the background. I'll report the result once it finishes.
 
 So far:
+
 - **Committed:** Step 3 (`9a1f7d8a9`, report filters on a parent include its subcategories) and Step 4 (`4f3420cd8`, picker, dropdowns and Sankey).
   - `sankey-spreadsheet.ts` had changes from both steps, so each commit contains only its own step's part.
   - I also undid a stray line-ending change to `overview.scss` that my earlier formatter run had caused.
@@ -15153,6 +15436,7 @@ Error: EEXIST: file already exists, mkdir 'C:\Users\icsab\actual-budget\actual-b
  packages/loot-core/src/types/models/reports.ts | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:52:59Z)**_
@@ -15179,6 +15463,7 @@ ls: cannot access 'packages/loot-core/src/mocks/files/budgets/test-budget': No s
 76:      id: 'test-budget',
 81:    expect(prefs.getPrefs().id).toBe('test-budget');
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:53:05Z)**_
@@ -15198,12 +15483,12 @@ _**Agent (claude-opus-5-5 2026-10-07 03:53:06Z)**_
 33	  enableGlobalMutations();
 34	  global.currentMonth = null;
 35	});
-36	
+36
 37	async function createTestBudget(name) {
 38	  const templatePath = fs.join(__dirname, '/../mocks/files', name);
 39	  const budgetPath = fs.join(__dirname, '/../mocks/files/budgets/test-budget');
 40	  fs._setDocumentDir(fs.join(budgetPath, '..'));
-41	
+41
 42	  await fs.mkdir(budgetPath);
 43	  await fs.copyFile(
 44	    fs.join(templatePath, 'metadata.json'),
@@ -15214,7 +15499,7 @@ _**Agent (claude-opus-5-5 2026-10-07 03:53:06Z)**_
 49	    fs.join(budgetPath, 'db.sqlite'),
 50	  );
 51	}
-52	
+52
 53	describe('Budgets', () => {
 54	  afterEach(async () => {
 55	    fs._setDocumentDir(null);
@@ -15222,17 +15507,18 @@ _**Agent (claude-opus-5-5 2026-10-07 03:53:06Z)**_
 57	      __dirname,
 58	      '/../mocks/files/budgets/test-budget',
 59	    );
-60	
+60
 61	    if (await fs.exists(budgetPath)) {
 62	      await fs.removeDirRecursively(budgetPath);
 63	    }
 64	  });
-65	
+65
 66	  test('budget is successfully loaded', async () => {
 67	    await createTestBudget('default-budget-template');
-68	
+68
 69	    // Grab the clock to compare later
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:53:11Z)**_
@@ -15263,6 +15549,7 @@ Error: EBUSY: resource busy or locked, unlink 'C:\Users\icsab\actual-budget\actu
 Error: EEXIST: file already exists, mkdir 'C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\mocks\files\budgets\test-budget'
 test-budget
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:53:35Z)**_
@@ -15287,22 +15574,24 @@ Remove leftover test folder and show status
 ?? ai-logs/sprint1/icsasso/2026-09-29_claude-web_splittingup-issue23.md
 ?? packages/desktop-client/e2e/report-subcategories.test.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 03:55:39Z)**_
 
 Steps 3 and 4 are committed, and the final checks are done. Everything passes except 2 loot-core tests that fail because of how Windows locks files, not because of this branch.
 
-| Check | Result |
-|---|---|
-| Typecheck (all packages) | Passes |
-| Lint (`oxlint --type-aware --quiet`, whole repo) | Passes, no errors |
-| Formatting of the 38 files this branch changed | Passes |
-| Web package tests | All pass |
-| loot-core tests | 1,021 pass, **2 fail** in `main.test.ts` |
-| New end-to-end test (3 tests, in Edge) | Passed 6 of 6 runs |
+| Check                                            | Result                                   |
+| ------------------------------------------------ | ---------------------------------------- |
+| Typecheck (all packages)                         | Passes                                   |
+| Lint (`oxlint --type-aware --quiet`, whole repo) | Passes, no errors                        |
+| Formatting of the 38 files this branch changed   | Passes                                   |
+| Web package tests                                | All pass                                 |
+| loot-core tests                                  | 1,021 pass, **2 fail** in `main.test.ts` |
+| New end-to-end test (3 tests, in Edge)           | Passed 6 of 6 runs                       |
 
 **The 2 loot-core failures:**
+
 - **Cause:** after its first test, `main.test.ts` deletes a temporary budget folder. Windows still has that folder's `db.sqlite` locked (`EBUSY`). The next test then can't recreate the folder (`EEXIST`).
 - **Why it's not this branch:** the only loot-core change here is to type definitions, which don't exist when the code runs.
 - **CI:** it runs on Linux, which doesn't lock files this way, so these should pass there.
@@ -15311,12 +15600,14 @@ Steps 3 and 4 are committed, and the final checks are done. Everything passes ex
 **`yarn lint` on your machine:** it still reports formatting issues in 476 files this branch never touched, because your checkout stores them with Windows line endings. CI checks them out with LF line endings and won't see this.
 
 **Commits on `feat/issue-55-report-subcategories`** (not pushed):
+
 1. `8b5a9dba8`: subcategories under their parent in custom reports.
 2. `db35b08d6`: Budgeted, Spent and Remaining side by side.
 3. `9a1f7d8a9`: report filters on a parent include its subcategories.
 4. `4f3420cd8`: picker, dropdowns and Sankey.
 
 **Not committed yet:**
+
 - `e2e/report-subcategories.test.ts`
 - the helpers added to `e2e/page-models/custom-report-page.ts`
 - the release note wording change ("in reports" instead of "in custom reports")
@@ -15346,6 +15637,7 @@ A  packages/desktop-client/e2e/report-subcategories.test.ts
 M  upcoming-release-notes/show-subcategories-in-reports.md
 ?? ai-logs/sprint1/icsasso/2026-09-29_claude-web_splittingup-issue23.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 04:01:10Z)**_

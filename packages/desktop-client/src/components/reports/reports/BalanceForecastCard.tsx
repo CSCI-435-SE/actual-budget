@@ -195,7 +195,12 @@ export function BalanceForecastCard({
                 </PrivacyFilter>
               </Block>
               <PrivacyFilter activationFilters={[!isCardHovered]}>
-                <Block style={{ fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}>
+                <Block
+                  style={{
+                    fontSize: 'var(--font-size-12)',
+                    color: theme.pageTextLight,
+                  }}
+                >
                   {endingPoint.date}
                 </Block>
               </PrivacyFilter>

@@ -72,6 +72,7 @@ drwxr-xr-x 11 root root   352 Oct 19 23:00 ..
 -rw-r--r--  1 root root  6170 Sep  8 12:39 vrt-update-apply.yml
 -rw-r--r--  1 root root 12821 Oct 19 23:00 vrt-update-generate.yml
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:24:11Z)**_
@@ -182,6 +183,7 @@ Fetch issue 101 and summarize PR workflows and runners
       1  depot-windows-2022
       3  ubuntu-latest
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:24:21Z)**_
@@ -246,7 +248,7 @@ Our repo is public, so GitHub-hosted runners are free with no minute limits.
 - Is anyone relying on any of the upstream-only scheduled workflows?
 
 ## Rough Scope
-Medium 
+Medium
 - The core fix is a find-and-replace of runner labels across the workflow files. No application code changes.
 - Disabling the upstream-only workflows can be done from the GitHub Actions UI without editing files.
 - Verification takes one test PR to confirm jobs get picked up and finish.
@@ -348,6 +350,7 @@ Medium
 .github/workflows/docker-nightly.yml:73:          username: ${{ github.repository_owner }}
 .github/workflows/size-compare.yml:186:          GITHUB_REPOSITORY: ${{ github.repository }}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:24:33Z)**_
@@ -371,6 +374,7 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: /tmp/claude-0/-workspaces-actual-budget/b59defbd-befd-49c7-86a8-1a338d053795/tasks/a4b380c27de40ee89.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:24:38Z)**_
@@ -381,21 +385,21 @@ _**Agent (claude-opus-5-5 2026-10-20 01:24:38Z)**_
 
 ```text
 1	name: Test
-2	
+2
 3	on:
 4	  push:
 5	    branches:
 6	      - master
 7	  pull_request:
 8	  merge_group:
-9	
+9
 10	permissions:
 11	  contents: read
-12	
+12
 13	concurrency:
 14	  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 15	  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
-16	
+16
 17	jobs:
 18	  setup:
 19	    runs-on: depot-ubuntu-latest
@@ -512,7 +516,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:24:38Z)**_
 130	        with:
 131	          persist-credentials: false
 132	      - uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
-133	
+133
 134	  migrations:
 135	    needs: setup
 136	    if: github.event_name == 'pull_request'
@@ -550,6 +554,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:24:38Z)**_
 168	            packages/ci-actions/migration-warnings-pr.txt
 169
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (2026-10-20 01:24:38Z)**_
@@ -557,6 +562,7 @@ _**Agent - sidechain (2026-10-20 01:24:38Z)**_
 In /workspaces/actual-budget/.github/workflows/ (a student fork, CSCI-435-SE/actual-budget, of actualbudget/actual), classify EVERY workflow file. This fork has no Depot runner account and none of upstream's secrets except the automatic GITHUB_TOKEN. Thoroughness: very thorough, but read-only.
 
 For each .yml file report one line/row with:
+
 - triggers (pull_request, pull_request_target, push to master, schedule, workflow_dispatch, release, issue_comment, workflow_run, etc.)
 - runner labels used (including matrix runner values)
 - non-GITHUB_TOKEN secrets used, and whether the job would hard-fail without them (vs. being guarded by `if:`)
@@ -677,6 +683,7 @@ actions/release-notes/check/action.yml
    337 workflows/vrt-update-generate.yml
   3822 total
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:24:43Z)**_
@@ -797,6 +804,7 @@ runs:
       shell: bash
       if: ${{ inputs.download-translations == 'true' && !env.ACT }}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:46Z)**_
@@ -1332,6 +1340,7 @@ Grep key fields from all workflows
 273:          # Defense in depth: re-validate every shard patch before applying.
 285:          # Apply each shard patch. Shards touch disjoint PNG files so
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
@@ -1342,7 +1351,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 
 ```text
 1	name: E2E Tests
-2	
+2
 3	on:
 4	  pull_request:
 5	    paths:
@@ -1356,17 +1365,17 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 13	      - '!packages/docs/**' # Docs changes don't affect E2E tests
 14	      - '!packages/eslint-plugin-actual/**' # Eslint plugin changes don't affect E2E tests
 15	  merge_group:
-16	
+16
 17	env:
 18	  GITHUB_PR_NUMBER: ${{github.event.pull_request.number}}
-19	
+19
 20	permissions:
 21	  contents: read
-22	
+22
 23	concurrency:
 24	  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 25	  cancel-in-progress: true
-26	
+26
 27	jobs:
 28	  build-web:
 29	    name: Build web bundle
@@ -1398,7 +1407,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 55	          path: packages/desktop-client/build/
 56	          retention-days: 1
 57	          overwrite: true
-58	
+58
 59	  functional:
 60	    name: Functional (shard ${{ matrix.shard }}/${{ vars.E2E_SHARD_TOTAL || '3' }})
 61	    runs-on: depot-ubuntu-latest-4
@@ -1449,7 +1458,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 106	          path: packages/desktop-client/test-results/junit.xml
 107	          retention-days: 1
 108	          overwrite: true
-109	
+109
 110	  report-e2e:
 111	    name: Report E2E results to Depot
 112	    needs: functional
@@ -1469,7 +1478,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 126	        if: ${{ !cancelled() }}
 127	        with:
 128	          path: e2e-junit
-129	
+129
 130	  functional-desktop-app:
 131	    name: Functional Desktop App
 132	    runs-on: depot-ubuntu-latest-4
@@ -1490,11 +1499,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 147	          download-translations: 'false'
 148	      - name: Trust the repository directory
 149	        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-150	
+150
 151	      # Build tools are needed to rebuild native modules like better-sqlite3 used by the Desktop app, which is required to run E2E tests on the Desktop app.
 152	      - name: Install build tools
 153	        run: apt-get update && apt-get install -y build-essential python3
-154	
+154
 155	      - name: Run Desktop app E2E Tests
 156	        run: |
 157	          yarn rebuild-electron
@@ -1511,7 +1520,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 168	        if: ${{ !cancelled() && github.event_name == 'merge_group' }}
 169	        with:
 170	          path: packages/desktop-electron/e2e/test-results/junit.xml
-171	
+171
 172	  vrt:
 173	    name: Visual regression (shard ${{ matrix.shard }}/${{ vars.E2E_SHARD_TOTAL || '3' }})
 174	    runs-on: depot-ubuntu-latest
@@ -1562,7 +1571,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 219	          path: packages/desktop-client/test-results/junit.xml
 220	          retention-days: 1
 221	          overwrite: true
-222	
+222
 223	  merge-vrt:
 224	    name: Merge VRT Reports
 225	    needs: vrt
@@ -1623,6 +1632,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 280	          retention-days: 1
 281
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
@@ -1633,21 +1643,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 
 ```text
 1	name: Test
-2	
+2
 3	on:
 4	  push:
 5	    branches:
 6	      - master
 7	  pull_request:
 8	  merge_group:
-9	
+9
 10	permissions:
 11	  contents: read
-12	
+12
 13	concurrency:
 14	  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 15	  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
-16	
+16
 17	jobs:
 18	  setup:
 19	    runs-on: depot-ubuntu-latest
@@ -1764,7 +1774,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 130	        with:
 131	          persist-credentials: false
 132	      - uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
-133	
+133
 134	  migrations:
 135	    needs: setup
 136	    if: github.event_name == 'pull_request'
@@ -1802,6 +1812,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:49Z)**_
 168	            packages/ci-actions/migration-warnings-pr.txt
 169
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
@@ -1812,28 +1823,28 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 
 ```text
 1	name: Build
-2	
+2
 3	defaults:
 4	  run:
 5	    shell: bash
-6	
+6
 7	env:
 8	  CI: true
-9	
+9
 10	on:
 11	  push:
 12	    branches:
 13	      - master
 14	  pull_request:
 15	  merge_group:
-16	
+16
 17	permissions:
 18	  contents: read
-19	
+19
 20	concurrency:
 21	  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 22	  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
-23	
+23
 24	jobs:
 25	  setup:
 26	    runs-on: depot-ubuntu-latest
@@ -1847,7 +1858,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 34	        uses: ./.github/actions/setup
 35	        with:
 36	          download-translations: 'false'
-37	
+37
 38	  api:
 39	    needs: setup
 40	    runs-on: depot-ubuntu-latest
@@ -1875,7 +1886,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 62	        with:
 63	          name: api-build-stats
 64	          path: api-stats.json
-65	
+65
 66	  crdt:
 67	    needs: setup
 68	    runs-on: depot-ubuntu-latest
@@ -1903,7 +1914,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 90	        with:
 91	          name: crdt-build-stats
 92	          path: crdt-stats.json
-93	
+93
 94	  web:
 95	    needs: setup
 96	    runs-on: depot-ubuntu-latest
@@ -1925,7 +1936,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 112	        with:
 113	          name: build-stats
 114	          path: packages/desktop-client/build-stats
-115	
+115
 116	  mobile:
 117	    needs: setup
 118	    runs-on: depot-macos-latest
@@ -1945,7 +1956,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 132	        with:
 133	          name: actual-mobile
 134	          path: packages/mobile-client/build
-135	
+135
 136	  cli:
 137	    needs: setup
 138	    runs-on: depot-ubuntu-latest
@@ -1973,7 +1984,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 160	        with:
 161	          name: cli-build-stats
 162	          path: cli-stats.json
-163	
+163
 164	  server:
 165	    needs: setup
 166	    runs-on: depot-ubuntu-latest
@@ -1994,6 +2005,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 181	          path: packages/sync-server/build
 182
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
@@ -2005,7 +2017,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 ```text
 1	name: Setup
 2	description: Setup the environment for the project
-3	
+3
 4	inputs:
 5	  working-directory:
 6	    description: 'Working directory to run in, default .'
@@ -2019,7 +2031,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 14	    description: 'Whether to restore and save dependency and Lage caches, default true'
 15	    required: false
 16	    default: 'true'
-17	
+17
 18	runs:
 19	  using: composite
 20	  steps:
@@ -2083,6 +2095,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:50Z)**_
 78	      if: ${{ inputs.download-translations == 'true' && !env.ACT }}
 79
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:24:51Z)**_
@@ -2227,6 +2240,7 @@ Summarize jobs, runners, and steps in heavy PR workflows
 .github/workflows/electron-pr.yml:142:        if: ${{ startsWith(matrix.os, 'windows') }}
 .github/workflows/electron-pr.yml:145:          name: actual-electron-${{ matrix.os }}-appx
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:54Z)**_
@@ -2240,15 +2254,15 @@ Print smaller workflow files
 ```text
 === ai-generated-label
      1	name: Add 'AI generated' label to '[AI]' PRs
-     2	
-     9	
+     2
+     9
     10	on:
     12	  pull_request_target: # zizmor: ignore[dangerous-triggers]
     13	    types: [opened, reopened, edited]
-    14	
+    14
     15	permissions:
     16	  pull-requests: write
-    17	
+    17
     18	jobs:
     19	  add-ai-generated-label:
     20	    name: Add 'AI generated' label
@@ -2263,7 +2277,7 @@ Print smaller workflow files
     29	        run: gh pr edit "$PR_NUMBER" --add-label "AI generated"
 === api-browser-test
      1	name: API Browser Test
-     2	
+     2
      3	on:
      4	  pull_request:
      5	    paths:
@@ -2274,14 +2288,14 @@ Print smaller workflow files
     10	      - 'yarn.lock'
     11	      - '.github/workflows/api-browser-test.yml'
     12	  merge_group:
-    13	
+    13
     14	permissions:
     15	  contents: read
-    16	
+    16
     17	concurrency:
     18	  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     19	  cancel-in-progress: true
-    20	
+    20
     21	jobs:
     22	  api-browser:
     23	    name: API browser e2e
@@ -2311,18 +2325,18 @@ Print smaller workflow files
     47	          overwrite: true
 === autofix
      1	name: autofix.ci
-     2	
+     2
      3	defaults:
      4	  run:
      5	    shell: bash
-     6	
+     6
      7	on:
      8	  pull_request:
      9	    types: [opened, synchronize, reopened, ready_for_review]
-    10	
+    10
     11	permissions:
     12	  contents: read
-    13	
+    13
     14	jobs:
     15	  autofix:
     16	    runs-on: depot-ubuntu-latest
@@ -2341,7 +2355,7 @@ Print smaller workflow files
     31	      - uses: autofix-ci/action@7a166d7532b277f34e16238930461bf77f9d7ed8 # v1.3.3
 === count-points
      1	name: Count points
-     2	
+     2
      3	on:
      4	  schedule:
      6	    - cron: '0 0 1 * *'
@@ -2351,12 +2365,12 @@ Print smaller workflow files
     10	        description: 'Start date for point counter (YYYY-MM-DD)'
     11	        required: true
     12	        type: string
-    13	
+    13
     14	permissions:
     15	  contents: read
     16	  issues: read
     17	  pull-requests: read
-    18	
+    18
     19	jobs:
     20	  count-points:
     21	    runs-on: depot-ubuntu-latest
@@ -2376,15 +2390,15 @@ Print smaller workflow files
     35	        run: node .github/scripts/count-points.mjs
 === crdt-version-check
      1	name: CRDT version bump check
-     2	
+     2
      3	on:
      4	  pull_request:
      5	    paths:
      6	      - 'packages/crdt/**'
-     7	
+     7
      8	permissions:
      9	  contents: read
-    10	
+    10
     11	jobs:
     12	  check-version-bump:
     13	    runs-on: depot-ubuntu-latest
@@ -2394,51 +2408,51 @@ Print smaller workflow files
     17	        with:
     18	          fetch-depth: 0
     19	          persist-credentials: false
-    20	
+    20
     21	      - name: Verify version bump
     22	        env:
     23	          BASE_REF: ${{ github.base_ref }}
     24	        run: |
     25	          set -euo pipefail
-    26	
+    26
     27	          if ! git cat-file -e "origin/${BASE_REF}:packages/crdt/package.json" 2>/dev/null; then
     28	            echo "packages/crdt/package.json does not exist on the base branch; skipping."
     29	            exit 0
     30	          fi
-    31	
+    31
     32	          BASE_VERSION=$(git show "origin/${BASE_REF}:packages/crdt/package.json" | jq -r .version)
     33	          HEAD_VERSION=$(jq -r .version packages/crdt/package.json)
     34	          echo "Base version: $BASE_VERSION"
     35	          echo "Head version: $HEAD_VERSION"
-    36	
+    36
     37	          if [ "$BASE_VERSION" = "$HEAD_VERSION" ]; then
     38	            echo "::error file=packages/crdt/package.json::Files in packages/crdt/ were modified but the @actual-app/crdt version was not bumped. Please update the \"version\" field in packages/crdt/package.json."
     39	            exit 1
     40	          fi
-    41	
+    41
     42	          HIGHEST=$(printf '%s\n%s\n' "$BASE_VERSION" "$HEAD_VERSION" | sort -V | tail -n1)
     43	          if [ "$HIGHEST" != "$HEAD_VERSION" ]; then
     44	            echo "::error file=packages/crdt/package.json::The @actual-app/crdt version ($HEAD_VERSION) must be greater than the base version ($BASE_VERSION)."
     45	            exit 1
     46	          fi
-    47	
+    47
     48	          echo "Version bumped from $BASE_VERSION to $HEAD_VERSION."
 === dependency-review
      1	name: Dependency Review
-     2	
+     2
      3	on:
      4	  pull_request:
      5	    paths:
      6	      - 'yarn.lock'
-     7	
+     7
      8	concurrency:
      9	  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     10	  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
-    11	
+    11
     12	permissions:
     13	  contents: read
     14	  pull-requests: write # allow the action to post a summary comment
-    15	
+    15
     16	jobs:
     17	  dependency-review:
     18	    name: Dependency Review
@@ -2448,7 +2462,7 @@ Print smaller workflow files
     22	        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     23	        with:
     24	          persist-credentials: false
-    25	
+    25
     26	      - name: Dependency Review
     27	        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
     28	        with:
@@ -2456,18 +2470,18 @@ Print smaller workflow files
     30	          comment-summary-in-pr: always
 === discord-release-notifications
      1	name: Discord Release Notifications
-     2	
-    10	
+     2
+    10
     11	on:
     12	  push:
     13	    tags:
     14	      - '**'
     15	  release:
     16	    types: [published]
-    17	
+    17
     18	permissions:
     19	  contents: read
-    20	
+    20
     21	jobs:
     22	  notify:
     23	    name: Notify Discord
@@ -2487,7 +2501,7 @@ Print smaller workflow files
     37	          url: ${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}
     38	          username: Actual Releases
     39	          nofail: true
-    40	
+    40
     41	      - name: Notify Discord of published release
     42	        if: github.event_name == 'release'
     43	        uses: sarisia/actions-status-discord@eb045afee445dc055c18d3d90bd0f244fd062708 # v1.16.0
@@ -2501,15 +2515,15 @@ Print smaller workflow files
     51	          nofail: true
 === do-not-merge
      1	name: Block PRs with "do not merge" label
-     2	
+     2
      3	on:
      4	  pull_request:
      5	    types: [opened, reopened, synchronize, labeled, unlabeled]
      6	  merge_group:
-     7	
+     7
      8	permissions:
      9	  contents: read
-    10	
+    10
     11	jobs:
     12	  do-not-merge:
     13	    name: Block PRs with "do not merge" label
@@ -2522,8 +2536,8 @@ Print smaller workflow files
     20	          exit 1
 === docs-spelling
      1	name: Check Spelling (Docs)
-     2	
-    14	
+     2
+    14
     15	on:
     16	  push:
     17	    branches:
@@ -2543,10 +2557,10 @@ Print smaller workflow files
     31	      - 'opened'
     32	      - 'reopened'
     33	      - 'synchronize'
-    34	
+    34
     35	permissions:
     36	  contents: read
-    37	
+    37
     38	jobs:
     39	  spelling:
     40	    name: Check Spelling
@@ -2571,11 +2585,11 @@ Print smaller workflow files
      9	    workflows: ['E2E Tests']
     10	    types:
     11	      - completed
-    12	
+    12
     13	permissions:
     14	  actions: read
     15	  pull-requests: write
-    16	
+    16
     17	jobs:
     18	  comment:
     19	    name: Post VRT Comment
@@ -2590,7 +2604,7 @@ Print smaller workflow files
     28	          name: vrt-comment-metadata
     29	          path: /tmp/vrt-metadata
     30	        continue-on-error: true
-    31	
+    31
     32	      - name: Extract metadata
     33	        id: metadata
     34	        run: |
@@ -2599,15 +2613,15 @@ Print smaller workflow files
     37	            echo "should_comment=false" >> "$GITHUB_OUTPUT"
     38	            exit 0
     39	          fi
-    40	
+    40
     41	          PR_NUMBER=$(cat "/tmp/vrt-metadata/pr-number.txt")
     42	          VRT_RESULT=$(cat "/tmp/vrt-metadata/vrt-result.txt")
     43	          ARTIFACT_URL=$(cat "/tmp/vrt-metadata/artifact-url.txt")
-    44	
+    44
     45	          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
     46	          echo "vrt_result=$VRT_RESULT" >> "$GITHUB_OUTPUT"
     47	          echo "artifact_url=$ARTIFACT_URL" >> "$GITHUB_OUTPUT"
-    48	
+    48
     49	          if [ "$VRT_RESULT" = "failure" ]; then
     50	            echo "should_comment=true" >> "$GITHUB_OUTPUT"
     51	            echo "VRT tests failed for PR #$PR_NUMBER"
@@ -2615,7 +2629,7 @@ Print smaller workflow files
     53	            echo "should_comment=false" >> "$GITHUB_OUTPUT"
     54	            echo "VRT tests passed or skipped for PR #$PR_NUMBER"
     55	          fi
-    56	
+    56
     57	      - name: Comment on PR with VRT report link
     58	        if: steps.metadata.outputs.should_comment == 'true'
     59	        uses: marocchino/sticky-pull-request-comment@0ea0beb66eb9baf113663a64ec522f60e49231c0 # v3.0.4
@@ -2627,19 +2641,19 @@ Print smaller workflow files
     65	          message: |
     66	            <!-- vrt-comment -->
     67	            VRT tests ❌ failed. [View the test report](${{ steps.metadata.outputs.artifact_url }}).
-    68	
+    68
     69	            To update the VRT screenshots, comment `/update-vrt` on this PR. The VRT update operation takes about 10 to 15 minutes.
 === fork-pr-welcome
      1	name: Fork PR Welcome
-     2	
-    13	
+     2
+    13
     14	on:
     17	  pull_request_target: # zizmor: ignore[dangerous-triggers]
     18	    types: [opened, reopened]
-    19	
+    19
     20	permissions:
     21	  pull-requests: write
-    22	
+    22
     23	jobs:
     24	  welcome:
     25	    name: Post Welcome Message
@@ -2659,22 +2673,23 @@ Print smaller workflow files
     41	          message: |
     42	            <!-- fork-pr-welcome -->
     43	            👋 Hello contributor!
-    44	
+    44
     45	            We would love to review your PR! Before we can do that, please make sure:
-    46	
+    46
     47	            - ✅ All CI checks pass
     48	            - ✅ The PR is moved from draft to open (if applicable)
     49	            - ✅ The "[WIP]" prefix is removed from the PR title
     50	            - ✅ The PR description follows the provided template, with all checklist boxes filled in
     51	            - ✅ All CodeRabbit code review comments are resolved (if you disagree with anything - reply to the bot with your reasoning so we can read through it). The bot will eventually approve the PR.
     52	            - ✅ Any AI usage is disclosed (see our [AI Usage Policy](https://actualbudget.org/docs/contributing/ai-usage-policy))
-    53	
+    53
     54	            A quick note on volume: please get one PR reviewed and merged before opening several more. A stack of simultaneous, similar PRs from one author is reviewed slowly, and low-effort, untested, or undisclosed-AI PRs may be closed without a detailed review.
-    55	
+    55
     56	            We do this to reduce the TOIL the core contributor team has to go through for each PR and to allow for speedy reviews and merges.
-    57	
+    57
     58	            For more information, please see our [Contributing Guide](https://actualbudget.org/docs/contributing/).
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:24:57Z)**_
@@ -2688,14 +2703,14 @@ Print more workflow files
 ```text
 === electron-pr
      1	name: Electron
-     2	
+     2
      3	defaults:
      4	  run:
      5	    shell: bash
-     6	
+     6
      7	env:
      8	  CI: true
-     9	
+     9
     10	on:
     11	  pull_request:
     12	    paths:
@@ -2707,14 +2722,14 @@ Print more workflow files
     18	      - '!packages/ci-actions/**' # CI actions changes don't affect Electron
     19	      - '!packages/docs/**' # Docs changes don't affect Electron
     20	      - '!packages/eslint-plugin-actual/**' # Eslint plugin changes don't affect Electron
-    21	
+    21
     22	permissions:
     23	  contents: read
-    24	
+    24
     25	concurrency:
     26	  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
     27	  cancel-in-progress: true
-    28	
+    28
     29	jobs:
     30	  build:
     31	    strategy:
@@ -2753,7 +2768,7 @@ Print more workflow files
     64	          sudo flatpak install org.freedesktop.Platform//24.08 -y
     65	          sudo flatpak install org.electronjs.Electron2.BaseApp//24.08 -y
     66	          sudo flatpak install org.flatpak.Builder -y
-    67	
+    67
     68	          METAINFO_FILE="packages/desktop-electron/extra-resources/linux/com.actualbudget.actual.metainfo.xml"
     69	          TODAY=$(date +%Y-%m-%d)
     70	          VERSION=$(yarn workspace @actual-app/ci-actions tsx bin/get-next-package-version.ts --package-json ./packages/desktop-electron/package.json --type nightly)
@@ -2766,63 +2781,63 @@ Print more workflow files
     81	          sudo apt-get install -y crossbuild-essential-arm64
     82	      - name: Build Electron
     83	        run: ./bin/package-electron --skip-translations
-    84	
+    84
     85	      - name: Upload Linux x64 AppImage
     86	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
     87	        with:
     88	          name: Actual-linux-x86_64.AppImage
     89	          if-no-files-found: ignore
     90	          path: packages/desktop-electron/dist/Actual-linux-x86_64.AppImage
-    91	
+    91
     92	      - name: Upload Linux arm64 AppImage
     93	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
     94	        with:
     95	          name: Actual-linux-arm64.AppImage
     96	          if-no-files-found: ignore
     97	          path: packages/desktop-electron/dist/Actual-linux-arm64.AppImage
-    98	
+    98
     99	      - name: Upload Linux x64 flatpak
    100	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
    101	        with:
    102	          name: Actual-linux-x86_64.flatpak
    103	          if-no-files-found: ignore
    104	          path: packages/desktop-electron/dist/Actual-linux-x86_64.flatpak
-   105	
+   105
    106	      - name: Upload Windows x32 exe
    107	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
    108	        with:
    109	          name: Actual-windows-ia32.exe
    110	          if-no-files-found: ignore
    111	          path: packages/desktop-electron/dist/Actual-windows-ia32.exe
-   112	
+   112
    113	      - name: Upload Windows x64 exe
    114	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
    115	        with:
    116	          name: Actual-windows-x64.exe
    117	          if-no-files-found: ignore
    118	          path: packages/desktop-electron/dist/Actual-windows-x64.exe
-   119	
+   119
    120	      - name: Upload Windows arm64 exe
    121	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
    122	        with:
    123	          name: Actual-windows-arm64.exe
    124	          if-no-files-found: ignore
    125	          path: packages/desktop-electron/dist/Actual-windows-arm64.exe
-   126	
+   126
    127	      - name: Upload Mac x64 dmg
    128	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
    129	        with:
    130	          name: Actual-mac-x64.dmg
    131	          if-no-files-found: ignore
    132	          path: packages/desktop-electron/dist/Actual-mac-x64.dmg
-   133	
+   133
    134	      - name: Upload Mac arm64 dmg
    135	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
    136	        with:
    137	          name: Actual-mac-arm64.dmg
    138	          if-no-files-found: ignore
    139	          path: packages/desktop-electron/dist/Actual-mac-arm64.dmg
-   140	
+   140
    141	      - name: Upload Windows Store Build
    142	        if: ${{ startsWith(matrix.os, 'windows') }}
    143	        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -2832,23 +2847,23 @@ Print more workflow files
    147	            packages/desktop-electron/dist/*.appx
 === electron-master
      1	name: Electron Master
-     2	
+     2
      3	defaults:
      4	  run:
      5	    shell: bash
-     6	
+     6
      7	env:
      8	  CI: true
-     9	
+     9
     10	on:
     11	  push:
     12	    tags:
     13	      - v**
-    14	
+    14
     15	concurrency:
     16	  group: ${{ github.workflow }}-${{ github.ref }}
     17	  cancel-in-progress: false
-    18	
+    18
     19	jobs:
     20	  create-release:
     21	    permissions:
@@ -2866,9 +2881,9 @@ Print more workflow files
     33	          TAG: ${{ github.ref_name }}
     34	          RELEASE_NOTES: |
     35	            :link: [View release notes](https://actualbudget.org/blog/release-${{ steps.process_version.outputs.version }})
-    36	
+    36
     38	            Please note: Microsoft store updates can sometimes lag behind the main release by a couple of days while they verify the new version.
-    39	
+    39
     40	            <p>
     41	              <a href="https://apps.microsoft.com/detail/9p2hmlhsdbrm?cid=Github+Releases&mode=direct"><img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200" /></a>
     42	              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" width="12" height="1" alt="" />
@@ -2878,7 +2893,7 @@ Print more workflow files
     47	          if ! gh release view "$TAG" >/dev/null 2>&1; then
     48	            gh release create "$TAG" --draft --title "$TAG" --notes "$RELEASE_NOTES"
     49	          fi
-    50	
+    50
     51	  build:
     52	    needs: create-release
     54	    permissions:
@@ -2922,7 +2937,7 @@ Print more workflow files
     92	          sudo flatpak install org.freedesktop.Platform//24.08 -y
     93	          sudo flatpak install org.electronjs.Electron2.BaseApp//24.08 -y
     94	          sudo flatpak install org.flatpak.Builder -y
-    95	
+    95
     96	          METAINFO_FILE="packages/desktop-electron/extra-resources/linux/com.actualbudget.actual.metainfo.xml"
     97	          TODAY=$(date +%Y-%m-%d)
     98	          VERSION=${STEPS_PROCESS_VERSION_OUTPUTS_VERSION}
@@ -2985,20 +3000,20 @@ Print more workflow files
    160	          if [ ${#files[@]} -gt 0 ]; then
    161	            gh release upload "$TAG" --clobber "${files[@]}"
    162	          fi
-   163	
+   163
    164	    outputs:
    165	      version: ${{ steps.process_version.outputs.version }}
 === migration-warnings-comment
      1	name: Migration warnings comment
-     2	
+     2
     12	on:
     15	  workflow_run: # zizmor: ignore[dangerous-triggers]
     16	    workflows: ['Test']
     17	    types:
     18	      - completed
-    19	
+    19
     20	permissions: {}
-    21	
+    21
     22	jobs:
     23	  comment:
     24	    if: github.event.workflow_run.event == 'pull_request'
@@ -3015,7 +3030,7 @@ Print more workflow files
     37	          pattern: migration-warnings
     38	          merge-multiple: true
     39	          path: warnings
-    40	
+    40
     41	      - name: Post or update PR comment
     42	        if: hashFiles('warnings/migration-warnings.json') != ''
     43	        env:
@@ -3026,44 +3041,44 @@ Print more workflow files
     48	          set -euo pipefail
     49	          JSON=warnings/migration-warnings.json
     50	          MARKER='<!--- migration-warnings --->'
-    51	
+    51
     52	          PR=$(cat warnings/migration-warnings-pr.txt)
     53	          if ! [[ "$PR" =~ ^[0-9]+$ ]]; then
     54	            echo "Invalid PR number in artifact"
     55	            exit 1
     56	          fi
-    57	
+    57
     60	          if [ "$(gh api "repos/$REPO/pulls/$PR" --jq .head.sha)" != "$HEAD_SHA" ]; then
     61	            echo "Artifact PR head does not match triggering run head; skipping"
     62	            exit 0
     63	          fi
-    64	
+    64
     65	          existing=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
     66	            --jq '.[] | select(.user.login == "github-actions[bot]") | select(.body | contains("<!--- migration-warnings --->")) | .id')
     67	          existing=${existing%%$'\n'*}
-    68	
+    68
     70	          if jq -e 'length == 0' "$JSON" > /dev/null; then
     71	            if [ -n "$existing" ]; then
     72	              gh api -X DELETE "repos/$REPO/issues/comments/$existing"
     73	            fi
     74	            exit 0
     75	          fi
-    76	
+    76
     79	          jq -e '
     80	            type == "array" and all(.[];
     81	              (.name | type == "string" and test("^[A-Za-z0-9._-]{1,200}$")) and
     82	              (.risks | type == "array" and length > 0 and all(.[];
     83	                IN("drops a table", "drops a column", "renames a table or column"))))
     84	          ' "$JSON" > /dev/null
-    85	
+    85
     86	          body="$MARKER
-    88	
+    88
     89	          $(jq -r '.[] | . as $m | .risks[] | "- `\($m.name)` \(.)."' "$JSON")
-    90	
+    90
     91	          Migrations must be additive-only: removing or renaming tables or columns breaks older clients that sync the same budget file. See the [migration guidelines](https://actualbudget.org/docs/contributing/project-details/migrations).
-    92	
+    92
     93	          <sub>This is an automated advisory check — it may be a false positive and does not block the PR.</sub>"
-    94	
+    94
     95	          if [ -n "$existing" ]; then
     96	            gh api -X PATCH "repos/$REPO/issues/comments/$existing" -f body="$body"
     97	          else
@@ -3071,8 +3086,8 @@ Print more workflow files
     99	          fi
 === news-feed-check
      1	name: News feed check
-     2	
-     7	
+     2
+     7
      8	on:
      9	  pull_request:
     10	    paths:
@@ -3081,10 +3096,10 @@ Print more workflow files
     13	      - 'packages/ci-actions/src/news-feed/**'
     14	      - 'packages/ci-actions/bin/generate-news-feed.ts'
     15	      - '.github/workflows/news-feed-check.yml'
-    16	
+    16
     17	permissions:
     18	  contents: read
-    19	
+    19
     20	jobs:
     21	  check-news-feed:
     22	    runs-on: depot-ubuntu-latest
@@ -3093,48 +3108,48 @@ Print more workflow files
     25	      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     26	        with:
     27	          persist-credentials: false
-    28	
+    28
     29	      - name: Set up environment
     30	        uses: ./.github/actions/setup
     31	        with:
     32	          download-translations: 'false'
-    33	
+    33
     34	      - name: Regenerate news feed
     35	        run: yarn generate:news-feed
-    36	
+    36
     37	      - name: Verify the committed feed matches
     38	        run: |
     39	          set -euo pipefail
-    40	
+    40
     41	          if ! git diff --quiet -- packages/desktop-client/src/data/news.json; then
     42	            git --no-pager diff -- packages/desktop-client/src/data/news.json
     43	            echo "::error file=packages/desktop-client/src/data/news.json::news.json is out of date. Run \`yarn generate:news-feed\` and commit the result (autofix.ci normally does this for you)."
     44	            exit 1
     45	          fi
-    46	
+    46
     47	          echo "news.json is up to date."
 === netlify-release
      1	name: Deploy Netlify Release
-     2	
+     2
      3	defaults:
      4	  run:
      5	    shell: bash
-     6	
+     6
      7	env:
      8	  CI: true
-     9	
+     9
     10	on:
     11	  push:
     12	    tags:
     13	      - v**
-    14	
+    14
     15	permissions:
     16	  contents: read
-    17	
+    17
     18	concurrency:
     19	  group: ${{ github.workflow }}-${{ github.ref }}
     20	  cancel-in-progress: false
-    21	
+    21
     22	jobs:
     23	  build-and-deploy:
     24	    runs-on: depot-ubuntu-latest
@@ -3144,18 +3159,18 @@ Print more workflow files
     28	        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     29	        with:
     30	          persist-credentials: false
-    31	
+    31
     32	      - name: Set up environment
     33	        uses: ./.github/actions/setup
     34	        with:
     36	          cache: 'false'
-    37	
+    37
     38	      - name: Install Netlify
     39	        run: npm install netlify-cli@17.10.1 -g
-    40	
+    40
     41	      - name: Build Actual
     42	        run: yarn build:browser
-    43	
+    43
     44	      - name: Deploy to Netlify
     45	        id: netlify_deploy
     46	        env:
@@ -3168,19 +3183,19 @@ Print more workflow files
     53	            --prod
 === release-notes
      1	name: Release notes
-     2	
+     2
      3	on:
      4	  pull_request:
      5	  push:
      6	    branches:
      7	      - release
-     8	
+     8
      9	permissions: {}
-    10	
+    10
     11	concurrency:
     12	  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     13	  cancel-in-progress: true
-    14	
+    14
     15	jobs:
     16	  check-release-notes:
     17	    if: >-
@@ -3207,14 +3222,14 @@ Print more workflow files
     38	            console.log(`Head commit by "${commit.author.name}": ${commit.message.split('\n')[0]}`);
     39	            console.log(`Skip: ${skip}`);
     40	            core.setOutput('skip', String(skip));
-    41	
+    41
     42	      - name: Checkout
     43	        if: steps.bot-check.outputs.skip != 'true'
     44	        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     45	        with:
     46	          fetch-depth: 0
     47	          persist-credentials: false
-    48	
+    48
     49	      - name: Get changed files
     50	        if: steps.bot-check.outputs.skip != 'true'
     51	        id: changed-files
@@ -3222,20 +3237,20 @@ Print more workflow files
     53	          git fetch origin ${GITHUB_BASE_REF}
     54	          CHANGED_FILES=$(git diff --name-only origin/${GITHUB_BASE_REF}...HEAD)
     55	          NON_DOCS_FILES=$(echo "$CHANGED_FILES" | grep -v -e "^packages/docs/" -e "^\.github/actions/docs-spelling/" || true)
-    56	
+    56
     57	          if [ -z "$NON_DOCS_FILES" ] && [ -n "$CHANGED_FILES" ]; then
     58	            echo "only_docs=true" >> $GITHUB_OUTPUT
     59	            echo "only documentation files changed, skipping release notes check"
     60	          else
     61	            echo "only_docs=false" >> $GITHUB_OUTPUT
     62	          fi
-    63	
+    63
     64	      - name: Check release notes
     65	        if: >-
     66	          steps.bot-check.outputs.skip != 'true'
     67	          && steps.changed-files.outputs.only_docs != 'true'
     68	        uses: ./.github/actions/release-notes/check
-    69	
+    69
     70	  generate-release-notes:
     71	    if: github.event_name == 'push'
     72	    runs-on: depot-ubuntu-latest
@@ -3252,7 +3267,7 @@ Print more workflow files
     83	          version=$(gh api "repos/${GITHUB_REPOSITORY}/contents/packages/desktop-client/package.json?ref=release" --jq '.content' | base64 -d | jq -r .version)
     84	          echo "version=$version" >> "$GITHUB_OUTPUT"
     85	          echo "notes_branch=release-notes/$version" >> "$GITHUB_OUTPUT"
-    86	
+    86
     90	          repo_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git"
     91	          if git ls-remote --exit-code "$repo_url" "refs/tags/v$version" >/dev/null 2>&1; then
     92	            echo "Tag v$version already published; skipping generation"
@@ -3263,7 +3278,7 @@ Print more workflow files
     97	          else
     98	            echo "skip=false" >> "$GITHUB_OUTPUT"
     99	          fi
-   100	
+   100
    101	      - name: Checkout release-notes branch
    102	        if: steps.version.outputs.skip != 'true'
    103	        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -3271,7 +3286,7 @@ Print more workflow files
    105	          ref: ${{ steps.version.outputs.notes_branch }}
    106	          fetch-depth: 0
    107	          persist-credentials: true
-   108	
+   108
    109	      - name: Generate release notes
    110	        if: steps.version.outputs.skip != 'true'
    111	        uses: ./.github/actions/release-notes/generate
@@ -3280,6 +3295,7 @@ Print more workflow files
    114	          notes-branch: ${{ steps.version.outputs.notes_branch }}
    115	          version: ${{ steps.version.outputs.version }}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:25:02Z)**_
@@ -3293,8 +3309,8 @@ Print bot/VRT workflow files
 ```text
 === size-compare
      1	name: Compare Sizes
-     2	
-    13	
+     2
+    13
     14	on:
     17	  pull_request_target: # zizmor: ignore[dangerous-triggers]
     18	    paths:
@@ -3306,11 +3322,11 @@ Print bot/VRT workflow files
     24	      - '!packages/ci-actions/**' # CI actions changes don't affect the size of the web/api
     25	      - '!packages/docs/**' # Docs changes don't affect the size of the web/api
     26	      - '!packages/eslint-plugin-actual/**' # Eslint plugin changes don't affect the size of the web/api
-    27	
+    27
     28	concurrency:
     29	  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
     30	  cancel-in-progress: true
-    31	
+    31
     32	jobs:
     33	  compare:
     34	    runs-on: depot-ubuntu-latest
@@ -3328,7 +3344,7 @@ Print bot/VRT workflow files
     48	        uses: ./.github/actions/setup
     49	        with:
     50	          download-translations: 'false'
-    51	
+    51
     54	      - name: Resolve build runs
     55	        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
     56	        id: build-runs
@@ -3371,7 +3387,7 @@ Print bot/VRT workflow files
     93	            core.info(`Using baseline commit ${baseSha}.`);
     94	            core.setOutput('base_run_id', baseRun.id);
     95	            core.setOutput('head_run_id', headRun.id);
-    96	
+    96
     97	      - name: Download web build artifact from ${{github.base_ref}}
     98	        uses: dawidd6/action-download-artifact@8305c0f1062bb0d184d09ef4493ecb9288447732 # v20
     99	        with:
@@ -3429,7 +3445,7 @@ Print bot/VRT workflow files
      4	    - cron: '30 1 * * *'
      5	  workflow_dispatch: # Allow manual triggering
      6	permissions: {}
-     7	
+     7
      8	jobs:
      9	  stale:
     10	    permissions:
@@ -3456,7 +3472,7 @@ Print bot/VRT workflow files
     31	          any-of-labels: ':construction: WIP'
     32	          days-before-close: -1
     33	          days-before-issue-stale: -1
-    34	
+    34
     35	  stale-needs-info:
     36	    permissions:
     37	      issues: write
@@ -3478,15 +3494,15 @@ Print bot/VRT workflow files
      5	on:
      6	  issue_comment:
      7	    types: [created]
-     8	
+     8
      9	permissions:
     10	  contents: read
     11	  pull-requests: read
-    12	
+    12
     13	concurrency:
     14	  group: ${{ github.workflow }}-${{ github.event.issue.number }}
     15	  cancel-in-progress: false
-    16	
+    16
     17	jobs:
     18	  add-reaction:
     19	    name: Add 👀 Reaction
@@ -3507,7 +3523,7 @@ Print bot/VRT workflow files
     35	              comment_id: context.payload.comment.id,
     36	              content: 'eyes'
     37	            });
-    38	
+    38
     39	  get-pr:
     40	    name: Resolve PR details
     41	    runs-on: depot-ubuntu-latest
@@ -3532,7 +3548,7 @@ Print bot/VRT workflow files
     60	            core.setOutput('head_sha', pr.head.sha);
     61	            core.setOutput('head_ref', pr.head.ref);
     62	            core.setOutput('head_repo', pr.head.repo.full_name);
-    63	
+    63
     64	  build-web:
     65	    name: Build web bundle
     66	    runs-on: depot-ubuntu-latest
@@ -3542,7 +3558,7 @@ Print bot/VRT workflow files
     70	        with:
     71	          ref: ${{ needs.get-pr.outputs.head_sha }}
     72	          persist-credentials: false
-    73	
+    73
     74	      - name: Set up environment
     75	        uses: ./.github/actions/setup
     76	        with:
@@ -3558,7 +3574,7 @@ Print bot/VRT workflow files
     94	          path: packages/desktop-client/build/
     95	          retention-days: 1
     96	          overwrite: true
-    97	
+    97
     98	  browser-vrt:
     99	    name: Browser VRT (shard ${{ matrix.shard }}/3)
    100	    runs-on: depot-ubuntu-latest
@@ -3576,11 +3592,11 @@ Print bot/VRT workflow files
    112	        with:
    113	          ref: ${{ needs.get-pr.outputs.head_sha }}
    114	          persist-credentials: false
-   115	
+   115
    116	      - name: Trust workspace directory
    117	        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
    118	        shell: bash
-   119	
+   119
    120	      - name: Set up environment
    121	        uses: ./.github/actions/setup
    122	        with:
@@ -3598,9 +3614,9 @@ Print bot/VRT workflow files
    134	        run: |
    135	          git config --global user.name "github-actions[bot]"
    136	          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-   137	
+   137
    138	          git add "**/*.png"
-   139	
+   139
    140	          if git diff --staged --quiet; then
    141	            echo "has_changes=false" >> "$GITHUB_OUTPUT"
    142	            echo "No VRT changes in this shard"
@@ -3611,11 +3627,11 @@ Print bot/VRT workflow files
      9	    workflows: ['VRT Update - Generate']
     10	    types:
     11	      - completed
-    12	
+    12
     13	permissions:
     14	  contents: write
     15	  pull-requests: write
-    16	
+    16
     17	jobs:
     18	  apply-vrt-updates:
     19	    name: Apply VRT Updates
@@ -3630,7 +3646,7 @@ Print bot/VRT workflow files
     28	          run-id: ${{ github.event.workflow_run.id }}
     29	          pattern: vrt-patch-*
     30	          path: /tmp/artifacts
-    31	
+    31
     32	      - name: Download metadata artifact
     33	        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
     34	        with:
@@ -3638,7 +3654,7 @@ Print bot/VRT workflow files
     36	          run-id: ${{ github.event.workflow_run.id }}
     37	          pattern: vrt-metadata-*
     38	          path: /tmp/metadata
-    39	
+    39
     40	      - name: Extract metadata
     41	        id: metadata
     42	        run: |
@@ -3646,17 +3662,17 @@ Print bot/VRT workflow files
     44	            echo "No metadata found, skipping..."
     45	            exit 0
     46	          fi
-    47	
+    47
     48	          PR_NUMBER=$(cat "/tmp/metadata/pr-number.txt")
     49	          HEAD_REF=$(cat "/tmp/metadata/head-ref.txt")
     50	          HEAD_REPO=$(cat "/tmp/metadata/head-repo.txt")
-    51	
+    51
     52	          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
     53	          echo "head_ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
     54	          echo "head_repo=$HEAD_REPO" >> "$GITHUB_OUTPUT"
-    55	
+    55
     56	          echo "Found PR #$PR_NUMBER: $HEAD_REPO @ $HEAD_REF"
-    57	
+    57
     58	      - name: Checkout fork branch
     59	        if: steps.metadata.outputs.pr_number != ''
     60	        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -3666,20 +3682,20 @@ Print bot/VRT workflow files
     64	          token: ${{ secrets.ACTIONS_UPDATE_TOKEN }}
     65	          persist-credentials: false
     66	          fetch-depth: 0
-    67	
+    67
     68	      - name: Validate and apply patch
     69	        if: steps.metadata.outputs.pr_number != ''
     70	        id: apply
     71	        run: |
     72	          PATCH_FILE="/tmp/artifacts/vrt-update.patch"
-    73	
+    73
     74	          if [ ! -f "$PATCH_FILE" ]; then
     75	            echo "No patch file found"
     76	            exit 0
     77	          fi
-    78	
+    78
     79	          echo "Found patch file: $PATCH_FILE"
-    80	
+    80
     84	          echo "Validating patch contains only PNG files..."
     85	          if grep -E '^diff --git ' "$PATCH_FILE" \
     86	               | grep -vE '^diff --git a/[^[:space:]]+\.png b/[^[:space:]]+\.png$'; then
@@ -3688,27 +3704,27 @@ Print bot/VRT workflow files
     89	            echo "error=Patch validation failed: contains non-PNG files" >> "$GITHUB_OUTPUT"
     90	            exit 1
     91	          fi
-    92	
+    92
     94	          FILES_CHANGED=$(grep -cE '^diff --git ' "$PATCH_FILE")
     95	          echo "Patch modifies $FILES_CHANGED PNG file(s)"
-    96	
+    96
     98	          git config --global user.name "github-actions[bot]"
     99	          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-   100	
+   100
    102	          echo "Applying patch..."
    103	          if git apply --check "$PATCH_FILE" 2>&1; then
    104	            git apply "$PATCH_FILE"
-   105	
+   105
    107	            git add "**/*.png"
-   108	
+   108
    109	            if git diff --staged --quiet; then
    110	              echo "No changes after applying patch"
    111	              echo "applied=false" >> "$GITHUB_OUTPUT"
    112	              exit 0
    113	            fi
-   114	
+   114
    116	            git commit -m "Update VRT screenshots" -m "Auto-generated by VRT workflow" -m "PR: #${STEPS_METADATA_OUTPUTS_PR_NUMBER}"
-   117	
+   117
    118	            echo "applied=true" >> "$GITHUB_OUTPUT"
    119	          else
    120	            echo "Patch could not be applied cleanly"
@@ -3718,7 +3734,7 @@ Print bot/VRT workflow files
    124	          fi
    125	        env:
    126	          STEPS_METADATA_OUTPUTS_PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
-   127	
+   127
    128	      - name: Push changes
    129	        if: steps.apply.outputs.applied == 'true'
    130	        env:
@@ -3727,15 +3743,16 @@ Print bot/VRT workflow files
    133	          GITHUB_TOKEN: ${{ secrets.ACTIONS_UPDATE_TOKEN }}
    134	        run: |
    137	          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${HEAD_REPO}.git"
-   138	
+   138
    139	          git push origin "HEAD:refs/heads/$HEAD_REF"
    140	          echo "Successfully pushed VRT updates to $HEAD_REPO@$HEAD_REF"
-   141	
+   141
    142	      - name: Comment on PR - Failure
    143	        if: failure() && steps.metadata.outputs.pr_number != ''
    144	        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
    145	        env:
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:25:01Z)**_
@@ -4036,6 +4053,7 @@ runs:
         VERSION: ${{ inputs.version }}
       run: node packages/ci-actions/bin/release-notes-generate.mjs
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:25:06Z)**_
@@ -4224,6 +4242,7 @@ total 1863
 1 ('Publish npm packages', 'queued', None)
 private: False fork: False default: master
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:25:07Z)**_
@@ -4551,6 +4570,7 @@ jobs:
 134:          npm publish api/@actual-app/api.tgz --access public ${NPM_DIST_TAG:+--tag "$NPM_DIST_TAG"}
 138:          npm publish cli/@actual-app/cli.tgz --access public ${NPM_DIST_TAG:+--tag "$NPM_DIST_TAG"}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:25:16Z)**_
@@ -4627,6 +4647,7 @@ origin	https://github.com/CSCI-435-SE/actual-budget.git (push)
       id-token: write # Required for npm OIDC provenance
     steps:
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:25:17Z)**_
@@ -4686,6 +4707,7 @@ packages/sync-server/vitest.config.ts:9:    maxWorkers: 2,
 packages/loot-core/vitest.web.config.ts:12:    maxWorkers: 2,
 packages/loot-core/vitest.config.ts:17:    maxWorkers: 2,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-20 01:25:22Z)**_
@@ -4723,6 +4745,7 @@ Check fork status and build/e2e config
   concurrency: 2,
 };
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:25:29Z)**_
@@ -4781,6 +4804,7 @@ README.md
 STUDENTS.md
 issues-60-61-pdf-export-explained.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:25:36Z)**_
@@ -4825,6 +4849,7 @@ workflows/issues-close-tech-support.yml:25:          ISSUE_URL: https://github.c
 workflows/nightly-theme-catalog-scan.yml:17:    if: github.repository == 'actualbudget/actual'
 workflows/nightly-theme-catalog-scan.yml:34:    if: failure() && github.repository == 'actualbudget/actual'
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:25:39Z)**_
@@ -4836,6 +4861,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:25:39Z)**_
 # Plan: Make CI actually run on PRs (issue #101)
 
 ## Context
+
 All CI in CSCI-435-SE/actual-budget is inherited from upstream `actualbudget/actual`.
 64 of 67 `runs-on:` lines (plus matrix `runner:` values like `depot-ubuntu-24.04-8`)
 request **Depot** runners — a paid service upstream subscribes to. Our org has no
@@ -4846,12 +4872,12 @@ cancels it (~24h). Confirmed via the public Actions API: every recent run is
 (Linux = 4 vCPU / 16 GB, equivalent to `depot-ubuntu-latest-4`).
 
 (draft — awaiting workflow classification)
-
 ```
 
 ```text
 File created successfully at: /root/.claude/plans/i-d-like-to-work-kind-tide.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:25:42Z)**_
@@ -4868,54 +4894,56 @@ Abbreviations: "dul" = `depot-ubuntu-latest`; "Depot-report" = a `depot/test-rep
 
 ## Workflow table
 
-| File | Triggers | Runners | Non-GITHUB_TOKEN secrets / hard-fail? | Repo guard | Depot-specific | 3rd-party | Cat |
-|---|---|---|---|---|---|---|---|
-| check.yml | push master, PR, merge_group | dul (all 9 jobs) | none | none | Depot-report in `test`, `if: event_name=='push'` (so it runs on master pushes) | zizmor (uploads SARIF, needs `security-events: write`) | A |
-| build.yml | push master, PR, merge_group | dul; `mobile`: `depot-macos-latest` | none | none | runners only | translations clone (web, mobile) | A |
-| e2e-test.yml | PR (paths), merge_group | build-web/vrt/merge-vrt/report: dul; functional + functional-desktop-app: `depot-ubuntu-latest-4`; Playwright containers | none | none | Depot-report in report-e2e, functional-desktop-app, merge-vrt, all `if: merge_group` | none | A |
-| api-browser-test.yml | PR (paths), merge_group | `depot-ubuntu-latest-4` + Playwright container | none | none | runner | none | A |
-| electron-pr.yml | PR (paths) | matrix `depot-ubuntu-24.04-8`, `depot-windows-2022-8`, `depot-macos-latest` | none | none | runners | flathub.org flatpak install, translations | A (heavy) |
-| crdt-version-check.yml | PR (packages/crdt/**) | dul | none | none | runner | none | A |
-| news-feed-check.yml | PR (paths) | dul | none | none | runner | none | A |
-| docs-spelling.yml | push any branch (docs paths), PR (docs paths) | dul | none | none | runner | crate-ci/typos | A |
-| release-notes.yml | PR; push `release` | dul | none (`github.token`); generate job uses `environment: release` | none | runner | none | check job A (fails PRs with no `upcoming-release-notes/` file); generate job C |
-| do-not-merge.yml | PR (label events), merge_group | dul | none | none | runner | none | A/B |
-| dependency-review.yml | PR (yarn.lock) | dul | none | none | runner | GitHub dependency graph (needs GHAS if private) | A/B |
-| autofix.yml | PR | dul | none | none | runner | **autofix.ci GitHub App** (fails if not installed) | B |
-| ai-generated-label.yml | pull_request_target | dul | none | `if:` title starts `[AI]` | runner | none | B |
-| fork-pr-welcome.yml | pull_request_target | dul | none | head repo != base | runner | none | B |
-| e2e-vrt-comment.yml | workflow_run "E2E Tests" | dul | none | none | runner | none | B |
-| migration-warnings-comment.yml | workflow_run "Test" | dul | none | none | runner | none | B |
-| size-compare.yml | pull_request_target (paths) | dul | none | none | runner | none (needs build.yml artifacts for both base and head SHA) | B |
-| vrt-update-generate.yml | issue_comment `/update-vrt` | dul (3 browser shards + desktop, Playwright containers) | none | none | runner | none | B |
-| vrt-update-apply.yml | workflow_run "VRT Update - Generate" | dul | **ACTIONS_UPDATE_TOKEN**: hard-fail at checkout/push, no guard; `environment: pr-automation` | none | runner | none | B (disable or swap in GITHUB_TOKEN) |
-| issues-close-feature-requests.yml | issues typed | dul | none | `if:` type == Feature | runner | none | B |
-| issues-close-tech-support.yml | issues labeled | dul | none | label only | runner | hardcoded `actualbudget/actual/issues/N` URL | B/C |
-| issues-feature-implemented.yml | pull_request_target closed | dul | none | merged only | runner | script hardcodes owner `actualbudget` | B/C |
-| issues-remove-help-wanted.yml | issues closed | dul | none | label only | runner | none | B |
-| stale.yml | schedule daily, dispatch | dul | none | **none** | runner | none | C (or B if wanted) |
-| count-points.yml | schedule monthly, dispatch | dul | none | **none** | runner | script hardcodes `actualbudget` | C |
-| cut-release-branch.yml | schedule 25th, dispatch | dul | none; `environment: release` | `repository_owner == 'actualbudget'` | runner | none | C (guarded) |
-| i18n-string-extract-master.yml | schedule daily, dispatch | dul | WEBLATE_API_KEY_CI_STRINGS, STRING_IMPORT_DEPLOY_KEY | `repository == 'actualbudget/actual'` | runner | Weblate | C (guarded) |
-| nightly-theme-catalog-scan.yml | schedule daily, dispatch | dul | DISCORD_WEBHOOK_URL | `repository == 'actualbudget/actual'` (both jobs) | runner | Discord | C (guarded) |
-| discord-release-notifications.yml | push tags `**`, release published | dul | DISCORD_WEBHOOK_URL (`nofail`) | `repository == 'actualbudget/actual'` | runner | Discord | C (guarded) |
-| netlify-release.yml | push tags `v**` | dul | NETLIFY_SITE_ID, NETLIFY_API_TOKEN: hard-fail | **none** | runner | Netlify | C |
-| docker-release.yml | push tags `v*.*.*` | `depot-ubuntu-latest-4` | DOCKERHUB_USERNAME/TOKEN: hard-fail; image names hardcoded to actualbudget | **none** | runner | Docker Hub, GHCR | C |
-| docker-nightly.yml | push master, dispatch | `depot-ubuntu-latest-4` (matrix os: ubuntu, alpine) | DOCKERHUB_*: login guarded by `!fork` | job: `dispatch \|\| !repository.fork` | runner | Docker Hub, GHCR | C |
-| electron-master.yml | push tags `v**` | create-release: `ubuntu-latest`; build matrix: the three Depot runners above | CSC_KEY_PASSWORD, CSC_LINK, APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID (mac signing; probably fails) | **none** | runners | Apple notarization, flathub.org | C |
-| publish-nightly-electron.yml | schedule daily, dispatch | same three Depot runners | same Apple/CSC secrets | `repository.fork == false` | runners | Apple, flathub.org | C |
-| publish-npm-packages.yml | push tags `v*.*.*`, schedule daily, dispatch | build: dul; publish: `ubuntu-latest` | npm OIDC trusted publishing: hard-fail | `push \|\| fork == false` (tag pushes are never guarded) | runner | npm | C |
-| publish-crdt.yml | push master (crdt package.json), dispatch | check: dul; publish: `ubuntu-latest` | npm OIDC: hard-fail when local version differs from npm | **none** (only a version-mismatch check) | runner | npm | C |
-| publish-flathub.yml | release published, dispatch | `depot-ubuntu-22.04` | FLATHUB_GITHUB_TOKEN: hard-fail | **none** | runner | Flathub repo PR | C |
-| publish-microsoft-store.yml | release published, dispatch | `depot-windows-2022` | MICROSOFT_STORE_CLIENT_ID/_CLIENT_SECRET/_TENANT_ID/_PRODUCT_ID: hard-fail | **none** | runner | Microsoft Store | C |
+| File                              | Triggers                                      | Runners                                                                                                                  | Non-GITHUB_TOKEN secrets / hard-fail?                                                                          | Repo guard                                               | Depot-specific                                                                       | 3rd-party                                                   | Cat                                                                            |
+| --------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| check.yml                         | push master, PR, merge_group                  | dul (all 9 jobs)                                                                                                         | none                                                                                                           | none                                                     | Depot-report in `test`, `if: event_name=='push'` (so it runs on master pushes)       | zizmor (uploads SARIF, needs `security-events: write`)      | A                                                                              |
+| build.yml                         | push master, PR, merge_group                  | dul; `mobile`: `depot-macos-latest`                                                                                      | none                                                                                                           | none                                                     | runners only                                                                         | translations clone (web, mobile)                            | A                                                                              |
+| e2e-test.yml                      | PR (paths), merge_group                       | build-web/vrt/merge-vrt/report: dul; functional + functional-desktop-app: `depot-ubuntu-latest-4`; Playwright containers | none                                                                                                           | none                                                     | Depot-report in report-e2e, functional-desktop-app, merge-vrt, all `if: merge_group` | none                                                        | A                                                                              |
+| api-browser-test.yml              | PR (paths), merge_group                       | `depot-ubuntu-latest-4` + Playwright container                                                                           | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | A                                                                              |
+| electron-pr.yml                   | PR (paths)                                    | matrix `depot-ubuntu-24.04-8`, `depot-windows-2022-8`, `depot-macos-latest`                                              | none                                                                                                           | none                                                     | runners                                                                              | flathub.org flatpak install, translations                   | A (heavy)                                                                      |
+| crdt-version-check.yml            | PR (packages/crdt/**)                         | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | A                                                                              |
+| news-feed-check.yml               | PR (paths)                                    | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | A                                                                              |
+| docs-spelling.yml                 | push any branch (docs paths), PR (docs paths) | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | crate-ci/typos                                              | A                                                                              |
+| release-notes.yml                 | PR; push `release`                            | dul                                                                                                                      | none (`github.token`); generate job uses `environment: release`                                                | none                                                     | runner                                                                               | none                                                        | check job A (fails PRs with no `upcoming-release-notes/` file); generate job C |
+| do-not-merge.yml                  | PR (label events), merge_group                | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | A/B                                                                            |
+| dependency-review.yml             | PR (yarn.lock)                                | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | GitHub dependency graph (needs GHAS if private)             | A/B                                                                            |
+| autofix.yml                       | PR                                            | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | **autofix.ci GitHub App** (fails if not installed)          | B                                                                              |
+| ai-generated-label.yml            | pull_request_target                           | dul                                                                                                                      | none                                                                                                           | `if:` title starts `[AI]`                                | runner                                                                               | none                                                        | B                                                                              |
+| fork-pr-welcome.yml               | pull_request_target                           | dul                                                                                                                      | none                                                                                                           | head repo != base                                        | runner                                                                               | none                                                        | B                                                                              |
+| e2e-vrt-comment.yml               | workflow_run "E2E Tests"                      | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | B                                                                              |
+| migration-warnings-comment.yml    | workflow_run "Test"                           | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | B                                                                              |
+| size-compare.yml                  | pull_request_target (paths)                   | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none (needs build.yml artifacts for both base and head SHA) | B                                                                              |
+| vrt-update-generate.yml           | issue_comment `/update-vrt`                   | dul (3 browser shards + desktop, Playwright containers)                                                                  | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | B                                                                              |
+| vrt-update-apply.yml              | workflow_run "VRT Update - Generate"          | dul                                                                                                                      | **ACTIONS_UPDATE_TOKEN**: hard-fail at checkout/push, no guard; `environment: pr-automation`                   | none                                                     | runner                                                                               | none                                                        | B (disable or swap in GITHUB_TOKEN)                                            |
+| issues-close-feature-requests.yml | issues typed                                  | dul                                                                                                                      | none                                                                                                           | `if:` type == Feature                                    | runner                                                                               | none                                                        | B                                                                              |
+| issues-close-tech-support.yml     | issues labeled                                | dul                                                                                                                      | none                                                                                                           | label only                                               | runner                                                                               | hardcoded `actualbudget/actual/issues/N` URL                | B/C                                                                            |
+| issues-feature-implemented.yml    | pull_request_target closed                    | dul                                                                                                                      | none                                                                                                           | merged only                                              | runner                                                                               | script hardcodes owner `actualbudget`                       | B/C                                                                            |
+| issues-remove-help-wanted.yml     | issues closed                                 | dul                                                                                                                      | none                                                                                                           | label only                                               | runner                                                                               | none                                                        | B                                                                              |
+| stale.yml                         | schedule daily, dispatch                      | dul                                                                                                                      | none                                                                                                           | **none**                                                 | runner                                                                               | none                                                        | C (or B if wanted)                                                             |
+| count-points.yml                  | schedule monthly, dispatch                    | dul                                                                                                                      | none                                                                                                           | **none**                                                 | runner                                                                               | script hardcodes `actualbudget`                             | C                                                                              |
+| cut-release-branch.yml            | schedule 25th, dispatch                       | dul                                                                                                                      | none; `environment: release`                                                                                   | `repository_owner == 'actualbudget'`                     | runner                                                                               | none                                                        | C (guarded)                                                                    |
+| i18n-string-extract-master.yml    | schedule daily, dispatch                      | dul                                                                                                                      | WEBLATE_API_KEY_CI_STRINGS, STRING_IMPORT_DEPLOY_KEY                                                           | `repository == 'actualbudget/actual'`                    | runner                                                                               | Weblate                                                     | C (guarded)                                                                    |
+| nightly-theme-catalog-scan.yml    | schedule daily, dispatch                      | dul                                                                                                                      | DISCORD_WEBHOOK_URL                                                                                            | `repository == 'actualbudget/actual'` (both jobs)        | runner                                                                               | Discord                                                     | C (guarded)                                                                    |
+| discord-release-notifications.yml | push tags `**`, release published             | dul                                                                                                                      | DISCORD_WEBHOOK_URL (`nofail`)                                                                                 | `repository == 'actualbudget/actual'`                    | runner                                                                               | Discord                                                     | C (guarded)                                                                    |
+| netlify-release.yml               | push tags `v**`                               | dul                                                                                                                      | NETLIFY_SITE_ID, NETLIFY_API_TOKEN: hard-fail                                                                  | **none**                                                 | runner                                                                               | Netlify                                                     | C                                                                              |
+| docker-release.yml                | push tags `v*.*.*`                            | `depot-ubuntu-latest-4`                                                                                                  | DOCKERHUB_USERNAME/TOKEN: hard-fail; image names hardcoded to actualbudget                                     | **none**                                                 | runner                                                                               | Docker Hub, GHCR                                            | C                                                                              |
+| docker-nightly.yml                | push master, dispatch                         | `depot-ubuntu-latest-4` (matrix os: ubuntu, alpine)                                                                      | DOCKERHUB_*: login guarded by `!fork`                                                                          | job: `dispatch \|\| !repository.fork`                    | runner                                                                               | Docker Hub, GHCR                                            | C                                                                              |
+| electron-master.yml               | push tags `v**`                               | create-release: `ubuntu-latest`; build matrix: the three Depot runners above                                             | CSC_KEY_PASSWORD, CSC_LINK, APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID (mac signing; probably fails) | **none**                                                 | runners                                                                              | Apple notarization, flathub.org                             | C                                                                              |
+| publish-nightly-electron.yml      | schedule daily, dispatch                      | same three Depot runners                                                                                                 | same Apple/CSC secrets                                                                                         | `repository.fork == false`                               | runners                                                                              | Apple, flathub.org                                          | C                                                                              |
+| publish-npm-packages.yml          | push tags `v*.*.*`, schedule daily, dispatch  | build: dul; publish: `ubuntu-latest`                                                                                     | npm OIDC trusted publishing: hard-fail                                                                         | `push \|\| fork == false` (tag pushes are never guarded) | runner                                                                               | npm                                                         | C                                                                              |
+| publish-crdt.yml                  | push master (crdt package.json), dispatch     | check: dul; publish: `ubuntu-latest`                                                                                     | npm OIDC: hard-fail when local version differs from npm                                                        | **none** (only a version-mismatch check)                 | runner                                                                               | npm                                                         | C                                                                              |
+| publish-flathub.yml               | release published, dispatch                   | `depot-ubuntu-22.04`                                                                                                     | FLATHUB_GITHUB_TOKEN: hard-fail                                                                                | **none**                                                 | runner                                                                               | Flathub repo PR                                             | C                                                                              |
+| publish-microsoft-store.yml       | release published, dispatch                   | `depot-windows-2022`                                                                                                     | MICROSOFT_STORE_CLIENT_ID/_CLIENT_SECRET/_TENANT_ID/_PRODUCT_ID: hard-fail                                     | **none**                                                 | runner                                                                               | Microsoft Store                                             | C                                                                              |
 
 ## Composite actions (`/workspaces/actual-budget/.github/actions/`)
+
 - **`setup/action.yml`**: nothing Depot-specific and no secrets. It uses Node 24, the standard `actions/cache` for `**/node_modules` (keyed by OS, Node version and `yarn.lock` hash), the yarn download cache, and a Lage cache keyed per job and SHA. Every job saves its own Lage cache, so the 10 GB repo cache limit will churn. With `download-translations` left at its default (`true`) it clones the public `actualbudget/translations` repo; build.yml `web`/`mobile`, electron-pr, electron-master and netlify-release all do this.
 - **`release-notes/check` and `release-notes/generate`**: plain Node scripts using `github.token`. Nothing upstream-specific.
 - **`handle-feature-requests.js`**: GraphQL queries hardcoded to `owner: "actualbudget", name: "actual"`.
 - **`docs-spelling/`**: only a typos config.
 
 ## Timeouts, concurrency, sharding, machine-size assumptions
+
 - **timeout-minutes**: none in e2e-test.yml, check.yml or build.yml, so jobs use the 360-minute default. A job stuck waiting on a Depot label sits for a long time before failing.
 - **concurrency**: all three use `${workflow}-${PR number || ref}`. e2e cancels in progress always; check and build cancel except on master.
 - **Sharding**: e2e `functional` and `vrt` use a fixed matrix `shard: [1, 2, 3]`. Steps run only if `matrix.shard <= vars.E2E_SHARD_TOTAL || '3'`, so the repo variable can shrink the shard count but not raise it above 3; going above 3 means editing the matrix. Each shard sets `E2E_PORT=3000+shard`. vrt-update-generate hardcodes `/3`.
@@ -4926,6 +4954,7 @@ Abbreviations: "dul" = `depot-ubuntu-latest`; "Depot-report" = a `depot/test-rep
   - `lage.config.js` has `concurrency: 2`, and vitest configs set `maxWorkers` to 1 or 2, so unit tests are fine on small runners.
 
 ## Gotchas
+
 1. **check.yml `test` job on push to master**: the Depot-report step runs on `event_name == 'push'` and will likely fail without a Depot org, turning master red even when tests pass. The e2e Depot steps are safe because they only run on `merge_group`.
 2. **Tag pushes trigger unguarded publish workflows**: netlify-release, docker-release, electron-master, publish-npm-packages (its guard explicitly allows `push`), and publish-flathub/publish-microsoft-store on a published release. Any `v*` tag pushed or synced from upstream will run them and fail.
 3. **Some guards only work if GitHub marks the repo as a fork** (`github.event.repository.fork`): docker-nightly, publish-nightly-electron, and publish-npm-packages' scheduled run. If CSCI-435-SE/actual-budget was imported or duplicated rather than forked, they will run. Check the fork flag in the repo settings. Changing them to `github.repository == 'actualbudget/actual'` is safer.
@@ -4954,54 +4983,56 @@ Abbreviations: "dul" = `depot-ubuntu-latest`; "Depot-report" = a `depot/test-rep
 
 ## Workflow table
 
-| File | Triggers | Runners | Non-GITHUB_TOKEN secrets / hard-fail? | Repo guard | Depot-specific | 3rd-party | Cat |
-|---|---|---|---|---|---|---|---|
-| check.yml | push master, PR, merge_group | dul (all 9 jobs) | none | none | Depot-report in `test`, `if: event_name=='push'` (so it runs on master pushes) | zizmor (uploads SARIF, needs `security-events: write`) | A |
-| build.yml | push master, PR, merge_group | dul; `mobile`: `depot-macos-latest` | none | none | runners only | translations clone (web, mobile) | A |
-| e2e-test.yml | PR (paths), merge_group | build-web/vrt/merge-vrt/report: dul; functional + functional-desktop-app: `depot-ubuntu-latest-4`; Playwright containers | none | none | Depot-report in report-e2e, functional-desktop-app, merge-vrt, all `if: merge_group` | none | A |
-| api-browser-test.yml | PR (paths), merge_group | `depot-ubuntu-latest-4` + Playwright container | none | none | runner | none | A |
-| electron-pr.yml | PR (paths) | matrix `depot-ubuntu-24.04-8`, `depot-windows-2022-8`, `depot-macos-latest` | none | none | runners | flathub.org flatpak install, translations | A (heavy) |
-| crdt-version-check.yml | PR (packages/crdt/**) | dul | none | none | runner | none | A |
-| news-feed-check.yml | PR (paths) | dul | none | none | runner | none | A |
-| docs-spelling.yml | push any branch (docs paths), PR (docs paths) | dul | none | none | runner | crate-ci/typos | A |
-| release-notes.yml | PR; push `release` | dul | none (`github.token`); generate job uses `environment: release` | none | runner | none | check job A (fails PRs with no `upcoming-release-notes/` file); generate job C |
-| do-not-merge.yml | PR (label events), merge_group | dul | none | none | runner | none | A/B |
-| dependency-review.yml | PR (yarn.lock) | dul | none | none | runner | GitHub dependency graph (needs GHAS if private) | A/B |
-| autofix.yml | PR | dul | none | none | runner | **autofix.ci GitHub App** (fails if not installed) | B |
-| ai-generated-label.yml | pull_request_target | dul | none | `if:` title starts `[AI]` | runner | none | B |
-| fork-pr-welcome.yml | pull_request_target | dul | none | head repo != base | runner | none | B |
-| e2e-vrt-comment.yml | workflow_run "E2E Tests" | dul | none | none | runner | none | B |
-| migration-warnings-comment.yml | workflow_run "Test" | dul | none | none | runner | none | B |
-| size-compare.yml | pull_request_target (paths) | dul | none | none | runner | none (needs build.yml artifacts for both base and head SHA) | B |
-| vrt-update-generate.yml | issue_comment `/update-vrt` | dul (3 browser shards + desktop, Playwright containers) | none | none | runner | none | B |
-| vrt-update-apply.yml | workflow_run "VRT Update - Generate" | dul | **ACTIONS_UPDATE_TOKEN**: hard-fail at checkout/push, no guard; `environment: pr-automation` | none | runner | none | B (disable or swap in GITHUB_TOKEN) |
-| issues-close-feature-requests.yml | issues typed | dul | none | `if:` type == Feature | runner | none | B |
-| issues-close-tech-support.yml | issues labeled | dul | none | label only | runner | hardcoded `actualbudget/actual/issues/N` URL | B/C |
-| issues-feature-implemented.yml | pull_request_target closed | dul | none | merged only | runner | script hardcodes owner `actualbudget` | B/C |
-| issues-remove-help-wanted.yml | issues closed | dul | none | label only | runner | none | B |
-| stale.yml | schedule daily, dispatch | dul | none | **none** | runner | none | C (or B if wanted) |
-| count-points.yml | schedule monthly, dispatch | dul | none | **none** | runner | script hardcodes `actualbudget` | C |
-| cut-release-branch.yml | schedule 25th, dispatch | dul | none; `environment: release` | `repository_owner == 'actualbudget'` | runner | none | C (guarded) |
-| i18n-string-extract-master.yml | schedule daily, dispatch | dul | WEBLATE_API_KEY_CI_STRINGS, STRING_IMPORT_DEPLOY_KEY | `repository == 'actualbudget/actual'` | runner | Weblate | C (guarded) |
-| nightly-theme-catalog-scan.yml | schedule daily, dispatch | dul | DISCORD_WEBHOOK_URL | `repository == 'actualbudget/actual'` (both jobs) | runner | Discord | C (guarded) |
-| discord-release-notifications.yml | push tags `**`, release published | dul | DISCORD_WEBHOOK_URL (`nofail`) | `repository == 'actualbudget/actual'` | runner | Discord | C (guarded) |
-| netlify-release.yml | push tags `v**` | dul | NETLIFY_SITE_ID, NETLIFY_API_TOKEN: hard-fail | **none** | runner | Netlify | C |
-| docker-release.yml | push tags `v*.*.*` | `depot-ubuntu-latest-4` | DOCKERHUB_USERNAME/TOKEN: hard-fail; image names hardcoded to actualbudget | **none** | runner | Docker Hub, GHCR | C |
-| docker-nightly.yml | push master, dispatch | `depot-ubuntu-latest-4` (matrix os: ubuntu, alpine) | DOCKERHUB_*: login guarded by `!fork` | job: `dispatch \|\| !repository.fork` | runner | Docker Hub, GHCR | C |
-| electron-master.yml | push tags `v**` | create-release: `ubuntu-latest`; build matrix: the three Depot runners above | CSC_KEY_PASSWORD, CSC_LINK, APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID (mac signing; probably fails) | **none** | runners | Apple notarization, flathub.org | C |
-| publish-nightly-electron.yml | schedule daily, dispatch | same three Depot runners | same Apple/CSC secrets | `repository.fork == false` | runners | Apple, flathub.org | C |
-| publish-npm-packages.yml | push tags `v*.*.*`, schedule daily, dispatch | build: dul; publish: `ubuntu-latest` | npm OIDC trusted publishing: hard-fail | `push \|\| fork == false` (tag pushes are never guarded) | runner | npm | C |
-| publish-crdt.yml | push master (crdt package.json), dispatch | check: dul; publish: `ubuntu-latest` | npm OIDC: hard-fail when local version differs from npm | **none** (only a version-mismatch check) | runner | npm | C |
-| publish-flathub.yml | release published, dispatch | `depot-ubuntu-22.04` | FLATHUB_GITHUB_TOKEN: hard-fail | **none** | runner | Flathub repo PR | C |
-| publish-microsoft-store.yml | release published, dispatch | `depot-windows-2022` | MICROSOFT_STORE_CLIENT_ID/_CLIENT_SECRET/_TENANT_ID/_PRODUCT_ID: hard-fail | **none** | runner | Microsoft Store | C |
+| File                              | Triggers                                      | Runners                                                                                                                  | Non-GITHUB_TOKEN secrets / hard-fail?                                                                          | Repo guard                                               | Depot-specific                                                                       | 3rd-party                                                   | Cat                                                                            |
+| --------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| check.yml                         | push master, PR, merge_group                  | dul (all 9 jobs)                                                                                                         | none                                                                                                           | none                                                     | Depot-report in `test`, `if: event_name=='push'` (so it runs on master pushes)       | zizmor (uploads SARIF, needs `security-events: write`)      | A                                                                              |
+| build.yml                         | push master, PR, merge_group                  | dul; `mobile`: `depot-macos-latest`                                                                                      | none                                                                                                           | none                                                     | runners only                                                                         | translations clone (web, mobile)                            | A                                                                              |
+| e2e-test.yml                      | PR (paths), merge_group                       | build-web/vrt/merge-vrt/report: dul; functional + functional-desktop-app: `depot-ubuntu-latest-4`; Playwright containers | none                                                                                                           | none                                                     | Depot-report in report-e2e, functional-desktop-app, merge-vrt, all `if: merge_group` | none                                                        | A                                                                              |
+| api-browser-test.yml              | PR (paths), merge_group                       | `depot-ubuntu-latest-4` + Playwright container                                                                           | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | A                                                                              |
+| electron-pr.yml                   | PR (paths)                                    | matrix `depot-ubuntu-24.04-8`, `depot-windows-2022-8`, `depot-macos-latest`                                              | none                                                                                                           | none                                                     | runners                                                                              | flathub.org flatpak install, translations                   | A (heavy)                                                                      |
+| crdt-version-check.yml            | PR (packages/crdt/**)                         | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | A                                                                              |
+| news-feed-check.yml               | PR (paths)                                    | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | A                                                                              |
+| docs-spelling.yml                 | push any branch (docs paths), PR (docs paths) | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | crate-ci/typos                                              | A                                                                              |
+| release-notes.yml                 | PR; push `release`                            | dul                                                                                                                      | none (`github.token`); generate job uses `environment: release`                                                | none                                                     | runner                                                                               | none                                                        | check job A (fails PRs with no `upcoming-release-notes/` file); generate job C |
+| do-not-merge.yml                  | PR (label events), merge_group                | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | A/B                                                                            |
+| dependency-review.yml             | PR (yarn.lock)                                | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | GitHub dependency graph (needs GHAS if private)             | A/B                                                                            |
+| autofix.yml                       | PR                                            | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | **autofix.ci GitHub App** (fails if not installed)          | B                                                                              |
+| ai-generated-label.yml            | pull_request_target                           | dul                                                                                                                      | none                                                                                                           | `if:` title starts `[AI]`                                | runner                                                                               | none                                                        | B                                                                              |
+| fork-pr-welcome.yml               | pull_request_target                           | dul                                                                                                                      | none                                                                                                           | head repo != base                                        | runner                                                                               | none                                                        | B                                                                              |
+| e2e-vrt-comment.yml               | workflow_run "E2E Tests"                      | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | B                                                                              |
+| migration-warnings-comment.yml    | workflow_run "Test"                           | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | B                                                                              |
+| size-compare.yml                  | pull_request_target (paths)                   | dul                                                                                                                      | none                                                                                                           | none                                                     | runner                                                                               | none (needs build.yml artifacts for both base and head SHA) | B                                                                              |
+| vrt-update-generate.yml           | issue_comment `/update-vrt`                   | dul (3 browser shards + desktop, Playwright containers)                                                                  | none                                                                                                           | none                                                     | runner                                                                               | none                                                        | B                                                                              |
+| vrt-update-apply.yml              | workflow_run "VRT Update - Generate"          | dul                                                                                                                      | **ACTIONS_UPDATE_TOKEN**: hard-fail at checkout/push, no guard; `environment: pr-automation`                   | none                                                     | runner                                                                               | none                                                        | B (disable or swap in GITHUB_TOKEN)                                            |
+| issues-close-feature-requests.yml | issues typed                                  | dul                                                                                                                      | none                                                                                                           | `if:` type == Feature                                    | runner                                                                               | none                                                        | B                                                                              |
+| issues-close-tech-support.yml     | issues labeled                                | dul                                                                                                                      | none                                                                                                           | label only                                               | runner                                                                               | hardcoded `actualbudget/actual/issues/N` URL                | B/C                                                                            |
+| issues-feature-implemented.yml    | pull_request_target closed                    | dul                                                                                                                      | none                                                                                                           | merged only                                              | runner                                                                               | script hardcodes owner `actualbudget`                       | B/C                                                                            |
+| issues-remove-help-wanted.yml     | issues closed                                 | dul                                                                                                                      | none                                                                                                           | label only                                               | runner                                                                               | none                                                        | B                                                                              |
+| stale.yml                         | schedule daily, dispatch                      | dul                                                                                                                      | none                                                                                                           | **none**                                                 | runner                                                                               | none                                                        | C (or B if wanted)                                                             |
+| count-points.yml                  | schedule monthly, dispatch                    | dul                                                                                                                      | none                                                                                                           | **none**                                                 | runner                                                                               | script hardcodes `actualbudget`                             | C                                                                              |
+| cut-release-branch.yml            | schedule 25th, dispatch                       | dul                                                                                                                      | none; `environment: release`                                                                                   | `repository_owner == 'actualbudget'`                     | runner                                                                               | none                                                        | C (guarded)                                                                    |
+| i18n-string-extract-master.yml    | schedule daily, dispatch                      | dul                                                                                                                      | WEBLATE_API_KEY_CI_STRINGS, STRING_IMPORT_DEPLOY_KEY                                                           | `repository == 'actualbudget/actual'`                    | runner                                                                               | Weblate                                                     | C (guarded)                                                                    |
+| nightly-theme-catalog-scan.yml    | schedule daily, dispatch                      | dul                                                                                                                      | DISCORD_WEBHOOK_URL                                                                                            | `repository == 'actualbudget/actual'` (both jobs)        | runner                                                                               | Discord                                                     | C (guarded)                                                                    |
+| discord-release-notifications.yml | push tags `**`, release published             | dul                                                                                                                      | DISCORD_WEBHOOK_URL (`nofail`)                                                                                 | `repository == 'actualbudget/actual'`                    | runner                                                                               | Discord                                                     | C (guarded)                                                                    |
+| netlify-release.yml               | push tags `v**`                               | dul                                                                                                                      | NETLIFY_SITE_ID, NETLIFY_API_TOKEN: hard-fail                                                                  | **none**                                                 | runner                                                                               | Netlify                                                     | C                                                                              |
+| docker-release.yml                | push tags `v*.*.*`                            | `depot-ubuntu-latest-4`                                                                                                  | DOCKERHUB_USERNAME/TOKEN: hard-fail; image names hardcoded to actualbudget                                     | **none**                                                 | runner                                                                               | Docker Hub, GHCR                                            | C                                                                              |
+| docker-nightly.yml                | push master, dispatch                         | `depot-ubuntu-latest-4` (matrix os: ubuntu, alpine)                                                                      | DOCKERHUB_*: login guarded by `!fork`                                                                          | job: `dispatch \|\| !repository.fork`                    | runner                                                                               | Docker Hub, GHCR                                            | C                                                                              |
+| electron-master.yml               | push tags `v**`                               | create-release: `ubuntu-latest`; build matrix: the three Depot runners above                                             | CSC_KEY_PASSWORD, CSC_LINK, APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID (mac signing; probably fails) | **none**                                                 | runners                                                                              | Apple notarization, flathub.org                             | C                                                                              |
+| publish-nightly-electron.yml      | schedule daily, dispatch                      | same three Depot runners                                                                                                 | same Apple/CSC secrets                                                                                         | `repository.fork == false`                               | runners                                                                              | Apple, flathub.org                                          | C                                                                              |
+| publish-npm-packages.yml          | push tags `v*.*.*`, schedule daily, dispatch  | build: dul; publish: `ubuntu-latest`                                                                                     | npm OIDC trusted publishing: hard-fail                                                                         | `push \|\| fork == false` (tag pushes are never guarded) | runner                                                                               | npm                                                         | C                                                                              |
+| publish-crdt.yml                  | push master (crdt package.json), dispatch     | check: dul; publish: `ubuntu-latest`                                                                                     | npm OIDC: hard-fail when local version differs from npm                                                        | **none** (only a version-mismatch check)                 | runner                                                                               | npm                                                         | C                                                                              |
+| publish-flathub.yml               | release published, dispatch                   | `depot-ubuntu-22.04`                                                                                                     | FLATHUB_GITHUB_TOKEN: hard-fail                                                                                | **none**                                                 | runner                                                                               | Flathub repo PR                                             | C                                                                              |
+| publish-microsoft-store.yml       | release published, dispatch                   | `depot-windows-2022`                                                                                                     | MICROSOFT_STORE_CLIENT_ID/_CLIENT_SECRET/_TENANT_ID/_PRODUCT_ID: hard-fail                                     | **none**                                                 | runner                                                                               | Microsoft Store                                             | C                                                                              |
 
 ## Composite actions (`/workspaces/actual-budget/.github/actions/`)
+
 - **`setup/action.yml`**: nothing Depot-specific and no secrets. It uses Node 24, the standard `actions/cache` for `**/node_modules` (keyed by OS, Node version and `yarn.lock` hash), the yarn download cache, and a Lage cache keyed per job and SHA. Every job saves its own Lage cache, so the 10 GB repo cache limit will churn. With `download-translations` left at its default (`true`) it clones the public `actualbudget/translations` repo; build.yml `web`/`mobile`, electron-pr, electron-master and netlify-release all do this.
 - **`release-notes/check` and `release-notes/generate`**: plain Node scripts using `github.token`. Nothing upstream-specific.
 - **`handle-feature-requests.js`**: GraphQL queries hardcoded to `owner: "actualbudget", name: "actual"`.
 - **`docs-spelling/`**: only a typos config.
 
 ## Timeouts, concurrency, sharding, machine-size assumptions
+
 - **timeout-minutes**: none in e2e-test.yml, check.yml or build.yml, so jobs use the 360-minute default. A job stuck waiting on a Depot label sits for a long time before failing.
 - **concurrency**: all three use `${workflow}-${PR number || ref}`. e2e cancels in progress always; check and build cancel except on master.
 - **Sharding**: e2e `functional` and `vrt` use a fixed matrix `shard: [1, 2, 3]`. Steps run only if `matrix.shard &lt;= vars.E2E_SHARD_TOTAL || '3'`, so the repo variable can shrink the shard count but not raise it above 3; going above 3 means editing the matrix. Each shard sets `E2E_PORT=3000+shard`. vrt-update-generate hardcodes `/3`.
@@ -5012,6 +5043,7 @@ Abbreviations: "dul" = `depot-ubuntu-latest`; "Depot-report" = a `depot/test-rep
   - `lage.config.js` has `concurrency: 2`, and vitest configs set `maxWorkers` to 1 or 2, so unit tests are fine on small runners.
 
 ## Gotchas
+
 1. **check.yml `test` job on push to master**: the Depot-report step runs on `event_name == 'push'` and will likely fail without a Depot org, turning master red even when tests pass. The e2e Depot steps are safe because they only run on `merge_group`.
 2. **Tag pushes trigger unguarded publish workflows**: netlify-release, docker-release, electron-master, publish-npm-packages (its guard explicitly allows `push`), and publish-flathub/publish-microsoft-store on a published release. Any `v*` tag pushed or synced from upstream will run them and fail.
 3. **Some guards only work if GitHub marks the repo as a fork** (`github.event.repository.fork`): docker-nightly, publish-nightly-electron, and publish-npm-packages' scheduled run. If CSCI-435-SE/actual-budget was imported or duplicated rather than forked, they will run. Check the fork flag in the repo settings. Changing them to `github.repository == 'actualbudget/actual'` is safer.
@@ -5044,6 +5076,7 @@ The agent has sorted all 38 workflows. Combined with what I found directly, here
    - `release-notes` fails any PR that doesn't add an `upcoming-release-notes/*.md` file.
 
 **What already works:**
+
 - The shared [setup action](.github/actions/setup/action.yml) uses no secrets and nothing Depot-specific.
 - None of the core PR workflows (Check, Build, E2E, API browser, Electron PR) need a secret beyond the built-in `GITHUB_TOKEN`.
 - GitHub's free Linux runners for public repos (4 cores, 16 GB) are about the size of `depot-ubuntu-latest-4`. Playwright runs inside a pinned container, so screenshot tests shouldn't drift because of the host.
@@ -5051,18 +5084,21 @@ The agent has sorted all 38 workflows. Combined with what I found directly, here
 ## Options
 
 **A. Swap the labels in place (the issue's proposal)**
+
 - Replace every `depot-*` label in all workflow files with the GitHub-hosted equivalent.
 - Guard the Depot report steps and the upstream-only workflows with `if: github.repository == 'actualbudget/actual'`, which upstream already uses.
 - **Pro:** every upstream improvement flows through.
 - **Con:** it touches about 38 files. Upstream syncs will conflict on those lines, and new upstream jobs will quietly bring Depot labels back.
 
 **B. Leave upstream's files alone and add our own CI file**
+
 - Turn off every inherited workflow in the GitHub Actions settings page. That setting survives syncs.
 - Add one fork-owned `fork-ci.yml` that runs lint, typecheck, tests and build on `ubuntu-latest`.
 - **Pro:** upstream syncs never conflict, and CI is small, fast and easy for the team to follow.
 - **Con:** we lose E2E, screenshot tests and the PR bots unless we copy them in, and nothing in the code shows that the inherited workflows are turned off.
 
 **C. Hybrid (my recommendation)**
+
 - Swap labels only in the core PR workflows: `check`, `build`, `e2e-test`, `api-browser-test`, and optionally `electron-pr`.
 - Guard the Depot report steps.
 - Turn off all the upstream release, publish and scheduled workflows in the Actions settings page, so their files stay identical to upstream.
@@ -5070,6 +5106,7 @@ The agent has sorted all 38 workflows. Combined with what I found directly, here
 - **Pro:** about 5 files differ from upstream, upstream syncs conflict rarely, and the guard catches the quiet-regression case.
 
 **D. A self-hosted runner, or paying for Depot**
+
 - Run our own machine registered under the `depot-*` labels, or buy a Depot plan.
 - I'd rule both out. A self-hosted runner on a public repo runs code from any PR on your machine, and GitHub explicitly warns against it. Depot costs money and adds nothing over the free runners.
 
@@ -5082,6 +5119,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:30:35Z)**_
 **Which overall approach should the plan use?**
 
 Options:
+
 - **C: Hybrid (Recommended)** - Swap runner labels only in the core PR workflows, guard the Depot report steps, turn off upstream-only workflows in the Actions settings, and add a depot-label guard and a re-apply script for future syncs.
 - **A: Swap labels everywhere** - The issue's proposal: replace labels in all ~38 workflow files and add repo `if:` guards to upstream-only ones. Most upstream behavior is kept, but syncs conflict the most.
 - **B: Own CI file only** - Turn off every inherited workflow and add one fork-owned fork-ci.yml (lint/typecheck/test/build). Upstream syncs never conflict, but there's no E2E or screenshot testing.
@@ -5089,6 +5127,7 @@ Options:
 **How much CI should run on each PR?**
 
 Options:
+
 - **Linux only (Recommended)** - Check (lint, typecheck, unit tests, knip, constraints), Build (web/api/crdt/cli/server), E2E functional + screenshot tests, API browser test. Drop the macOS mobile build and the Windows/macOS Electron builds. Fast, and the free plan's job limits aren't a concern.
 - **Minimal** - Only Check + Build. Quickest feedback, no Playwright E2E or screenshot tests.
 - **Full** - Everything above plus Electron on Linux/Windows/macOS and the macOS mobile build. Slowest, and the free plan allows only 5 macOS jobs at once.
@@ -5096,6 +5135,7 @@ Options:
 **What should happen to the PR helper bots (release-notes check, autofix.ci, AI label, stale PR closer, size compare, VRT comment, migration-warnings comment)?**
 
 Options:
+
 - **Keep the harmless ones** - Keep the AI label, size compare, VRT comment, migration warnings and do-not-merge bots. Turn off autofix.ci (needs an app), stale (would close our PRs), the release-notes check, and the issue bots that point at upstream.
 - **Turn all off** - Only the real checks run; no bot comments or labels.
 - **Keep release-notes too** - Same as the first option, but also require each PR to add an upcoming-release-notes/*.md file, as upstream does.
@@ -5103,10 +5143,10 @@ Options:
 **Should the plan also cover the GitHub settings steps (these need an org/repo admin, not code changes)?** _(select multiple)_
 
 Options:
+
 - **Cancel stuck queued runs** - Cancel the ~20 runs still queued (e.g. the Test/Check runs from 2026-10-16) through the Actions UI or `gh run cancel`.
 - **Required status checks** - Make Check and Build required on master through branch protection, so a red PR can't be merged. Lint will fail at first until the separate lint-cleanup ticket lands.
 - **Document in STUDENTS.md** - Add a short 'CI in our fork' section explaining that we use GitHub-hosted runners, the sync re-apply script, and which workflows are turned off.
-
 
 **Answer:** Can you go more in depth on what is happening with each option? I don't understand CI tests super well, Linux only (Recommended), Keep the harmless ones, i dont have org/repo admin, so i can't affect the settings". Read the answers carefully — they may request clarification, changes, or that you not proceed — and follow what they actually say.
 </details></tool-use>
@@ -5121,40 +5161,44 @@ Sure. Your answer about admin access also changes the options, so I'll explain b
 2. **`runs-on:` picks the machine.** Every job has a line like `runs-on: depot-ubuntu-latest`. That line is a **label**, a request for a machine of that type. GitHub puts the job in a queue and waits until a machine with that label offers to take it.
 3. **Who answers which label.** GitHub's own free machines answer to labels like `ubuntu-latest`, `windows-2022` and `macos-latest`. Labels starting with `depot-` are answered only by Depot's machines, and Depot only sends machines to organizations that pay for it. Upstream pays; we don't.
 4. **Why things time out.** Our jobs ask for `depot-*`, so no machine ever volunteers. They sit at "Waiting for a runner…" until GitHub gives up after about 24 hours. Nothing is broken in the tests themselves; they never got a computer to run on.
-5. **Why upstream syncs matter.** When we pull in a new upstream release, git merges their changes into ours line by line. If upstream changed a line *we* also changed, git can't decide and stops with a **merge conflict**, which someone has to fix by hand. So the more workflow lines we edit, the more hand-fixing each future sync needs.
-6. **A useful detail for testing the fix.** For `pull_request` workflows, GitHub runs the workflow files *from the PR's branch*. So the PR that fixes the labels proves itself: if its checks start running, the fix works.
+5. **Why upstream syncs matter.** When we pull in a new upstream release, git merges their changes into ours line by line. If upstream changed a line _we_ also changed, git can't decide and stops with a **merge conflict**, which someone has to fix by hand. So the more workflow lines we edit, the more hand-fixing each future sync needs.
+6. **A useful detail for testing the fix.** For `pull_request` workflows, GitHub runs the workflow files _from the PR's branch_. So the PR that fixes the labels proves itself: if its checks start running, the fix works.
 
 ## What changes because you don't have admin access
 
 My earlier Option B and Option C relied on turning off workflows from the Actions tab. In code, there are two ways to turn off a workflow:
+
 - **Add a guard line** to each job: `if: github.repository == 'actualbudget/actual'`. The job then reports "skipped" everywhere except upstream's repo. Upstream already uses this exact pattern in several files.
 - **Delete the file.** That's simple, but whenever upstream later edits a file we deleted, git asks during the sync whether to keep it deleted. That's easy to answer, but it comes up on every sync.
 
-You may be able to turn workflows off from the Actions tab with ordinary write access (Actions tab → pick the workflow → "…" → *Disable workflow*), but I'll plan everything in code so it doesn't depend on that.
+You may be able to turn workflows off from the Actions tab with ordinary write access (Actions tab → pick the workflow → "…" → _Disable workflow_), but I'll plan everything in code so it doesn't depend on that.
 
 ## The options, step by step
 
 **Option A: swap labels everywhere**
-- *What we do:* in every workflow file, change `runs-on: depot-ubuntu-latest` → `ubuntu-latest` (and similar). Add the guard line to every job that publishes or releases.
-- *What you'd see on a PR:* the checks start within a minute or two.
-- *On a future sync:* any time upstream edits one of those `runs-on:` lines or the lines next to them, git conflicts, and the fix is "keep ours." Worse, when upstream **adds a new job** with `depot-…`, git merges it in quietly with no conflict, and that one job starts hanging again.
-- *Size:* about 38 files edited.
+
+- _What we do:_ in every workflow file, change `runs-on: depot-ubuntu-latest` → `ubuntu-latest` (and similar). Add the guard line to every job that publishes or releases.
+- _What you'd see on a PR:_ the checks start within a minute or two.
+- _On a future sync:_ any time upstream edits one of those `runs-on:` lines or the lines next to them, git conflicts, and the fix is "keep ours." Worse, when upstream **adds a new job** with `depot-…`, git merges it in quietly with no conflict, and that one job starts hanging again.
+- _Size:_ about 38 files edited.
 
 **Option B: our own CI file, upstream's turned off**
-- *What we do:* write one new file, `fork-ci.yml`, that runs lint, typecheck, unit tests and build on `ubuntu-latest`. Then turn off every inherited workflow, either by deleting it or by adding the guard line.
-- *What you'd see on a PR:* one small, fast set of checks that the team fully owns and understands.
-- *On a future sync:* our file never conflicts. The turned-off upstream files still conflict when upstream edits them, through either the guard lines or the deleted files.
-- *What we lose:* E2E browser tests, screenshot tests, and the PR bots, unless we copy them into our file (which is just Option A again).
+
+- _What we do:_ write one new file, `fork-ci.yml`, that runs lint, typecheck, unit tests and build on `ubuntu-latest`. Then turn off every inherited workflow, either by deleting it or by adding the guard line.
+- _What you'd see on a PR:_ one small, fast set of checks that the team fully owns and understands.
+- _On a future sync:_ our file never conflicts. The turned-off upstream files still conflict when upstream edits them, through either the guard lines or the deleted files.
+- _What we lose:_ E2E browser tests, screenshot tests, and the PR bots, unless we copy them into our file (which is just Option A again).
 
 **Option C: hybrid (still my recommendation)**
-- *What we do:*
+
+- _What we do:_
   1. Swap labels only in the ~6 core PR workflows: `check`, `build`, `e2e-test`, `api-browser-test`, plus the "harmless" bots you chose to keep.
   2. Add the guard line to the Depot test-report steps, so `master` doesn't go red.
   3. Add the guard line to the upstream-only release, publish and scheduled jobs, and to the bots you chose to turn off.
   4. Add a tiny new workflow, `fork-ci-guard.yml`, that searches the workflow files for `depot-` and fails the PR if it finds one in a workflow we want running. This catches the "upstream quietly added a new Depot job" case automatically.
   5. Add a small script someone can run after each sync to redo the label swap in one command.
-- *What you'd see on a PR:* the real checks (lint, typecheck, tests, build, E2E, screenshots) all running. If a sync brings Depot back, the guard check goes red and names the file.
-- *On a future sync:* conflicts are about the same as Option A for the files we touch, but nothing can break silently, and the fix is one command.
+- _What you'd see on a PR:_ the real checks (lint, typecheck, tests, build, E2E, screenshots) all running. If a sync brings Depot back, the guard check goes red and names the file.
+- _On a future sync:_ conflicts are about the same as Option A for the files we touch, but nothing can break silently, and the fix is one command.
 
 **Rejected:** a self-hosted runner (on a public repo it would run any stranger's PR code on your machine) and paying for Depot.
 
@@ -5167,6 +5211,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:33:33Z)**_
 **With everything done in code (no admin settings), which approach should the plan use?**
 
 Options:
+
 - **C: Hybrid + guard (Recommended)** - Swap labels in the core PR workflows, add repo guard lines to upstream-only jobs and turned-off bots, add a fork-ci-guard.yml that fails if a running workflow uses depot-, plus a one-command re-apply script for syncs.
 - **A: Swap everywhere** - Change labels in all ~38 files and guard the publish/release jobs. No guard workflow or script; new upstream Depot jobs could quietly hang again.
 - **B: Own CI file** - One new fork-ci.yml (lint/typecheck/test/build) and every inherited workflow turned off with guard lines. Simplest to understand, but no E2E or screenshot tests.
@@ -5174,9 +5219,9 @@ Options:
 **How should upstream-only workflows be turned off in code?**
 
 Options:
+
 - **Guard lines (Recommended)** - Add `if: github.repository == 'actualbudget/actual'` to their jobs. Files stay; jobs show as 'skipped'. Matches the pattern upstream already uses, so it's a one-line diff per job.
 - **Delete the files** - Remove the workflow files entirely. Cleaner Actions tab, but each sync where upstream edits one of them asks whether to keep it deleted.
-
 
 **Answer:** C: Hybrid + guard (Recommended), Guard lines (Recommended)
 </details></tool-use>
@@ -5249,6 +5294,7 @@ node_modules/yaml/package.json
 26:    "packages/ci-actions": {
 knip.json
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:34:18Z)**_
@@ -5326,6 +5372,7 @@ self-hosted-runner:
   labels:
     - depot-*
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:34:42Z)**_
@@ -5344,6 +5391,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:35:07Z)**_
 # Plan: Make CI actually run on PRs (issue #101)
 
 ## Context
+
 All CI in CSCI-435-SE/actual-budget is inherited from upstream `actualbudget/actual`.
 Nearly every job requests a **Depot** runner (`runs-on: depot-ubuntu-latest`, matrix
 `runner: depot-ubuntu-24.04-8`, …). Depot is a paid runner service that upstream pays for; our org has
@@ -5353,6 +5401,7 @@ test failures have reached `master` uncaught. The repo is public, so GitHub-host
 are free (Linux: 4 vCPU / 16 GB, about the same as `depot-ubuntu-latest-4`).
 
 Hidden traps beyond the runner labels (found during exploration):
+
 - `depot/test-report-action` steps (Depot OIDC) would turn `master` red: check.yml:117 runs on push.
 - GitHub reports the repo as `fork: false`, so upstream's `repository.fork` guards don't skip.
   Once runners work, docker-nightly (pushes to ghcr), publish-nightly-electron, npm publish,
@@ -5364,6 +5413,7 @@ via guard lines, Linux-only CI, keep only the harmless bots.
 ## Approach
 
 ### 1. Swap runner labels in workflows we want running
+
 Label map: `depot-ubuntu-latest`, `depot-ubuntu-latest-4` → `ubuntu-latest`;
 `depot-ubuntu-24.04-8` → `ubuntu-24.04`; `depot-ubuntu-22.04` → `ubuntu-22.04`.
 
@@ -5377,13 +5427,16 @@ Label map: `depot-ubuntu-latest`, `depot-ubuntu-latest-4` → `ubuntu-latest`;
   `migration-warnings-comment`, `issues-remove-help-wanted`.
 
 ### 2. Guard Depot-only steps and macOS
+
 Prepend `github.repository == 'actualbudget/actual' && ` to the existing `if:` of each
 `Report test results to Depot` step (check.yml:119; e2e-test.yml report-e2e / functional-desktop-app /
 merge-vrt). Add `if: github.repository == 'actualbudget/actual'` to build.yml `mobile` (macOS).
 
 ### 3. Turn off upstream-only workflows with guard lines
+
 Add `if: github.repository == 'actualbudget/actual'` to **every job** (combine with `&&` where an
 `if:` exists; leave their `depot-*` labels untouched so the diff stays minimal):
+
 - Turned-off bots: `autofix`, `stale`, `release-notes`, `issues-close-feature-requests`,
   `issues-close-tech-support`, `issues-feature-implemented`, `count-points`,
   `vrt-update-generate`, `vrt-update-apply` (the last two need `ACTIONS_UPDATE_TOKEN`).
@@ -5394,7 +5447,9 @@ Add `if: github.repository == 'actualbudget/actual'` to **every job** (combine w
   `nightly-theme-catalog-scan`, `discord-release-notifications`.
 
 ### 4. New fork-owned checker script: `.github/scripts/fork-ci-runners.mjs`
+
 Zero-dependency Node script, placed next to the existing `.github/scripts/count-points.mjs`.
+
 - Scans `.github/workflows/*.yml` line by line. It tracks each job block (2-space key under `jobs:`)
   and treats a job as guarded if its job-level `if:` mentions `github.repository == 'actualbudget/actual'`
   or `github.repository_owner == 'actualbudget'`.
@@ -5406,12 +5461,14 @@ Zero-dependency Node script, placed next to the existing `.github/scripts/count-
   upstream sync.
 
 ### 5. New fork-owned workflow: `.github/workflows/fork-ci-guard.yml`
+
 Triggers: `pull_request`, `push` to master. `runs-on: ubuntu-latest`, `permissions: contents: read`,
 `actions/checkout` pinned to the same SHA the other workflows use, with `persist-credentials: false`
 (so zizmor in check.yml passes). One step: `node .github/scripts/fork-ci-runners.mjs`. There's no yarn
 install (Node is preinstalled on the runner), so the run takes seconds.
 
 ### 6. Team docs: add a "CI in our fork" section to `STUDENTS.md` (fork-owned)
+
 Explain why we use GitHub-hosted runners, what the guard check means, the sync recipe
 ("after merging upstream, run `node .github/scripts/fork-ci-runners.mjs --fix`; on
 `runs-on:` conflicts keep ours"), which workflows are turned off, and a note that a maintainer with
@@ -5419,6 +5476,7 @@ write/admin access can cancel the ~20 stuck queued runs (otherwise they expire o
 This covers acceptance criterion 4.
 
 ## Critical files
+
 - Modified: `.github/workflows/{check,build,e2e-test,api-browser-test,electron-pr}.yml`, the
   small-check and kept-bot workflows (label swap), and the guarded workflows listed in step 3.
 - New: `.github/scripts/fork-ci-runners.mjs`, `.github/workflows/fork-ci-guard.yml`.
@@ -5426,6 +5484,7 @@ This covers acceptance criterion 4.
 - Reused: `.github/actions/setup/action.yml` (already portable, unchanged).
 
 ## Verification
+
 1. Locally run `node .github/scripts/fork-ci-runners.mjs`. It should exit 0. Temporarily
    re-add a `depot-ubuntu-latest` label to an unguarded job: it should exit 1 and report the line.
    Then `--fix` should restore it.
@@ -5444,13 +5503,14 @@ This covers acceptance criterion 4.
    effect after merge, because they run the default branch's copy of the workflow.
 
 ## Wrap-up
-Log the session with SpecStory per the user's instructions (details to come at the end).
 
+Log the session with SpecStory per the user's instructions (details to come at the end).
 ```
 
 ```text
 The file /root/.claude/plans/i-d-like-to-work-kind-tide.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:35:09Z)**_
@@ -5468,6 +5528,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:35:09Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:35:19Z)**_
@@ -5493,6 +5554,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:36:55Z)**_
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  I like the plan, and we'll use manual mode. The only question is, if errors got through, and any test fails, can we still merge a PR and fix the issues in another PR? I.E. lint is messed up right now, and yarn test fails too.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:37:05Z)**_
@@ -5510,6 +5572,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:37:07Z)**_
 ```text
 The file /root/.claude/plans/i-d-like-to-work-kind-tide.md has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:37:24Z)**_
@@ -5649,6 +5712,7 @@ required.
 
 Log the session with SpecStory per the user's instructions (details to come at the end).
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:37:29Z)**_
@@ -5670,6 +5734,7 @@ Create a feature branch for issue 101
 Switched to a new branch 'fix/issue-101-ci-runners'
 ?? issues-60-61-pdf-export-explained.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:38:02Z)**_
@@ -5734,6 +5799,7 @@ const CONFIG = {
 62:    "lint:fix": "oxfmt . && oxlint --fix --type-aware --quiet",
 v24.22.0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:38:06Z)**_
@@ -5794,8 +5860,7 @@ function indentOf(line) {
 
 function isGuarded(ifText) {
   return (
-    !ifText.includes('||') &&
-    UPSTREAM_GUARDS.some(guard => guard.test(ifText))
+    !ifText.includes('||') && UPSTREAM_GUARDS.some(guard => guard.test(ifText))
   );
 }
 
@@ -5874,7 +5939,9 @@ for (const file of files) {
         }
         problems.push(
           `${file}:${i + 1} job "${job.name}" uses ${label}` +
-            (canFix ? ` (use ${replacement})` : ' (no known GitHub equivalent)'),
+            (canFix
+              ? ` (use ${replacement})`
+              : ' (no known GitHub equivalent)'),
         );
       }
       if (shouldFix) {
@@ -5894,7 +5961,9 @@ for (const file of files) {
 }
 
 if (shouldFix) {
-  console.log(`Swapped ${fixedCount} Depot runner label(s) to GitHub-hosted runners.`);
+  console.log(
+    `Swapped ${fixedCount} Depot runner label(s) to GitHub-hosted runners.`,
+  );
 }
 
 if (problems.length > 0) {
@@ -5907,7 +5976,7 @@ if (problems.length > 0) {
   }
   console.error(
     '\nFix: run `node .github/scripts/fork-ci-runners.mjs --fix` to swap them to\n' +
-      "GitHub-hosted runners, or, if the job is upstream-only (publishing,\n" +
+      'GitHub-hosted runners, or, if the job is upstream-only (publishing,\n' +
       "releases, ...), add `if: github.repository == 'actualbudget/actual'` to it.\n" +
       'See "CI in our fork" in STUDENTS.md.',
   );
@@ -5915,12 +5984,12 @@ if (problems.length > 0) {
 }
 
 console.log('No unguarded Depot runner labels found.');
-
 ```
 
 ```text
 File created successfully at: /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:39:58Z)**_
@@ -6013,6 +6082,7 @@ releases, ...), add `if: github.repository == 'actualbudget/actual'` to it.
 See "CI in our fork" in STUDENTS.md.
 exit=1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:40:17Z)**_
@@ -6113,6 +6183,7 @@ List job names and existing job-level if conditions
 == publish-microsoft-store
 25:   publish-microsoft-store:
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:40:50Z)**_
@@ -6144,22 +6215,22 @@ _**Agent (claude-opus-5-5 2026-10-20 01:40:50Z)**_
 13	//   node .github/scripts/fork-ci-runners.mjs          # report, exit 1 if any
 14	//   node .github/scripts/fork-ci-runners.mjs --fix    # swap to GitHub runners
 15	//   node .github/scripts/fork-ci-runners.mjs --dir <workflows-dir> [--fix]
-16	
+16
 17	import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 18	import { join } from 'node:path';
 19	import { fileURLToPath } from 'node:url';
-20	
+20
 21	const UPSTREAM_GUARDS = [
 22	  /github\.repository\s*==\s*'actualbudget\/actual'/,
 23	  /github\.repository_owner\s*==\s*'actualbudget'/,
 24	];
-25	
+25
 26	// depot-<github label>[-<core count>] -> <github label>
 27	const DEPOT_LABEL =
 28	  /\bdepot-(ubuntu-latest|ubuntu-\d\d\.\d\d(?:-arm)?|windows-\d{4}|macos-(?:latest|\d+))(?:-\d+)?\b/g;
 29	const ANY_DEPOT_LABEL = /\bdepot-[\w.-]+/g;
 30	const RUNNER_LINE = /^\s*(?:-\s+)?(?:runs-on|runner):/;
-31	
+31
 32	const args = process.argv.slice(2);
 33	const shouldFix = args.includes('--fix');
 34	const dirIndex = args.indexOf('--dir');
@@ -6167,17 +6238,17 @@ _**Agent (claude-opus-5-5 2026-10-20 01:40:50Z)**_
 36	  dirIndex === -1
 37	    ? fileURLToPath(new URL('../workflows', import.meta.url))
 38	    : args[dirIndex + 1];
-39	
+39
 40	function indentOf(line) {
 41	  return line.length - line.trimStart().length;
 42	}
-43	
+43
 44	function isGuarded(ifText) {
 45	  return (
 46	    !ifText.includes('||') && UPSTREAM_GUARDS.some(guard => guard.test(ifText))
 47	  );
 48	}
-49	
+49
 50	// Splits a workflow into its jobs: [{ name, start, end, ifText }]
 51	function findJobs(lines) {
 52	  const jobsLine = lines.findIndex(line => /^jobs:\s*(#.*)?$/.test(line));
@@ -6185,6 +6256,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:40:50Z)**_
 54	    return [];
 55	  }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:41:32Z)**_
@@ -6195,6 +6267,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:41:32Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:41:36Z)**_
@@ -6205,6 +6278,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:41:36Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:41:40Z)**_
@@ -6215,6 +6289,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:41:40Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:41:42Z)**_
@@ -6233,6 +6308,7 @@ Confirm checker still skips upstream-guarded jobs
 67
 upstream-guarded files correctly skipped
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:00Z)**_
@@ -6320,6 +6396,7 @@ for file, only_jobs in TARGETS.items():
 ```text
 File created successfully at: /tmp/claude-0/-workspaces-actual-budget/b59defbd-befd-49c7-86a8-1a338d053795/scratchpad/add_guards.py (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:13Z)**_
@@ -6371,6 +6448,7 @@ build.yml: mobile
  .github/workflows/vrt-update-generate.yml           | 7 ++++++-
  19 files changed, 30 insertions(+), 10 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:17Z)**_
@@ -6436,6 +6514,7 @@ Review guard rewrites of existing conditions
 -    if: ${{ !cancelled() && needs.get-pr.result == 'success' }}
 +    if: ${{ github.repository == 'actualbudget/actual' && (!cancelled() && needs.get-pr.result == 'success') }}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:25Z)**_
@@ -6469,6 +6548,7 @@ Locate the Depot test-report steps
 .github/workflows/e2e-test.yml-249-        uses: depot/test-report-action@2ad5779840a9c63e884fa26f11d019768a27a941 # v1.0.1
 .github/workflows/e2e-test.yml-250-        if: ${{ !cancelled() && github.event_name == 'merge_group' }}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:30Z)**_
@@ -6492,6 +6572,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:42:30Z)**_
 114	    if: ${{ !cancelled() && github.event_name == 'merge_group' }}
 115	    permissions:
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:31Z)**_
@@ -6505,6 +6586,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:42:31Z)**_
 118	        uses: depot/test-report-action@2ad5779840a9c63e884fa26f11d019768a27a941 # v1.0.1
 119	        if: ${{ !cancelled() && github.event_name == 'push' }}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:43Z)**_
@@ -6515,6 +6597,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:42:43Z)**_
 ```text
 The file /workspaces/actual-budget/.github/workflows/check.yml has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:45Z)**_
@@ -6525,6 +6608,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:42:45Z)**_
 ```text
 The file /workspaces/actual-budget/.github/workflows/e2e-test.yml has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:49Z)**_
@@ -6535,6 +6619,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:42:49Z)**_
 ```text
 The file /workspaces/actual-budget/.github/workflows/e2e-test.yml has been updated. All occurrences were successfully replaced.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:42:54Z)**_
@@ -6551,7 +6636,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:42:54Z)**_
  `./.github/workflows/electron-pr.yml`
 
 ```text
-28	
+28
 29	jobs:
 30	  build:
 31	    strategy:
@@ -6568,6 +6653,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:42:54Z)**_
 42	    steps:
 43	      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:43:08Z)**_
@@ -6578,6 +6664,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:43:08Z)**_
 ```text
 The file /workspaces/actual-budget/.github/workflows/electron-pr.yml has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:43:10Z)**_
@@ -6610,6 +6697,7 @@ migration-warnings-comment.yml: comment
 news-feed-check.yml: check-news-feed
 size-compare.yml: compare
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:43:16Z)**_
@@ -6633,6 +6721,7 @@ exit=0
  34 files changed, 69 insertions(+), 51 deletions(-)
 [This command modified 3 files you've previously read: .github/workflows/electron-pr.yml, .github/workflows/e2e-test.yml, .github/workflows/check.yml. Call Read before editing.]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:43:30Z)**_
@@ -6694,6 +6783,7 @@ Spot-check label swap diffs
 
 37
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:43:40Z)**_
@@ -6740,12 +6830,12 @@ jobs:
           persist-credentials: false
       - name: Check workflow runner labels
         run: node .github/scripts/fork-ci-runners.mjs
-
 ```
 
 ```text
 File created successfully at: /workspaces/actual-budget/.github/workflows/fork-ci-guard.yml (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:43:58Z)**_
@@ -6783,6 +6873,7 @@ Show STUDENTS.md size and headings
 181:# Push the branch to the team repo
 211:## 8. Project documentation & policies (required reading)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:44:00Z)**_
@@ -6793,50 +6884,50 @@ _**Agent (claude-opus-5-5 2026-10-20 01:44:00Z)**_
 
 ````text
 150	---
-151	
+151
 152	## Contributing workflow
-153	
+153
 154	All team members have write access to this repository, so the team uses a **branch-based** workflow — not forks. Here is the background and the commands.
-155	
+155
 156	**Why not forks?** Forking is the standard model for contributing to open-source projects where you _don't_ have write access: you fork to your own GitHub account, clone your fork, and open a PR from your fork back to the original. You will encounter this when contributing to the upstream project. But for your course team — where everyone has write access to the shared repo — it just adds confusion: two clones on your machine, two remotes to keep in sync, merge conflicts that are harder to reason about.
-157	
+157
 158	**Branch-based workflow** is what most professional teams use internally. You clone the shared repo once, create a short-lived branch for each issue, push the branch back to the same repo, and open a PR from that branch into `main`. One clone, one remote, full PR workflow.
-159	
+159
 160	### For each issue you work on
-161	
+161
 162	```bash
 163	# One-time setup: clone the team repo (skip if already done)
 164	git clone https://github.com/CSCI-435-SE/actual-budget.git
 165	cd actual-budget
-166	
+166
 167	# Before starting each issue: make sure you are on a fresh main
 168	git checkout main
 169	git pull origin main
-170	
+170
 171	# Create a branch named for the issue
 172	git checkout -b feat/issue-17-dark-mode      # new feature
 173	git checkout -b fix/issue-42-toast-dismiss   # bug fix
-174	
+174
 175	# ... make your changes, run tests ...
-176	
+176
 177	# Stage and commit
 178	git add <the files you changed>
 179	git commit -m "feat: add dark mode toggle (#17)"
-180	
+180
 181	# Push the branch to the team repo
 182	git push origin feat/issue-17-dark-mode
 183	```
-184	
+184
 185	After pushing, GitHub shows a **"Compare & pull request"** banner on the repository page. Click it to open a PR from your branch into `main`. Fill in the description (what changed and why), reference the issue (`Closes #17`), and request a review from a teammate.
-186	
+186
 187	**Branch naming:**
-188	
+188
 189	| Prefix | Use for |
 190	|---|---|
 191	| `feat/issue-<N>-short-description` | new features |
 192	| `fix/issue-<N>-short-description` | bug fixes |
 193	| `chore/short-description` | docs, config, dependency updates |
-194	
+194
 195	> ⚠️ **`main` is protected — direct pushes are blocked.** All changes go through a reviewed PR. If you accidentally commit to `main` locally, move your changes to a branch before pushing:
 196	>
 197	> ```bash
@@ -6844,23 +6935,23 @@ _**Agent (claude-opus-5-5 2026-10-20 01:44:00Z)**_
 199	> git checkout main
 200	> git reset --hard origin/main          # revert local main to match remote
 201	> ```
-202	
+202
 203	**After your PR is merged**, delete the branch to keep the repo tidy:
-204	
+204
 205	```bash
 206	git checkout main
 207	git pull origin main
 208	git branch -d feat/issue-17-dark-mode
 209	```
-210	
+210
 211	## 8. Project documentation & policies (required reading)
-212	
+212
 213	📚 **Official documentation:** <https://actualbudget.org/docs> — start with
 214	[Getting Started](https://actualbudget.org/docs/getting-started/envelope-budgeting).
-215	
+215
 216	Actual has its own established contribution processes. They are **not restated here** — you are
 217	responsible for finding, reading, and following them from the sources below:
-218	
+218
 219	| You must take care of | Where to find it |
 220	| --- | --- |
 221	| How to use the tool | <https://actualbudget.org/docs> |
@@ -6868,9 +6959,10 @@ _**Agent (claude-opus-5-5 2026-10-20 01:44:00Z)**_
 223	| Bug / issue resolution process | [Contributing docs](https://actualbudget.org/docs/contributing/) |
 224	| Pull request conventions & PR policies | [CONTRIBUTING.md](CONTRIBUTING.md) + [PR and Commit Rules](.github/agents/pr-and-commit-rules.md) |
 225	| AI policies | [AI Usage Policy](https://actualbudget.org/docs/contributing/ai-usage-policy) + [AGENTS.md](AGENTS.md) |
-226	
+226
 227	Happy budgeting! 🎉
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:44:06Z)**_
@@ -6885,6 +6977,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:44:30Z)**_
 ```text
 The file /workspaces/actual-budget/STUDENTS.md has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:44:38Z)**_
@@ -6944,6 +7037,7 @@ fix exit=1
 32:    runs-on: ubuntu-latest
 171-    runs-on: macos-latest
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:45:15Z)**_
@@ -6968,6 +7062,7 @@ Files /tmp/claude-0/-workspaces-actual-budget/b59defbd-befd-49c7-86a8-1a338d0537
 Files /tmp/claude-0/-workspaces-actual-budget/b59defbd-befd-49c7-86a8-1a338d053795/scratchpad/sync/electron-pr.yml and .github/workflows/electron-pr.yml differ
 Only in .github/workflows: fork-ci-guard.yml
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:45:37Z)**_
@@ -6999,6 +7094,7 @@ Finished in 313ms on 37 files using 12 threads.
 oxfmt exit=0
 oxlint exit=0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:45:53Z)**_
@@ -7020,6 +7116,7 @@ Check whether actionlint or docker is available
 actionlint not installed
 no-docker
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:46:03Z)**_
@@ -7078,6 +7175,7 @@ Show final working tree status
 ?? issues-60-61-pdf-export-explained.md
  35 files changed, 130 insertions(+), 76 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:46:15Z)**_
@@ -7093,13 +7191,15 @@ The fix for issue #101 is in place on the branch `fix/issue-101-ci-runners`, but
 - **Team docs:** section 9 of [STUDENTS.md](STUDENTS.md) explains why CI changed, that a red check doesn't block merging, and the steps to follow after merging an upstream release.
 
 **Verification so far:**
+
 - Check mode passes on the real files.
-- On a test copy, the checker caught a reintroduced Depot label and `--fix` repaired it. A guard joined with `||` was correctly *not* treated as turned off. A label it doesn't recognize stayed flagged instead of being guessed.
+- On a test copy, the checker caught a reintroduced Depot label and `--fix` repaired it. A guard joined with `||` was correctly _not_ treated as turned off. A label it doesn't recognize stayed flagged instead of being guessed.
 - Re-applying the changes to the original pre-change workflows reproduced our branch, apart from the three hand edits I made myself.
 - All workflows parse as valid YAML, and the changed files pass the repo's formatter (`oxfmt`) and linter (`oxlint`).
 - `actionlint` isn't installed here, so that check couldn't run. `zizmor` will audit the workflows on the PR.
 
 **What to expect on the first PR:** the checks should start within minutes. Some will still fail, and none of these block merging:
+
 - lint, on the 93 files already wrong on `master` (a separate ticket)
 - the 6 tests in `mutations.test.tsx`, which already fail
 - possibly the screenshot tests
@@ -7163,6 +7263,7 @@ jobs:
         run: gh pr edit "$PR_NUMBER" --add-label "AI generated"
 ['scope: large', 'scope: medium', 'scope: small', 'scope: xl']
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:59:12Z)**_
@@ -7239,6 +7340,7 @@ node .github/scripts/fork-ci-runners.mjs --dir $S 2>&1 | grep "uses depot-"; ech
 
 expected 10 flagged (all but quoted-if-guard), plus quoted-job-key attributed to its own job
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
@@ -7271,20 +7373,20 @@ _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
 14	//   node .github/scripts/fork-ci-runners.mjs          # report, exit 1 if any
 15	//   node .github/scripts/fork-ci-runners.mjs --fix    # swap to GitHub runners
 16	//   node .github/scripts/fork-ci-runners.mjs --dir <workflows-dir> [--fix]
-17	
+17
 18	import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 19	import { join } from 'node:path';
 20	import { fileURLToPath } from 'node:url';
-21	
+21
 22	const UPSTREAM_GUARD =
 23	  /^(?:github\.repository\s*==\s*'actualbudget\/actual'|github\.repository_owner\s*==\s*'actualbudget')$/;
-24	
+24
 25	// depot-<github label>[-<core count>] -> <github label>
 26	const DEPOT_LABEL =
 27	  /\bdepot-(ubuntu-latest|ubuntu-\d\d\.\d\d(?:-arm)?|windows-\d{4}|macos-(?:latest|\d+))(?:-\d+)?\b/g;
 28	const ANY_DEPOT_LABEL = /\bdepot-[\w.-]+/g;
 29	const RUNNER_LINE = /^\s*(?:-\s+)?(?:runs-on|runner):/;
-30	
+30
 31	const args = process.argv.slice(2);
 32	const shouldFix = args.includes('--fix');
 33	const dirIndex = args.indexOf('--dir');
@@ -7292,11 +7394,11 @@ _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
 35	  dirIndex === -1
 36	    ? fileURLToPath(new URL('../workflows', import.meta.url))
 37	    : args[dirIndex + 1];
-38	
+38
 39	function indentOf(line) {
 40	  return line.length - line.trimStart().length;
 41	}
-42	
+42
 43	// Splits an expression on `&&` / `||` outside of parentheses and quotes
 44	function splitTopLevel(expr) {
 45	  const parts = [];
@@ -7325,7 +7427,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
 68	  parts.push(current.trim());
 69	  return { parts, hasOr };
 70	}
-71	
+71
 72	function isGuarded(ifText) {
 73	  const expr = ifText
 74	    .replace(/^\s*if:\s*[>|]?-?/, '')
@@ -7336,14 +7438,14 @@ _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
 79	  const { parts, hasOr } = splitTopLevel(expr);
 80	  return !hasOr && parts.some(part => UPSTREAM_GUARD.test(part));
 81	}
-82	
+82
 83	// Splits a workflow into its jobs: [{ name, start, end, ifText }]
 84	function findJobs(lines) {
 85	  const jobsLine = lines.findIndex(line => /^jobs:\s*(#.*)?$/.test(line));
 86	  if (jobsLine === -1) {
 87	    return [];
 88	  }
-89	
+89
 90	  const jobs = [];
 91	  for (let i = jobsLine + 1; i < lines.length; i++) {
 92	    const line = lines[i];
@@ -7361,7 +7463,7 @@ _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
 104	      jobs.push({ name: jobKey[1], start: i, end: lines.length, ifText: '' });
 105	    }
 106	  }
-107	
+107
 108	  for (const job of jobs) {
 109	    for (let i = job.start + 1; i < job.end; i++) {
 110	      if (!/^ {4}if:/.test(lines[i])) {
@@ -7379,22 +7481,22 @@ _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
 122	      break;
 123	    }
 124	  }
-125	
+125
 126	  return jobs;
 127	}
-128	
+128
 129	const problems = [];
 130	let fixedCount = 0;
-131	
+131
 132	const files = readdirSync(workflowsDir)
 133	  .filter(file => /\.ya?ml$/.test(file))
 134	  .sort();
-135	
+135
 136	for (const file of files) {
 137	  const path = join(workflowsDir, file);
 138	  const lines = readFileSync(path, 'utf8').split('\n');
 139	  let changed = false;
-140	
+140
 141	  for (const job of findJobs(lines)) {
 142	    if (isGuarded(job.ifText)) {
 143	      continue;
@@ -7427,18 +7529,18 @@ _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
 170	      }
 171	    }
 172	  }
-173	
+173
 174	  if (changed) {
 175	    writeFileSync(path, lines.join('\n'));
 176	  }
 177	}
-178	
+178
 179	if (shouldFix) {
 180	  console.log(
 181	    `Swapped ${fixedCount} Depot runner label(s) to GitHub-hosted runners.`,
 182	  );
 183	}
-184	
+184
 185	if (problems.length > 0) {
 186	  console.error(
 187	    'These jobs request Depot runners, which our fork does not have, so they\n' +
@@ -7455,10 +7557,11 @@ _**Agent (claude-opus-5-5 2026-10-20 01:59:38Z)**_
 198	  );
 199	  process.exit(1);
 200	}
-201	
+201
 202	console.log('No unguarded Depot runner labels found.');
 203
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 01:59:47Z)**_
@@ -7476,6 +7579,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:01Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:04Z)**_
@@ -7486,6 +7590,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:04Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:06Z)**_
@@ -7496,6 +7601,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:06Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:08Z)**_
@@ -7506,6 +7612,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:08Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:12Z)**_
@@ -7516,6 +7623,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:12Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:14Z)**_
@@ -7526,6 +7634,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:14Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:16Z)**_
@@ -7536,6 +7645,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:16Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:18Z)**_
@@ -7546,6 +7656,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:18Z)**_
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:22Z)**_
@@ -7565,6 +7676,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:23Z)**_
 21	    runs-on: ubuntu-latest
 22	    if: startsWith(github.event.pull_request.title, '[AI]')
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:31Z)**_
@@ -7575,6 +7687,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:31Z)**_
 ```text
 The file /workspaces/actual-budget/.github/workflows/ai-generated-label.yml has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:37Z)**_
@@ -7595,6 +7708,7 @@ Find the turned-off workflow list in STUDENTS.md
 ```text
 239:  release-notes check, `/update-vrt`, and the issue bots that point at upstream.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:40Z)**_
@@ -7609,6 +7723,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:40Z)**_
 238	  Netlify, Flathub, Microsoft Store, nightly desktop app), the stale-PR closer, autofix.ci, the
 239	  release-notes check, `/update-vrt`, and the issue bots that point at upstream.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:51Z)**_
@@ -7619,6 +7734,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:00:51Z)**_
 ```text
 The file /workspaces/actual-budget/STUDENTS.md has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:00:56Z)**_
@@ -7677,6 +7793,7 @@ exit=0
 47:    runs-on: ubuntu-latest # upstream used depot-ubuntu-latest
 50:    runs-on: ${{ 'x #' && 'ubuntu-latest' }}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:01:13Z)**_
@@ -7721,6 +7838,7 @@ Finished in 157ms on 3 files using 12 threads.
 oxlint exit=0
 [This command modified 1 file you've previously read: ../../tmp/claude-0/-workspaces-actual-budget/b59defbd-befd-49c7-86a8-1a338d053795/scratchpad/add_guards.py. Call Read before editing.]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:01:47Z)**_
@@ -7749,6 +7867,7 @@ Confirm the only difference is the preserved quotes
 ?? .github/workflows/fork-ci-guard.yml
 ?? issues-60-61-pdf-export-explained.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:01:56Z)**_
@@ -7758,18 +7877,21 @@ Both problems are fixed on the branch. Nothing is committed yet.
 **1. AI label bot:** it was failing because our repo doesn't have an "AI generated" label (only the four `scope:` labels), so adding it errored on every `[AI]` PR. I turned it off with the same guard line as the other upstream-only bots, and set its runner label back to upstream's so the only difference from upstream is the `if:` line. It's also added to the turned-off list in [STUDENTS.md](STUDENTS.md), with a note that we review AI-generated PRs by hand.
 
 **2. Checker gaps:** you were right that it missed labels. Testing showed that quoted values on a `runs-on:` line were actually caught. What slipped through were:
+
 - a quoted `"runs-on":` key
-- a label on the line *after* `runs-on:`, either as a list item or under `labels:`
+- a label on the line _after_ `runs-on:`, either as a list item or under `labels:`
 - a matrix value under any key other than `runner` (e.g. `os:`)
 - flow-style matrix entries like `include: [{ runner: … }]`
 
 It also got two things wrong:
+
 - A quoted job name wasn't recognized as a job, so its label was blamed on the job above it.
 - A quoted guard (`if: "github.repository == …"`) wasn't recognized, so a turned-off job was wrongly flagged.
 
-[fork-ci-runners.mjs](.github/scripts/fork-ci-runners.mjs) now checks *every* non-comment line in a running job for `depot-<label>`, whatever the key or quoting, and it accepts quoted job names and quoted `if:` conditions. A label mentioned only in a comment is ignored, and a `#` inside quotes isn't mistaken for a comment. `--fix` keeps each label's original quotes. The downside is that a stray `depot-` anywhere else in a running job would also be flagged, which should be rare.
+[fork-ci-runners.mjs](.github/scripts/fork-ci-runners.mjs) now checks _every_ non-comment line in a running job for `depot-<label>`, whatever the key or quoting, and it accepts quoted job names and quoted `if:` conditions. A label mentioned only in a comment is ignored, and a `#` inside quotes isn't mistaken for a comment. `--fix` keeps each label's original quotes. The downside is that a stray `depot-` anywhere else in a running job would also be flagged, which should be rare.
 
 **Re-tested:**
+
 - The checker passes on our real workflow files.
 - On a test file covering all the spellings above plus the two comment cases, it flags exactly the 11 it should and `--fix` repairs all of them.
 - A reintroduced quoted label is caught and fixed.
@@ -7788,7 +7910,7 @@ A couple things I noticed. First, guards wrapped in parentheses give false failu
 
 _**Agent (claude-opus-5-5 2026-10-20 02:06:53Z)**_
 
-Three good catches. All three come from the same root issue: when I widened the scan last round, I made it scan *every* line of a job, which overshot. Here's how I'll handle each:
+Three good catches. All three come from the same root issue: when I widened the scan last round, I made it scan _every_ line of a job, which overshot. Here's how I'll handle each:
 
 1. **Guards in parentheses:** the checker only recognized the guard at the top level of the expression. It will now unwrap parentheses that surround the whole expression, and look inside a parenthesized `&&` group.
 2. **macOS and Windows labels:** you're right, `--fix` contradicted the Linux-only decision. It will only swap Linux labels. macOS and Windows labels will stay flagged with a hint to guard the job or remove the matrix entry, because that's a decision for a person.
@@ -7811,6 +7933,7 @@ none
 == depot- mentions outside runs-on/runner lines:
 .github/workflows/fork-ci-guard.yml:4:# (`depot-*`). We have no Depot account, so such jobs would otherwise wait in
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:07:01Z)**_
@@ -7829,6 +7952,7 @@ List runs-on lines that use expressions
       3     runs-on: ${{ matrix.runner }}
 no block-style runs-on
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:07:23Z)**_
@@ -8099,7 +8223,9 @@ for (const file of files) {
         if (shouldFix && canFix) {
           continue;
         }
-        problems.push(`${file}:${i + 1} job "${job.name}" uses ${label} (${hint})`);
+        problems.push(
+          `${file}:${i + 1} job "${job.name}" uses ${label} (${hint})`,
+        );
       }
       if (shouldFix) {
         const fixed = code.replace(DEPOT_LINUX_LABEL, '$1');
@@ -8134,7 +8260,7 @@ if (problems.length > 0) {
   console.error(
     '\nFix: run `node .github/scripts/fork-ci-runners.mjs --fix` to swap Linux\n' +
       'labels to GitHub-hosted runners. For macOS/Windows jobs, or jobs that are\n' +
-      "upstream-only (publishing, releases, ...), add\n" +
+      'upstream-only (publishing, releases, ...), add\n' +
       "`if: github.repository == 'actualbudget/actual'` to the job instead.\n" +
       'See "CI in our fork" in STUDENTS.md.',
   );
@@ -8142,12 +8268,12 @@ if (problems.length > 0) {
 }
 
 console.log('No unguarded Depot runner labels found.');
-
 ```
 
 ```text
 The file /workspaces/actual-budget/.github/scripts/fork-ci-runners.mjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:08:14Z)**_
@@ -8171,10 +8297,10 @@ jobs:
     runs-on: 'depot-ubuntu-latest'
     steps: [{ run: echo }]
   double-quoted:
-    runs-on: "depot-ubuntu-latest-4"
+    runs-on: 'depot-ubuntu-latest-4'
     steps: [{ run: echo }]
   quoted-key:
-    "runs-on": depot-ubuntu-latest
+    'runs-on': depot-ubuntu-latest
     steps: [{ run: echo }]
   block-list:
     runs-on:
@@ -8261,12 +8387,12 @@ jobs:
       - uses: some/action@v1
         with:
           runner: depot-ubuntu-latest
-
 ```
 
 ```text
 File created successfully at: /tmp/claude-0/-workspaces-actual-budget/b59defbd-befd-49c7-86a8-1a338d053795/scratchpad/variants2/variants.yml (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:08:29Z)**_
@@ -8316,6 +8442,7 @@ will wait in the queue until GitHub cancels them:
 >     runs-on: ubuntu-latest
 [This command modified 1 file you've previously read: ../../tmp/claude-0/-workspaces-actual-budget/b59defbd-befd-49c7-86a8-1a338d053795/scratchpad/variants2/variants.yml. Call Read before editing.]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:08:39Z)**_
@@ -8363,6 +8490,7 @@ jobs:
     if: "(github.repository == 'actualbudget/actual') && failure()"
     runs-on: depot-ubuntu-latest
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:09:00Z)**_
@@ -8383,6 +8511,7 @@ Locate the upstream sync section
 ```text
 248:### After merging an upstream release
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:09:02Z)**_
@@ -8393,24 +8522,25 @@ _**Agent (claude-opus-5-5 2026-10-20 02:09:02Z)**_
 
 ````text
 248	### After merging an upstream release
-249	
+249
 250	Upstream edits can bring Depot runners back, either in a merge conflict or silently in a new job.
-251	
+251
 252	1. In a merge conflict on a `runs-on:`/`runner:` line or a guard `if:` line, **keep our version**.
 253	2. Run the checker and let it swap any new Depot labels:
-254	
+254
 255	   ```bash
 256	   node .github/scripts/fork-ci-runners.mjs --fix
 257	   node .github/scripts/fork-ci-runners.mjs   # should print "No unguarded Depot runner labels found."
 258	   ```
-259	
+259
 260	3. If upstream added a new workflow that **publishes or releases** something, don't swap its
 261	   runner. Add `if: github.repository == 'actualbudget/actual'` to each of its jobs instead, so it
 262	   never runs here.
-263	
+263
 264	Happy budgeting! 🎉
 265
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:09:15Z)**_
@@ -8421,6 +8551,7 @@ _**Agent (claude-opus-5-5 2026-10-20 02:09:15Z)**_
 ```text
 The file /workspaces/actual-budget/STUDENTS.md has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:09:20Z)**_
@@ -8461,6 +8592,7 @@ All matched files use the correct format.
 Finished in 132ms on 2 files using 12 threads.
 oxlint exit=0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-20 02:09:36Z)**_
@@ -8472,6 +8604,7 @@ All three problems are fixed in the checker script, and none of the workflow fil
 3. **Labels in shell commands:** the checker now looks only where a runner label can come from: a job's `runs-on:` section and its `strategy:` matrix. Upstream uses only those two. `run:` scripts, step `with:` inputs and `env:` are never checked or changed. Labels set through repo variables, inputs or another job's outputs can't be seen from the files; that limitation is noted in the script's header comment.
 
 **Tested:**
+
 - The checker passes on our real workflow files.
 - On the new test workflow, it flags exactly the 15 jobs that should be flagged and none of the 7 that shouldn't.
 - `--fix` changed only `runs-on` and matrix lines, and left macOS and Windows alone.
@@ -8521,9 +8654,10 @@ bin/tsx                              packages/ci-actions        knip.json       
 ./src/client/modals/**/*.ts                                     …ages/loot-core/package.json  Package entry file not fo…
 ./src/client/notifications/**/*.ts                              …ages/loot-core/package.json  Package entry file not fo…
 ./src/client/prefs/**/*.ts                                      …ages/loot-core/package.json  Package entry file not fo…
-...14 more similar hints                                                                                                
+...14 more similar hints
 knip exit=1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:08:00Z)**_
@@ -8542,10 +8676,10 @@ Check whether knip findings involve our changes
 [plugin rolldown:vite-resolve] Module "vm" has been externalized for browser compatibility, imported by "/workspaces/actual-budget/node_modules/asn1.js/lib/asn1/api.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
 [plugin rolldown:vite-resolve] Module "vm" has been externalized for browser compatibility, imported by "/workspaces/actual-budget/node_modules/asn1.js/lib/asn1/api.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
 Configuration hints (38)
-android/app/src/main/assets/**       packages/mobile-client     knip.json                     Remove from ignore        
-ios/App/App/public/**                packages/mobile-client     knip.json                     Remove from ignore        
-ios/DerivedData/**                   packages/mobile-client     knip.json                     Remove from ignore        
-playwright.config.d.ts               packages/desktop-client    knip.json                     Remove from ignore        
+android/app/src/main/assets/**       packages/mobile-client     knip.json                     Remove from ignore
+ios/App/App/public/**                packages/mobile-client     knip.json                     Remove from ignore
+ios/DerivedData/**                   packages/mobile-client     knip.json                     Remove from ignore
+playwright.config.d.ts               packages/desktop-client    knip.json                     Remove from ignore
 better-sqlite3                       packages/api               knip.json                     Remove from ignoreDepende…
 @jlongster/sql.js                    packages/api               knip.json                     Remove from ignoreDepende…
 browserify-zlib                      packages/loot-core         knip.json                     Remove from ignoreDepende…
@@ -8566,10 +8700,11 @@ bin/tsx                              packages/ci-actions        knip.json       
 ./src/client/modals/**/*.ts                                     …ages/loot-core/package.json  Package entry file not fo…
 ./src/client/notifications/**/*.ts                              …ages/loot-core/package.json  Package entry file not fo…
 ./src/client/prefs/**/*.ts                                      …ages/loot-core/package.json  Package entry file not fo…
-...14 more similar hints                                                                                                
+...14 more similar hints
 knip reports nothing about .github / our files
 Unused devDependencies (3)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:08:24Z)**_
@@ -8586,6 +8721,7 @@ Unused devDependencies (3)
 @babel/traverse  packages/component-library/package.json:72:6
 @babel/types     packages/component-library/package.json:73:6
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:08:37Z)**_
@@ -8593,6 +8729,7 @@ _**Agent (claude-opus-5-5 2026-10-24 16:08:37Z)**_
 Yes, it's ready for a PR. Nothing else has turned up, and the remaining CI failures are ones that were already on `master`.
 
 **Final checks:**
+
 - No whitespace errors in the diff.
 - `knip` fails, but nothing involves our files. The only finding is three unused `@babel/*` dev dependencies in `packages/component-library/package.json`, which this branch doesn't touch. That's another existing `master` problem that went unnoticed while CI never ran, just like the lint errors.
 - Everything from earlier still holds: the checker passes, the sync simulation matches, and `oxfmt`/`oxlint` pass on our files.
@@ -8600,9 +8737,10 @@ Yes, it's ready for a PR. Nothing else has turned up, and the remaining CI failu
 **The commit will contain:** 34 workflow files, the new `fork-ci-guard.yml` and `fork-ci-runners.mjs`, and `STUDENTS.md`. Your untracked `issues-60-61-pdf-export-explained.md` stays out.
 
 **What to expect on this PR's checks:**
+
 - **Should start and pass:** Fork CI guard, Build, the Linux Electron build, the API browser test, and most Test jobs (typecheck, constraints, migrations, `zizmor`).
 - **Already failing on `master`, so expected red:** lint (the 93 files), knip (the `@babel` dependencies), and the 6 tests in `mutations.test.tsx`. The screenshot tests may fail too.
-- **Quirks of this PR only:** two workflows use the *`master`* copy of their file even on a PR, so this PR can't fix them for itself.
+- **Quirks of this PR only:** two workflows use the _`master`_ copy of their file even on a PR, so this PR can't fix them for itself.
   - "Add 'AI generated' label" will go red, because `master`'s copy still runs and the label doesn't exist.
   - "Compare Sizes" will sit queued, because `master`'s copy still asks for Depot.
 
@@ -8668,6 +8806,7 @@ drwxr-xr-x 3 root root     96 Oct 12 20:34 .
 drwxr-xr-x 5 root root    160 Oct 19 23:00 ..
 -rw-r--r-- 1 root root 145135 Oct 12 20:34 2026-10-11_claude-code_strykerjs-setup.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:11:31Z)**_
@@ -8723,6 +8862,7 @@ total 4844
 -rw-r--r-- 1 root root  139757 Oct 24 15:56 2026-10-22_13-09-25Z-looking-at-issue-60.md
 -rw-r--r-- 1 root root  107725 Oct 24 15:56 2026-10-20_01-49-15Z-check-the-changes-made.md
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:11:36Z)**_
@@ -8765,6 +8905,7 @@ _**User (2026-10-16 18:52:08Z)**_
 ======
 ugrep: warning: docs/sprints.md: No such file or directory
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:11:42Z)**_
@@ -8790,43 +8931,44 @@ docs/sprint2/checkin/tigerk9.md
 3:- So far, I fixed the dev containers so that when the dev container is opened, it automatically installs jq (which is needed by the repo rules/specstory if you’re to log your ai usage). I’ve also started working on my issue for fixing the CI tests failing. I believe I’ve now fixed all of the files, so they’ll run within our own repo without queuing in the upstream repo, and never going through since we don’t have permission to access their repo. Everything seems good now, I’d just like to get multiple AI sessions to check the work, as well as to get my teammates to review it soon, so we can actually have our CI tests running (due to them not running, errors were able to make it to our master branch…). Further, I still need to code the issue that fixes the formatting of the pdf output, but I’m waiting until I finish my first issue to tackle this second issue.
 4-
 5-What is one thing you learned about the codebase or about software engineering practice?
-6-- I learned about “Depot” which is what the upstream repository uses to run CI tests. Essentially Depot is a cloud based CI runner that runs extremely fast. It saves the developers a lot of time not having to wait for CI tests to fully run (it can take a while), but it costs money (through tokens) so we’re not able to access their depot. I also learned that with CI testing, you can run the CI test as if the code were running on a Linux machine, that way if you have one developer working on Mac and another on Windows, their operating system won’t interfere with the running of the checks. This ensures that the code works regardless of the operating system and hardware. 
+6-- I learned about “Depot” which is what the upstream repository uses to run CI tests. Essentially Depot is a cloud based CI runner that runs extremely fast. It saves the developers a lot of time not having to wait for CI tests to fully run (it can take a while), but it costs money (through tokens) so we’re not able to access their depot. I also learned that with CI testing, you can run the CI test as if the code were running on a Linux machine, that way if you have one developer working on Mac and another on Windows, their operating system won’t interfere with the running of the checks. This ensures that the code works regardless of the operating system and hardware.
 7-
 8-What is one thing you would do differently?
 9-- One thing I was considering doing differently was to have three different agents create the same changes, then checking how they differ myself, and also having them each check each other's work. It’s possible they’d all output the same thing, so if that were the case I’d work on changing the prompt slightly between each session. I would also have finished this issue earlier, as CI testing is huge for any repository but I’ve been swamped with tests, projects, and homeworks recently that I’ve had to prioritize over this project. I also would have liked to get a teammate to review this sooner, to get feedback from someone on another machine, but we’ve all been crazy busy recently with classwork so that wasn’t able to happen this time around.
 10-
 ======
 
-  Create or update markdown files for the agent sessions in the current working directory.                              
-                                                                                                                        
-  By default, syncs all registered providers that have activity.                                                        
-  Provide a specific agent ID to sync a specific provider.                                                              
-                                                                                                                        
-  Available provider IDs: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code   
-  Copilot IDE), cursor (Cursor CLI), cursorcloud (Cursor Cloud Agent), cursoride (Cursor IDE), deepseek (DeepSeek TUI), 
-  droid (Factory Droid CLI), gemini (Gemini CLI), grok (Grok Build), muse (Muse Code), opencode (OpenCode), pi (Pi),    
-  qwen (Qwen Code).                                                                                                     
-         
-  USAGE  
-         
-    specstory sync [provider-id] [--flags]                                
-            
-  EXAMPLES  
-            
-    # Sync all agents with activity                                       
-    specstory sync                                                        
-                                                                          
-    # Sync specific agent                                                 
-    specstory sync antigravity                                            
-    specstory sync claude                                                 
-    specstory sync codex                                                  
-    specstory sync copilotide                                             
-    specstory sync cursor                                                 
-    specstory sync cursorcloud                                            
-    specstory sync cursoride                                              
-    specstory sync deepseek                                               
+  Create or update markdown files for the agent sessions in the current working directory.
+
+  By default, syncs all registered providers that have activity.
+  Provide a specific agent ID to sync a specific provider.
+
+  Available provider IDs: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code
+  Copilot IDE), cursor (Cursor CLI), cursorcloud (Cursor Cloud Agent), cursoride (Cursor IDE), deepseek (DeepSeek TUI),
+  droid (Factory Droid CLI), gemini (Gemini CLI), grok (Grok Build), muse (Muse Code), opencode (OpenCode), pi (Pi),
+  qwen (Qwen Code).
+
+  USAGE
+
+    specstory sync [provider-id] [--flags]
+
+  EXAMPLES
+
+    # Sync all agents with activity
+    specstory sync
+
+    # Sync specific agent
+    specstory sync antigravity
+    specstory sync claude
+    specstory sync codex
+    specstory sync copilotide
+    specstory sync cursor
+    specstory sync cursorcloud
+    specstory sync cursoride
+    specstory sync deepseek
     specstory sync droid
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:12:10Z)**_
@@ -8845,8 +8987,8 @@ Show SpecStory sync flags
 `.specstory/bin/specstory sync --help 2>&1 | sed -n '/FLAGS/,$p' | head -30`
 
 ```text
-  FLAGS  
-         
+  FLAGS
+
     --config-dir              Custom directory for the project-level config.toml (default: ./.specstory/cli)
     --console                 Enable error/warn/info output to stdout
     --debug                   Enable debug-level output (requires --console or --log)
@@ -8870,6 +9012,7 @@ Show SpecStory sync flags
     --telemetry-service-name  Override the default service name for telemetry, if telemetry is enabled
     --user-data-dir           Per-Provider IDE user-data-dir override formatted as provider_id:path (repeatable, e.g., cursoride:D:\apps\cursor\current\data\user-data)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:12:27Z)**_
@@ -8895,6 +9038,7 @@ total 552
 -rw-r--r-- 1 root root 145135 Oct 12 20:34 2026-10-11_claude-code_strykerjs-setup.md
 -rw-r--r-- 1 root root 414044 Oct 24  2026 2026-10-20_claude-code_issue-101-ci-runners.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:13:38Z)**_
@@ -8921,6 +9065,7 @@ user turns: 8
 nothing sensitive found
 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:14:01Z)**_
@@ -8956,6 +9101,7 @@ Sync this session with SpecStory and copy it to ai-logs
 `.specstory/bin/specstory sync claude -s b59defbd-befd-49c7-86a8-1a338d053795 --no-cloud-sync --no-version-check 2>&1 | tail -5; ls -l .specstory/history/2026-10-20_01-22-03Z-i-d-like-to.md && cp .specstory/history/2026-10-20_01-22-03Z-i-d-like-to.md ai-logs/sprint2/tigerk9/2026-10-20_claude-code_issue-101-ci-runners.md && ls -l ai-logs/sprint2/tigerk9/`
 </details></tool-use>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:14:08Z)**_
@@ -8969,6 +9115,7 @@ This session is logged at [ai-logs/sprint2/tigerk9/2026-10-20_claude-code_issue-
 To capture the end of the session as well, I can re-run the sync and copy just before committing.
 
 How do you want to commit it? Your team has done it both ways:
+
 - **In this PR:** the issue #95 sync PR included its own log commit.
 - **A separate log PR:** for example `ai-log/review-pr-87`.
 
@@ -9027,7 +9174,6 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
-
 ARGUMENTS: Two commits on branch fix/issue-101-ci-runners: (1) CI changes for issue #101 (workflows, .github/scripts/fork-ci-runners.mjs, STUDENTS.md), (2) AI log ai-logs/sprint2/tigerk9/2026-10-20_claude-code_issue-101-ci-runners.md. Then push.
 
 ---
@@ -9044,23 +9190,23 @@ _**Agent (claude-opus-5-5 2026-10-24 16:14:56Z)**_
 
 ```text
 1	# PR and Commit Rules for AI Agents
-2	
+2
 3	This file lists the PR and commit rules you have to apply yourself.
-4	
+4
 5	## Pull Request Rules
-6	
+6
 7	### `[AI]` prefix on PR titles
-8	
+8
 9	**ALL pull request titles MUST be prefixed with `[AI]`** — you have to apply it
 10	yourself.
-11	
+11
 12	**Examples:**
-13	
+13
 14	- `[AI] Fix type error in account validation`
 15	- `Fix type error in account validation` (MISSING PREFIX — NOT ALLOWED)
-16	
+16
 17	### Do not fill in the PR template
-18	
+18
 19	- **NEVER fill in the PR template** (`.github/PULL_REQUEST_TEMPLATE.md`). Create
 20	  the PR with that template as the body, unmodified — leave all blank spaces and
 21	  placeholder comments as-is, and leave every checklist box unchecked. The human
@@ -9068,31 +9214,32 @@ _**Agent (claude-opus-5-5 2026-10-24 16:14:56Z)**_
 23	  Checklist sections.
 24	- **Exception**: if a human **explicitly asks** you to fill it out, do so **in
 25	  Chinese**, using Chinese characters (简体中文) for all content you add.
-26	
+26
 27	## Do not create GitHub issues
-28	
+28
 29	**Agents must never create GitHub issues.** Filing an issue is a human
 30	decision — neither the GitHub MCP tools (`issue_write` with method `create`)
 31	nor the `gh` CLI (`gh issue create`) may be used to open one; agent hooks
 32	block both. If you believe an issue should exist, share the proposed title
 33	and body with the user and let them file it. Updating existing issues (and
 34	commenting on them) remains allowed.
-35	
+35
 36	## GitHub comment, review and issue prefix
-37	
+37
 38	**Prefix everything you post to GitHub with the robot emoji 🤖** — pull-request
 39	and issue comments, pull-request reviews (including inline review comments), and
 40	the title and body of issues you edit. This keeps agent-authored content
 41	visibly marked. It does **not** change PR titles (still `[AI] …`) or commit
 42	messages (still `[AI] …`).
-43	
+43
 44	Write the text normally; just make sure 🤖 is the first character (for issues,
 45	on both the title and the body).
-46	
+46
 47	This applies only to comments **you** author — bots like CodeRabbit post under
 48	their own identity and are not affected.
 49
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:15:01Z)**_
@@ -9113,6 +9260,7 @@ Stage the CI changes for the first commit
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Hang on, we're not on the right branch i don't think
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:15:20Z)**_
@@ -9188,6 +9336,7 @@ b4d1d26ff Merge pull request #99 from CSCI-435-SE/chore/sync-upstream-v26.10.0
 ?? ai-logs/sprint2/tigerk9/2026-10-20_claude-code_issue-101-ci-runners.md
 ?? issues-60-61-pdf-export-explained.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:15:27Z)**_
@@ -9211,6 +9360,7 @@ Compare the two branches before switching
  docs/sprint2/checkin/tigerk9.md | 10 ++++++++++
  1 file changed, 10 insertions(+)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:15:29Z)**_
@@ -9273,6 +9423,7 @@ fix/issue-101-ci-runners
 ?? issues-60-61-pdf-export-explained.md
 (34 modified workflow files)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:15:40Z)**_
@@ -9358,6 +9509,7 @@ commit exit=0
 82d9aad19 Merge pull request #102 from CSCI-435-SE/chore/sync-upstream-v26.10.0
  37 files changed, 464 insertions(+), 76 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-24 16:16:09Z)**_
@@ -9381,4 +9533,5 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 EOF
 echo "commit exit=$?"; git log --oneline -3; git status --short
 ```
+
 </details></tool-use>

@@ -12,15 +12,15 @@ what is the sync error mentioned when I run yarn test, and how can I fix?
 
 <pasted_content id="c5c9">
 lage - Version 2.15.17 - 2 Workers
-[14:27:57] - skipped  @actual-app/api - test (8.25s)
-[14:27:57] - skipped  @actual-app/ci-actions - test (8.26s)
-[14:27:57] - skipped  @actual-app/cli - test (0.10s)
-[14:27:57] - skipped  @actual-app/crdt - test (0.04s)
-[14:28:00] - skipped  @actual-app/components - test (2.71s)
-[14:28:00] - skipped  eslint-plugin-actual - test (0.06s)
-[14:33:54] ✓ success  @actual-app/core - test (5m 54.42s)
-[14:35:35] ✗ failed   @actual-app/sync-server - test (1m 40.63s)
-[14:36:39] ✓ success  @actual-app/web - test (8m 42.33s)
+[14:27:57] - skipped @actual-app/api - test (8.25s)
+[14:27:57] - skipped @actual-app/ci-actions - test (8.26s)
+[14:27:57] - skipped @actual-app/cli - test (0.10s)
+[14:27:57] - skipped @actual-app/crdt - test (0.04s)
+[14:28:00] - skipped @actual-app/components - test (2.71s)
+[14:28:00] - skipped eslint-plugin-actual - test (0.06s)
+[14:33:54] ✓ success @actual-app/core - test (5m 54.42s)
+[14:35:35] ✗ failed @actual-app/sync-server - test (1m 40.63s)
+[14:36:39] ✓ success @actual-app/web - test (8m 42.33s)
 
 Summary
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
@@ -29,13 +29,11 @@ worker restarts: 0, max worker memory usage: 46.47 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 [@actual-app/sync-server test] ERROR DETECTED
 
-
-
 local cache fetch: 529500513a659c91d64e9c41a1ff77a9bd75af85 false
 remote fallback fetch: 529500513a659c91d64e9c41a1ff77a9bd75af85 false
 Running yarn run test, pid: 208044
 
- RUN  v5.0.0 C:/Actual Budget/packages/sync-server
+RUN v5.0.0 C:/Actual Budget/packages/sync-server
 
 Checking if there are any migrations to run for direction "up"...
 Migrations: DONE
@@ -45,11 +43,11 @@ Deleted 0 old sessions
 stdout | src/accounts/password.test.js > loginWithPassword legacy hash upgrade > does not rehash an existing argon2id hash on login
 Deleted 0 old sessions
 
- ✓ src/accounts/password.test.js (17 tests) 2119ms
-   ✓ hashPassword / verifyPassword (4)
-     ✓ verifies a legacy bcrypt hash for backwards compatibility 314ms
-   ✓ loginWithPassword legacy hash upgrade (3)
-     ✓ logs in with a legacy bcrypt hash and upgrades it to argon2id 359ms
+✓ src/accounts/password.test.js (17 tests) 2119ms
+✓ hashPassword / verifyPassword (4)
+✓ verifies a legacy bcrypt hash for backwards compatibility 314ms
+✓ loginWithPassword legacy hash upgrade (3)
+✓ logs in with a legacy bcrypt hash and upgrades it to argon2id 359ms
 stdout | src/app-account.test.js > auth rate limiting > should return 429 after exceeding the rate limit on /login
 Logging in via password
 
@@ -206,9 +204,9 @@ stdout | src/app-account.test.js > /server-prefs > POST /server-prefs > should u
 stdout | src/app-account.test.js > /server-prefs > POST /server-prefs > should save multiple server preferences
 2026-10-19T18:34:15.266Z info: POST 200 /server-prefs
 
- ✓ src/app-account.test.js (23 tests) 1909ms
-   ✓ auth rate limiting (3)
-     ✓ should return 429 after exceeding the rate limit on /login 451ms
+✓ src/app-account.test.js (23 tests) 1909ms
+✓ auth rate limiting (3)
+✓ should return 429 after exceeding the rate limit on /login 451ms
 stdout | src/app-sync.test.ts > /user-get-key > returns encryption key details for a given fileId
 2026-10-19T18:34:16.787Z info: POST 200 /user-get-key
 
@@ -372,16 +370,16 @@ stdout | src/app-sync.test.ts > /sync > returns 200 and syncs successfully with 
 
 stdout | src/app-sync.test.ts > /sync > returns 500 if the request body is invalid
 Error parsing sync request Error: illegal tag: field no 13 wire type 7
-    at BinaryReader.tag (file:///C:/Actual%20Budget/node_modules/@bufbuild/protobuf/dist/esm/wire/binary-encoding.js:319:19)
-    at readMessage (file:///C:/Actual%20Budget/node_modules/@bufbuild/protobuf/dist/esm/from-binary.js:64:38)
-    at fromBinary (file:///C:/Actual%20Budget/node_modules/@bufbuild/protobuf/dist/esm/from-binary.js:30:5)
-    at C:/Actual Budget/packages/sync-server/src/app-sync.ts:141:17
-    at Layer.handleRequest (C:\Actual Budget\node_modules\router\lib\layer.js:152:17)
-    at next (C:\Actual Budget\node_modules\router\lib\route.js:157:13)
-    at Route.dispatch (C:\Actual Budget\node_modules\router\lib\route.js:117:3)
-    at handle (C:\Actual Budget\node_modules\router\index.js:435:11)
-    at Layer.handleRequest (C:\Actual Budget\node_modules\router\lib\layer.js:152:17)
-    at C:\Actual Budget\node_modules\router\index.js:295:15
+at BinaryReader.tag (file:///C:/Actual%20Budget/node_modules/@bufbuild/protobuf/dist/esm/wire/binary-encoding.js:319:19)
+at readMessage (file:///C:/Actual%20Budget/node_modules/@bufbuild/protobuf/dist/esm/from-binary.js:64:38)
+at fromBinary (file:///C:/Actual%20Budget/node_modules/@bufbuild/protobuf/dist/esm/from-binary.js:30:5)
+at C:/Actual Budget/packages/sync-server/src/app-sync.ts:141:17
+at Layer.handleRequest (C:\Actual Budget\node_modules\router\lib\layer.js:152:17)
+at next (C:\Actual Budget\node_modules\router\lib\route.js:157:13)
+at Route.dispatch (C:\Actual Budget\node_modules\router\lib\route.js:117:3)
+at handle (C:\Actual Budget\node_modules\router\index.js:435:11)
+at Layer.handleRequest (C:\Actual Budget\node_modules\router\lib\layer.js:152:17)
+at C:\Actual Budget\node_modules\router\index.js:295:15
 2026-10-19T18:34:17.540Z info: POST 500 /sync
 
 stdout | src/app-sync.test.ts > /sync > returns 422 if since is not provided
@@ -405,7 +403,7 @@ stdout | src/app-sync.test.ts > /sync > returns 403 when non-owner syncs another
 stdout | src/app-sync.test.ts > /sync > allows an admin to sync another user's file
 2026-10-19T18:34:17.613Z info: POST 200 /sync
 
- ✓ src/app-sync.test.ts (72 tests) 902ms
+✓ src/app-sync.test.ts (72 tests) 902ms
 stdout | src/app-admin.test.js > disabled-user session revocation > should return 401 when the token belongs to a disabled user
 2026-10-19T18:34:18.769Z info: GET 401 /users
 
@@ -457,7 +455,7 @@ stdout | src/app-admin.test.js > /admin > /access > DELETE /access > should retu
 stdout | src/app-admin.test.js > /admin > /access > DELETE /access > should return 400 if not all access deletions are successful
 2026-10-19T18:34:19.468Z info: DELETE 400 /access?fileId=8fb0c86c-fdd2-4123-8c1b-3a2dc124cf60
 
- ✓ src/app-admin.test.js (15 tests) 795ms
+✓ src/app-admin.test.js (15 tests) 795ms
 stdout | src/secrets.test.js > secretsService > secrets api > returns 401 if the user is not authenticated
 2026-10-19T18:34:20.896Z info: GET 401 /simplefin_token
 
@@ -506,7 +504,7 @@ stdout | src/secrets.test.js > secretsService > secrets api > when OpenID is the
 stdout | src/secrets.test.js > secretsService > secrets api > when OpenID is the active auth method > POST returns 200 for admin users
 2026-10-19T18:34:21.375Z info: POST 200 /
 
- ✓ src/secrets.test.js (26 tests) 668ms
+✓ src/secrets.test.js (26 tests) 668ms
 stdout | src/app-simplefin/app-simplefin.test.js > app-simplefin > /status > reports configured when a real token is stored
 2026-10-19T18:34:22.457Z info: POST 200 /status
 
@@ -555,14 +553,14 @@ stdout | src/app-simplefin/app-simplefin.test.js > app-simplefin > /accounts > r
 stdout | src/app-simplefin/app-simplefin.test.js > app-simplefin > /transactions > reports an invalid token when the cached access key is not an access URL
 2026-10-19T18:34:23.087Z info: POST 200 /transactions
 
- ✓ src/app-simplefin/app-simplefin.test.js (16 tests) 693ms
- ✓ src/app-enablebanking/tests/poll-auth.spec.ts (25 tests) 466ms
- ✓ src/app-cors-proxy.test.js (34 tests) 205ms
- ✓ src/app-sync/tests/services/files-service.test.js (9 tests) 187ms
+✓ src/app-simplefin/app-simplefin.test.js (16 tests) 693ms
+✓ src/app-enablebanking/tests/poll-auth.spec.ts (25 tests) 466ms
+✓ src/app-cors-proxy.test.js (34 tests) 205ms
+✓ src/app-sync/tests/services/files-service.test.js (9 tests) 187ms
 stdout | src/app-openid.test.ts > /config > rejects config access after an owner has already been created
 2026-10-19T18:34:27.373Z info: POST 400 /config
 
- ✓ src/app-openid.test.ts (1 test) 197ms
+✓ src/app-openid.test.ts (1 test) 197ms
 stdout | src/app-gocardless/app-gocardless.test.ts > /create-web-token > rejects a missing Origin header
 Error /create-web-token Invalid Origin header
 
@@ -572,136 +570,135 @@ Error /create-web-token Invalid Origin header
 stdout | src/app-gocardless/app-gocardless.test.ts > /create-web-token > rejects a missing institutionId
 Error /create-web-token Invalid GoCardless identifier: undefined
 
- ✓ src/app-gocardless/app-gocardless.test.ts (6 tests) 93ms
- ✓ src/app-enablebanking/tests/transactions.spec.ts (2 tests) 95ms
+✓ src/app-gocardless/app-gocardless.test.ts (6 tests) 93ms
+✓ src/app-enablebanking/tests/transactions.spec.ts (2 tests) 95ms
 stdout | src/app-gocardless/services/tests/gocardless-service.spec.ts > goCardlessService > #getRequisitionWithAccounts > returns combined data
 GoCardless requisition linked: {
-  institutionId: 'string',
-  requisitionId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  agreementId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  accountIds: [
-    'f0e49aa6-f6db-48fc-94ca-4a62372fadf4',
-    'f0e49aa6-f6db-48fc-94ca-4a62372fadf4'
-  ]
+institutionId: 'string',
+requisitionId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+agreementId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+accountIds: [
+'f0e49aa6-f6db-48fc-94ca-4a62372fadf4',
+'f0e49aa6-f6db-48fc-94ca-4a62372fadf4'
+]
 }
 
 stdout | src/app-gocardless/services/tests/gocardless-service.spec.ts > goCardlessService > #createRequisition > calls goCardlessClient and delete requisition
 GoCardless requisition request: {
-  institutionId: 'some-institution-id',
-  accessValidForDays: '90',
-  maxHistoricalDays: '90',
-  transactionTotalDays: '90',
-  separateContinuousHistoryConsent: false,
-  accountSelection: false,
-  supportedFeatures: undefined
+institutionId: 'some-institution-id',
+accessValidForDays: '90',
+maxHistoricalDays: '90',
+transactionTotalDays: '90',
+separateContinuousHistoryConsent: false,
+accountSelection: false,
+supportedFeatures: undefined
 }
 
 stdout | src/app-gocardless/services/tests/gocardless-service.spec.ts > goCardlessService > #createRequisition > calls goCardlessClient and delete requisition
 GoCardless requisition created: {
-  institutionId: 'some-institution-id',
-  requisitionId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  agreementId: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+institutionId: 'some-institution-id',
+requisitionId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+agreementId: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
 }
 
 stdout | src/app-gocardless/services/tests/gocardless-service.spec.ts > goCardlessService > #createRequisition > uses institution transaction_total_days for maxHistoricalDays by default
 GoCardless requisition request: {
-  institutionId: 'some-institution-id',
-  accessValidForDays: '90',
-  maxHistoricalDays: '730',
-  transactionTotalDays: '730',
-  separateContinuousHistoryConsent: false,
-  accountSelection: false,
-  supportedFeatures: undefined
+institutionId: 'some-institution-id',
+accessValidForDays: '90',
+maxHistoricalDays: '730',
+transactionTotalDays: '730',
+separateContinuousHistoryConsent: false,
+accountSelection: false,
+supportedFeatures: undefined
 }
 
 stdout | src/app-gocardless/services/tests/gocardless-service.spec.ts > goCardlessService > #createRequisition > uses institution transaction_total_days for maxHistoricalDays by default
 GoCardless requisition created: {
-  institutionId: 'some-institution-id',
-  requisitionId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  agreementId: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+institutionId: 'some-institution-id',
+requisitionId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+agreementId: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
 }
 
 stdout | src/app-gocardless/services/tests/gocardless-service.spec.ts > goCardlessService > #createRequisition > caps maxHistoricalDays at 90 for banks with separate_continuous_history_consent
 GoCardless requisition request: {
-  institutionId: 'some-institution-id',
-  accessValidForDays: '90',
-  maxHistoricalDays: 90,
-  transactionTotalDays: '730',
-  separateContinuousHistoryConsent: true,
-  accountSelection: false,
-  supportedFeatures: [ 'separate_continuous_history_consent' ]
+institutionId: 'some-institution-id',
+accessValidForDays: '90',
+maxHistoricalDays: 90,
+transactionTotalDays: '730',
+separateContinuousHistoryConsent: true,
+accountSelection: false,
+supportedFeatures: [ 'separate_continuous_history_consent' ]
 }
 
 stdout | src/app-gocardless/services/tests/gocardless-service.spec.ts > goCardlessService > #createRequisition > caps maxHistoricalDays at 90 for banks with separate_continuous_history_consent
 GoCardless requisition created: {
-  institutionId: 'some-institution-id',
-  requisitionId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-  agreementId: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+institutionId: 'some-institution-id',
+requisitionId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+agreementId: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
 }
 
- ✓ src/app-gocardless/services/tests/gocardless-service.spec.ts (30 tests) 51ms
- ✓ src/load-config-file-env.test.ts (1 test) 57ms
- ✓ src/app-enablebanking/services/tests/enablebanking-service.spec.ts (34 tests) 29ms
- ✓ src/config-file-env.test.ts (8 tests) 39ms
- ✓ src/app-enablebanking/services/tests/normalization.spec.ts (30 tests) 13ms
+✓ src/app-gocardless/services/tests/gocardless-service.spec.ts (30 tests) 51ms
+✓ src/load-config-file-env.test.ts (1 test) 57ms
+✓ src/app-enablebanking/services/tests/enablebanking-service.spec.ts (34 tests) 29ms
+✓ src/config-file-env.test.ts (8 tests) 39ms
+✓ src/app-enablebanking/services/tests/normalization.spec.ts (30 tests) 13ms
 stdout | src/app-gocardless/banks/tests/ssk_dusseldorf_dussdeddxxx.spec.ts > ssk_dusseldorf_dussdeddxxx > #normalizeTransaction > returns null for unbooked transactions
 Skipping unbooked transaction: 2024102900000000-1
 
- ✓ src/app-gocardless/banks/tests/ssk_dusseldorf_dussdeddxxx.spec.ts (3 tests) 14ms
- ✓ src/app-gocardless/banks/tests/commerzbank_cobadeff.spec.ts (4 tests) 19ms
- ✓ src/app-gocardless/banks/tests/lhv_lhvbee22.spec.ts (8 tests) 21ms
- ✓ src/app-gocardless/banks/tests/swedbank_habalv22.spec.ts (5 tests) 26ms
- ✓ src/app-gocardless/banks/tests/revolut_revolt21.spec.ts (2 tests) 19ms
- ✓ src/util/ssrf.test.ts (17 tests) 18ms
- ✓ src/app-gocardless/banks/tests/bancsabadell_bsabesbbb.spec.ts (3 tests) 10ms
- ✓ src/app-gocardless/banks/tests/virgin_nrnbgb22.spec.ts (3 tests) 20ms
- ✓ src/app-gocardless/banks/tests/cbc_cregbebb.spec.ts (2 tests) 15ms
- ✓ src/app-gocardless/banks/tests/boursobank_bousfrppxxx.spec.ts (28 tests) 16ms
- ✓ src/app-gocardless/tests/bank-factory.spec.ts (81 tests) 17ms
- ✓ src/app-gocardless/banks/tests/sandboxfinance_sfin0000.spec.ts (6 tests) 18ms
- ✓ src/app-gocardless/banks/tests/mbank_retail_brexplpw.spec.ts (6 tests) 21ms
- ✓ src/app-gocardless/banks/tests/spk_marburg_biedenkopf_heladef1mar.spec.ts (9 tests) 14ms
- ✓ src/app-gocardless/banks/tests/ing_pl_ingbplpw.spec.ts (6 tests) 16ms
- ✓ src/app-gocardless/banks/tests/integration_bank.spec.ts (5 tests) 17ms
- ✓ src/app-gocardless/banks/tests/abnamro_abnanl2a.spec.ts (2 tests) 9ms
- ✓ src/app-gocardless/banks/tests/fortuneo_ftnofrp1xxx.spec.ts (2 tests) 10ms
- ✓ src/app-gocardless/banks/tests/nbg_ethngraaxxx.spec.ts (2 tests) 13ms
- ✓ src/load-config.test.js (6 tests) 13ms
- ✓ src/app-gocardless/banks/tests/ing_ingddeff.spec.ts (6 tests) 12ms
- ✓ src/app-gocardless/banks/tests/alior_albpplpw.spec.ts (5 tests) 19ms
- ✓ src/app-gocardless/banks/tests/bper_retail_bpmoit22.spec.ts (6 tests) 11ms
- ✓ src/app-gocardless/banks/tests/raiffeisen_at_rzbaatww.spec.ts (5 tests) 11ms
- ✓ src/app-gocardless/banks/tests/nationwide_naiagb21.spec.ts (6 tests) 12ms
- ✓ src/app-gocardless/banks/tests/easybank_bawaatww.spec.ts (3 tests) 14ms
- ✓ src/app-gocardless/banks/tests/abanca_caglesmm.spec.ts (1 test) 9ms
- ✓ src/app-gocardless/tests/utils.spec.ts (4 tests) 7ms
- ✓ src/app-gocardless/banks/tests/kbc_kredbebb.spec.ts (2 tests) 20ms
- ✓ src/app-gocardless/banks/tests/belfius_gkccbebb.spec.ts (1 test) 10ms
- ✓ src/app-enablebanking/utils/tests/jwt.spec.ts (5 tests) 9ms
- ✓ src/migrations.test.ts (2 tests) 10ms
- ✓ src/app-enablebanking/utils/tests/errors.spec.ts (11 tests) 8ms
+✓ src/app-gocardless/banks/tests/ssk_dusseldorf_dussdeddxxx.spec.ts (3 tests) 14ms
+✓ src/app-gocardless/banks/tests/commerzbank_cobadeff.spec.ts (4 tests) 19ms
+✓ src/app-gocardless/banks/tests/lhv_lhvbee22.spec.ts (8 tests) 21ms
+✓ src/app-gocardless/banks/tests/swedbank_habalv22.spec.ts (5 tests) 26ms
+✓ src/app-gocardless/banks/tests/revolut_revolt21.spec.ts (2 tests) 19ms
+✓ src/util/ssrf.test.ts (17 tests) 18ms
+✓ src/app-gocardless/banks/tests/bancsabadell_bsabesbbb.spec.ts (3 tests) 10ms
+✓ src/app-gocardless/banks/tests/virgin_nrnbgb22.spec.ts (3 tests) 20ms
+✓ src/app-gocardless/banks/tests/cbc_cregbebb.spec.ts (2 tests) 15ms
+✓ src/app-gocardless/banks/tests/boursobank_bousfrppxxx.spec.ts (28 tests) 16ms
+✓ src/app-gocardless/tests/bank-factory.spec.ts (81 tests) 17ms
+✓ src/app-gocardless/banks/tests/sandboxfinance_sfin0000.spec.ts (6 tests) 18ms
+✓ src/app-gocardless/banks/tests/mbank_retail_brexplpw.spec.ts (6 tests) 21ms
+✓ src/app-gocardless/banks/tests/spk_marburg_biedenkopf_heladef1mar.spec.ts (9 tests) 14ms
+✓ src/app-gocardless/banks/tests/ing_pl_ingbplpw.spec.ts (6 tests) 16ms
+✓ src/app-gocardless/banks/tests/integration_bank.spec.ts (5 tests) 17ms
+✓ src/app-gocardless/banks/tests/abnamro_abnanl2a.spec.ts (2 tests) 9ms
+✓ src/app-gocardless/banks/tests/fortuneo_ftnofrp1xxx.spec.ts (2 tests) 10ms
+✓ src/app-gocardless/banks/tests/nbg_ethngraaxxx.spec.ts (2 tests) 13ms
+✓ src/load-config.test.js (6 tests) 13ms
+✓ src/app-gocardless/banks/tests/ing_ingddeff.spec.ts (6 tests) 12ms
+✓ src/app-gocardless/banks/tests/alior_albpplpw.spec.ts (5 tests) 19ms
+✓ src/app-gocardless/banks/tests/bper_retail_bpmoit22.spec.ts (6 tests) 11ms
+✓ src/app-gocardless/banks/tests/raiffeisen_at_rzbaatww.spec.ts (5 tests) 11ms
+✓ src/app-gocardless/banks/tests/nationwide_naiagb21.spec.ts (6 tests) 12ms
+✓ src/app-gocardless/banks/tests/easybank_bawaatww.spec.ts (3 tests) 14ms
+✓ src/app-gocardless/banks/tests/abanca_caglesmm.spec.ts (1 test) 9ms
+✓ src/app-gocardless/tests/utils.spec.ts (4 tests) 7ms
+✓ src/app-gocardless/banks/tests/kbc_kredbebb.spec.ts (2 tests) 20ms
+✓ src/app-gocardless/banks/tests/belfius_gkccbebb.spec.ts (1 test) 10ms
+✓ src/app-enablebanking/utils/tests/jwt.spec.ts (5 tests) 9ms
+✓ src/migrations.test.ts (2 tests) 10ms
+✓ src/app-enablebanking/utils/tests/errors.spec.ts (11 tests) 8ms
 
- Test Files  50 passed (50)
-      Tests  606 passed (606)
-   Start at  14:33:56
-   Duration  98.34s (import 85%, tests 11%, transform 3%, worker 1%)
+Test Files 50 passed (50)
+Tests 606 passed (606)
+Start at 14:33:56
+Duration 98.34s (import 85%, tests 11%, transform 3%, worker 1%)
 
     Isolate  50 workers spawned · ~225ms startup each (spawn + environment, per file)
              at least ~11.05s faster with isolate: false — reuses workers across files instead of one per file
 
 Checking if there are any migrations to run for direction "down"...
 error during close [Error: EBUSY: resource busy or locked, unlink 'C:\Actual Budget\packages\sync-server\test-server-files\account.sqlite'] {
-  errno: -4082,
-  code: 'EBUSY',
-  syscall: 'unlink',
-  path: 'C:\\Actual Budget\\packages\\sync-server\\test-server-files\\account.sqlite'
+errno: -4082,
+code: 'EBUSY',
+syscall: 'unlink',
+path: 'C:\\Actual Budget\\packages\\sync-server\\test-server-files\\account.sqlite'
 }
 
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-Took a total of 8m 50.74s to complete. 
+Took a total of 8m 50.74s to complete.
 PS C:\Actual Budget>
 </pasted_content id="c5c9">
-
 
 ---
 
@@ -732,6 +729,7 @@ packages\sync-server\src\migrations.ts:60:          set[direction](err => {
 packages\sync-server\src\scripts\run-migrations.js:3:const direction = process.argv[2] || 'up';
 packages\sync-server\src\scripts\run-migrations.js:5:run(direction).catch(err => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:38:12Z)**_
@@ -743,12 +741,12 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:12Z)**_
 ```text
 1	import { getAccountDb } from './src/account-db';
 2	import { run as runMigrations } from './src/migrations';
-3	
+3
 4	const GENERIC_ADMIN_ID = 'genericAdmin';
 5	const GENERIC_USER_ID = 'genericUser';
 6	const ADMIN_ROLE_ID = 'ADMIN';
 7	const BASIC_ROLE_ID = 'BASIC';
-8	
+8
 9	const createUser = (userId, userName, role, owner = 0, enabled = 1) => {
 10	  const missingParams = [];
 11	  if (!userId) missingParams.push('userId');
@@ -757,7 +755,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:12Z)**_
 14	  if (missingParams.length > 0) {
 15	    throw new Error(`Missing required parameters: ${missingParams.join(', ')}`);
 16	  }
-17	
+17
 18	  if (
 19	    typeof userId !== 'string' ||
 20	    typeof userName !== 'string' ||
@@ -767,7 +765,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:12Z)**_
 24	      'Invalid parameter types. userId, userName, and role must be strings',
 25	    );
 26	  }
-27	
+27
 28	  try {
 29	    getAccountDb().mutate(
 30	      'INSERT INTO users (id, user_name, display_name, enabled, owner, role) VALUES (?, ?, ?, ?, ?, ?)',
@@ -778,12 +776,12 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:12Z)**_
 35	    throw error;
 36	  }
 37	};
-38	
+38
 39	const setSessionUser = (userId, token = 'valid-token') => {
 40	  if (!userId) {
 41	    throw new Error('userId is required');
 42	  }
-43	
+43
 44	  try {
 45	    const db = getAccountDb();
 46	    const session = db.first('SELECT token FROM sessions WHERE token = ?', [
@@ -792,7 +790,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:12Z)**_
 49	    if (!session) {
 50	      throw new Error(`Session not found for token: ${token}`);
 51	    }
-52	
+52
 53	    db.mutate('UPDATE sessions SET user_id = ? WHERE token = ?', [
 54	      userId,
 55	      token,
@@ -802,19 +800,19 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:12Z)**_
 59	    throw error;
 60	  }
 61	};
-62	
+62
 63	export async function setup() {
 64	  const NEVER_EXPIRES = -1; // or consider using a far future timestamp
-65	
+65
 66	  await runMigrations();
-67	
+67
 68	  createUser(GENERIC_ADMIN_ID, 'admin', ADMIN_ROLE_ID, 1);
-69	
+69
 70	  // Insert a fake "valid-token" fixture that can be reused
 71	  const db = getAccountDb();
 72	  try {
 73	    await db.mutate('BEGIN TRANSACTION');
-74	
+74
 75	    await db.mutate('DELETE FROM sessions');
 76	    await db.mutate(
 77	      'INSERT INTO sessions (token, expires_at, user_id) VALUES (?, ?, ?)',
@@ -824,29 +822,30 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:12Z)**_
 81	      'INSERT INTO sessions (token, expires_at, user_id) VALUES (?, ?, ?)',
 82	      ['valid-token-admin', NEVER_EXPIRES, 'genericAdmin'],
 83	    );
-84	
+84
 85	    await db.mutate(
 86	      'INSERT INTO sessions (token, expires_at, user_id) VALUES (?, ?, ?)',
 87	      ['valid-token-user', NEVER_EXPIRES, 'genericUser'],
 88	    );
-89	
+89
 90	    await db.mutate('COMMIT');
 91	  } catch (error) {
 92	    await db.mutate('ROLLBACK');
 93	    throw new Error(`Failed to setup test sessions: ${error.message}`);
 94	  }
-95	
+95
 96	  setSessionUser('genericAdmin');
 97	  setSessionUser('genericAdmin', 'valid-token-admin');
-98	
+98
 99	  createUser(GENERIC_USER_ID, 'user', BASIC_ROLE_ID, 1);
 100	}
-101	
+101
 102	export async function teardown() {
 103	  await runMigrations('down');
 104	}
 105
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:38:13Z)**_
@@ -857,55 +856,55 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:13Z)**_
 
 ```text
 1	import path from 'node:path';
-2	
+2
 3	import { load } from 'migrate';
-4	
+4
 5	import { config } from './load-config';
-6	
+6
 7	type MigrationCallback = (err?: Error) => void;
 8	type MigrationModule = {
 9	  up: (next?: MigrationCallback) => void;
 10	  down: (next?: MigrationCallback) => void;
 11	};
 12	type MigrationLoader = () => Promise<MigrationModule>;
-13	
+13
 14	// Vite resolves this glob at build time and inlines a static map of
 15	// () => import('chunks/...js') calls. Each migration becomes its own chunk.
 16	// Runtime fs reads against a migrations/ directory disappear.
 17	const migrationsLoaders = import.meta.glob<MigrationModule>(
 18	  '../migrations/*.{ts,js}',
 19	);
-20	
+20
 21	export async function loadMigrationModules(
 22	  loaders: Record<string, MigrationLoader>,
 23	): Promise<Record<string, MigrationModule>> {
 24	  const migrationsModules: Record<string, MigrationModule> = {};
-25	
+25
 26	  for (const key of Object.keys(loaders).sort()) {
 27	    // Migration titles are persisted in .migrate. Keep their original .js
 28	    // titles when source files are converted to TypeScript.
 29	    const fileName = key
 30	      .slice(key.lastIndexOf('/') + 1)
 31	      .replace(/\.ts$/, '.js');
-32	
+32
 33	    if (Object.prototype.hasOwnProperty.call(migrationsModules, fileName)) {
 34	      throw new Error(`Duplicate migration title: ${fileName}`);
 35	    }
-36	
+36
 37	    migrationsModules[fileName] = await loaders[key]();
 38	  }
-39	
+39
 40	  return migrationsModules;
 41	}
-42	
+42
 43	export async function run(direction: 'up' | 'down' = 'up'): Promise<void> {
 44	  console.log(
 45	    `Checking if there are any migrations to run for direction "${direction}"...`,
 46	  );
-47	
+47
 48	  try {
 49	    const migrationsModules = await loadMigrationModules(migrationsLoaders);
-50	
+50
 51	    return new Promise<void>((resolve, reject) => {
 52	      load(
 53	        {
@@ -914,10 +913,10 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:13Z)**_
 56	        },
 57	        (err, set) => {
 58	          if (err) return reject(err);
-59	
+59
 60	          set[direction](err => {
 61	            if (err) return reject(err);
-62	
+62
 63	            console.log('Migrations: DONE');
 64	            resolve();
 65	          });
@@ -931,6 +930,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:13Z)**_
 73	}
 74
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:38:15Z)**_
@@ -942,6 +942,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:38:15Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:38:22Z)**_
@@ -966,6 +967,7 @@ src/db.js:50:  close() {
 src/db.js:51:    this.db.close();
 ../../node_modules/vitest/dist/chunks/index.B89dZ0-N.js:21425:				for (const error of errors) this.logger.error("error during close", error);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:38:25Z)**_
@@ -1073,6 +1075,7 @@ export function listLoginMethods() {
         : true,
     )
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:38:27Z)**_
@@ -1100,6 +1103,7 @@ src/sync-simple.js:82:  db.close();
 0c95eb483 Add ESM loader support and update sync-server modules (#6179)
 d027adc73 Move sync-server to vitest (#4840)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:38:48Z)**_
@@ -1160,7 +1164,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:39:45Z)**_
 
 ```text
 1	import { join, resolve } from 'node:path';
-2	
+2
 3	import { bootstrapOpenId } from './accounts/openid';
 4	import {
 5	  bootstrapPassword,
@@ -1172,19 +1176,20 @@ _**Agent (claude-opus-5-5 2026-10-19 18:39:45Z)**_
 11	} from './accounts/password';
 12	import { openDatabase } from './db';
 13	import { config } from './load-config';
-14	
+14
 15	let _accountDb;
-16	
+16
 17	export function getAccountDb() {
 18	  if (_accountDb === undefined) {
 19	    const dbPath = join(resolve(config.get('serverFiles')), 'account.sqlite');
 20	    _accountDb = openDatabase(dbPath);
 21	  }
-22	
+22
 23	  return _accountDb;
 24	}
 25
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:39:46Z)**_
@@ -1195,9 +1200,9 @@ _**Agent (claude-opus-5-5 2026-10-19 18:39:46Z)**_
 
 ```text
 1	import fs from 'node:fs/promises';
-2	
+2
 3	import { config } from '../src/load-config';
-4	
+4
 5	async function ensureExists(path: string): Promise<void | null> {
 6	  try {
 7	    await fs.mkdir(path);
@@ -1205,22 +1210,23 @@ _**Agent (claude-opus-5-5 2026-10-19 18:39:46Z)**_
 9	    if (err instanceof Error && 'code' in err && err.code === 'EEXIST') {
 10	      return null;
 11	    }
-12	
+12
 13	    throw err;
 14	  }
 15	}
-16	
+16
 17	export const up = async function (): Promise<void> {
 18	  await ensureExists(config.get('serverFiles'));
 19	  await ensureExists(config.get('userFiles'));
 20	};
-21	
+21
 22	export const down = async function (): Promise<void> {
 23	  await fs.rm(config.get('serverFiles'), { recursive: true, force: true });
 24	  await fs.rm(config.get('userFiles'), { recursive: true, force: true });
 25	};
 26
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:40:15Z)**_
@@ -1231,6 +1237,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:40:15Z)**_
 ```text
 The file c:\Actual Budget\packages\sync-server\src\account-db.js has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:40:18Z)**_
@@ -1241,6 +1248,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:40:18Z)**_
 ```text
 The file c:\Actual Budget\packages\sync-server\migrations\1694360000000-create-folders.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:40:22Z)**_
@@ -1251,6 +1259,7 @@ _**Agent (claude-opus-5-5 2026-10-19 18:40:22Z)**_
 ```text
 The file c:\Actual Budget\packages\sync-server\migrations\1694360000000-create-folders.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:40:23Z)**_
@@ -1291,6 +1300,7 @@ TypeError: Cannot open database because the directory does not exist
 Checking if there are any migrations to run for direction "down"...
 Migrations: DONE
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:40:57Z)**_
@@ -1308,6 +1318,7 @@ Typecheck sync-server workspace
 🎉 All files passed
 exit: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:41:01Z)**_
@@ -1355,6 +1366,7 @@ drwxr-xr-x 1 Kirby 197609    0 Oct 19 14:39 src
  M migrations/1694360000000-create-folders.ts
  M src/account-db.js
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:41:04Z)**_
@@ -1388,6 +1400,7 @@ Migrations: DONE
 exit: 0
 .migrate-test
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:42:32Z)**_
@@ -1415,6 +1428,7 @@ Checking if there are any migrations to run for direction "down"...
 Migrations: DONE
 exit: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:44:11Z)**_
@@ -1431,6 +1445,7 @@ Checking formatting...
 All matched files use the correct format.
 Finished in 211ms on 2 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 18:44:17Z)**_
@@ -1438,10 +1453,12 @@ _**Agent (claude-opus-5-5 2026-10-19 18:44:17Z)**_
 The fix works: the sync-server tests now pass on Windows, and the `EBUSY` error during cleanup is gone.
 
 **What changed:**
+
 - [account-db.js](packages/sync-server/src/account-db.js): added a `closeAccountDb()` helper. It closes the shared database connection and clears it, so any later `getAccountDb()` call opens a fresh one.
 - [1694360000000-create-folders.ts](packages/sync-server/migrations/1694360000000-create-folders.ts): `down` now calls `closeAccountDb()` before deleting the folders, with a one-line comment explaining why.
 
 **Checks:**
+
 - I ran the sync-server tests twice in a row. Both runs passed all 606 tests and finished cleanup with `Migrations: DONE`. The second run confirms the next run starts cleanly from what the first one leaves behind.
 - The typecheck, lint and format checks pass on the two changed files.
 - The `Error parsing sync request` and `/create-web-token` messages still appear, as expected. They come from tests that deliberately send bad input, and those tests pass.
@@ -1470,6 +1487,7 @@ Show root test scripts
 52:    "test": "lage test --continue",
 53:    "test:debug": "lage test --no-cache --continue",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 19:18:36Z)**_
@@ -1483,6 +1501,7 @@ yarn test:debug
 It's defined in the root `package.json` as `lage test --no-cache --continue`. That runs every package's tests and ignores lage's saved results, so nothing gets marked `skipped` the way most packages were in your earlier output.
 
 **Other options:**
+
 - **Delete the cache, then run normally:** `rm -rf .lage` in Git Bash, or `Remove-Item -Recurse -Force .lage` in PowerShell, followed by `yarn test`. After that, later `yarn test` runs start caching again.
 - **Test a single package:** `yarn workspace @actual-app/sync-server run test`. This runs vitest directly without going through lage, so lage's cache doesn't apply.
 
@@ -1534,7 +1553,6 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-10-19 20:30:58Z)**_
@@ -1576,6 +1594,7 @@ a21169c9b :bug: Fix app failing to start when opened offline (#9025)
  1 file changed, 6 insertions(+)
 7caf6aa16 Merge pull request #83 from CSCI-435-SE/feat/issue-55-report-subcategories
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 20:31:03Z)**_
@@ -1603,15 +1622,16 @@ git log --oneline -1 && git push -u origin fix/issue-98-94-failing-tests 2>&1 | 
 
 ```text
 af95ddff5 [AI] Close account DB before removing server files in down migration
-remote:      https://github.com/CSCI-435-SE/actual-budget/pull/new/fix/issue-98-94-failing-tests        
-remote: 
-remote: GitHub found 136 vulnerabilities on CSCI-435-SE/actual-budget's default branch (6 critical, 66 high, 55 moderate, 9 low). To find out more, visit:        
-remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
-remote: 
+remote:      https://github.com/CSCI-435-SE/actual-budget/pull/new/fix/issue-98-94-failing-tests
+remote:
+remote: GitHub found 136 vulnerabilities on CSCI-435-SE/actual-budget's default branch (6 critical, 66 high, 55 moderate, 9 low). To find out more, visit:
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot
+remote:
 branch 'fix/issue-98-94-failing-tests' set up to track 'origin/fix/issue-98-94-failing-tests'.
 To https://github.com/CSCI-435-SE/actual-budget.git
  * [new branch]          fix/issue-98-94-failing-tests -> fix/issue-98-94-failing-tests
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 20:31:15Z)**_
@@ -1622,6 +1642,7 @@ I committed the fix and pushed `fix/issue-98-94-failing-tests` to your fork. It'
 - **Open the PR here:** https://github.com/CSCI-435-SE/actual-budget/pull/new/fix/issue-98-94-failing-tests
 
 When you create the PR:
+
 - **Title:** it must start with `[AI]`, for example `[AI] Fix failing tests (#98, #94)`.
 - **Base branch:** check that it targets your fork's `master` and not upstream `actualbudget/actual`. The new-PR link above should already point at the fork.
 - **Body:** this repo's rules say to leave the PR template unfilled for you to complete.
@@ -1659,6 +1680,7 @@ Date:   Fri Oct 16 15:03:56 2026 -0400
  packages/loot-core/vitest.config.ts                |    6 +-
  4 files changed, 1864 insertions(+), 7 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 20:44:40Z)**_
@@ -1669,10 +1691,12 @@ Written for: the reviewers of this PR, as sections to paste into its description
 ## Tech Debt
 
 **Introduced**
+
 - `account-db.js` is still plain JavaScript, so the new `closeAccountDb()` helper is untyped.
 - The `create-folders` down migration now depends on `account-db.js`. Before, it only deleted folders.
 
 **Encountered**
+
 - The shared account database connection is never closed anywhere else, including when the server shuts down.
 - If the test cleanup fails, it leaves stale files behind (`.migrate-test` and `test-server-files/`). They have to be deleted by hand before the tests will run again.
 - Tests that are expected to fail log real-looking errors (`Error parsing sync request`, `Invalid Origin header`), which makes the test output hard to read.
@@ -1727,13 +1751,13 @@ index dc5793538..36470c715 100644
 +  it,
 +  vi,
 +} from 'vitest';
- 
+
  import { createTestAppStore, TestProviders } from '#mocks';
  import type { AppStore } from '#redux/store';
 @@ -23,11 +31,17 @@ vi.mock(
    () => import('#mocks/connection'),
  );
- 
+
 -// With no translation resources loaded, i18next echoes the key back with
 +// English keys are their own values, so i18next echoes the key back with
  // interpolation applied - matching what the notification messages render.
@@ -1750,14 +1774,14 @@ index dc5793538..36470c715 100644
 +    interpolation: { escapeValue: false },
 +  });
  });
- 
+
  function wrapperFor(store: AppStore) {
 diff --git a/packages/loot-core/src/server/main.test.ts b/packages/loot-core/src/server/main.test.ts
 index 46f0ad969..5c50224ef 100644
 --- a/packages/loot-core/src/server/main.test.ts
 +++ b/packages/loot-core/src/server/main.test.ts
 @@ -52,6 +52,8 @@ async function createTestBudget(name) {
- 
+
  describe('Budgets', () => {
    afterEach(async () => {
 +    // Close the DB first; Windows can't delete a file that's still open
@@ -1773,7 +1797,7 @@ index f0f4c6e90..0fd322684 100644
  import { peggyLoader } from '@actual-app/vite-plugin-peggy';
 -import { defineConfig } from 'vitest/config';
 +import { configDefaults, defineConfig } from 'vitest/config';
- 
+
  export default defineConfig({
    test: {
      globals: true,
@@ -1789,6 +1813,7 @@ index f0f4c6e90..0fd322684 100644
      onConsoleLog(log: string, type: 'stdout' | 'stderr'): boolean | void {
        // print only console.error
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-19 20:46:29Z)**_

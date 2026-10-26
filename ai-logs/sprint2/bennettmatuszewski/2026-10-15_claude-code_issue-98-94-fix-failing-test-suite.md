@@ -175,6 +175,7 @@ module.exports = {
   concurrency: 2,
 };
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:38:48Z)**_
@@ -195,6 +196,7 @@ lib-dist
 reports/mutation
 sandbox-rFkDc1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:38:58Z)**_
@@ -277,7 +279,7 @@ index f0f4c6e90..0fd322684 100644
  import { peggyLoader } from '@actual-app/vite-plugin-peggy';
 -import { defineConfig } from 'vitest/config';
 +import { configDefaults, defineConfig } from 'vitest/config';
- 
+
  export default defineConfig({
    test: {
      globals: true,
@@ -293,6 +295,7 @@ index f0f4c6e90..0fd322684 100644
      onConsoleLog(log: string, type: 'stdout' | 'stderr'): boolean | void {
        // print only console.error
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:39:36Z)**_
@@ -314,6 +317,7 @@ src/server/transactions/export/export-to-csv.test.ts
 src/server/transactions/import/ofx2json.test.ts
 src/server/transactions/import/parse-file.test.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:39:54Z)**_
@@ -321,10 +325,12 @@ _**Agent (claude-opus-5-5 2026-10-16 03:39:54Z)**_
 I added the exclusion in [vitest.config.ts](packages/loot-core/vitest.config.ts), and `yarn test` will no longer run tests from Stryker's leftover sandboxes. I checked by listing the test files Vitest finds: 69 files, none under `.stryker-tmp`, even with the old sandbox still on disk.
 
 What changed:
+
 - **Vitest's defaults are back.** The list now starts with `...configDefaults.exclude`. That covers `node_modules`, so I removed the separate `'node_modules'` line.
 - **`.stryker-tmp/**` is excluded**, with a short comment saying why.
 
 I only listed the test files and didn't run the full suite. Two optional cleanups are still up to you:
+
 - Delete the leftover sandbox: `rm -rf packages/loot-core/.stryker-tmp`
 - Revert your `.gitignore` edit. It's misspelled (`.styker-tmp`), and `packages/loot-core/.gitignore` already ignores the folder.
 
@@ -339,17 +345,15 @@ Investigate and see why this test failed.
 <pasted_content id="bce2">
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
 
- FAIL  src/server/main.test.ts > Budgets > budget is successfully loaded
+FAIL src/server/main.test.ts > Budgets > budget is successfully loaded
 Error: EEXIST: file already exists, mkdir 'C:\Actual Budget\packages\loot-core\src\mocks\files\budgets\test-budget'
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
 
-
- Test Files  1 failed | 67 passed | 1 skipped (69)
-      Tests  1 failed | 1026 passed | 2 skipped (1029)
-   Start at  23:41:39
-   Duration  256.63s (transform 5.87s, setup 399.09s, import 11.31s, tests 75.90s, environment 12ms)
+Test Files 1 failed | 67 passed | 1 skipped (69)
+Tests 1 failed | 1026 passed | 2 skipped (1029)
+Start at 23:41:39
+Duration 256.63s (transform 5.87s, setup 399.09s, import 11.31s, tests 75.90s, environment 12ms)
 </pasted_content id="bce2">
-
 
 ---
 
@@ -403,6 +407,7 @@ drwxr-xr-x 1 Kirby 197609 0 Oct 15 23:42 .
 drwxr-xr-x 1 Kirby 197609 0 Sep  3 18:35 ..
 -rw-r--r-- 1 Kirby 197609 0 Sep  3 18:35 .commit-to-git
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:48:07Z)**_
@@ -484,6 +489,7 @@ src/platform/client/browser-server/coordinator.test.ts
 src/platform/client/browser-server/coordinator.ts
 src/server/budgetfiles/app.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:48:17Z)**_
@@ -537,6 +543,7 @@ Inspect node fs mkdir and recursive delete implementations
 711939f71 replace uuid and fs-extra with builtins (#7529)
 f364d5a9d [AI] Add subpath import wildcard patterns to loot-core (#7429)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:48:19Z)**_
@@ -564,6 +571,7 @@ Run main.test.ts cleanly, then with leftover dir present
 Error: EEXIST: file already exists, mkdir 'C:\Actual Budget\packages\loot-core\src\mocks\files\budgets\test-budget'
       Tests  1 failed | 6 skipped (7)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:48:47Z)**_
@@ -598,6 +606,7 @@ drwxr-xr-x 1 Kirby 197609 0 Sep  3 18:35 ..
 -rw-r--r-- 1 Kirby 197609 0 Sep  3 18:35 .commit-to-git
 drwxr-xr-x 1 Kirby 197609 0 Oct 15 23:49 test-budget
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:49:13Z)**_
@@ -645,6 +654,7 @@ Read closeBudget implementation
 287-}: {
 288-  id?: Budget['id'];
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:49:23Z)**_
@@ -660,6 +670,7 @@ Remove the leftover test-budget folder from my test runs
 ..
 .commit-to-git
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:49:33Z)**_
@@ -675,6 +686,7 @@ This is a bug in the test's cleanup that only shows up on Windows. The EEXIST er
 5. The next test to create that folder then fails, because [`createTestBudget`](packages/loot-core/src/server/main.test.ts#L37-L51) calls a plain `fs.mkdir`, which errors with EEXIST.
 
 So results alternate from run to run:
+
 - **Run starts with no leftover folder:** "budget is successfully loaded" fails with EBUSY and leaves the folder behind. "budget detects out of sync migrations" then fails with EEXIST. I got exactly this when I reran the file on its own.
 - **Run starts with the leftover folder:** the first test fails immediately with EEXIST, before it opens the database. Cleanup then succeeds, so the rest of the file passes. That's the single failure you saw.
 
@@ -710,6 +722,7 @@ _**Agent (claude-opus-5-5 2026-10-16 03:52:06Z)**_
 ```text
 The file c:\Actual Budget\packages\loot-core\src\server\main.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:52:32Z)**_
@@ -722,10 +735,11 @@ Run main.test.ts twice and check for leftover folder
 
 ```text
       Tests  7 passed (7)
-. .. .commit-to-git 
+. .. .commit-to-git
       Tests  7 passed (7)
 . .. .commit-to-git
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 03:52:35Z)**_
@@ -743,89 +757,86 @@ Investigate the failed mutation tests and create a potential fix
 <pasted_content id="bce2">
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
 
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > rejects a name over the character limit without contacting the server
+FAIL src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > rejects a name over the character limit without contacting the server
 TypeError: Cannot read properties of null (reading 'mutateAsync')
- ❯ src/budget/mutations.test.tsx:61:26
-     59|     });
-     60|
-     61|     await result.current.mutateAsync({
-       |                          ^
-     62|       name: tooLongName,
-     63|       groupId: 'group1',
+❯ src/budget/mutations.test.tsx:61:26
+59| });
+60|
+61| await result.current.mutateAsync({
+| ^
+62| name: tooLongName,
+63| groupId: 'group1',
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
 
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the character limit
+FAIL src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the character limit
 TypeError: Cannot read properties of null (reading 'mutateAsync')
- ❯ src/budget/mutations.test.tsx:83:26
-     81|     });
-     82|
-     83|     await result.current.mutateAsync({
-       |                          ^
-     84|       name: maxLengthName,
-     85|       groupId: 'group1',
+❯ src/budget/mutations.test.tsx:83:26
+81| });
+82|
+83| await result.current.mutateAsync({
+| ^
+84| name: maxLengthName,
+85| groupId: 'group1',
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
 
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when creating a subcategory
+FAIL src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when creating a subcategory
 TypeError: Cannot read properties of null (reading 'mutateAsync')
- ❯ src/budget/mutations.test.tsx:108:26
-    106|     });
-    107|
-    108|     await result.current.mutateAsync({
-       |                          ^
-    109|       name: 'Restaurants',
-    110|       groupId: 'group1',
+❯ src/budget/mutations.test.tsx:108:26
+106| });
+107|
+108| await result.current.mutateAsync({
+| ^
+109| name: 'Restaurants',
+110| groupId: 'group1',
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
 
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the character limit without contacting the server
+FAIL src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the character limit without contacting the server
 TypeError: Cannot read properties of null (reading 'mutateAsync')
- ❯ src/budget/mutations.test.tsx:152:26
-    150|     });
-    151|
-    152|     await result.current.mutateAsync({ category: newCategory(tooLongNa…
-       |                          ^
-    153|
-    154|     expect(createCategoryHandler).not.toHaveBeenCalled();
+❯ src/budget/mutations.test.tsx:152:26
+150| });
+151|
+152| await result.current.mutateAsync({ category: newCategory(tooLongNa…
+| ^
+153|
+154| expect(createCategoryHandler).not.toHaveBeenCalled();
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
 
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
+FAIL src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
 TypeError: Cannot read properties of null (reading 'mutateAsync')
- ❯ src/budget/mutations.test.tsx:172:26
-    170|     });
-    171|
-    172|     await result.current.mutateAsync({ category: newCategory(maxLength…
-       |                          ^
-    173|
-    174|     await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
+❯ src/budget/mutations.test.tsx:172:26
+170| });
+171|
+172| await result.current.mutateAsync({ category: newCategory(maxLength…
+| ^
+173|
+174| await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
 
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory under its parent
+FAIL src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory under its parent
 TypeError: Cannot read properties of null (reading 'mutateAsync')
- ❯ src/budget/mutations.test.tsx:190:26
-    188|     });
-    189|
-    190|     await result.current.mutateAsync({
-       |                          ^
-    191|       category: { ...newCategory('Restaurants'), parent_id: 'food' },
-    192|     });
+❯ src/budget/mutations.test.tsx:190:26
+188| });
+189|
+190| await result.current.mutateAsync({
+| ^
+191| category: { ...newCategory('Restaurants'), parent_id: 'food' },
+192| });
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
 
-
- Test Files  1 failed | 76 passed (77)
-      Tests  6 failed | 1051 passed | 1 skipped (1058)
-   Start at  23:54:54
-   Duration  288.91s (transform 28.85s, setup 198.70s, import 143.00s, tests 72.10s, environment 133.32s)
-
+Test Files 1 failed | 76 passed (77)
+Tests 6 failed | 1051 passed | 1 skipped (1058)
+Start at 23:54:54
+Duration 288.91s (transform 28.85s, setup 198.70s, import 143.00s, tests 72.10s, environment 133.32s)
 
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 4m 52.99s to complete.
 </pasted_content id="bce2">
-
 
 ---
 
@@ -921,6 +932,7 @@ describe('useCreateCategoryMutation (mobile category creation)', () => {
     const { result } = renderHook(() => useCreateCategoryMutation(), {
       wrapper: wrapperFor(store),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:05:56Z)**_
@@ -993,6 +1005,7 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
  FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory under its parent
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:05:58Z)**_
@@ -1012,6 +1025,7 @@ Locate and read TestProviders mock
 34:    "#mocks/*": "./src/mocks/*.ts",
 connection.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:06:03Z)**_
@@ -1084,6 +1098,7 @@ export function TestProviders({
 003efecc2 Fix react query cache not being cleared when switching budgets (#6953)
 37a7d0ecc Retrofit useTransactions to use react-query under the hood (#6757)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:06:05Z)**_
@@ -1167,6 +1182,7 @@ Read the category mutation hooks
 147-      );
 148-    },
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:06:10Z)**_
@@ -1184,6 +1200,7 @@ Find desktop-client test setup and i18n init
 ```text
 setupTests.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:06:16Z)**_
@@ -1262,6 +1279,7 @@ vite.config.mts
 src/i18n.ts:1:import { initReactI18next } from 'react-i18next';
 src/i18n.ts:24:  .use(initReactI18next)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:06:22Z)**_
@@ -1314,6 +1332,7 @@ e3952d2a2 [AI] Add option to 'Copy [budget] to future months' (#7420)
 ../../node_modules/@testing-library/react/package.json:3:  "version": "16.3.2",
 ../../node_modules/react/package.json:7:  "version": "19.2.7",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:06:25Z)**_
@@ -1367,6 +1386,7 @@ mutation result NULL suspended= true
 err undefined i18next.isInitialized true
  ✓ src/budget/zz-diag.test.tsx (1 test) 48ms
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:06:46Z)**_
@@ -1480,6 +1500,7 @@ src/components/settings/LanguageSettings.tsx:12:import { availableLanguages, set
 src/i18n.test.ts:3:import { availableLanguages, setI18NextLanguage } from './i18n';
 src/prefs/prefsSlice.ts:16:import { setI18NextLanguage } from '#i18n';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:06:57Z)**_
@@ -1527,6 +1548,7 @@ modules [ 'external', 'backend' ] backend true
 resolved after wait; hasLoadedNamespace= true
  ✓ src/budget/zz-diag.test.tsx (1 test) 111ms
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:07:16Z)**_
@@ -1570,6 +1592,7 @@ cb5237359 Rename loot-core/platform/client/fetch to connection to match server-s
 003efecc2 Fix react query cache not being cleared when switching budgets (#6953)
 37a7d0ecc Retrofit useTransactions to use react-query under the hood (#6757)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:07:23Z)**_
@@ -1591,7 +1614,7 @@ Author: Reese Bryan <reesebryan04@gmail.com>
 Date:   Fri Sep 11 14:53:06 2026 -0400
 
     [AI] test: add coverage for the 50-character category name limit
-    
+
     Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
 
  .../desktop-client/src/budget/mutations.test.tsx   | 155 +++++++++++++++++++++
@@ -1627,6 +1650,7 @@ Date:   Fri Oct 2 18:40:53 2026 -0400
  packages/desktop-client/src/spreadsheet/index.ts   |     2 +
  .../1780700000000_add_category_parent.sql          |     5 +
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:07:28Z)**_
@@ -1653,6 +1677,7 @@ drwxr-xr-x 1 Kirby 197609      0 Oct 12 18:43 ..
 d80b19045 Merge pull request #93 from CSCI-435-SE/docs/showcase1-handout
 package.json:78:    "#components/util/localeToCountry": "./src/components/util/localeToCountry.ts",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:07:33Z)**_
@@ -1669,6 +1694,7 @@ Check what generates locale/en.json
 package.json:123:    "generate:i18n": "i18next",
 ../../package.json:46:    "generate:i18n": "yarn workspace @actual-app/web generate:i18n",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:07:36Z)**_
@@ -1693,6 +1719,7 @@ drwxr-xr-x 1 Kirby 197609      0 Oct 16 00:07 .
 drwxr-xr-x 1 Kirby 197609      0 Oct 12 18:43 ..
 -rw-r--r-- 1 Kirby 197609 207931 Sep 12 12:16 en.json
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:07:59Z)**_
@@ -1710,7 +1737,7 @@ _**Agent (claude-opus-5-5 2026-10-16 04:07:59Z)**_
 
 ```text
 1	import type { ReactNode } from 'react';
-2	
+2
 3	import {
 4	  clearServer,
 5	  initServer,
@@ -1719,21 +1746,21 @@ _**Agent (claude-opus-5-5 2026-10-16 04:07:59Z)**_
 8	import { renderHook, waitFor } from '@testing-library/react';
 9	import i18next from 'i18next';
 10	import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-11	
+11
 12	import { createTestAppStore, TestProviders } from '#mocks';
 13	import type { AppStore } from '#redux/store';
-14	
+14
 15	import {
 16	  CATEGORY_NAME_MAX_LENGTH,
 17	  useCreateCategoryMutation,
 18	  useSaveCategoryMutation,
 19	} from './mutations';
-20	
+20
 21	vi.mock(
 22	  '@actual-app/core/platform/client/connection',
 23	  () => import('#mocks/connection'),
 24	);
-25	
+25
 26	// With no translation resources loaded, i18next echoes the key back with
 27	// interpolation applied - matching what the notification messages render.
 28	void i18next.init({
@@ -1742,6 +1769,7 @@ _**Agent (claude-opus-5-5 2026-10-16 04:07:59Z)**_
 31	});
 32
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:08:01Z)**_
@@ -1772,6 +1800,7 @@ module.exports = {
   "\"before\" or \"after\" (optional, uses app settings)": "\"before\" or \"after\" (optional, uses app settings)",
   "(+{{numHiddenPayees}} more)": "(+{{numHiddenPayees}} more)",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:08:03Z)**_
@@ -1786,6 +1815,7 @@ _**Agent (claude-opus-5-5 2026-10-16 04:08:15Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\budget\mutations.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:08:18Z)**_
@@ -1796,6 +1826,7 @@ _**Agent (claude-opus-5-5 2026-10-16 04:08:18Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\budget\mutations.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:08:47Z)**_
@@ -1815,6 +1846,7 @@ en.json
 All matched files use the correct format.
 Finished in 177ms on 1 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-16 04:08:54Z)**_
@@ -1832,6 +1864,7 @@ I fixed the 6 failing tests in [mutations.test.tsx](packages/desktop-client/src/
 **The fix:** The test used to start i18next with `void i18next.init(...)`, which doesn't wait for loading to finish. It now uses `await i18next.init(...)` inside a `beforeAll`, so translations are loaded before any hook renders. I also updated the comment to explain why. The notification assertions still hold because the English values in `en.json` are the same as their keys.
 
 **Verified:**
+
 - All 6 tests pass with `en.json` present and with it removed.
 - The file passes the formatter and linter.
 - The temporary diagnostic test I added is deleted.

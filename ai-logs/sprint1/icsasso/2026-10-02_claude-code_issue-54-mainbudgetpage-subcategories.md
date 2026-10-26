@@ -48,6 +48,7 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\tasks\a1b1f68281ae186f9.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (2026-10-01 04:41:04Z)**_
@@ -59,7 +60,7 @@ In the Actual Budget monorepo at c:\Users\icsab\actual-budget\actual-budget, I n
 3. Budget math: how budgeted amount, spent, balance, leftover/to-budget are computed per category — packages/loot-core/src/server/budget/base.ts, envelope.ts, actions.ts (setBudget, createAllBudgets, the "to-budget" / total budgeted calculation). Which spreadsheet cells (e.g. budget-x, sum-amount-x, leftover-x, total-budgeted) exist.
 4. UI on main budget page: packages/desktop-client/src/components/budget/ — BudgetTable, BudgetCategories, ExpenseCategory, ExpenseGroup, SidebarCategory, SidebarGroup, envelope/EnvelopeBudgetComponents. How "Add category" is triggered (onShowNewCategory, NewCategory), how rows are flattened/rendered, the category context menu. Also any separateGroups / expandAll logic and the nested category group feature if it exists (search "parent_id", "nested", "subgroup").
 5. Client hooks/queries for categories: useCategories, categoryQueries, grouped categories data shape.
-Report findings, not full file dumps.
+   Report findings, not full file dumps.
 
 _**Agent (claude-opus-5-5 2026-10-01 04:41:06Z)**_
 
@@ -115,6 +116,7 @@ packages\desktop-client\src\components\transactions\TransactionsTable.test.tsx
 packages\desktop-client\src\components\accounts\Balance.tsx
 packages\cli\src\commands\query.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:14Z)**_
@@ -259,6 +261,7 @@ IncomeMenu.tsx
 TransferMenu.tsx
 budgetsummary
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:21Z)**_
@@ -309,6 +312,7 @@ src/server/sql/init.sql:66:CREATE TABLE category_groups
 src/server/sql/init.sql:81:CREATE TABLE category_mapping
 init.sql
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:21Z)**_
@@ -327,6 +331,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:21Z)**_
 385:           (_.isChild = 0 OR _.parent_id IS NOT NULL)
 394:        LEFT JOIN transactions t2 ON (_.is_child = 1 AND t2.id = _.parent_id)
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:26Z)**_
@@ -487,6 +492,7 @@ export type CategoryGroupEntity = {
   categories?: CategoryEntity[];
 };
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:29Z)**_
@@ -540,6 +546,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:32Z)**_
 507:export async function moveCategory(
 528:export async function deleteCategory(
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:36Z)**_
@@ -979,6 +986,7 @@ export async function getAccount(id: DbAccount['id']) {
   return first<DbAccount>(`SELECT * FROM accounts WHERE id = ?`, [id]);
 }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:43Z)**_
@@ -1023,6 +1031,7 @@ src/server/models.ts:107:export const categoryGroupModel = {
 259:  await sendMessages([
 265:      timestamp: Timestamp.send(),
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:50Z)**_
@@ -1176,6 +1185,7 @@ export async function deleteAll(table: string) {
 128:        SELECT t.*, c.transferId AS category
 130:        LEFT JOIN category_mapping c ON c.id = t.category
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:54Z)**_
@@ -1214,6 +1224,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:54Z)**_
 376:export async function createAllBudgets() {
 403:export async function setType(type) {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:41:57Z)**_
@@ -1496,6 +1507,7 @@ export async function createAllBudgets() {
 
   return { start, end };
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
@@ -1511,15 +1523,15 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 4	// @ts-strict-ignore
 5	import * as monthUtils from '#shared/months';
 6	import { safeNumber } from '#shared/util';
-7	
+7
 8	import { createCategory as createCategoryFromBase } from './base';
 9	import { flatten2, number, sumAmounts, unflatten2 } from './util';
-10	
+10
 11	function getBlankSheet(months) {
 12	  const blankMonth = monthUtils.prevMonth(months[0]);
 13	  return monthUtils.sheetForMonth(blankMonth);
 14	}
-15	
+15
 16	export function createBlankCategory(cat, months) {
 17	  if (months.length > 0) {
 18	    const sheetName = getBlankSheet(months);
@@ -1528,19 +1540,19 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 21	    sheet.get().createStatic(sheetName, `leftover-pos-${cat.id}`, 0);
 22	  }
 23	}
-24	
+24
 25	function createBlankMonth(categories, sheetName, months) {
 26	  sheet.get().createStatic(sheetName, 'is-blank', true);
 27	  sheet.get().createStatic(sheetName, 'to-budget', 0);
 28	  sheet.get().createStatic(sheetName, 'buffered', 0);
-29	
+29
 30	  categories.forEach(cat => createBlankCategory(cat, months));
 31	}
-32	
+32
 33	export function createCategory(cat, sheetName, prevSheetName) {
 34	  if (!cat.is_income) {
 35	    sheet.get().createStatic(sheetName, `budget-${cat.id}`, 0);
-36	
+36
 37	    // This makes the app more robust by "fixing up" null budget values.
 38	    // Those should not be allowed, but in case somehow a null value
 39	    // ends up there, we are resilient to it. Preferrably the
@@ -1549,9 +1561,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 42	    if (sheet.get().getCellValue(sheetName, `budget-${cat.id}`) == null) {
 43	      sheet.get().set(resolveName(sheetName, `budget-${cat.id}`), 0);
 44	    }
-45	
+45
 46	    sheet.get().createStatic(sheetName, `carryover-${cat.id}`, false);
-47	
+47
 48	    sheet.get().createDynamic(sheetName, `leftover-${cat.id}`, {
 49	      initialValue: 0,
 50	      dependencies: [
@@ -1569,7 +1581,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 62	        );
 63	      },
 64	    });
-65	
+65
 66	    sheet.get().createDynamic(sheetName, 'leftover-pos-' + cat.id, {
 67	      initialValue: 0,
 68	      dependencies: [`leftover-${cat.id}`],
@@ -1579,21 +1591,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 72	    });
 73	  }
 74	}
-75	
+75
 76	export function createCategoryGroup(group, sheetName) {
 77	  sheet.get().createDynamic(sheetName, 'group-sum-amount-' + group.id, {
 78	    initialValue: 0,
 79	    dependencies: group.categories.map(cat => `sum-amount-${cat.id}`),
 80	    run: sumAmounts,
 81	  });
-82	
+82
 83	  if (!group.is_income) {
 84	    sheet.get().createDynamic(sheetName, 'group-budget-' + group.id, {
 85	      initialValue: 0,
 86	      dependencies: group.categories.map(cat => `budget-${cat.id}`),
 87	      run: sumAmounts,
 88	    });
-89	
+89
 90	    sheet.get().createDynamic(sheetName, 'group-leftover-' + group.id, {
 91	      initialValue: 0,
 92	      dependencies: group.categories.map(cat => `leftover-${cat.id}`),
@@ -1601,14 +1613,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 94	    });
 95	  }
 96	}
-97	
+97
 98	export function createSummary(groups, categories, prevSheetName, sheetName) {
 99	  const incomeGroup = groups.filter(group => group.is_income)[0];
 100	  const expenseCategories = categories.filter(cat => !cat.is_income);
 101	  const incomeCategories = categories.filter(cat => cat.is_income);
-102	
+102
 103	  sheet.get().createStatic(sheetName, 'buffered', 0);
-104	
+104
 105	  sheet.get().createDynamic(sheetName, 'from-last-month', {
 106	    initialValue: 0,
 107	    dependencies: [
@@ -1618,21 +1630,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 111	    run: (toBudget, buffered) =>
 112	      safeNumber(number(toBudget) + number(buffered)),
 113	  });
-114	
+114
 115	  // Alias the group income total to `total-income`
 116	  sheet.get().createDynamic(sheetName, 'total-income', {
 117	    initialValue: 0,
 118	    dependencies: [`group-sum-amount-${incomeGroup.id}`],
 119	    run: amount => amount,
 120	  });
-121	
+121
 122	  sheet.get().createDynamic(sheetName, 'available-funds', {
 123	    initialValue: 0,
 124	    dependencies: ['total-income', 'from-last-month'],
 125	    run: (income, fromLastMonth) =>
 126	      safeNumber(number(income) + number(fromLastMonth)),
 127	  });
-128	
+128
 129	  sheet.get().createDynamic(sheetName, 'last-month-overspent', {
 130	    initialValue: 0,
 131	    dependencies: flatten2(
@@ -1653,7 +1665,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 146	      );
 147	    },
 148	  });
-149	
+149
 150	  sheet.get().createDynamic(sheetName, 'total-budgeted', {
 151	    initialValue: 0,
 152	    dependencies: groups
@@ -1664,7 +1676,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 157	      return -sumAmounts(...amounts);
 158	    },
 159	  });
-160	
+160
 161	  sheet.get().createDynamic(sheetName, 'buffered', { initialValue: 0 });
 162	  sheet.get().createDynamic(sheetName, 'buffered-auto', {
 163	    initialValue: 0,
@@ -1696,7 +1708,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 189	      return auto;
 190	    },
 191	  });
-192	
+192
 193	  sheet.get().createDynamic(sheetName, 'to-budget', {
 194	    initialValue: 0,
 195	    dependencies: [
@@ -1714,7 +1726,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 207	      );
 208	    },
 209	  });
-210	
+210
 211	  sheet.get().createDynamic(sheetName, 'total-spent', {
 212	    initialValue: 0,
 213	    dependencies: groups
@@ -1722,7 +1734,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 215	      .map(group => `group-sum-amount-${group.id}`),
 216	    run: sumAmounts,
 217	  });
-218	
+218
 219	  sheet.get().createDynamic(sheetName, 'total-leftover', {
 220	    initialValue: 0,
 221	    dependencies: groups
@@ -1731,7 +1743,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 224	    run: sumAmounts,
 225	  });
 226	}
-227	
+227
 228	export function createBudget(meta, categories, months) {
 229	  // The spreadsheet is now strict - so we need to fill in some
 230	  // default values for the month before the first month. Only do this
@@ -1743,7 +1755,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 236	    meta.blankSheet = blankSheet;
 237	  }
 238	}
-239	
+239
 240	export function handleCategoryChange(months, oldValue, newValue) {
 241	  function addDeps(sheetName, groupId, catId) {
 242	    sheet
@@ -1762,7 +1774,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 255	        `leftover-${catId}`,
 256	      ]);
 257	  }
-258	
+258
 259	  function removeDeps(sheetName, groupId, catId) {
 260	    sheet
 261	      .get()
@@ -1780,11 +1792,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 273	        `leftover-${catId}`,
 274	      ]);
 275	  }
-276	
+276
 277	  if (oldValue && oldValue.tombstone === 0 && newValue.tombstone === 1) {
 278	    const id = newValue.id;
 279	    const groupId = newValue.cat_group;
-280	
+280
 281	    months.forEach(month => {
 282	      const sheetName = monthUtils.sheetForMonth(month);
 283	      removeDeps(sheetName, groupId, id);
@@ -1794,25 +1806,25 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 287	    (!oldValue || oldValue.tombstone === 1)
 288	  ) {
 289	    createBlankCategory(newValue, months);
-290	
+290
 291	    months.forEach(month => {
 292	      const prevMonth = monthUtils.prevMonth(month);
 293	      const prevSheetName = monthUtils.sheetForMonth(prevMonth);
 294	      const sheetName = monthUtils.sheetForMonth(month);
 295	      const { start, end } = monthUtils.bounds(month);
-296	
+296
 297	      createCategoryFromBase(newValue, sheetName, prevSheetName, start, end);
-298	
+298
 299	      const id = newValue.id;
 300	      const groupId = newValue.cat_group;
-301	
+301
 302	      sheet
 303	        .get()
 304	        .addDependencies(sheetName, 'last-month-overspent', [
 305	          `${prevSheetName}!leftover-${id}`,
 306	          `${prevSheetName}!carryover-${id}`,
 307	        ]);
-308	
+308
 309	      addDeps(sheetName, groupId, id);
 310	      if (newValue.is_income) {
 311	        sheet
@@ -1830,7 +1842,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 323	  } else if (oldValue && oldValue.cat_group !== newValue.cat_group) {
 324	    // The category moved so we need to update the dependencies
 325	    const id = newValue.id;
-326	
+326
 327	    months.forEach(month => {
 328	      const sheetName = monthUtils.sheetForMonth(month);
 329	      removeDeps(sheetName, oldValue.cat_group, id);
@@ -1838,7 +1850,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 331	    });
 332	  }
 333	}
-334	
+334
 335	export function handleCategoryGroupChange(months, oldValue, newValue) {
 336	  function addDeps(sheetName, groupId) {
 337	    sheet
@@ -1857,7 +1869,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 350	        `group-leftover-${groupId}`,
 351	      ]);
 352	  }
-353	
+353
 354	  function removeDeps(sheetName, groupId) {
 355	    sheet
 356	      .get()
@@ -1875,7 +1887,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 368	        `group-leftover-${groupId}`,
 369	      ]);
 370	  }
-371	
+371
 372	  if (newValue.tombstone === 1 && oldValue && oldValue.tombstone === 0) {
 373	    const id = newValue.id;
 374	    months.forEach(month => {
@@ -1887,11 +1899,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 380	    (!oldValue || oldValue.tombstone === 1)
 381	  ) {
 382	    const group = newValue;
-383	
+383
 384	    if (!group.is_income) {
 385	      months.forEach(month => {
 386	        const sheetName = monthUtils.sheetForMonth(month);
-387	
+387
 388	        // Dirty, dirty hack. These functions should not be async, but this is
 389	        // OK because we're leveraging the sync nature of queries. Ideally we
 390	        // wouldn't be querying here. But I think we have to. At least for now
@@ -1902,7 +1914,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 395	          true,
 396	        );
 397	        createCategoryGroup({ ...group, categories }, sheetName);
-398	
+398
 399	        addDeps(sheetName, group.id);
 400	      });
 401	    }
@@ -1910,6 +1922,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:07Z)**_
 403	}
 404
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:10Z)**_
@@ -1991,6 +2004,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:13Z)**_
 126:  'budget/cover-overbudgeted',
 130:  'budget/transfer-category',
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:18Z)**_
@@ -2095,6 +2109,7 @@ export async function copyUntilYearEnd({
 79:      .map(cat => `budget-${cat.id}`),
 91:export function createSummary(groups, sheetName) {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:28Z)**_
@@ -2134,6 +2149,7 @@ components/budget/SidebarCategory.tsx:96:        backgroundColor: 'transparent',
    688 components/budget/envelope/EnvelopeBudgetComponents.tsx
   4316 total
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:28Z)**_
@@ -2174,6 +2190,7 @@ desktop-client/src/components/budget/BudgetTable.tsx:161:    const [expenseGroup
 desktop-client/src/components/budget/BudgetTable.tsx:171:        if (collapsedGroupIds.includes(group.id)) {
 desktop-client/src/components/budget/BudgetTable.tsx:230:  const expandAllCategories = () => {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
@@ -2184,7 +2201,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 
 ```text
 1	import React, { memo, useMemo, useState } from 'react';
-2	
+2
 3	import { styles } from '@actual-app/components/styles';
 4	import { theme } from '@actual-app/components/theme';
 5	import { View } from '@actual-app/components/view';
@@ -2192,12 +2209,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 7	  CategoryEntity,
 8	  CategoryGroupEntity,
 9	} from '@actual-app/core/types/models';
-10	
+10
 11	import { DropHighlightPosContext } from '#components/sort';
 12	import type { DragState, OnDropCallback } from '#components/sort';
 13	import { Row } from '#components/table';
 14	import { useLocalPref } from '#hooks/useLocalPref';
-15	
+15
 16	import { ExpenseCategory } from './ExpenseCategory';
 17	import { ExpenseGroup } from './ExpenseGroup';
 18	import { IncomeCategory } from './IncomeCategory';
@@ -2206,7 +2223,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 21	import { SidebarCategory } from './SidebarCategory';
 22	import { SidebarGroup } from './SidebarGroup';
 23	import { separateGroups } from './util';
-24	
+24
 25	type BudgetItem =
 26	  | { type: 'new-group' }
 27	  | { type: 'new-category' }
@@ -2219,12 +2236,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 34	  | { type: 'income-separator' }
 35	  | { type: 'income-group'; value: CategoryGroupEntity }
 36	  | { type: 'income-category'; value: CategoryEntity };
-37	
+37
 38	type LocalDragState =
 39	  | DragState<CategoryEntity>
 40	  | DragState<CategoryGroupEntity>
 41	  | null;
-42	
+42
 43	type BudgetCategoriesProps = {
 44	  categoryGroups: CategoryGroupEntity[];
 45	  editingCell: { id: string; cell: string } | null;
@@ -2244,7 +2261,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 59	  onReorderCategory: OnDropCallback;
 60	  onReorderGroup: OnDropCallback;
 61	};
-62	
+62
 63	export const BudgetCategories = memo<BudgetCategoriesProps>(
 64	  ({
 65	    categoryGroups,
@@ -2268,33 +2285,33 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 83	    function onCollapse(value: Array<CategoryGroupEntity['id']>) {
 84	      setCollapsedGroupIdsPref(value);
 85	    }
-86	
+86
 87	    const [isAddingGroup, setIsAddingGroup] = useState(false);
 88	    const [newCategoryForGroup, setNewCategoryForGroup] = useState<
 89	      string | null
 90	    >(null);
 91	    const items: BudgetItem[] = useMemo(() => {
 92	      const [expenseGroups, incomeGroup] = separateGroups(categoryGroups);
-93	
+93
 94	      let items: BudgetItem[] = Array.prototype.concat.apply(
 95	        [],
 96	        expenseGroups.map(group => {
 97	          if (group.hidden && !showHiddenCategories) {
 98	            return [];
 99	          }
-100	
+100
 101	          const groupCategories = group.categories?.filter(
 102	            cat => showHiddenCategories || !cat.hidden,
 103	          );
-104	
+104
 105	          const items: BudgetItem[] = [
 106	            { type: 'expense-group', value: { ...group } },
 107	          ];
-108	
+108
 109	          if (newCategoryForGroup === group.id) {
 110	            items.push({ type: 'new-category' });
 111	          }
-112	
+112
 113	          return [
 114	            ...items,
 115	            ...(collapsedGroupIds.includes(group.id)
@@ -2310,21 +2327,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 125	          ];
 126	        }),
 127	      );
-128	
+128
 129	      if (isAddingGroup) {
 130	        items.push({ type: 'new-group' });
 131	      }
-132	
+132
 133	      if (incomeGroup) {
 134	        const incomeCategoryItems: BudgetItem[] = [
 135	          { type: 'income-separator' },
 136	          { type: 'income-group', value: incomeGroup },
 137	        ];
-138	
+138
 139	        if (newCategoryForGroup === incomeGroup.id) {
 140	          incomeCategoryItems.push({ type: 'new-category' });
 141	        }
-142	
+142
 143	        incomeCategoryItems.push(
 144	          ...(collapsedGroupIds.includes(incomeGroup.id)
 145	            ? []
@@ -2338,10 +2355,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 153	            }),
 154	          ),
 155	        );
-156	
+156
 157	        items = items.concat(incomeCategoryItems);
 158	      }
-159	
+159
 160	      return items;
 161	    }, [
 162	      categoryGroups,
@@ -2350,19 +2367,19 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 165	      isAddingGroup,
 166	      showHiddenCategories,
 167	    ]);
-168	
+168
 169	    const [dragState, setDragState] = useState<LocalDragState>(null);
 170	    const [savedCollapsed, setSavedCollapsed] = useState<Array<
 171	      CategoryGroupEntity['id']
 172	    > | null>(null);
-173	
+173
 174	    // TODO: If we turn this into a reducer, we could probably memoize
 175	    // each item in the list for better perf
 176	    function onDragChange(
 177	      newDragState: DragState<CategoryEntity> | DragState<CategoryGroupEntity>,
 178	    ) {
 179	      const { state } = newDragState;
-180	
+180
 181	      if (state === 'start-preview') {
 182	        // @ts-expect-error fix me
 183	        setDragState({
@@ -2383,7 +2400,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 198	        onCollapse(savedCollapsed || []);
 199	      }
 200	    }
-201	
+201
 202	    function onToggleCollapse(id: CategoryGroupEntity['id']) {
 203	      if (collapsedGroupIds.includes(id)) {
 204	        onCollapse(collapsedGroupIds.filter(id_ => id_ !== id));
@@ -2391,38 +2408,38 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 206	        onCollapse([...collapsedGroupIds, id]);
 207	      }
 208	    }
-209	
+209
 210	    function onShowNewGroup() {
 211	      setIsAddingGroup(true);
 212	    }
-213	
+213
 214	    function onHideNewGroup() {
 215	      setIsAddingGroup(false);
 216	    }
-217	
+217
 218	    function _onSaveGroup(group: CategoryGroupEntity) {
 219	      onSaveGroup?.(group);
 220	      if (group.id === 'new') {
 221	        onHideNewGroup();
 222	      }
 223	    }
-224	
+224
 225	    function onShowNewCategory(groupId: CategoryGroupEntity['id']) {
 226	      onCollapse(collapsedGroupIds.filter(c => c !== groupId));
 227	      setNewCategoryForGroup(groupId);
 228	    }
-229	
+229
 230	    function onHideNewCategory() {
 231	      setNewCategoryForGroup(null);
 232	    }
-233	
+233
 234	    function _onSaveCategory(category: CategoryEntity) {
 235	      onSaveCategory?.(category);
 236	      if (category.id === 'new') {
 237	        onHideNewCategory();
 238	      }
 239	    }
-240	
+240
 241	    return (
 242	      <View
 243	        style={{
@@ -2474,7 +2491,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 289	                </Row>
 290	              );
 291	              break;
-292	
+292
 293	            case 'expense-group':
 294	              content = (
 295	                <ExpenseGroup
@@ -2560,10 +2577,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 375	              // @ts-expect-error Error is expected here because "item.type" is "never"
 376	              throw new Error('Unknown item type: ' + item.type);
 377	          }
-378	
+378
 379	          const pos =
 380	            idx === 0 ? 'first' : idx === items.length - 1 ? 'last' : null;
-381	
+381
 382	          return (
 383	            <DropHighlightPosContext.Provider
 384	              key={
@@ -2593,10 +2610,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:31Z)**_
 408	    );
 409	  },
 410	);
-411	
+411
 412	BudgetCategories.displayName = 'BudgetCategories';
 413
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:33Z)**_
@@ -2643,6 +2661,7 @@ export function useCategoriesById() {
 509:export function useReorderCategoryGroupMutation() {
 527:export function useSortCategoriesMutation() {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:37Z)**_
@@ -2833,6 +2852,7 @@ type DeleteCategoryPayload = {
 
 export function useDeleteCategoryMutation() {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:40Z)**_
@@ -2890,6 +2910,7 @@ SidebarCategory.tsx:107:          onPress={handleContextMenu}
 SidebarCategory.tsx:167:              onSave({ ...category, name: value });
 SidebarCategory.tsx:171:              onSave({ ...category, name: value });
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:49Z)**_
@@ -3096,6 +3117,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:49Z)**_
       {!dragPreview && (
         <SvgExpandArrow
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:42:58Z)**_
@@ -3188,6 +3210,7 @@ components/budget/index.tsx:174:  const onBudgetAction = (month, type, args) => 
 191-  groupIncomeReceived: 'total-income',
 192-
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:43:07Z)**_
@@ -3321,6 +3344,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:43:07Z)**_
       sessionStorage.setItem(
 desktop-client/src/spreadsheet/index.ts:29:  'envelope-budget': {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:43:13Z)**_
@@ -3389,6 +3413,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:43:13Z)**_
 ../../loot-core/src/server/sync/index.ts:16:  triggerBudgetChanges,
 ../../loot-core/src/server/sync/index.ts:405:    triggerBudgetChanges(oldData, newData);
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-10-01 04:43:57Z)**_
@@ -3398,17 +3423,20 @@ I found no nesting anywhere today. Categories and category groups both have a fl
 ## 1. Database schema
 
 **Base tables** are in `packages/loot-core/src/server/sql/init.sql`:
+
 - **`categories` (L58-64):** `id`, `name`, `is_income`, `cat_group`, `sort_order`, `tombstone`.
 - **`category_groups` (L66-71):** `id`, `name`, `is_income`, `sort_order`, `tombstone`. The UNIQUE constraint on `name` was later removed by `migrations/1555786194328_remove_category_group_unique.sql`.
 - **`category_mapping` (L81):** `id`, `transferId`. It remaps the category of a deleted one to the category that replaced it.
 
 **Columns added later**, all in `packages/loot-core/migrations/`:
+
 - `1685007876842_add_category_hidden.sql`: `hidden` on both tables.
 - `1694438752000_add_goal_targets.sql`: `categories.goal_def`, plus `goal` on `zero_budgets` and `reflect_budgets`.
 - `1754611200000_add_category_template_settings.sql`: `categories.template_settings` (JSON).
 - `1778510362740_add_cleanup_groups_and_def.sql`: `categories.cleanup_def`. This is the newest category migration and a good template for an `ALTER TABLE ... ADD COLUMN` file. Files are named `<timestamp>_name.sql` or `.js`.
 
 **Types and schema**, all of which would need a new field such as `parent_id`:
+
 - `packages/loot-core/src/server/db/types/index.ts`: `DbCategory` (L47-58) and `DbCategoryGroup` (L60-67).
 - `packages/loot-core/src/types/models/category.ts`: `CategoryEntity` (`id, name, is_income, group, goal_def, cleanup_def, template_settings, sort_order, tombstone, hidden`).
 - `packages/loot-core/src/types/models/category-group.ts`: `CategoryGroupEntity`, which also carries `categories?: CategoryEntity[]`.
@@ -3418,6 +3446,7 @@ I found no nesting anywhere today. Categories and category groups both have a fl
 ## 2. Server CRUD and the sync layer
 
 **Handlers** are in `packages/loot-core/src/server/budget/app.ts`. All are registered at L145-158 and wrapped in `mutator(undoable(...))`:
+
 - `getCategories` (L185) returns `{ grouped, list }`, built from `getCategoryGroups` (L415).
 - `createCategory` (L309) takes `{ name, groupId, isIncome, hidden }` and calls `db.insertCategory`.
 - `updateCategory` (L332) calls `db.updateCategory(categoryModel.toDb(...))`.
@@ -3425,6 +3454,7 @@ I found no nesting anywhere today. Categories and category groups both have a fl
 - `deleteCategory` (L368) takes an optional `transferId` and calls `budget.doTransfer` for expense categories.
 
 **DB functions** are in `packages/loot-core/src/server/db/index.ts`:
+
 - `insertWithSchema` (L292) and `updateWithSchema` (L305).
 - `getCategories` (L312) and `getCategoriesGrouped` (L322).
 - `insertCategory` (L440): rejects a duplicate name within the same group, shifts sort orders, calls `insertWithUUID`, then inserts a `category_mapping` row pointing the category at itself.
@@ -3437,12 +3467,14 @@ I found no nesting anywhere today. Categories and category groups both have a fl
 ## 3. Budget math
 
 **Shared code**, `packages/loot-core/src/server/budget/base.ts`:
+
 - `createCategory` (L73) creates the `sum-amount-<id>` cell, a SQL sum of the month's on-budget transactions.
 - `createBudget` (L268) loads groups via AQL, loops months, creates the per-category and per-group cells, then the summary.
 - `createAllBudgets` is at L376, `doTransfer` at L245.
 - `handleBudgetChange` (L161) writes the `budget-`, `carryover-`, `goal-` and `long-goal-` cells from `zero_budgets` / `reflect_budgets` rows.
 
 **Envelope budget**, `packages/loot-core/src/server/budget/envelope.ts`:
+
 - **Per category (L33-74):** `budget-<id>` (static), `carryover-<id>`, and `leftover-<id>`, where leftover = budgeted + spent + (previous month's leftover if carryover is on, otherwise previous month's positive leftover). `leftover-pos-<id>` holds the positive part.
 - **Per group (L76-96):** `group-sum-amount-<g>`, `group-budget-<g>` and `group-leftover-<g>`, each the sum of the group's category cells.
 - **Summary (L98-226):**
@@ -3452,18 +3484,21 @@ I found no nesting anywhere today. Categories and category groups both have a fl
 - **Dependency updates:** `handleCategoryChange` (L240) adds or removes dependencies when a category is created, deleted or moved between groups. `handleCategoryGroupChange` is at L335.
 
 The child-spends-only-from-parent rule could go in one of two places:
+
 - **In the cells:** if a child's `budget-` is excluded from `group-budget`, `total-budgeted` stays correct.
 - **In the actions:** every write to a child moves money out of the parent, the way `transferCategory` does.
 
 **Tracking budget**, `packages/loot-core/src/server/budget/tracking.ts`: the same structure (`createCategory` L11, `createCategoryGroup` L66, `createSummary` L91).
 
 **Actions**, `packages/loot-core/src/server/budget/actions.ts`:
+
 - `getBudget` (L111) and `setBudget` (L126) upsert the `${table}` row with id `<yyyymm>-<cat>`.
 - `transferCategory` (L643) moves money between two categories with `setBudget`, inside `batchMessages`. This is the natural primitive for "fund a child from its parent".
 - Also: `coverOverspending` (L518), `transferAvailable` (L578), `coverOverbudgeted` (L595), `holdForNextMonth` (L486), `setCategoryCarryover` (L704).
 - These are exposed as `budget/*` methods in `app.ts` (L25-47, L74-130).
 
 **Client cell names**:
+
 - `packages/desktop-client/src/spreadsheet/bindings.ts:152-178` (`envelopeBudget`: `catBudgeted`, `catSumAmount`, `catBalance`, `catCarryover`, `catGoal`, `groupBudgeted`, `groupBalance`, `toBudget`, `totalBudgeted`, and so on). Tracking starts at L180.
 - The field types are in `packages/desktop-client/src/spreadsheet/index.ts:29`.
 
@@ -3472,6 +3507,7 @@ The child-spends-only-from-parent rule could go in one of two places:
 **`index.tsx`** holds the handlers: `onSaveCategory` (L154), `onDeleteCategory` (L158), `onSaveCategoryGroup` (L163), `onBudgetAction` (L174).
 
 **`BudgetTable.tsx`**:
+
 - The `budget.collapsed` local pref is read at L84.
 - `_onReorderCategory` (around L115-152) finds the target group with `findSortUp` / `findSortDown`.
 - `moveVertically` (L168) flattens groups into categories for keyboard navigation.
@@ -3479,6 +3515,7 @@ The child-spends-only-from-parent rule could go in one of two places:
 - `<BudgetCategories>` is rendered at L320.
 
 **`BudgetCategories.tsx`** is the row flattener:
+
 - The `BudgetItem` union (L25-36) has `new-group | new-category | expense-group | expense-category | income-separator | income-group | income-category`.
 - The `items` useMemo (L91-167) calls `separateGroups`, filters hidden categories, inserts the `new-category` row right after its group header when `newCategoryForGroup === group.id`, and skips the categories of collapsed groups.
 - `onShowNewCategory(groupId)` (L225) expands the group and sets `newCategoryForGroup`.
@@ -3486,12 +3523,14 @@ The child-spends-only-from-parent rule could go in one of two places:
 - The rendering switch is at L252-377.
 
 **Rows**:
+
 - **`ExpenseCategory.tsx`:** uses `useDraggable` / `useDroppable`, then `SidebarCategory`, then `RenderMonths` with `ExpenseCategoryComponent` from `useBudgetComponents()` (L75).
 - **`SidebarCategory.tsx`:** the context menu (L67-86) has only Rename, Hide/Show and Delete, so an "Add subcategory" item would go here. Indentation comes from `paddingLeft: 13` on the `InputCell` (L177). Width is `200 + 100 * categoryExpandedState`.
 - **`SidebarGroup.tsx`:** the context menu (L73-115) has rename, toggle-visibility, delete, sort-asc/desc and apply templates. The "Add category" button (L173-184) calls `onShowNewCategory(group.id)`.
 - **`ExpenseGroup.tsx`, `IncomeGroup.tsx`, `IncomeCategory.tsx`** are the remaining row components.
 
 **`envelope/EnvelopeBudgetComponents.tsx`**:
+
 - `ExpenseGroupMonth` (L144) and `ExpenseCategoryMonth` (L198) bind to `envelopeBudget.catBudgeted` / `catSumAmount` / `catBalance` and fire `onBudgetAction(month, 'budget-amount', ...)`.
 - The menus live alongside it: `BudgetMenu`, `BalanceMenu`, `BalanceMovementMenu`, `TransferMenu`, `CoverMenu`.
 
@@ -3525,17 +3564,20 @@ _**User (2026-10-01 04:43:57Z)**_
 ## 1. Database schema
 
 **Base tables** are in `packages/loot-core/src/server/sql/init.sql`:
+
 - **`categories` (L58-64):** `id`, `name`, `is_income`, `cat_group`, `sort_order`, `tombstone`.
 - **`category_groups` (L66-71):** `id`, `name`, `is_income`, `sort_order`, `tombstone`. The UNIQUE constraint on `name` was later removed by `migrations/1555786194328_remove_category_group_unique.sql`.
 - **`category_mapping` (L81):** `id`, `transferId`. It remaps the category of a deleted one to the category that replaced it.
 
 **Columns added later**, all in `packages/loot-core/migrations/`:
+
 - `1685007876842_add_category_hidden.sql`: `hidden` on both tables.
 - `1694438752000_add_goal_targets.sql`: `categories.goal_def`, plus `goal` on `zero_budgets` and `reflect_budgets`.
 - `1754611200000_add_category_template_settings.sql`: `categories.template_settings` (JSON).
 - `1778510362740_add_cleanup_groups_and_def.sql`: `categories.cleanup_def`. This is the newest category migration and a good template for an `ALTER TABLE ... ADD COLUMN` file. Files are named `&lt;timestamp&gt;_name.sql` or `.js`.
 
 **Types and schema**, all of which would need a new field such as `parent_id`:
+
 - `packages/loot-core/src/server/db/types/index.ts`: `DbCategory` (L47-58) and `DbCategoryGroup` (L60-67).
 - `packages/loot-core/src/types/models/category.ts`: `CategoryEntity` (`id, name, is_income, group, goal_def, cleanup_def, template_settings, sort_order, tombstone, hidden`).
 - `packages/loot-core/src/types/models/category-group.ts`: `CategoryGroupEntity`, which also carries `categories?: CategoryEntity[]`.
@@ -3545,6 +3587,7 @@ _**User (2026-10-01 04:43:57Z)**_
 ## 2. Server CRUD and the sync layer
 
 **Handlers** are in `packages/loot-core/src/server/budget/app.ts`. All are registered at L145-158 and wrapped in `mutator(undoable(...))`:
+
 - `getCategories` (L185) returns `{ grouped, list }`, built from `getCategoryGroups` (L415).
 - `createCategory` (L309) takes `{ name, groupId, isIncome, hidden }` and calls `db.insertCategory`.
 - `updateCategory` (L332) calls `db.updateCategory(categoryModel.toDb(...))`.
@@ -3552,6 +3595,7 @@ _**User (2026-10-01 04:43:57Z)**_
 - `deleteCategory` (L368) takes an optional `transferId` and calls `budget.doTransfer` for expense categories.
 
 **DB functions** are in `packages/loot-core/src/server/db/index.ts`:
+
 - `insertWithSchema` (L292) and `updateWithSchema` (L305).
 - `getCategories` (L312) and `getCategoriesGrouped` (L322).
 - `insertCategory` (L440): rejects a duplicate name within the same group, shifts sort orders, calls `insertWithUUID`, then inserts a `category_mapping` row pointing the category at itself.
@@ -3564,12 +3608,14 @@ _**User (2026-10-01 04:43:57Z)**_
 ## 3. Budget math
 
 **Shared code**, `packages/loot-core/src/server/budget/base.ts`:
+
 - `createCategory` (L73) creates the `sum-amount-&lt;id&gt;` cell, a SQL sum of the month's on-budget transactions.
 - `createBudget` (L268) loads groups via AQL, loops months, creates the per-category and per-group cells, then the summary.
 - `createAllBudgets` is at L376, `doTransfer` at L245.
 - `handleBudgetChange` (L161) writes the `budget-`, `carryover-`, `goal-` and `long-goal-` cells from `zero_budgets` / `reflect_budgets` rows.
 
 **Envelope budget**, `packages/loot-core/src/server/budget/envelope.ts`:
+
 - **Per category (L33-74):** `budget-&lt;id&gt;` (static), `carryover-&lt;id&gt;`, and `leftover-&lt;id&gt;`, where leftover = budgeted + spent + (previous month's leftover if carryover is on, otherwise previous month's positive leftover). `leftover-pos-&lt;id&gt;` holds the positive part.
 - **Per group (L76-96):** `group-sum-amount-&lt;g&gt;`, `group-budget-&lt;g&gt;` and `group-leftover-&lt;g&gt;`, each the sum of the group's category cells.
 - **Summary (L98-226):**
@@ -3579,18 +3625,21 @@ _**User (2026-10-01 04:43:57Z)**_
 - **Dependency updates:** `handleCategoryChange` (L240) adds or removes dependencies when a category is created, deleted or moved between groups. `handleCategoryGroupChange` is at L335.
 
 The child-spends-only-from-parent rule could go in one of two places:
+
 - **In the cells:** if a child's `budget-` is excluded from `group-budget`, `total-budgeted` stays correct.
 - **In the actions:** every write to a child moves money out of the parent, the way `transferCategory` does.
 
 **Tracking budget**, `packages/loot-core/src/server/budget/tracking.ts`: the same structure (`createCategory` L11, `createCategoryGroup` L66, `createSummary` L91).
 
 **Actions**, `packages/loot-core/src/server/budget/actions.ts`:
+
 - `getBudget` (L111) and `setBudget` (L126) upsert the `${table}` row with id `&lt;yyyymm&gt;-&lt;cat&gt;`.
 - `transferCategory` (L643) moves money between two categories with `setBudget`, inside `batchMessages`. This is the natural primitive for "fund a child from its parent".
 - Also: `coverOverspending` (L518), `transferAvailable` (L578), `coverOverbudgeted` (L595), `holdForNextMonth` (L486), `setCategoryCarryover` (L704).
 - These are exposed as `budget/*` methods in `app.ts` (L25-47, L74-130).
 
 **Client cell names**:
+
 - `packages/desktop-client/src/spreadsheet/bindings.ts:152-178` (`envelopeBudget`: `catBudgeted`, `catSumAmount`, `catBalance`, `catCarryover`, `catGoal`, `groupBudgeted`, `groupBalance`, `toBudget`, `totalBudgeted`, and so on). Tracking starts at L180.
 - The field types are in `packages/desktop-client/src/spreadsheet/index.ts:29`.
 
@@ -3599,6 +3648,7 @@ The child-spends-only-from-parent rule could go in one of two places:
 **`index.tsx`** holds the handlers: `onSaveCategory` (L154), `onDeleteCategory` (L158), `onSaveCategoryGroup` (L163), `onBudgetAction` (L174).
 
 **`BudgetTable.tsx`**:
+
 - The `budget.collapsed` local pref is read at L84.
 - `_onReorderCategory` (around L115-152) finds the target group with `findSortUp` / `findSortDown`.
 - `moveVertically` (L168) flattens groups into categories for keyboard navigation.
@@ -3606,6 +3656,7 @@ The child-spends-only-from-parent rule could go in one of two places:
 - `&lt;BudgetCategories&gt;` is rendered at L320.
 
 **`BudgetCategories.tsx`** is the row flattener:
+
 - The `BudgetItem` union (L25-36) has `new-group | new-category | expense-group | expense-category | income-separator | income-group | income-category`.
 - The `items` useMemo (L91-167) calls `separateGroups`, filters hidden categories, inserts the `new-category` row right after its group header when `newCategoryForGroup === group.id`, and skips the categories of collapsed groups.
 - `onShowNewCategory(groupId)` (L225) expands the group and sets `newCategoryForGroup`.
@@ -3613,12 +3664,14 @@ The child-spends-only-from-parent rule could go in one of two places:
 - The rendering switch is at L252-377.
 
 **Rows**:
+
 - **`ExpenseCategory.tsx`:** uses `useDraggable` / `useDroppable`, then `SidebarCategory`, then `RenderMonths` with `ExpenseCategoryComponent` from `useBudgetComponents()` (L75).
 - **`SidebarCategory.tsx`:** the context menu (L67-86) has only Rename, Hide/Show and Delete, so an "Add subcategory" item would go here. Indentation comes from `paddingLeft: 13` on the `InputCell` (L177). Width is `200 + 100 * categoryExpandedState`.
 - **`SidebarGroup.tsx`:** the context menu (L73-115) has rename, toggle-visibility, delete, sort-asc/desc and apply templates. The "Add category" button (L173-184) calls `onShowNewCategory(group.id)`.
 - **`ExpenseGroup.tsx`, `IncomeGroup.tsx`, `IncomeCategory.tsx`** are the remaining row components.
 
 **`envelope/EnvelopeBudgetComponents.tsx`**:
+
 - `ExpenseGroupMonth` (L144) and `ExpenseCategoryMonth` (L198) bind to `envelopeBudget.catBudgeted` / `catSumAmount` / `catBalance` and fire `onBudgetAction(month, 'budget-amount', ...)`.
 - The menus live alongside it: `BudgetMenu`, `BalanceMenu`, `BalanceMovementMenu`, `TransferMenu`, `CoverMenu`.
 
@@ -3653,15 +3706,15 @@ _**Agent (claude-opus-5-5 2026-10-01 04:44:07Z)**_
 4	// @ts-strict-ignore
 5	import * as monthUtils from '#shared/months';
 6	import { safeNumber } from '#shared/util';
-7	
+7
 8	import { createCategory as createCategoryFromBase } from './base';
 9	import { flatten2, number, sumAmounts, unflatten2 } from './util';
-10	
+10
 11	function getBlankSheet(months) {
 12	  const blankMonth = monthUtils.prevMonth(months[0]);
 13	  return monthUtils.sheetForMonth(blankMonth);
 14	}
-15	
+15
 16	export function createBlankCategory(cat, months) {
 17	  if (months.length > 0) {
 18	    const sheetName = getBlankSheet(months);
@@ -3670,19 +3723,19 @@ _**Agent (claude-opus-5-5 2026-10-01 04:44:07Z)**_
 21	    sheet.get().createStatic(sheetName, `leftover-pos-${cat.id}`, 0);
 22	  }
 23	}
-24	
+24
 25	function createBlankMonth(categories, sheetName, months) {
 26	  sheet.get().createStatic(sheetName, 'is-blank', true);
 27	  sheet.get().createStatic(sheetName, 'to-budget', 0);
 28	  sheet.get().createStatic(sheetName, 'buffered', 0);
-29	
+29
 30	  categories.forEach(cat => createBlankCategory(cat, months));
 31	}
-32	
+32
 33	export function createCategory(cat, sheetName, prevSheetName) {
 34	  if (!cat.is_income) {
 35	    sheet.get().createStatic(sheetName, `budget-${cat.id}`, 0);
-36	
+36
 37	    // This makes the app more robust by "fixing up" null budget values.
 38	    // Those should not be allowed, but in case somehow a null value
 39	    // ends up there, we are resilient to it. Preferrably the
@@ -3691,9 +3744,9 @@ _**Agent (claude-opus-5-5 2026-10-01 04:44:07Z)**_
 42	    if (sheet.get().getCellValue(sheetName, `budget-${cat.id}`) == null) {
 43	      sheet.get().set(resolveName(sheetName, `budget-${cat.id}`), 0);
 44	    }
-45	
+45
 46	    sheet.get().createStatic(sheetName, `carryover-${cat.id}`, false);
-47	
+47
 48	    sheet.get().createDynamic(sheetName, `leftover-${cat.id}`, {
 49	      initialValue: 0,
 50	      dependencies: [
@@ -3711,7 +3764,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:44:07Z)**_
 62	        );
 63	      },
 64	    });
-65	
+65
 66	    sheet.get().createDynamic(sheetName, 'leftover-pos-' + cat.id, {
 67	      initialValue: 0,
 68	      dependencies: [`leftover-${cat.id}`],
@@ -3721,21 +3774,21 @@ _**Agent (claude-opus-5-5 2026-10-01 04:44:07Z)**_
 72	    });
 73	  }
 74	}
-75	
+75
 76	export function createCategoryGroup(group, sheetName) {
 77	  sheet.get().createDynamic(sheetName, 'group-sum-amount-' + group.id, {
 78	    initialValue: 0,
 79	    dependencies: group.categories.map(cat => `sum-amount-${cat.id}`),
 80	    run: sumAmounts,
 81	  });
-82	
+82
 83	  if (!group.is_income) {
 84	    sheet.get().createDynamic(sheetName, 'group-budget-' + group.id, {
 85	      initialValue: 0,
 86	      dependencies: group.categories.map(cat => `budget-${cat.id}`),
 87	      run: sumAmounts,
 88	    });
-89	
+89
 90	    sheet.get().createDynamic(sheetName, 'group-leftover-' + group.id, {
 91	      initialValue: 0,
 92	      dependencies: group.categories.map(cat => `leftover-${cat.id}`),
@@ -3743,14 +3796,14 @@ _**Agent (claude-opus-5-5 2026-10-01 04:44:07Z)**_
 94	    });
 95	  }
 96	}
-97	
+97
 98	export function createSummary(groups, categories, prevSheetName, sheetName) {
 99	  const incomeGroup = groups.filter(group => group.is_income)[0];
 100	  const expenseCategories = categories.filter(cat => !cat.is_income);
 101	  const incomeCategories = categories.filter(cat => cat.is_income);
-102	
+102
 103	  sheet.get().createStatic(sheetName, 'buffered', 0);
-104	
+104
 105	  sheet.get().createDynamic(sheetName, 'from-last-month', {
 106	    initialValue: 0,
 107	    dependencies: [
@@ -3758,6 +3811,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:44:07Z)**_
 109	      `${prevSheetName}!buffered-selected`,
 110	    ],
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:45:03Z)**_
@@ -3769,11 +3823,13 @@ _**Agent (claude-opus-5-5 2026-10-01 04:45:03Z)**_
 # Plan: Subcategories on the main budget page (issue #54)
 
 ## Context
+
 Users want to nest a category under another one (e.g. "Restaurants" under "Food") on the main budget page. Money reaches the child only through its parent; the parent can keep any amount for itself. Today there is no nesting anywhere: `categories` belong to a flat `category_group`, and the only `parent_id` in the schema is on transactions (split transactions). Reports, other pages and suggested starter subcategories are out of scope.
 
 ## Answers to the open questions
 
 **1. Where are categories stored and handled?**
+
 - **Database:** the `categories` table (`packages/loot-core/src/server/sql/init.sql:58`) with columns `id, name, is_income, cat_group, sort_order, tombstone`. Migrations in `packages/loot-core/migrations/` later added `hidden`, `goal_def`, `template_settings` and `cleanup_def`.
 - **Types:** `DbCategory` in `packages/loot-core/src/server/db/types/index.ts:47`, `CategoryEntity` in `packages/loot-core/src/types/models/category.ts`, and the AQL schema in `packages/loot-core/src/server/aql/schema/index.ts:82`.
 - **Server CRUD:** the handlers `createCategory`, `updateCategory`, `moveCategory` and `deleteCategory` in `packages/loot-core/src/server/budget/app.ts:309-368` call `insertCategory` and the related functions in `packages/loot-core/src/server/db/index.ts:440-528`. Validation is in `packages/loot-core/src/server/models.ts:72`.
@@ -3782,15 +3838,18 @@ Users want to nest a category under another one (e.g. "Restaurants" under "Food"
 
 **2. Are categories contained neatly enough to add sub-containers?**
 Mostly yes:
+
 - Sync is generic. Each column becomes a CRDT message, so a new column only needs a migration plus schema and type entries, with no sync code.
 - The spreadsheet already has per-category cells (`budget-<id>`, `leftover-<id>`) that a child can reuse unchanged.
 
 What doesn't fit as neatly:
+
 - Grouping and sorting assume a flat list within a group: `execCategoryGroups`, `BudgetCategories` flattening, `findSortUp/Down`, and drag-and-drop.
 - Budget writes have no idea that one category could depend on another.
 
 **3. Are significant UI changes needed?**
 Moderate, not a redesign. The table rows and month cells can be reused. The changes are:
+
 - an "Add subcategory" item in the category context menu;
 - a new-subcategory input row;
 - child rows indented under their parent, with an optional collapse toggle;
@@ -3799,10 +3858,12 @@ Moderate, not a redesign. The table rows and month cells can be reused. The chan
 
 **4. A non-trivial design decision: how the child's money is represented.**
 There are two options:
+
 - **(A) Transfer model (recommended).** Every change to a child's budget moves the same delta out of the parent's `budget-<parent>` in the same batch. Group and total sums stay correct with no formula changes, "To Budget" is untouched, and the child can never draw on the main pool.
 - **(B) Slice model.** The parent's cell holds the total and the child's cell is a portion of it. Then `group-budget`, `leftover` and `total-budgeted` all have to exclude or subtract the children, which touches carryover and rollover logic and is riskier.
 
 Choosing A raises follow-on questions:
+
 - Bulk actions: copy last month, set to zero, templates, and cleanup.
 - What happens to a child's money when the child is deleted or un-nested.
 - Whether nesting can go deeper than one level. This plan allows one level only.
@@ -3810,6 +3871,7 @@ Choosing A raises follow-on questions:
 ## Recommended implementation (transfer model, one level deep)
 
 ### 1. Data model (loot-core)
+
 - **New migration** `packages/loot-core/migrations/<timestamp>_add_category_parent.sql`: `ALTER TABLE categories ADD COLUMN parent_id TEXT DEFAULT NULL;`. Use `1778510362740_add_cleanup_groups_and_def.sql` as the template.
 - **Add `parent_id`** to `DbCategory`, `CategoryEntity` (`parent_id?: CategoryEntity['id'] | null`), the `categories` AQL schema (`f('id', { ref: 'categories' })`) and `api-models.ts` if it is exposed there.
 - **Validation** in `categoryModel` / `db.insertCategory` / `db.updateCategory`:
@@ -3821,12 +3883,14 @@ Choosing A raises follow-on questions:
   These checks cover "one parent per child, many children per parent".
 
 ### 2. Server handlers (`server/budget/app.ts`)
+
 - **`category-create`** accepts an optional `parentId`.
 - **`category-move`** to another group: carry the children along with the parent, or reject moving a child on its own.
 - **`category-delete`** of a parent: un-nest its children (`parent_id = NULL`). Their existing budgets stay in place, since they were already deducted from the parent. Deleting a child moves its budget back to the parent by default, reusing `transferId` / `doTransfer`.
 - **`execCategoryGroups`** (`aql/schema/executors.ts:322`) keeps returning a flat `categories[]`, ordered so each child follows its parent. The UI builds the tree, so nothing that relies on the flat list breaks.
 
 ### 3. Budget rules (`server/budget/actions.ts`)
+
 - **`setBudget`:** if the category has a `parent_id`, compute `delta = new - old` and, inside one `batchMessages`, write the child and then `budget-<parent> -= delta`. This enforces "child funded only via parent" for every write path: the UI cell, the API and undo.
 - **Negative parent:** allow it, the same way the envelope budget already lets a category go negative. Optionally warn in the UI.
 - **Bulk actions** that write many cells (`copyPreviousMonth`, `setZero`, `set3MonthAvg`, `setNMonthAvg`, `applyTemplate`, cleanup):
@@ -3836,10 +3900,12 @@ Choosing A raises follow-on questions:
 - **Display-only parent total:** add a cell `parent-total-budget-<parentId>` = own budget + the children's budgets. Create it in `envelope.ts` `createCategory` when the category has children, and rebuild its dependencies in `handleCategoryChange` (`envelope.ts:240`) when `parent_id` changes. Repeat both in `tracking.ts`.
 
 ### 4. Client data and mutations (desktop-client)
+
 - **`useCreateCategoryMutation`** (`budget/mutations.ts:87`) and `useSaveCategoryMutation` (`:153`) pass `parentId`. The duplicate-name check stays per group.
 - **New tree helper** in `components/budget/util.ts`, alongside `separateGroups`: `nestCategories(group.categories)`, which returns parents with `children[]`.
 
 ### 5. UI (main budget page only)
+
 - **`SidebarCategory.tsx`:** add an "Add subcategory" item to the context menu (L67-86) for expense categories that have no `parent_id`. Child rows get extra left padding, increasing `paddingLeft: 13` at L177.
 - **`BudgetCategories.tsx`:**
   - Add `newSubcategoryForParent` state, next to `newCategoryForGroup`.
@@ -3859,9 +3925,11 @@ Choosing A raises follow-on questions:
 - **Mobile and reports:** out of scope. They keep seeing children as ordinary flat categories, which is still correct for the totals.
 
 ### 6. Release note
+
 Add `upcoming-release-notes/add-budget-subcategories.md`, following the writing-release-notes skill.
 
 ## Verification
+
 - **Unit tests (loot-core):**
   - `actions.test.ts`: setting a child's budget to X decreases the parent by X and leaves `to-budget` unchanged; bulk actions don't double-adjust.
   - `db` / `app` tests: the nesting validation rejects a grandchild, an income parent, a cross-group parent and a tombstoned parent; deleting a parent un-nests its children; deleting a child returns its money to the parent.
@@ -3871,12 +3939,12 @@ Add `upcoming-release-notes/add-budget-subcategories.md`, following the writing-
   2. Confirm the parent can leave money unallocated, and that a month with no child budget is fine.
   3. Delete or un-nest the child and confirm the totals.
 - **E2E:** add a Playwright test in `packages/desktop-client/e2e/budget.test.ts` for creating a subcategory and allocating to it.
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\.claude\plans\please-come-up-with-snug-lobster.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:45:03Z)**_
@@ -3894,6 +3962,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:45:03Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:52:05Z)**_
@@ -4028,6 +4097,7 @@ Add `upcoming-release-notes/add-budget-subcategories.md`, following the writing-
   3. Delete or un-nest the child and confirm the totals.
 - **E2E:** add a Playwright test in `packages/desktop-client/e2e/budget.test.ts` for creating a subcategory and allocating to it.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:52:19Z)**_
@@ -4056,7 +4126,7 @@ The plan is written and approved, and it answers the four open questions. I have
    - **Alternative:** treat the child as a slice of the parent's number. That would mean rewriting the total, leftover and carryover formulas, which is riskier.
    - **Follow-on decisions:** how bulk actions like "copy last month" and templates avoid moving money twice, what happens to a child's money when it's deleted or un-nested, and limiting nesting to one level.
 
-The plan also covers the step-by-step changes, tests and a manual check using the demo budget: [please-come-up-with-snug-lobster.md](C:\Users\icsab\.claude\plans\please-come-up-with-snug-lobster.md).
+The plan also covers the step-by-step changes, tests and a manual check using the demo budget: [please-come-up-with-snug-lobster.md](C:\Users\icsab.claude\plans\please-come-up-with-snug-lobster.md).
 
 This is a large, multi-step feature. Should I start with step 1 (the new column, types and nesting checks), or do you want to split it into sub-issues first?
 
@@ -4075,13 +4145,13 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
 List latest migrations and show template
 
 ```text
-Name                                                 
-----                                                 
-1778510362740_add_cleanup_groups_and_def.sql         
+Name
+----
+1778510362740_add_cleanup_groups_and_def.sql
 1780099200000_add_show_trend_lines_report_setting.sql
-1780327681000_add_tags_hidden.sql                    
-1780606215000_add_bank_sync_status.sql               
-1780606215001_add_performance_indexes.sql            
+1780327681000_add_tags_hidden.sql
+1780606215000_add_bank_sync_status.sql
+1780606215001_add_performance_indexes.sql
 BEGIN TRANSACTION;
 
 ALTER TABLE categories ADD COLUMN cleanup_def TEXT DEFAULT NULL;
@@ -4093,6 +4163,7 @@ CREATE TABLE cleanup_groups
 
 COMMIT;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
@@ -4103,7 +4174,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
 
 ```text
 1	import type { CategoryGroupEntity } from './category-group';
-2	
+2
 3	export type CategoryEntity = {
 4	  id: string;
 5	  name: string;
@@ -4118,6 +4189,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
 14	};
 15
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
@@ -4133,7 +4205,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
 43	  name: string | null;
 44	  tombstone: 1 | 0;
 45	};
-46	
+46
 47	export type DbCategory = {
 48	  id: string;
 49	  name: string;
@@ -4146,7 +4218,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
 56	  template_settings?: { source: 'notes' | 'ui' };
 57	  tombstone: 1 | 0;
 58	};
-59	
+59
 60	export type DbCategoryGroup = {
 61	  id: string;
 62	  name: string;
@@ -4155,9 +4227,10 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
 65	  hidden: 1 | 0;
 66	  tombstone: 1 | 0;
 67	};
-68	
+68
 69	export type DbCleanupGroup = {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
@@ -4193,6 +4266,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:26Z)**_
 101	  },
 102	  cleanup_groups: {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
@@ -4206,18 +4280,18 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
 431	    'SELECT * FROM categories WHERE cat_group = ?',
 432	    [group.id],
 433	  );
-434	
+434
 435	  // Delete all the categories within a group
 436	  await Promise.all(categories.map(cat => deleteCategory(cat, transferId)));
 437	  await delete_('category_groups', group.id);
 438	}
-439	
+439
 440	export async function insertCategory(
 441	  category: WithRequired<Partial<DbCategory>, 'name' | 'cat_group'>,
 442	  { atEnd }: { atEnd?: boolean | undefined } = { atEnd: undefined },
 443	): Promise<DbCategory['id']> {
 444	  let sort_order;
-445	
+445
 446	  let id_: DbCategory['id'];
 447	  await batchMessages(async () => {
 448	    // Dont allow duplicated names in groups
@@ -4230,7 +4304,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
 455	        `Category '${category.name}' already exists in group '${category.cat_group}'`,
 456	      );
 457	    }
-458	
+458
 459	    if (atEnd) {
 460	      const lastCat = await first<Pick<DbCategory, 'sort_order'>>(`
 461	        SELECT sort_order FROM categories WHERE tombstone = 0 ORDER BY sort_order DESC, id DESC LIMIT 1
@@ -4243,7 +4317,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
 468	        `SELECT id, sort_order FROM categories WHERE cat_group = ? AND tombstone = 0 ORDER BY sort_order, id`,
 469	        [category.cat_group],
 470	      );
-471	
+471
 472	      const { updates, sort_order: order } = shoveSortOrders(
 473	        categories,
 474	        categories.length > 0 ? categories[0].id : null,
@@ -4253,12 +4327,12 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
 478	      }
 479	      sort_order = order;
 480	    }
-481	
+481
 482	    category = {
 483	      ...categoryModel.validate(category),
 484	      sort_order,
 485	    };
-486	
+486
 487	    const id = await insertWithUUID('categories', category);
 488	    // Create an entry in the mapping table that points it to itself
 489	    await insert('category_mapping', { id, transferId: id });
@@ -4266,7 +4340,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
 491	  });
 492	  return id_;
 493	}
-494	
+494
 495	export function updateCategory(
 496	  category: WithRequired<
 497	    Partial<DbCategory>,
@@ -4278,7 +4352,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
 503	  // const { cat_group: group, ...rest } = category;
 504	  return update('categories', category);
 505	}
-506	
+506
 507	export async function moveCategory(
 508	  id: DbCategory['id'],
 509	  groupId: DbCategoryGroup['id'],
@@ -4287,19 +4361,19 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
 512	  if (!groupId) {
 513	    throw new Error('moveCategory: groupId is required');
 514	  }
-515	
+515
 516	  const categories = await all<Pick<DbCategory, 'id' | 'sort_order'>>(
 517	    `SELECT id, sort_order FROM categories WHERE cat_group = ? AND tombstone = 0 ORDER BY sort_order, id`,
 518	    [groupId],
 519	  );
-520	
+520
 521	  const { updates, sort_order } = shoveSortOrders(categories, targetId);
 522	  for (const info of updates) {
 523	    await update('categories', info);
 524	  }
 525	  await update('categories', { id, sort_order, cat_group: groupId });
 526	}
-527	
+527
 528	export async function deleteCategory(
 529	  category: Pick<DbCategory, 'id'>,
 530	  transferId?: DbCategory['id'] | null,
@@ -4313,6 +4387,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:27Z)**_
 538	      [category.id],
 539	    );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:31Z)**_
@@ -4329,11 +4404,11 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:31Z)**_
 64	      update ? ['name', 'offbudget', 'closed'] : ['name'],
 65	      update,
 66	    );
-67	
+67
 68	    return account as DbAccount;
 69	  },
 70	};
-71	
+71
 72	export const categoryModel = {
 73	  validate(
 74	    category: Partial<DbCategory>,
@@ -4345,7 +4420,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:31Z)**_
 80	      update ? ['name', 'is_income', 'cat_group'] : ['name', 'cat_group'],
 81	      update,
 82	    );
-83	
+83
 84	    const { sort_order: _sort_order, ...rest } = category;
 85	    return { ...rest } as DbCategory;
 86	  },
@@ -4368,11 +4443,12 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:31Z)**_
 103	    ) as CategoryEntity;
 104	  },
 105	};
-106	
+106
 107	export const categoryGroupModel = {
 108	  validate(
 109	    categoryGroup: Partial<DbCategoryGroup>,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:32Z)**_
@@ -4387,10 +4463,10 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:32Z)**_
 302	      }
 303	    }
 304	  }
-305	
+305
 306	  return values;
 307	}
-308	
+308
 309	async function createCategory({
 310	  name,
 311	  groupId,
@@ -4405,7 +4481,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:32Z)**_
 320	  if (!groupId) {
 321	    throw APIError('Creating a category: groupId is required');
 322	  }
-323	
+323
 324	  return await db.insertCategory({
 325	    name: name.trim(),
 326	    cat_group: groupId,
@@ -4413,7 +4489,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:32Z)**_
 328	    hidden: hidden ? 1 : 0,
 329	  });
 330	}
-331	
+331
 332	async function updateCategory(category: CategoryEntity): Promise<void> {
 333	  try {
 334	    await db.updateCategory(
@@ -4435,7 +4511,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:32Z)**_
 350	    throw e;
 351	  }
 352	}
-353	
+353
 354	async function moveCategory({
 355	  id,
 356	  groupId,
@@ -4449,10 +4525,11 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:32Z)**_
 364	    await db.moveCategory(id, groupId, targetId);
 365	  });
 366	}
-367	
+367
 368	async function deleteCategory({
 369	  id,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:33Z)**_
@@ -4610,6 +4687,7 @@ packages\loot-core\src\server\sync\sync.test.ts:325:      groupId = await db.ins
 packages\loot-core\src\server\sync\sync.test.ts:326:      await db.insertCategoryGroup({ id: 'group2', name: 'group2' });
 packages\loot-core\src\server\sync\sync.test.ts:327:      fooId = await db.insertCategory({ name: 'foo', cat_group: 'group1' });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:42Z)**_
@@ -4621,6 +4699,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:42Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:42Z)**_
@@ -4632,16 +4711,16 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:42Z)**_
 ```text
 1	// @ts-strict-ignore
 2	import * as db from './index';
-3	
+3
 4	beforeEach(global.emptyDatabase());
-5	
+5
 6	async function insertTransactions(transactions) {
 7	  await db.insertAccount({ id: 'foo', name: 'bar' });
 8	  return Promise.all(
 9	    transactions.map(transaction => db.insertTransaction(transaction)),
 10	  );
 11	}
-12	
+12
 13	async function getTransactions(latestDate) {
 14	  const rows = await db.getTransactions('foo');
 15	  return rows
@@ -4657,10 +4736,10 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:42Z)**_
 25	      sort_order: row.sort_order,
 26	    }));
 27	}
-28	
+28
 29	// TODO: test that `insertTransaction` is done sync (or is at least
 30	// validated in the same event loop and it's same to not await)
-31	
+31
 32	describe('Database', () => {
 33	  test('inserting a category works', async () => {
 34	    await db.insertCategoryGroup({ id: 'group1', name: 'group1' });
@@ -4670,7 +4749,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:42Z)**_
 38	    });
 39	    expect((await db.getCategories()).length).toBe(1);
 40	  });
-41	
+41
 42	  test('using a deleted category name works', async () => {
 43	    await db.insertCategoryGroup({ id: 'group1', name: 'group1' });
 44	    const id = await db.insertCategory({
@@ -4685,7 +4764,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:42Z)**_
 53	    });
 54	    expect((await db.getCategories()).length).toBe(1);
 55	  });
-56	
+56
 57	  test('transactions are sorted by date', async () => {
 58	    await insertTransactions([
 59	      { date: '2018-01-05', account: 'foo', amount: -23 },
@@ -4696,11 +4775,12 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:42Z)**_
 64	    ]);
 65	    expect(await getTransactions('2018-01-05')).toMatchSnapshot();
 66	  });
-67	
+67
 68	  test('transactions are sorted by starting balance flag', async () => {
 69	    // The transaction with a starting balance flag should always be
 70	    // at the end of any transactions of the same day (it sorts by
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:46Z)**_
@@ -4721,6 +4801,7 @@ packages\loot-core\src\platform\server\fs\index.api.ts:22:  'default-db.sqlite',
 packages\loot-core\src\server\update.ts:10:async function runMigrations() {
 packages\loot-core\src\server\update.ts:35:  await runMigrations();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:49Z)**_
@@ -4730,29 +4811,29 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:49Z)**_
  `./packages/loot-core/src/mocks/setup.ts`
 
 ```text
-125	
+125
 126	// If you want to test the sql.js backend, you need this so it knows
 127	// where to find the webassembly file
 128	// process.env.PUBLIC_URL =
 129	//   __dirname + '/../../../../node_modules/@jlongster/sql.js/dist/';
-130	
+130
 131	global.emptyDatabase = function (avoidUpdate) {
 132	  return async () => {
 133	    const path = ':memory:';
 134	    // let path = `/tmp/foo-${Math.random()}.sqlite`;
 135	    // console.log('Using db ' + path);
-136	
+136
 137	    await sqlite.init();
-138	
+138
 139	    const memoryDB = await sqlite.openDatabase(path);
 140	    sqlite.execQuery(
 141	      memoryDB,
 142	      nativeFs.readFileSync(__dirname + '/../server/sql/init.sql', 'utf8'),
 143	    );
-144	
+144
 145	    db.setDatabase(memoryDB);
 146	    db.runQuery('INSERT INTO db_version (version) VALUES (?)', ['0.0.1']);
-147	
+147
 148	    if (!avoidUpdate) {
 149	      await updateVersion();
 150	      await db.loadClock();
@@ -4761,6 +4842,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:53:49Z)**_
 153	};
 154
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:53:59Z)**_
@@ -4784,6 +4866,7 @@ COMMIT;
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\migrations\1780700000000_add_category_parent.sql (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:54:34Z)**_
@@ -4794,6 +4877,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:54:34Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\types\models\category.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:54:42Z)**_
@@ -4804,6 +4888,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:54:42Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\db\types\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:54:47Z)**_
@@ -4814,6 +4899,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:54:47Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\aql\schema\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:54:58Z)**_
@@ -4825,6 +4911,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:54:58Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:55:00Z)**_
@@ -4894,6 +4981,7 @@ packages\loot-core\src\server\budget\actions.ts-794-
 packages\loot-core\src\server\budget\actions.ts-795-  await batchMessages(async () => {
 packages\loot-core\src\server\budget\actions.ts-796-    for (const category of categories) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:55:04Z)**_
@@ -4917,6 +5005,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:55:04Z)**_
 318-export type DbViewCategoryWithGroupHidden = {
 319-  id: DbCategory['id'];
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:55:55Z)**_
@@ -4927,6 +5016,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:55:55Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\db\types\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:57:37Z)**_
@@ -4937,6 +5027,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:57:37Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\db\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:57:53Z)**_
@@ -4947,6 +5038,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:57:53Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\db\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:57:59Z)**_
@@ -4961,6 +5053,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:58:24Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\db\index.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:58:30Z)**_
@@ -4971,7 +5064,7 @@ _**Agent (claude-opus-5-5 2026-10-01 04:58:30Z)**_
 
 ```text
 310	// different files
-311	
+311
 312	export async function getCategories(
 313	  ids?: Array<DbCategory['id']>,
 314	): Promise<DbCategory[]> {
@@ -4981,11 +5074,12 @@ _**Agent (claude-opus-5-5 2026-10-01 04:58:30Z)**_
 318	    ? await all<DbCategory>(query, [...ids])
 319	    : await all<DbCategory>(query);
 320	}
-321	
+321
 322	export async function getCategoriesGrouped(
 323	  ids?: Array<DbCategoryGroup['id']>,
 324	): Promise<
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 04:58:32Z)**_
@@ -5008,6 +5102,7 @@ Run db unit tests
    Start at  00:58:50
    Duration  8.61s (transform 1.79s, setup 6.91s, import 42ms, tests 1.24s, environment 0ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:01:29Z)**_
@@ -5048,6 +5143,7 @@ worker restarts: 0, max worker memory usage: 41.49 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 2m 14.67s to complete.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:04:53Z)**_
@@ -5071,6 +5167,7 @@ Serialized Error: { code: 'SQLITE_ERROR' }
    Start at  01:01:44
    Duration  189.02s (transform 7.38s, setup 290.61s, import 7.03s, tests 57.30s, environment 12ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:05:01Z)**_
@@ -5089,55 +5186,56 @@ Exit code 255
      ✓ fails when amounts don't match 161ms
      ✓ fails when transaction id doesn't exist 150ms
  ❯ src/server/main.test.ts (7 tests | 2 failed) 2315ms
-Formula execution error: Error: Formula error: 
+Formula execution error: Error: Formula error:
  ❯ src/server/aql/schema/executors.test.ts (5 tests | 1 failed) 27088ms
 Formula execution error: Error: Formula error: Function name INVALID_FUNCTION not recognized.
-Formula execution error: Error: Formula error: 
+Formula execution error: Error: Formula error:
 ⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
  FAIL  src/server/main.test.ts > Budgets > budget is successfully loaded
  FAIL  src/server/main.test.ts > Budgets > budget detects out of sync migrations
-Error: EBUSY: resource busy or locked, unlink 
+Error: EBUSY: resource busy or locked, unlink
 'C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\mocks\files\budgets\test-budget\db.sqlite'
  FAIL  src/server/main.test.ts > Budgets > budget detects out of sync migrations
-Error: EEXIST: file already exists, mkdir 
+Error: EEXIST: file already exists, mkdir
 'C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\mocks\files\budgets\test-budget'
  FAIL  src/server/transactions/merge.test.ts > Merging success > two banksynced transactions keeps older transaction
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > first banksynced, second manual keeps banksynced 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > first banksynced, second manual keeps banksynced
 values
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > first file imported, second banksycned keeps 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > first file imported, second banksycned keeps
 banksynced values
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > second file imported, first banksycned keeps 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > second file imported, first banksycned keeps
 banksynced values
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > second file imported, first manual keeps file 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > second file imported, first manual keeps file
 imported values
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > first file imported, second manual keeps file 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > first file imported, second manual keeps file
 imported values
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > second banksynced, first manual keeps banksynced 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > second banksynced, first manual keeps banksynced
 values
 SqliteError: ambiguous column name: parent_id
  FAIL  src/server/transactions/merge.test.ts > Merging success > missing values in keep are filled in with drop values
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > preserves schedule link from dropped transaction when 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > preserves schedule link from dropped transaction when
 kept transaction has none
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > preserves schedule link from kept transaction when 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > preserves schedule link from kept transaction when
 both have schedules
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > preserves schedule link when merging manual scheduled 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > preserves schedule link when merging manual scheduled
 with banksynced
 SqliteError: ambiguous column name: parent_id
- FAIL  src/server/transactions/merge.test.ts > Merging success > preserves split categories when merging split 
+ FAIL  src/server/transactions/merge.test.ts > Merging success > preserves split categories when merging split
 transaction with uncategorized imported transaction
 SqliteError: ambiguous column name: parent_id
  Test Files  3 failed | 46 passed | 1 skipped (50)
       Tests  17 failed | 658 passed | 2 skipped (677)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:08:54Z)**_
@@ -5207,6 +5305,7 @@ packages\loot-core\src\server\sheet.ts-219-  sheet.startTransaction();
 packages\loot-core\src\server\sheet.ts-220-
 packages\loot-core\src\server\sheet.ts-221-  // Load all the budget amounts and carryover values
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:09:02Z)**_
@@ -5264,6 +5363,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:02Z)**_
 154-      ),
 155-    );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:09:07Z)**_
@@ -5275,6 +5375,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:07Z)**_
 ```text
 packages\loot-core\migrations\1608652596044_trans_views.sql:40:CREATE VIEW v_transactions AS
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
@@ -5284,7 +5385,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
  `./packages/loot-core/src/server/aql/schema/index.ts`
 
 ```text
-330	
+330
 331	    schedules: {
 332	      v_schedules: internalFields => {
 333	        const fields = internalFields({
@@ -5302,7 +5403,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
 345	          _conditions: '_rules.conditions',
 346	          _actions: '_rules.actions',
 347	        });
-348	
+348
 349	        return `
 350	        SELECT ${fields} FROM schedules _
 351	        LEFT JOIN schedules_next_date _nd ON _nd.schedule_id = _.id
@@ -5312,7 +5413,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
 355	        `;
 356	      },
 357	    },
-358	
+358
 359	    transactions: {
 360	      fields: {
 361	        is_parent: 'isParent',
@@ -5323,7 +5424,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
 366	        transfer_id: 'transferred_id',
 367	        payee: 'description',
 368	      },
-369	
+369
 370	      v_transactions_internal: internalFields => {
 371	        // Override some fields to make custom stuff
 372	        const fields = internalFields({
@@ -5332,7 +5433,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
 375	          amount: `IFNULL(_.amount, 0)`,
 376	          parent_id: 'CASE WHEN _.isChild = 0 THEN NULL ELSE _.parent_id END',
 377	        });
-378	
+378
 379	        return `
 380	          SELECT ${fields} FROM transactions _
 381	          LEFT JOIN category_mapping cm ON cm.id = _.category
@@ -5343,7 +5444,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
 386	           (_.isChild = 0 OR _.parent_id IS NOT NULL)
 387	        `;
 388	      },
-389	
+389
 390	      // We join on t2 to only include valid child transactions. We
 391	      // want to only include ones with valid parents, which is when
 392	      // an alive parent transaction exists
@@ -5352,14 +5453,14 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
 395	        LEFT JOIN transactions t2 ON (_.is_child = 1 AND t2.id = _.parent_id)
 396	        WHERE IFNULL(_.tombstone, 0) = 0 AND (_.is_child = 0 OR t2.tombstone = 0)
 397	      `,
-398	
+398
 399	      v_transactions: (_, publicFields) => {
 400	        const fields = publicFields({
 401	          payee: 'p.id',
 402	          category: 'c.id',
 403	          account: 'a.id',
 404	        });
-405	
+405
 406	        // This adds an order, and also validates any id references by
 407	        // selecting the ids through a join which return null if they
 408	        // are dead
@@ -5375,6 +5476,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:12Z)**_
 418	  },
 419	};
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:09:16Z)**_
@@ -5421,6 +5523,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:16Z)**_
 48-
 49-      viewStrs.push(`
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:09:19Z)**_
@@ -5432,7 +5535,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:19Z)**_
 ```text
 1	// @ts-strict-ignore
 2	import { quoteAlias } from './compiler';
-3	
+3
 4	function selectFields(fields) {
 5	  return Object.keys(fields)
 6	    .map(as => {
@@ -5449,6 +5552,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:09:19Z)**_
 17	}
 18
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:09:23Z)**_
@@ -5479,6 +5583,7 @@ Exit code 255
    ❯ compileAndRunAqlQuery src/server/aql/exec.ts:121:21
    ❯ mergeTransactionsNoTransfer src/server/transactions/merge.ts:182:42
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:16:12Z)**_
@@ -5495,13 +5600,13 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:12Z)**_
 124	    if (!withDead) {
 125	      s.from = 'v_transactions_internal_alive v_transactions_internal';
 126	    }
-127	
+127
 128	    return execQuery(queryState, compilerState, s, params, outputTypes);
 129	  }
-130	
+130
 131	  let rows;
 132	  let matched = null;
-133	
+133
 134	  if (isHappyPathQuery(queryState)) {
 135	    // This is just an optimization - we can just filter out children
 136	    // directly and only list parents
@@ -5537,7 +5642,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:12Z)**_
 166	      ${sqlPieces.limit != null ? `LIMIT ${sqlPieces.limit}` : ''}
 167	      ${sqlPieces.offset != null ? `OFFSET ${sqlPieces.offset}` : ''}
 168	    `;
-169	
+169
 170	    rows = await db.all<db.DbViewTransactionInternal>(rowSql, params);
 171	    matched = new Set(
 172	      [].concat.apply(
@@ -5546,7 +5651,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:12Z)**_
 175	      ),
 176	    );
 177	  }
-178	
+178
 179	  const where = whereIn(
 180	    rows.map(row => row.group_id),
 181	    `IFNULL(${sqlPieces.from}.parent_id, ${sqlPieces.from}.id)`,
@@ -5557,18 +5662,19 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:12Z)**_
 186	    WHERE ${where} ${whereDead}
 187	    ${sqlPieces.orderBy}
 188	  `;
-189	
+189
 190	  const allRows = await db.all<
 191	    db.DbViewTransactionInternal & {
 192	      _parent_id: db.DbViewTransactionInternal['parent_id'];
 193	    }
 194	  >(finalSql);
-195	
+195
 196	  // Group the parents and children up
 197	  const { parents, children } = allRows.reduce(
 198	    (acc, trans) => {
 199	      const pid = trans._parent_id;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:16:12Z)**_
@@ -5587,7 +5693,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:12Z)**_
 176	      schedule: keep.schedule || drop.schedule,
 177	    } as TransactionEntity);
 178	  }
-179	
+179
 180	  // Delete the dropped transaction using shared deleteTransaction to
 181	  // intelligently handle possible parent/child cascading logic
 182	  const { data: transactionsToDelete } = await aqlQuery(
@@ -5599,6 +5705,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:12Z)**_
 188	  const ungroupedTransactions = ungroupTransactions(transactionsToDelete);
 189	  if (ungroupedTransactions.length > 0) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:16:22Z)**_
@@ -5616,6 +5723,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:44Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\aql\schema\executors.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:16:44Z)**_
@@ -5738,6 +5846,7 @@ packages\loot-core\src\server\transactions\import\__snapshots__\parse-file.test.
 packages\loot-core\src\server\transactions\import\__snapshots__\parse-file.test.ts.snap:1544:    "parent_id": null,
 packages\loot-core\src\server\transactions\import\__snapshots__\parse-file.test.ts.snap:1570:    "parent_id": null,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:16:49Z)**_
@@ -5750,7 +5859,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:49Z)**_
 976	  if (subtransactions.length === 0) {
 977	    return;
 978	  }
-979	
+979
 980	  // Find the next sibling's sort_order (transaction with lower sort_order that isn't a child)
 981	  // Scoped to the same account and date to avoid picking transactions from other contexts
 982	  const nextSibling = await first<{ sort_order: number }>(
@@ -5762,6 +5871,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:49Z)**_
 988	       AND date = ?
 989	     ORDER BY sort_order DESC
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:16:49Z)**_
@@ -5772,17 +5882,17 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:49Z)**_
 
 ```text
 1	// @ts-strict-ignore
-2	
+2
 3	import * as connection from '#platform/server/connection';
 4	import * as db from '#server/db';
 5	import { incrFetch, whereIn } from '#server/db/util';
 6	import { batchMessages } from '#server/sync';
 7	import type { Diff } from '#shared/util';
 8	import type { PayeeEntity, TransactionEntity } from '#types/models';
-9	
+9
 10	import * as rules from './transaction-rules';
 11	import * as transfer from './transfer';
-12	
+12
 13	async function idsWithChildren(ids: string[]) {
 14	  const whereIds = whereIn(ids, 'parent_id');
 15	  const rows = await db.all<Pick<db.DbViewTransactionInternal, 'id'>>(
@@ -5794,7 +5904,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:49Z)**_
 21	  }
 22	  return [...set];
 23	}
-24	
+24
 25	async function getTransactionsByIds(
 26	  ids: string[],
 27	): Promise<TransactionEntity[]> {
@@ -5802,6 +5912,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:16:49Z)**_
 29	  //
 30	  // or better yet, use ActualQL
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:16:53Z)**_
@@ -5819,12 +5930,13 @@ Exit code 1
  ❯ src/server/main.test.ts (7 tests | 1 failed) 1240ms
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
  FAIL  src/server/main.test.ts > Budgets > budget is successfully loaded
-Error: EEXIST: file already exists, mkdir 
+Error: EEXIST: file already exists, mkdir
 'C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\mocks\files\budgets\test-budget'
  Test Files  1 failed | 2 passed (3)
       Tests  1 failed | 32 passed (33)
    Duration  36.86s (transform 4.47s, setup 20.49s, import 2.44s, tests 33.14s, environment 1ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:17:46Z)**_
@@ -5843,6 +5955,7 @@ Check mock budget files status
 ```text
 packages/loot-core/src/mocks/files/budgets/.commit-to-git
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:18:21Z)**_
@@ -5854,6 +5967,7 @@ Inspect mock dir and stash my changes
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Please focus on the issue; fix these yarn test problems later
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:18:33Z)**_
@@ -5861,6 +5975,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:18:33Z)**_
 I'll leave the `main.test.ts` failure for later, as you asked. Step 1 is done.
 
 **What changed:**
+
 - **New column:** [1780700000000_add_category_parent.sql](packages/loot-core/migrations/1780700000000_add_category_parent.sql) adds `parent_id` to `categories`, empty by default.
 - **Types and schema:** `parent_id` is now on `CategoryEntity`, `DbCategory`, `DbViewCategory` and the AQL `categories` schema. It isn't in the public API model yet.
 - **Nesting checks:** a new `validateCategoryParent` in [db/index.ts](packages/loot-core/src/server/db/index.ts) runs whenever a category is created or updated with a parent. It rejects:
@@ -5872,10 +5987,12 @@ I'll leave the `main.test.ts` failure for later, as you asked. Step 1 is done.
   - a category that is its own parent.
 
   A parent can still have many children, and each child has exactly one parent because it's a single column.
+
 - **Existing bug this exposed:** [executors.ts:184](packages/loot-core/src/server/aql/schema/executors.ts#L184) selected `parent_id` without saying which table it came from. Once `categories` also had that column, transaction queries that join categories failed. I added the table name, as the line above it already does.
 - **Tests:** 9 new cases in [db/index.test.ts](packages/loot-core/src/server/db/index.test.ts) cover each rule, plus nesting and un-nesting an existing category.
 
 **Test results:**
+
 - `yarn typecheck` passes.
 - The `db`, `merge` and `executors` tests pass.
 - `main.test.ts > budget is successfully loaded` fails with `EEXIST` on the test-budget folder under `src/mocks/files/budgets`. That points to a leftover folder or Windows file lock, but I haven't confirmed it isn't caused by this change.
@@ -5915,7 +6032,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:53Z)**_
 11	import * as monthUtils from '#shared/months';
 12	import { q } from '#shared/query';
 13	import type { CategoryEntity, CategoryGroupEntity } from '#types/models';
-14	
+14
 15	import * as actions from './actions';
 16	import * as budget from './base';
 17	import * as cleanupGroupActions from './cleanup-groups';
@@ -5924,7 +6041,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:53Z)**_
 20	import * as goalActions from './goal-template';
 21	import { sortCategories } from './sort-categories';
 22	import * as goalNoteActions from './template-notes';
-23	
+23
 24	export type BudgetHandlers = {
 25	  'budget/budget-amount': typeof actions.setBudget;
 26	  'budget/copy-previous-month': typeof actions.copyPreviousMonth;
@@ -5933,6 +6050,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:53Z)**_
 29	  'budget/set-3month-avg': typeof actions.set3MonthAvg;
 30	  'budget/set-6month-avg': typeof actions.set6MonthAvg;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:19:54Z)**_
@@ -5943,7 +6061,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:54Z)**_
 
 ```text
 366	}
-367	
+367
 368	async function deleteCategory({
 369	  id,
 370	  transferId,
@@ -5959,14 +6077,14 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:54Z)**_
 380	    if (!row) {
 381	      throw new Error(`Category with id ${id} not found.`);
 382	    }
-383	
+383
 384	    const transfer =
 385	      transferId &&
 386	      (await db.first<Pick<db.DbCategory, 'is_income'>>(
 387	        'SELECT is_income FROM categories WHERE id = ?',
 388	        [transferId],
 389	      ));
-390	
+390
 391	    if (transferId && !transfer) {
 392	      throw new Error(`Transfer category with id ${transferId} not found.`);
 393	    } else if (
@@ -5977,7 +6095,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:54Z)**_
 398	    ) {
 399	      throw new Error('Cannot transfer between income and expense categories.');
 400	    }
-401	
+401
 402	    // Update spreadsheet values if it's an expense category
 403	    // TODO: We should do this for income too if it's a tracking budget
 404	    if (row.is_income === 0) {
@@ -5985,11 +6103,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:54Z)**_
 406	        await budget.doTransfer([id], transferId);
 407	      }
 408	    }
-409	
+409
 410	    await db.deleteCategory({ id }, transferId);
 411	  });
 412	}
-413	
+413
 414	// Server must return AQL entities not the raw DB data
 415	async function getCategoryGroups({ hidden }: { hidden?: boolean } = {}) {
 416	  const baseQuery = q('category_groups').select('*');
@@ -6003,6 +6121,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:54Z)**_
 424	    ...g,
 425	    categories: g.categories?.filter(c => Boolean(c.hidden) === hidden),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:19:55Z)**_
@@ -6024,7 +6143,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:55Z)**_
 557	  // const { cat_group: group, ...rest } = category;
 558	  return update('categories', category);
 559	}
-560	
+560
 561	export async function moveCategory(
 562	  id: DbCategory['id'],
 563	  groupId: DbCategoryGroup['id'],
@@ -6033,19 +6152,19 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:55Z)**_
 566	  if (!groupId) {
 567	    throw new Error('moveCategory: groupId is required');
 568	  }
-569	
+569
 570	  const categories = await all<Pick<DbCategory, 'id' | 'sort_order'>>(
 571	    `SELECT id, sort_order FROM categories WHERE cat_group = ? AND tombstone = 0 ORDER BY sort_order, id`,
 572	    [groupId],
 573	  );
-574	
+574
 575	  const { updates, sort_order } = shoveSortOrders(categories, targetId);
 576	  for (const info of updates) {
 577	    await update('categories', info);
 578	  }
 579	  await update('categories', { id, sort_order, cat_group: groupId });
 580	}
-581	
+581
 582	export async function deleteCategory(
 583	  category: Pick<DbCategory, 'id'>,
 584	  transferId?: DbCategory['id'] | null,
@@ -6063,6 +6182,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:55Z)**_
 596	        id: mapping.id,
 597	        transferId,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:19:56Z)**_
@@ -6083,7 +6203,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:56Z)**_
 270	      `Invalid "categories" option for category_groups: "${categoriesOption}"`,
 271	    );
 272	  }
-273	
+273
 274	  if (categoriesOption !== 'none') {
 275	    return execCategoryGroupsWithCategories(
 276	      compilerState,
@@ -6102,7 +6222,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:56Z)**_
 289	    outputTypes,
 290	  );
 291	}
-292	
+292
 293	async function execCategoryGroupsWithCategories(
 294	  compilerState: CompilerState,
 295	  queryState: QueryState,
@@ -6118,11 +6238,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:56Z)**_
 305	    params,
 306	    outputTypes,
 307	  );
-308	
+308
 309	  if (categoriesOption === 'none') {
 310	    return categoryGroups;
 311	  }
-312	
+312
 313	  const { data: categories }: { data: CategoryEntity[] } = await aqlQuery(
 314	    q('categories')
 315	      .filter({
@@ -6130,7 +6250,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:56Z)**_
 317	      })
 318	      .select('*'),
 319	  );
-320	
+320
 321	  return categoryGroups.map(group => {
 322	    const cats = categories.filter(cat => cat.group === group.id);
 323	    return {
@@ -6139,7 +6259,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:56Z)**_
 326	    };
 327	  });
 328	}
-329	
+329
 330	async function execCategoryGroupsBasic(
 331	  compilerState: CompilerState,
 332	  queryState: QueryState,
@@ -6149,19 +6269,20 @@ _**Agent (claude-opus-5-5 2026-10-01 05:19:56Z)**_
 336	) {
 337	  return execQuery(queryState, compilerState, sqlPieces, params, outputTypes);
 338	}
-339	
+339
 340	function isValidCategoriesOption(
 341	  categories: string,
 342	): categories is CategoriesOption {
 343	  return ['all', 'none'].includes(categories);
 344	}
-345	
+345
 346	export const schemaExecutors: Record<string, AqlQueryExecutor> = {
 347	  transactions: execTransactions,
 348	  category_groups: execCategoryGroups,
 349	};
 350
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:20:10Z)**_
@@ -6175,22 +6296,22 @@ _**Agent (claude-opus-5-5 2026-10-01 05:20:10Z)**_
 241	    sheet.endTransaction();
 242	  }
 243	}
-244	
+244
 245	export async function doTransfer(categoryIds, transferId) {
 246	  const { createdMonths: months } = sheet.get().meta();
-247	
+247
 248	  [...months].forEach(month => {
 249	    const totalValue = categoryIds
 250	      .map(id => {
 251	        return budgetActions.getBudget({ month, category: id });
 252	      })
 253	      .reduce((total, value) => total + value, 0);
-254	
+254
 255	    const transferValue = budgetActions.getBudget({
 256	      month,
 257	      category: transferId,
 258	    });
-259	
+259
 260	    void budgetActions.setBudget({
 261	      month,
 262	      category: transferId,
@@ -6198,10 +6319,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:20:10Z)**_
 264	    });
 265	  });
 266	}
-267	
+267
 268	export async function createBudget(months) {
 269	  const { data: groups }: { data: CategoryGroupEntity[] } = await aqlQuery(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:20:11Z)**_
@@ -6215,23 +6337,24 @@ _**Agent (claude-opus-5-5 2026-10-01 05:20:11Z)**_
 597	        transferId,
 598	      });
 599	    }
-600	
+600
 601	    // Finally, map the category we're about to delete to the new one
 602	    await update('category_mapping', { id: category.id, transferId });
 603	  }
-604	
+604
 605	  return delete_('categories', category.id);
 606	}
-607	
+607
 608	export async function getPayee(id: DbPayee['id']) {
 609	  return first<DbPayee>(`SELECT * FROM payees WHERE id = ?`, [id]);
 610	}
-611	
+611
 612	export async function getAccount(id: DbAccount['id']) {
 613	  return first<DbAccount>(`SELECT * FROM accounts WHERE id = ?`, [id]);
 614	}
 615
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:20:28Z)**_
@@ -6246,6 +6369,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:20:57Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\app.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:21:27Z)**_
@@ -6256,6 +6380,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:21:27Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\app.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:21:59Z)**_
@@ -6266,6 +6391,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:21:59Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\db\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:22:28Z)**_
@@ -6276,6 +6402,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:22:28Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\db\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:23:02Z)**_
@@ -6286,6 +6413,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:02Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\aql\schema\executors.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:23:06Z)**_
@@ -6299,7 +6427,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:06Z)**_
  `./packages/loot-core/src/server/budget/app.ts`
 
 ```text
-370	
+370
 371	async function deleteCategory({
 372	  id,
 373	  transferId,
@@ -6315,20 +6443,20 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:06Z)**_
 383	    if (!row) {
 384	      throw new Error(`Category with id ${id} not found.`);
 385	    }
-386	
+386
 387	    // A subcategory's money came from its parent, so give it back unless
 388	    // the caller picked somewhere else for it to go.
 389	    if (!transferId && row.parent_id) {
 390	      transferId = row.parent_id;
 391	    }
-392	
+392
 393	    const transfer =
 394	      transferId &&
 395	      (await db.first<Pick<db.DbCategory, 'is_income'>>(
 396	        'SELECT is_income FROM categories WHERE id = ?',
 397	        [transferId],
 398	      ));
-399	
+399
 400	    if (transferId && !transfer) {
 401	      throw new Error(`Transfer category with id ${transferId} not found.`);
 402	    } else if (
@@ -6339,7 +6467,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:06Z)**_
 407	    ) {
 408	      throw new Error('Cannot transfer between income and expense categories.');
 409	    }
-410	
+410
 411	    // Update spreadsheet values if it's an expense category
 412	    // TODO: We should do this for income too if it's a tracking budget
 413	    if (row.is_income === 0) {
@@ -6347,11 +6475,12 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:06Z)**_
 415	        await budget.doTransfer([id], transferId);
 416	      }
 417	    }
-418	
+418
 419	    await db.deleteCategory({ id }, transferId);
 420	  });
 421	}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:23:31Z)**_
@@ -6362,6 +6491,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:31Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\app.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:23:38Z)**_
@@ -6398,6 +6528,7 @@ packages\loot-core\src\server\main.test.ts:194:    bounds = await runHandler(han
 
 [Showing results with pagination = limit: 20]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:23:44Z)**_
@@ -6411,17 +6542,17 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:44Z)**_
 2	import * as sheet from '#server/sheet';
 3	// @ts-strict-ignore
 4	import * as monthUtils from '#shared/months';
-5	
+5
 6	import { createAllBudgets } from './base';
-7	
+7
 8	beforeEach(() => {
 9	  return global.emptyDatabase()();
 10	});
-11	
+11
 12	describe('Base budget', () => {
 13	  it('Recomputes budget cells when account fields change', async () => {
 14	    await sheet.loadSpreadsheet(db);
-15	
+15
 16	    await db.insertCategoryGroup({ id: 'group1', name: 'group1' });
 17	    await db.insertCategoryGroup({
 18	      id: 'group2',
@@ -6432,9 +6563,9 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:44Z)**_
 23	      name: 'foo',
 24	      cat_group: 'group1',
 25	    });
-26	
+26
 27	    await createAllBudgets();
-28	
+28
 29	    // Insert a transaction referencing an account that doesn't exist
 30	    // yet
 31	    await db.insertTransaction({
@@ -6443,11 +6574,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:44Z)**_
 34	      account: '29eef937-9933-49ef-80d9-71627074cf31',
 35	      category: catId,
 36	    });
-37	
+37
 38	    // Make sure that the spreadsheet finishes processing to make sure
 39	    // the next change doesn't get batched in with it
 40	    await sheet.waitOnSpreadsheet();
-41	
+41
 42	    // The category should have nothing spent on it yet
 43	    expect(
 44	      sheet.getCellValue(
@@ -6455,16 +6586,16 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:44Z)**_
 46	        `sum-amount-${catId}`,
 47	      ),
 48	    ).toBe(0);
-49	
+49
 50	    // Create the referenced account
 51	    await db.insertAccount({
 52	      id: '29eef937-9933-49ef-80d9-71627074cf31',
 53	      name: 'foo',
 54	    });
-55	
+55
 56	    // Make sure the spreadsheet finishes processing
 57	    await sheet.waitOnSpreadsheet();
-58	
+58
 59	    // The category should see the transaction
 60	    expect(
 61	      sheet.getCellValue(
@@ -6473,11 +6604,12 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:44Z)**_
 64	      ),
 65	    ).toBe(-5000);
 66	  });
-67	
+67
 68	  it('Excludes hidden categories from group totals in Tracking Budget', async () => {
 69	    await sheet.loadSpreadsheet(db);
 70	    sheet.get().meta().budgetType = 'tracking';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:23:45Z)**_
@@ -6487,11 +6619,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:45Z)**_
  `./packages/loot-core/src/server/budget/base.test.ts`
 
 ```text
-340	
+340
 341	  it('Seeds sum-amount across all months on a cold build (Envelope Budget)', async () => {
 342	    await sheet.loadSpreadsheet(db);
 343	    sheet.get().meta().budgetType = 'envelope';
-344	
+344
 345	    await db.insertCategoryGroup({ id: 'group1', name: 'Expenses' });
 346	    await db.insertCategoryGroup({
 347	      id: 'group2',
@@ -6506,9 +6638,9 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:45Z)**_
 356	      name: 'Rent',
 357	      cat_group: 'group1',
 358	    });
-359	
+359
 360	    await db.insertAccount({ id: 'account1', name: 'Account 1' });
-361	
+361
 362	    // Insert transactions across multiple months *before* building the
 363	    // budgets, so the cold build seeds the sum-amount cells from the
 364	    // batched query rather than per-cell queries.
@@ -6542,14 +6674,14 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:45Z)**_
 392	      account: 'account1',
 393	      category: rentId,
 394	    });
-395	
+395
 396	    await createAllBudgets();
 397	    await sheet.waitOnSpreadsheet();
-398	
+398
 399	    const jan = monthUtils.sheetForMonth('2017-01');
 400	    const feb = monthUtils.sheetForMonth('2017-02');
 401	    const mar = monthUtils.sheetForMonth('2017-03');
-402	
+402
 403	    // Per-category seeded sums
 404	    expect(sheet.getCellValue(jan, `sum-amount-${foodId}`)).toBe(-1500);
 405	    expect(sheet.getCellValue(feb, `sum-amount-${foodId}`)).toBe(-2500);
@@ -6558,16 +6690,17 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:45Z)**_
 408	    // A category with no transactions in a month seeds to 0
 409	    expect(sheet.getCellValue(feb, `sum-amount-${rentId}`)).toBe(0);
 410	    expect(sheet.getCellValue(mar, `sum-amount-${rentId}`)).toBe(-90000);
-411	
+411
 412	    // Downstream cells read the seeded values correctly
 413	    expect(sheet.getCellValue(jan, 'group-sum-amount-group1')).toBe(-91500);
 414	    expect(sheet.getCellValue(feb, 'group-sum-amount-group1')).toBe(-2500);
 415	    expect(sheet.getCellValue(jan, `leftover-${foodId}`)).toBe(-1500);
 416	  });
-417	
+417
 418	  it('Seeds sum-amount across all months on a cold build (Tracking Budget)', async () => {
 419	    await sheet.loadSpreadsheet(db);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:23:56Z)**_
@@ -6583,6 +6716,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:57Z)**_
 ```text
 72:export const app = createApp<BudgetHandlers>();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:23:57Z)**_
@@ -6597,26 +6731,26 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:57Z)**_
 3	import * as db from '#server/db';
 4	import { loadMappings } from '#server/db/mappings';
 5	import { isMutating, runHandler, runMutator } from '#server/mutators';
-6	
+6
 7	import { app } from './app';
 8	import * as bankSync from './sync';
-9	
+9
 10	vi.mock('./sync', async () => ({
 11	  ...(await vi.importActual('./sync')),
 12	  simpleFinBatchSync: vi.fn(),
 13	  syncAccount: vi.fn(),
 14	}));
-15	
+15
 16	const simpleFinBatchSyncHandler = app.handlers['simplefin-batch-sync'];
 17	const accountsBankSyncHandler = app.handlers['accounts-bank-sync'];
-18	
+18
 19	function insertBank(bank: { id: string; bank_id: string; name: string }) {
 20	  db.runQuery(
 21	    'INSERT INTO banks (id, bank_id, name, tombstone) VALUES (?, ?, ?, 0)',
 22	    [bank.id, bank.bank_id, bank.name],
 23	  );
 24	}
-25	
+25
 26	async function setupSimpleFinAccounts(
 27	  accounts: Array<{
 28	    id: string;
@@ -6633,6 +6767,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:23:57Z)**_
 39	      account_id: acct.accountId,
 40	      account_sync_source: 'simpleFin',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:24:32Z)**_
@@ -6656,9 +6791,7 @@ import { createAllBudgets } from './base';
 beforeEach(global.emptyDatabase());
 
 async function getCategory(id: string) {
-  return db.first<db.DbCategory>('SELECT * FROM categories WHERE id = ?', [
-    id,
-  ]);
+  return db.first<db.DbCategory>('SELECT * FROM categories WHERE id = ?', [id]);
 }
 
 async function setupCategories() {
@@ -6811,12 +6944,12 @@ describe('Subcategories', () => {
     expect(getBudget({ category: 'food', month })).toBe(parentBefore);
   });
 });
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:24:40Z)**_
@@ -6830,23 +6963,24 @@ _**Agent (claude-opus-5-5 2026-10-01 05:24:41Z)**_
  `./packages/loot-core/src/server/budget/subcategories.test.ts`
 
 ```text
-55	
+55
 56	    const { data: groups }: { data: CategoryGroupEntity[] } = await aqlQuery(
 57	      q('category_groups').filter({ id: 'group1' }).select('*'),
 58	    );
 59	    const ids = groups[0].categories.map(cat => cat.id);
-60	
+60
 61	    expect(ids.indexOf('food')).toBe(ids.indexOf('restaurants') - 1);
 62	    expect(ids.indexOf('groceries')).toBe(ids.indexOf('food') + 1 + 1);
 63	    expect(ids.slice(0, 3)).toEqual(
 64	      expect.arrayContaining(['food', 'restaurants', 'groceries']),
 65	    );
 66	  });
-67	
+67
 68	  it('moving a parent to another group brings its subcategories', async () => {
 69	    await setupCategories();
 70
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:24:59Z)**_
@@ -6857,6 +6991,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:24:59Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:25:24Z)**_
@@ -6872,6 +7007,7 @@ Run subcategory and db tests
       Tests  27 passed (27)
    Duration  9.94s (transform 3.86s, setup 15.58s, import 752ms, tests 2.42s, environment 0ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:25:27Z)**_
@@ -6889,6 +7025,7 @@ Run budget, aql, transactions, api tests
       Tests  338 passed (338)
    Duration  100.00s (transform 5.33s, setup 136.02s, import 2.68s, tests 51.60s, environment 5ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:28:00Z)**_
@@ -6915,6 +7052,7 @@ src/server/budget/subcategories.test.ts(122,14): error TS18047: 'cat' is possibl
 src/server/budget/subcategories.test.ts(123,14): error TS18047: 'cat' is possibly 'null'.
 💥 Found 11 errors
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:28:03Z)**_
@@ -6934,6 +7072,7 @@ String: async function getCategory(id: string) {
   ]);
 }</tool_use_error>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:28:28Z)**_
@@ -6944,6 +7083,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:28:28Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:28:32Z)**_
@@ -6954,16 +7094,17 @@ _**Agent (claude-opus-5-5 2026-10-01 05:28:32Z)**_
 
 ```text
 13	beforeEach(global.emptyDatabase());
-14	
+14
 15	async function getCategory(id: string) {
 16	  return db.first<db.DbCategory>('SELECT * FROM categories WHERE id = ?', [id]);
 17	}
-18	
+18
 19	async function setupCategories() {
 20	  await db.insertCategoryGroup({ id: 'group1', name: 'group1' });
 21	  await db.insertCategoryGroup({ id: 'group2', name: 'group2' });
 22	  await db.insertCategoryGroup({ id: 'income', name: 'income', is_income: 1 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:28:48Z)**_
@@ -6974,6 +7115,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:28:48Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:31:35Z)**_
@@ -6987,6 +7129,7 @@ success: 6, skipped: 4, pending: 0, aborted: 0, failed: 0
       Tests  8 passed (8)
    Duration  8.39s (transform 2.40s, setup 6.76s, import 662ms, tests 555ms, environment 0ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:31:39Z)**_
@@ -7002,6 +7145,7 @@ Lint the changed loot-core files
 ```text
 (PowerShell completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:32:05Z)**_
@@ -7009,6 +7153,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:32:05Z)**_
 Step 2 is done. The server side now supports creating, moving and deleting subcategories, and lists them under their parent.
 
 **What changed:**
+
 - **Creating:** `category-create` takes an optional `parentId` and stores it, then runs the nesting checks from step 1.
 - **Moving** ([db/index.ts](packages/loot-core/src/server/db/index.ts), `moveCategory`):
   - Moving a parent to another group takes its subcategories along, in their current order, right after it.
@@ -7023,6 +7168,7 @@ Step 2 is done. The server side now supports creating, moving and deleting subca
 **Tests:** a new [subcategories.test.ts](packages/loot-core/src/server/budget/subcategories.test.ts) has 8 tests, one for each rule above. They pass, as do the 9 nesting tests from step 1. The budget, query, transactions and API tests (338) also pass, `yarn typecheck` passes, and lint shows nothing on the changed files.
 
 **Gaps:**
+
 - **Hidden-parent ordering:** when the budget page filters the list, for example to hide hidden categories, a subcategory whose parent is hidden still appears, as a top-level row. The UI in step 5 decides how hidden parents should look.
 - **Not yet in the app:** budgeting a subcategory still draws on the main pool, not its parent. That rule is step 3. Nothing in the UI uses any of this until step 5.
 
@@ -7048,7 +7194,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 
 ```text
 1	// @ts-strict-ignore
-2	
+2
 3	import * as asyncStorage from '#platform/server/asyncStorage';
 4	import * as db from '#server/db';
 5	import * as sheet from '#server/sheet';
@@ -7059,7 +7205,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 10	import { integerToCurrency, safeNumber } from '#shared/util';
 11	import type { IntegerAmount } from '#shared/util';
 12	import type { CategoryEntity } from '#types/models';
-13	
+13
 14	export async function getSheetValue(
 15	  sheetName: string,
 16	  cell: string,
@@ -7067,7 +7213,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 18	  const node = sheet.getCell(sheetName, cell);
 19	  return safeNumber(typeof node.value === 'number' ? node.value : 0);
 20	}
-21	
+21
 22	export async function getSheetBoolean(
 23	  sheetName: string,
 24	  cell: string,
@@ -7075,7 +7221,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 26	  const node = sheet.getCell(sheetName, cell);
 27	  return typeof node.value === 'boolean' ? node.value : false;
 28	}
-29	
+29
 30	// We want to only allow the positive movement of money back and
 31	// forth. buffered should never be allowed to go into the negative,
 32	// and you shouldn't be allowed to pull non-existent money from
@@ -7088,13 +7234,13 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 39	  amount = Math.min(Math.max(amount, -buffered), Math.max(toBudget, 0));
 40	  return buffered + amount;
 41	}
-42	
+42
 43	type BudgetTable = 'reflect_budgets' | 'zero_budgets';
-44	
+44
 45	function getBudgetTable(): BudgetTable {
 46	  return isTrackingBudget() ? 'reflect_budgets' : 'zero_budgets';
 47	}
-48	
+48
 49	export function isTrackingBudget(): boolean {
 50	  const budgetType = db.firstSync<Pick<db.DbPreference, 'value'>>(
 51	    `SELECT value FROM preferences WHERE id = ?`,
@@ -7103,16 +7249,16 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 54	  const val = budgetType ? budgetType.value : 'envelope';
 55	  return val === 'tracking';
 56	}
-57	
+57
 58	function dbMonth(month: string): number {
 59	  return parseInt(month.replace('-', ''));
 60	}
-61	
+61
 62	function monthFromDbMonth(month: number): string {
 63	  const monthString = String(month).padStart(6, '0');
 64	  return `${monthString.slice(0, 4)}-${monthString.slice(4)}`;
 65	}
-66	
+66
 67	// TODO: complete list of fields.
 68	type BudgetData = {
 69	  is_income: 1 | 0;
@@ -7121,7 +7267,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 72	  category: string;
 73	  amount: number;
 74	};
-75	
+75
 76	function getBudgetData<T extends BudgetTable>(
 77	  table: T,
 78	  month: string,
@@ -7143,7 +7289,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 94	    [month],
 95	  );
 96	}
-97	
+97
 98	function getAllMonths(startMonth: string): string[] {
 99	  const { createdMonths } = sheet.get().meta();
 100	  let latest = null;
@@ -7154,9 +7300,9 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 105	  }
 106	  return monthUtils.rangeInclusive(startMonth, latest);
 107	}
-108	
+108
 109	// TODO: Valid month format in all the functions below
-110	
+110
 111	export function getBudget({
 112	  category,
 113	  month,
@@ -7171,7 +7317,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 122	  );
 123	  return existing ? existing.amount || 0 : 0;
 124	}
-125	
+125
 126	export function setBudget({
 127	  category,
 128	  month,
@@ -7183,7 +7329,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 134	}): Promise<void> {
 135	  amount = safeNumber(typeof amount === 'number' ? amount : 0);
 136	  const table = getBudgetTable();
-137	
+137
 138	  const existing = db.firstSync<
 139	    Pick<db.DbZeroBudget | db.DbReflectBudget, 'id'>
 140	  >(`SELECT id FROM ${table} WHERE month = ? AND category = ?`, [
@@ -7200,7 +7346,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 151	    amount,
 152	  });
 153	}
-154	
+154
 155	export function setGoal({ month, category, goal, long_goal }): Promise<void> {
 156	  const table = getBudgetTable();
 157	  const existing = db.firstSync<
@@ -7224,7 +7370,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 175	    long_goal,
 176	  });
 177	}
-178	
+178
 179	export function setBuffer(month: string, amount: unknown): Promise<void> {
 180	  const existing = db.firstSync<Pick<db.DbZeroBudget, 'id'>>(
 181	    `SELECT id FROM zero_budget_months WHERE id = ?`,
@@ -7238,7 +7384,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 189	  }
 190	  return db.insert('zero_budget_months', { id: month, buffered: amount });
 191	}
-192	
+192
 193	function setCarryover(
 194	  table: string,
 195	  category: string,
@@ -7261,9 +7407,9 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 212	    carryover: flag ? 1 : 0,
 213	  });
 214	}
-215	
+215
 216	// Actions
-217	
+217
 218	export async function copyPreviousMonth({
 219	  month,
 220	}: {
@@ -7272,7 +7418,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 223	  const prevMonth = dbMonth(monthUtils.prevMonth(month));
 224	  const table = getBudgetTable();
 225	  const budgetData = await getBudgetData(table, prevMonth.toString());
-226	
+226
 227	  await batchMessages(async () => {
 228	    budgetData.forEach(prevBudget => {
 229	      if (prevBudget.is_income === 1 && !isTrackingBudget()) {
@@ -7289,7 +7435,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 240	    });
 241	  });
 242	}
-243	
+243
 244	export async function copySinglePreviousMonth({
 245	  month,
 246	  category,
@@ -7306,12 +7452,12 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 257	    void setBudget({ category, month, amount: newAmount });
 258	  });
 259	}
-260	
+260
 261	export async function setZero({ month }: { month: string }): Promise<void> {
 262	  const categories = await db.all<db.DbViewCategory>(
 263	    'SELECT * FROM v_categories WHERE tombstone = 0',
 264	  );
-265	
+265
 266	  await batchMessages(async () => {
 267	    categories.forEach(cat => {
 268	      if (cat.is_income === 1 && !isTrackingBudget()) {
@@ -7321,7 +7467,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 272	    });
 273	  });
 274	}
-275	
+275
 276	export async function set3MonthAvg({
 277	  month,
 278	}: {
@@ -7335,28 +7481,28 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 286	  WHERE c.tombstone = 0 AND c.hidden = 0 AND g.hidden = 0
 287	  `,
 288	  );
-289	
+289
 290	  await batchMessages(async () => {
 291	    for (const cat of categories) {
 292	      if (cat.is_income === 1 && !isTrackingBudget()) {
 293	        continue;
 294	      }
-295	
+295
 296	      let avg = await getCategoryAverage({
 297	        month,
 298	        maxMonths: 3,
 299	        categoryId: cat.id,
 300	      });
-301	
+301
 302	      if (cat.is_income === 0) {
 303	        avg *= -1;
 304	      }
-305	
+305
 306	      void setBudget({ category: cat.id, month, amount: avg });
 307	    }
 308	  });
 309	}
-310	
+310
 311	export async function set12MonthAvg({
 312	  month,
 313	}: {
@@ -7370,7 +7516,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 321	  WHERE c.tombstone = 0 AND c.hidden = 0 AND g.hidden = 0
 322	  `,
 323	  );
-324	
+324
 325	  await batchMessages(async () => {
 326	    for (const cat of categories) {
 327	      if (cat.is_income === 1 && !isTrackingBudget()) {
@@ -7380,7 +7526,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 331	    }
 332	  });
 333	}
-334	
+334
 335	export async function set6MonthAvg({
 336	  month,
 337	}: {
@@ -7394,7 +7540,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 345	  WHERE c.tombstone = 0 AND c.hidden = 0 AND g.hidden = 0
 346	  `,
 347	  );
-348	
+348
 349	  await batchMessages(async () => {
 350	    for (const cat of categories) {
 351	      if (cat.is_income === 1 && !isTrackingBudget()) {
@@ -7404,7 +7550,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 355	    }
 356	  });
 357	}
-358	
+358
 359	export async function setNMonthAvg({
 360	  month,
 361	  N,
@@ -7418,22 +7564,22 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 369	    'SELECT is_income FROM v_categories WHERE id = ?',
 370	    [category],
 371	  );
-372	
+372
 373	  let avg = await getCategoryAverage({
 374	    month,
 375	    maxMonths: N,
 376	    categoryId: category,
 377	  });
-378	
+378
 379	  await batchMessages(async () => {
 380	    if (categoryFromDb.is_income === 0) {
 381	      avg *= -1;
 382	    }
-383	
+383
 384	    void setBudget({ category, month, amount: avg });
 385	  });
 386	}
-387	
+387
 388	export async function getCategoryAverage({
 389	  month,
 390	  maxMonths,
@@ -7451,7 +7597,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 402	  if (months.length === 0) {
 403	    return 0;
 404	  }
-405	
+405
 406	  let sumAmount = 0;
 407	  for (const prevMonth of months) {
 408	    sumAmount += await getSheetValue(
@@ -7461,7 +7607,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 412	  }
 413	  return Math.round(sumAmount / months.length);
 414	}
-415	
+415
 416	async function getAverageMonths({
 417	  month,
 418	  maxMonths,
@@ -7478,29 +7624,29 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 429	  });
 430	  const months: string[] = [];
 431	  let prevMonth = firstMonth;
-432	
+432
 433	  for (let l = 0; l < maxMonths; l++) {
 434	    if (firstActivityMonth != null && prevMonth < firstActivityMonth) {
 435	      break;
 436	    }
-437	
+437
 438	    months.push(prevMonth);
 439	    prevMonth = monthUtils.prevMonth(prevMonth);
 440	  }
-441	
+441
 442	  return months;
 443	}
-444	
+444
 445	function getAverageStartMonth(month: string): string {
 446	  const prevMonth = monthUtils.prevMonth(month);
-447	
+447
 448	  if (prevMonth >= monthUtils.currentMonth()) {
 449	    return monthUtils.prevMonth(monthUtils.currentMonth());
 450	  }
-451	
+451
 452	  return prevMonth;
 453	}
-454	
+454
 455	async function getFirstActivityMonth({
 456	  categoryId,
 457	  endMonth,
@@ -7526,12 +7672,12 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 477	       )`,
 478	    [categoryId, endDbMonth, categoryId, endDbMonth],
 479	  );
-480	
+480
 481	  return firstActivity?.month == null
 482	    ? null
 483	    : monthFromDbMonth(firstActivity.month);
 484	}
-485	
+485
 486	export async function holdForNextMonth({
 487	  month,
 488	  amount,
@@ -7543,27 +7689,27 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 494	    'SELECT buffered FROM zero_budget_months WHERE id = ?',
 495	    [month],
 496	  );
-497	
+497
 498	  const sheetName = monthUtils.sheetForMonth(month);
 499	  const toBudget = await getSheetValue(sheetName, 'to-budget');
-500	
+500
 501	  if (toBudget > 0) {
 502	    const bufferedAmount = calcBufferedAmount(
 503	      toBudget,
 504	      (row && row.buffered) || 0,
 505	      amount,
 506	    );
-507	
+507
 508	    await setBuffer(month, bufferedAmount);
 509	    return true;
 510	  }
 511	  return false;
 512	}
-513	
+513
 514	export async function resetHold({ month }: { month: string }): Promise<void> {
 515	  await setBuffer(month, 0);
 516	}
-517	
+517
 518	export async function coverOverspending({
 519	  month,
 520	  to,
@@ -7583,20 +7729,20 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 534	    sheetName,
 535	    from === 'to-budget' ? 'to-budget' : 'leftover-' + from,
 536	  );
-537	
+537
 538	  // Cover provided amount (can be partial) or full overspending amount.
 539	  const amountToCover = amount
 540	    ? // Covering in the app provides a positive amount to cover so we invert it here
 541	      -amount
 542	    : await getSheetValue(sheetName, 'leftover-' + to);
-543	
+543
 544	  if (amountToCover >= 0 || leftoverFrom <= 0) {
 545	    return;
 546	  }
-547	
+547
 548	  // Don't go over the leftover amount of the covering category
 549	  const coverableAmount = Math.min(Math.abs(amountToCover), leftoverFrom);
-550	
+550
 551	  await batchMessages(async () => {
 552	    // If we are covering it from the to be budgeted amount, ignore this
 553	    if (from !== 'to-budget') {
@@ -7607,13 +7753,13 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 558	        amount: fromBudgeted - coverableAmount,
 559	      });
 560	    }
-561	
+561
 562	    await setBudget({
 563	      category: to,
 564	      month,
 565	      amount: toBudgeted + coverableAmount,
 566	    });
-567	
+567
 568	    await addMovementNotes({
 569	      month,
 570	      amount: coverableAmount,
@@ -7623,7 +7769,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 574	    });
 575	  });
 576	}
-577	
+577
 578	export async function transferAvailable({
 579	  month,
 580	  amount,
@@ -7636,11 +7782,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 587	  const sheetName = monthUtils.sheetForMonth(month);
 588	  const leftover = await getSheetValue(sheetName, 'to-budget');
 589	  amount = Math.max(Math.min(amount, leftover), 0);
-590	
+590
 591	  const budgeted = await getSheetValue(sheetName, 'budget-' + category);
 592	  await setBudget({ category, month, amount: budgeted + amount });
 593	}
-594	
+594
 595	export async function coverOverbudgeted({
 596	  month,
 597	  category,
@@ -7658,27 +7804,27 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 609	    sheetName,
 610	    'leftover-' + category,
 611	  );
-612	
+612
 613	  // Cover provided amount (can be partial) or full overbudgeted amount.
 614	  const amountToCover = amount
 615	    ? // Covering in the app provides a positive amount to cover so we invert it here
 616	      -amount
 617	    : await getSheetValue(sheetName, 'to-budget');
-618	
+618
 619	  if (amountToCover >= 0 || categoryLeftover <= 0) {
 620	    return;
 621	  }
-622	
+622
 623	  // Don't exceed the available balance of the covering category.
 624	  const coverableAmount = Math.min(Math.abs(amountToCover), categoryLeftover);
-625	
+625
 626	  await batchMessages(async () => {
 627	    await setBudget({
 628	      category,
 629	      month,
 630	      amount: categoryBudget - coverableAmount,
 631	    });
-632	
+632
 633	    await addMovementNotes({
 634	      month,
 635	      amount: coverableAmount,
@@ -7688,7 +7834,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 639	    });
 640	  });
 641	}
-642	
+642
 643	export async function transferCategory({
 644	  month,
 645	  amount,
@@ -7704,17 +7850,17 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 655	}): Promise<void> {
 656	  const sheetName = monthUtils.sheetForMonth(month);
 657	  const fromBudgeted = await getSheetValue(sheetName, 'budget-' + from);
-658	
+658
 659	  await batchMessages(async () => {
 660	    await setBudget({ category: from, month, amount: fromBudgeted - amount });
-661	
+661
 662	    // If we are simply moving it back into available cash to budget,
 663	    // don't do anything else
 664	    if (to !== 'to-budget') {
 665	      const toBudgeted = await getSheetValue(sheetName, 'budget-' + to);
 666	      await setBudget({ category: to, month, amount: toBudgeted + amount });
 667	    }
-668	
+668
 669	    await addMovementNotes({
 670	      month,
 671	      amount,
@@ -7724,7 +7870,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 675	    });
 676	  });
 677	}
-678	
+678
 679	export async function copyUntilYearEnd({
 680	  month,
 681	  category,
@@ -7736,20 +7882,20 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 687	    monthUtils.sheetForMonth(month),
 688	    'budget-' + category,
 689	  );
-690	
+690
 691	  const yearEnd = monthUtils.getYearEnd(month);
 692	  const { createdMonths } = sheet.get().meta();
 693	  const futureMonths = [...(createdMonths as Set<string>)]
 694	    .filter(m => m > month && m <= yearEnd)
 695	    .sort();
-696	
+696
 697	  await batchMessages(async () => {
 698	    for (const futureMonth of futureMonths) {
 699	      void setBudget({ category, month: futureMonth, amount });
 700	    }
 701	  });
 702	}
-703	
+703
 704	export async function setCategoryCarryover({
 705	  startMonth,
 706	  category,
@@ -7761,18 +7907,18 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 712	}): Promise<void> {
 713	  const table = getBudgetTable();
 714	  const months = getAllMonths(startMonth);
-715	
+715
 716	  await batchMessages(async () => {
 717	    for (const month of months) {
 718	      void setCarryover(table, category, dbMonth(month).toString(), flag);
 719	    }
 720	  });
 721	}
-722	
+722
 723	function addNewLine(notes?: string) {
 724	  return !notes ? '' : `${notes}\n`;
 725	}
-726	
+726
 727	async function addMovementNotes({
 728	  month,
 729	  amount,
@@ -7792,7 +7938,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 743	    undefined,
 744	    currency.decimalPlaces,
 745	  );
-746	
+746
 747	  const monthBudgetNotesId = `budget-${month}`;
 748	  const existingMonthBudgetNotes = addNewLine(
 749	    db.firstSync<Pick<db.DbNote, 'note'>>(
@@ -7800,7 +7946,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 751	      [monthBudgetNotesId],
 752	    )?.note,
 753	  );
-754	
+754
 755	  const locale = getLocale(await asyncStorage.getItem('language'));
 756	  const displayDay = monthUtils.format(
 757	    monthUtils.currentDate(),
@@ -7810,27 +7956,27 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 761	  const categories = await db.getCategories(
 762	    [from, to].filter(c => c !== 'to-budget' && c !== 'overbudgeted'),
 763	  );
-764	
+764
 765	  const fromCategoryName =
 766	    from === 'to-budget'
 767	      ? 'To Budget'
 768	      : categories.find(c => c.id === from)?.name;
-769	
+769
 770	  const toCategoryName =
 771	    to === 'to-budget'
 772	      ? 'To Budget'
 773	      : to === 'overbudgeted'
 774	        ? 'Overbudgeted'
 775	        : categories.find(c => c.id === to)?.name;
-776	
+776
 777	  const note = `Reassigned ${displayAmount} from ${fromCategoryName} → ${toCategoryName} on ${displayDay}`;
-778	
+778
 779	  await db.update('notes', {
 780	    id: monthBudgetNotesId,
 781	    note: `${existingMonthBudgetNotes}- ${note}`,
 782	  });
 783	}
-784	
+784
 785	export async function resetIncomeCarryover({
 786	  month,
 787	}: {
@@ -7840,7 +7986,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 791	  const categories = await db.all<db.DbViewCategory>(
 792	    'SELECT * FROM v_categories WHERE is_income = 1 AND tombstone = 0',
 793	  );
-794	
+794
 795	  await batchMessages(async () => {
 796	    for (const category of categories) {
 797	      await setCarryover(table, category.id, dbMonth(month).toString(), false);
@@ -7849,6 +7995,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:33:55Z)**_
 800	}
 801
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:34:25Z)**_
@@ -7910,6 +8057,7 @@ packages\loot-core\src\mocks\budget.ts:741:  // setBudget(monthUtils.currentMont
 packages\loot-core\src\server\budget\app.ts:25:  'budget/budget-amount': typeof actions.setBudget;
 packages\loot-core\src\server\budget\app.ts:74:app.method('budget/budget-amount', mutator(undoable(actions.setBudget)));
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:34:35Z)**_
@@ -7966,9 +8114,9 @@ _**Agent (claude-opus-5-5 2026-10-01 05:34:35Z)**_
 68	  'budget/render-note-templates': typeof goalNoteActions.unparse;
 69	  'budget/create-cleanup-group': typeof cleanupGroupActions.createCleanupGroup;
 70	};
-71	
+71
 72	export const app = createApp<BudgetHandlers>();
-73	
+73
 74	app.method('budget/budget-amount', mutator(undoable(actions.setBudget)));
 75	app.method(
 76	  'budget/copy-previous-month',
@@ -8030,6 +8178,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:34:35Z)**_
 132	);
 133	app.method(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:35:05Z)**_
@@ -8053,7 +8202,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:35:05Z)**_
 380	  const earliestDate =
 381	    earliestTransaction && db.fromDateRepr(earliestTransaction.date);
 382	  const currentMonth = monthUtils.currentMonth();
-383	
+383
 384	  // Get the range based off of the earliest transaction and the
 385	  // current month. If no transactions currently exist the current
 386	  // month is also used as the starting month
@@ -8061,32 +8210,33 @@ _**Agent (claude-opus-5-5 2026-10-01 05:35:05Z)**_
 388	    earliestDate || currentMonth,
 389	    currentMonth,
 390	  );
-391	
+391
 392	  const meta = sheet.get().meta();
 393	  const createdMonths = meta.createdMonths || new Set();
 394	  const newMonths = range.filter(m => !createdMonths.has(m));
-395	
+395
 396	  if (newMonths.length > 0) {
 397	    await createBudget(range);
 398	  }
-399	
+399
 400	  return { start, end };
 401	}
-402	
+402
 403	export async function setType(type) {
 404	  const meta = sheet.get().meta();
 405	  if (type === meta.budgetType) {
 406	    return;
 407	  }
-408	
+408
 409	  meta.budgetType = type;
 410	  meta.createdMonths = new Set();
-411	
+411
 412	  // Go through and force all the cells to be recomputed
 413	  const nodes = sheet.get().getNodes();
 414	  db.transaction(() => {
 415	    for (const name of nodes.keys()) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:35:06Z)**_
@@ -8123,6 +8273,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:35:06Z)**_
 525-
 526-export async function sendMessages(messages: Message[]) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:35:16Z)**_
@@ -8140,6 +8291,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:35:54Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:36:02Z)**_
@@ -8157,6 +8309,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:36:13Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:36:21Z)**_
@@ -8174,6 +8327,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:36:37Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:36:44Z)**_
@@ -8184,6 +8338,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:36:44Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:36:52Z)**_
@@ -8194,6 +8349,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:36:52Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:37:00Z)**_
@@ -8204,6 +8360,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:37:00Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:37:05Z)**_
@@ -8241,6 +8398,7 @@ packages\loot-core\src\server\budget\actions.test.ts:150:    await setNMonthAvg(
 packages\loot-core\src\server\budget\actions.test.ts:159:    await setNMonthAvg({ month: '2024-04', N: 3, category: 'cat1' });
 packages\loot-core\src\server\budget\actions.test.ts:174:    await setNMonthAvg({ month: '2024-04', N: 3, category: 'cat1' });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:37:09Z)**_
@@ -8255,6 +8413,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:37:27Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:37:51Z)**_
@@ -8272,6 +8431,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:38:03Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:38:06Z)**_
@@ -8286,6 +8446,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:38:40Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:38:48Z)**_
@@ -8296,6 +8457,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:38:48Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:38:54Z)**_
@@ -8313,6 +8475,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:13Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\app.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:39:29Z)**_
@@ -8323,6 +8486,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:29Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\app.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:39:44Z)**_
@@ -8341,7 +8505,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 ```text
 225	  });
 226	}
-227	
+227
 228	export function createBudget(meta, categories, months) {
 229	  // The spreadsheet is now strict - so we need to fill in some
 230	  // default values for the month before the first month. Only do this
@@ -8353,7 +8517,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 236	    meta.blankSheet = blankSheet;
 237	  }
 238	}
-239	
+239
 240	export function handleCategoryChange(months, oldValue, newValue) {
 241	  function addDeps(sheetName, groupId, catId) {
 242	    sheet
@@ -8372,7 +8536,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 255	        `leftover-${catId}`,
 256	      ]);
 257	  }
-258	
+258
 259	  function removeDeps(sheetName, groupId, catId) {
 260	    sheet
 261	      .get()
@@ -8390,11 +8554,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 273	        `leftover-${catId}`,
 274	      ]);
 275	  }
-276	
+276
 277	  if (oldValue && oldValue.tombstone === 0 && newValue.tombstone === 1) {
 278	    const id = newValue.id;
 279	    const groupId = newValue.cat_group;
-280	
+280
 281	    months.forEach(month => {
 282	      const sheetName = monthUtils.sheetForMonth(month);
 283	      removeDeps(sheetName, groupId, id);
@@ -8404,25 +8568,25 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 287	    (!oldValue || oldValue.tombstone === 1)
 288	  ) {
 289	    createBlankCategory(newValue, months);
-290	
+290
 291	    months.forEach(month => {
 292	      const prevMonth = monthUtils.prevMonth(month);
 293	      const prevSheetName = monthUtils.sheetForMonth(prevMonth);
 294	      const sheetName = monthUtils.sheetForMonth(month);
 295	      const { start, end } = monthUtils.bounds(month);
-296	
+296
 297	      createCategoryFromBase(newValue, sheetName, prevSheetName, start, end);
-298	
+298
 299	      const id = newValue.id;
 300	      const groupId = newValue.cat_group;
-301	
+301
 302	      sheet
 303	        .get()
 304	        .addDependencies(sheetName, 'last-month-overspent', [
 305	          `${prevSheetName}!leftover-${id}`,
 306	          `${prevSheetName}!carryover-${id}`,
 307	        ]);
-308	
+308
 309	      addDeps(sheetName, groupId, id);
 310	      if (newValue.is_income) {
 311	        sheet
@@ -8440,7 +8604,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 323	  } else if (oldValue && oldValue.cat_group !== newValue.cat_group) {
 324	    // The category moved so we need to update the dependencies
 325	    const id = newValue.id;
-326	
+326
 327	    months.forEach(month => {
 328	      const sheetName = monthUtils.sheetForMonth(month);
 329	      removeDeps(sheetName, oldValue.cat_group, id);
@@ -8448,7 +8612,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 331	    });
 332	  }
 333	}
-334	
+334
 335	export function handleCategoryGroupChange(months, oldValue, newValue) {
 336	  function addDeps(sheetName, groupId) {
 337	    sheet
@@ -8467,7 +8631,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 350	        `group-leftover-${groupId}`,
 351	      ]);
 352	  }
-353	
+353
 354	  function removeDeps(sheetName, groupId) {
 355	    sheet
 356	      .get()
@@ -8485,7 +8649,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 368	        `group-leftover-${groupId}`,
 369	      ]);
 370	  }
-371	
+371
 372	  if (newValue.tombstone === 1 && oldValue && oldValue.tombstone === 0) {
 373	    const id = newValue.id;
 374	    months.forEach(month => {
@@ -8497,9 +8661,10 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:45Z)**_
 380	    (!oldValue || oldValue.tombstone === 1)
 381	  ) {
 382	    const group = newValue;
-383	
+383
 384	    if (!group.is_income) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
@@ -8509,7 +8674,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
  `./packages/loot-core/src/server/budget/base.ts`
 
 ```text
-160	
+160
 161	function handleBudgetChange(budget) {
 162	  if (budget.category) {
 163	    const sheetName = monthUtils.sheetForMonth(budget.month.toString());
@@ -8528,19 +8693,19 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 176	      .set(`${sheetName}!long-goal-${budget.category}`, budget.long_goal);
 177	  }
 178	}
-179	
+179
 180	export function triggerBudgetChanges(oldValues, newValues) {
 181	  const { createdMonths = new Set() } = sheet.get().meta();
 182	  const budgetType = getBudgetType();
 183	  sheet.startTransaction();
-184	
+184
 185	  try {
 186	    newValues.forEach((items, table) => {
 187	      const old = oldValues.get(table);
-188	
+188
 189	      items.forEach(newValue => {
 190	        const oldValue = old && old.get(newValue.id);
-191	
+191
 192	        if (table === 'zero_budget_months') {
 193	          handleBudgetMonthChange(newValue);
 194	        } else if (table === 'zero_budgets' || table === 'reflect_budgets') {
@@ -8549,7 +8714,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 197	          const changed = new Set(
 198	            Object.keys(getChangedValues(oldValue || {}, newValue) || {}),
 199	          );
-200	
+200
 201	          if (oldValue) {
 202	            handleTransactionChange(oldValue, changed);
 203	          }
@@ -8590,6 +8755,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 238	      });
 239	    });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
@@ -8604,20 +8770,20 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 270	    q('category_groups').select('*'),
 271	  );
 272	  const categories = groups.flatMap(group => group.categories);
-273	
+273
 274	  sheet.startTransaction();
 275	  const meta = sheet.get().meta();
 276	  meta.createdMonths = meta.createdMonths || new Set();
-277	
+277
 278	  const budgetType = getBudgetType();
-279	
+279
 280	  if (budgetType === 'envelope') {
 281	    envelopeBudget.createBudget(meta, categories, months);
 282	  }
-283	
+283
 284	  // Only months that don't already exist need to be created and seeded.
 285	  const monthsToCreate = months.filter(month => !meta.createdMonths.has(month));
-286	
+286
 287	  // Spend totals for every category in the months being created, computed
 288	  // once via a single grouped query and used to seed the `sum-amount` cells so
 289	  // they don't each run their own query. Scoped to the uncached month span so
@@ -8646,14 +8812,14 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 312	    return sumAmounts;
 313	  };
 314	  const seededCells: string[] = [];
-315	
+315
 316	  monthsToCreate.forEach(month => {
 317	    const prevMonth = monthUtils.prevMonth(month);
 318	    const { start, end } = monthUtils.bounds(month);
 319	    const sheetName = monthUtils.sheetForMonth(month);
 320	    const prevSheetName = monthUtils.sheetForMonth(prevMonth);
 321	    const dbMonth = parseInt(month.replace('-', ''));
-322	
+322
 323	    categories.forEach(cat => {
 324	      // Seed the spend total before creating the dynamic cell so the cell
 325	      // skips its per-category query. Only happens on a cold build, when
@@ -8675,7 +8841,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 341	        trackingBudget.createCategoryGroup(group, sheetName);
 342	      }
 343	    });
-344	
+344
 345	    if (budgetType === 'envelope') {
 346	      envelopeBudget.createSummary(
 347	        groups,
@@ -8686,13 +8852,13 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 352	    } else {
 353	      trackingBudget.createSummary(groups, sheetName);
 354	    }
-355	
+355
 356	    meta.createdMonths.add(month);
 357	  });
-358	
+358
 359	  sheet.get().setMeta(meta);
 360	  sheet.endTransaction();
-361	
+361
 362	  // Persist the seeded spend totals to the cache. Because they were loaded
 363	  // directly (rather than recomputed) they aren't part of the computation
 364	  // queue that normally gets cached, so without this a warm load would have
@@ -8700,7 +8866,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 366	  if (seededCells.length > 0) {
 367	    sheet.get().saveCachedCells(seededCells);
 368	  }
-369	
+369
 370	  // Wait for the spreadsheet to finish computing. Normally this won't
 371	  // do anything (as values are cached) but on first run this need to
 372	  // show the loading screen while it initially sets up.
@@ -8708,6 +8874,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:46Z)**_
 374	}
 375
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:39:51Z)**_
@@ -8719,7 +8886,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:51Z)**_
 ```text
 70	  return sums;
 71	}
-72	
+72
 73	export function createCategory(cat, sheetName, prevSheetName, start, end) {
 74	  sheet.get().createDynamic(sheetName, 'sum-amount-' + cat.id, {
 75	    initialValue: 0,
@@ -8738,14 +8905,14 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:51Z)**_
 88	      return amount || 0;
 89	    },
 90	  });
-91	
+91
 92	  if (getBudgetType() === 'envelope') {
 93	    envelopeBudget.createCategory(cat, sheetName, prevSheetName);
 94	  } else {
 95	    void trackingBudget.createCategory(cat, sheetName, prevSheetName);
 96	  }
 97	}
-98	
+98
 99	function handleAccountChange(months, oldValue, newValue) {
 100	  if (!oldValue || oldValue.offbudget !== newValue.offbudget) {
 101	    const rows = db.runQuery<Pick<db.DbTransaction, 'category'>>(
@@ -8756,10 +8923,10 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:51Z)**_
 106	      [newValue.id],
 107	      true,
 108	    );
-109	
+109
 110	    months.forEach(month => {
 111	      const sheetName = monthUtils.sheetForMonth(month);
-112	
+112
 113	      rows.forEach(row => {
 114	        sheet
 115	          .get()
@@ -8768,7 +8935,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:51Z)**_
 118	    });
 119	  }
 120	}
-121	
+121
 122	function handleTransactionChange(transaction, changedFields) {
 123	  if (
 124	    (changedFields.has('date') ||
@@ -8782,13 +8949,13 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:51Z)**_
 132	  ) {
 133	    const month = monthUtils.monthFromDate(db.fromDateRepr(transaction.date));
 134	    const sheetName = monthUtils.sheetForMonth(month);
-135	
+135
 136	    sheet
 137	      .get()
 138	      .recompute(resolveName(sheetName, 'sum-amount-' + transaction.category));
 139	  }
 140	}
-141	
+141
 142	function handleCategoryMappingChange(months, oldValue, newValue) {
 143	  months.forEach(month => {
 144	    const sheetName = monthUtils.sheetForMonth(month);
@@ -8802,12 +8969,13 @@ _**Agent (claude-opus-5-5 2026-10-01 05:39:51Z)**_
 152	      .recompute(resolveName(sheetName, 'sum-amount-' + newValue.transferId));
 153	  });
 154	}
-155	
+155
 156	function handleBudgetMonthChange(budget) {
 157	  const sheetName = monthUtils.sheetForMonth(budget.id);
 158	  sheet.get().set(`${sheetName}!buffered`, budget.buffered);
 159	}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:40:07Z)**_
@@ -8872,6 +9040,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:40:07Z)**_
 507-      this.graph.removeEdge(dep, name);
 508-    });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:40:12Z)**_
@@ -8886,10 +9055,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:40:12Z)**_
 508	    });
 509	    this.recompute(name);
 510	  }
-511	
+511
 512	  _markDirty(name) {
 513	    this.dirtyCells.push(name);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:40:20Z)**_
@@ -8915,23 +9085,24 @@ _**Agent (claude-opus-5-5 2026-10-01 05:40:20Z)**_
 7	import { q } from '#shared/query';
 8	import { getChangedValues } from '#shared/util';
 9	import type { CategoryGroupEntity } from '#types/models';
-10	
+10
 11	import * as budgetActions from './actions';
 12	import * as envelopeBudget from './envelope';
 13	import * as trackingBudget from './tracking';
-14	
+14
 15	export function getBudgetType() {
 16	  const meta = sheet.get().meta();
 17	  return meta.budgetType || 'envelope';
 18	}
-19	
+19
 20	export function getBudgetRange(start: string, end: string) {
 21	  start = monthUtils.getMonth(start);
 22	  end = monthUtils.getMonth(end);
-23	
+23
 24	  // The start date should never be after the end date. If that
 25	  // happened, the month range might be a valid range and weird
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:40:54Z)**_
@@ -8942,6 +9113,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:40:54Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\base.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:42:12Z)**_
@@ -8952,6 +9124,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:42:12Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\base.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:42:52Z)**_
@@ -8962,6 +9135,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:42:52Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\base.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:44:46Z)**_
@@ -8972,6 +9146,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:44:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\base.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:45:50Z)**_
@@ -8982,6 +9157,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:45:50Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\base.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:46:36Z)**_
@@ -8992,6 +9168,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:46:36Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\base.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:46:45Z)**_
@@ -9016,6 +9193,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:46:46Z)**_
 12-  );
 13-}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:47:00Z)**_
@@ -9039,6 +9217,7 @@ packages\loot-core\src\server\budget\category-template-context.test.ts:50:      
 packages\loot-core\src\server\budget\category-template-context.test.ts:66:    currencyCode: string = 'USD',
 packages\loot-core\src\server\budget\category-template-context.test.ts:75:      currencyCode,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:47:01Z)**_
@@ -9050,10 +9229,10 @@ _**Agent (claude-opus-5-5 2026-10-01 05:47:01Z)**_
 ```text
 1	// @ts-strict-ignore
 2	import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-3	
+3
 4	import * as db from '#server/db';
 5	import * as sheet from '#server/sheet';
-6	
+6
 7	import {
 8	  copyUntilYearEnd,
 9	  coverOverbudgeted,
@@ -9064,11 +9243,11 @@ _**Agent (claude-opus-5-5 2026-10-01 05:47:01Z)**_
 14	  setNMonthAvg,
 15	} from './actions';
 16	import * as budget from './base';
-17	
+17
 18	describe('copyUntilYearEnd', () => {
 19	  beforeEach(global.emptyDatabase());
 20	  afterEach(global.emptyDatabase());
-21	
+21
 22	  async function setupDatabase() {
 23	    await db.insertCategoryGroup({
 24	      id: 'income-group',
@@ -9095,20 +9274,21 @@ _**Agent (claude-opus-5-5 2026-10-01 05:47:01Z)**_
 45	    await sheet.loadSpreadsheet(db);
 46	    await budget.createBudget(['2024-01', '2024-02', '2024-03']);
 47	  }
-48	
+48
 49	  it('copies the current month budget to all future months in the same year', async () => {
 50	    await setupDatabase();
-51	
+51
 52	    await setBudget({ category: 'cat1', month: '2024-01', amount: 5000 });
 53	    await setBudget({ category: 'cat1', month: '2024-02', amount: 1000 });
 54	    await setBudget({ category: 'cat1', month: '2024-03', amount: 2000 });
 55	    await sheet.waitOnSpreadsheet();
-56	
+56
 57	    await copyUntilYearEnd({ month: '2024-01', category: 'cat1' });
 58	    await sheet.waitOnSpreadsheet();
-59	
+59
 60	    expect(await getSheetValue('budget202401', 'budget-cat1')).toBe(5000);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:47:10Z)**_
@@ -9132,13 +9312,13 @@ _**Agent (claude-opus-5-5 2026-10-01 05:47:10Z)**_
 5	import * as monthUtils from '#shared/months';
 6	import { q } from '#shared/query';
 7	import type { CategoryGroupEntity } from '#types/models';
-8	
+8
 9	import { getBudget, setBudget } from './actions';
 10	import { app } from './app';
 11	import { createAllBudgets } from './base';
-12	
+12
 13	beforeEach(global.emptyDatabase());
-14	
+14
 15	async function getCategory(id: string) {
 16	  const category = await db.first<db.DbCategory>(
 17	    'SELECT * FROM categories WHERE id = ?',
@@ -9146,6 +9326,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:47:10Z)**_
 19	  );
 20	  if (!category) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:48:09Z)**_
@@ -9156,6 +9337,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:48:09Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:48:50Z)**_
@@ -9354,6 +9536,7 @@ EOF
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:49:03Z)**_
@@ -9368,6 +9551,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:50:24Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:51:35Z)**_
@@ -9399,7 +9583,7 @@ Exit code 1
      ✓ a transfer from the parent to a subcategory is not charged twice 87ms
      ✓ covering a subcategory from To Budget takes the money from its parent 58ms
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
- FAIL  src/server/budget/subcategories.test.ts > Budgeting subcategories > updates the parent total when subcategories 
+ FAIL  src/server/budget/subcategories.test.ts > Budgeting subcategories > updates the parent total when subcategories
 are added or removed
 AssertionError: expected 10000 to be 7000 // Object.is equality
 - Expected
@@ -9408,6 +9592,7 @@ AssertionError: expected 10000 to be 7000 // Object.is equality
       Tests  1 failed | 18 passed (19)
    Duration  9.65s (transform 2.30s, setup 7.35s, import 573ms, tests 1.38s, environment 0ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:51:42Z)**_
@@ -9425,7 +9610,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:51:42Z)**_
 
 ```text
 265	    await budgetAmount('restaurants', jan, 3000);
-266	
+266
 267	    const id = await runHandler(app.handlers['category-create'], {
 268	      name: 'snacks',
 269	      groupId: 'group1',
@@ -9434,13 +9619,14 @@ _**Agent (claude-opus-5-5 2026-10-01 05:51:42Z)**_
 272	    await sheet.waitOnSpreadsheet();
 273	    await budgetAmount(id, jan, 500);
 274	    expect(await cell(jan, 'parent-total-budget-food')).toBe(10000);
-275	
+275
 276	    // Un-nesting keeps the money where it is, so it leaves the total
 277	    const restaurants = await getCategory('restaurants');
 278	    await runHandler(app.handlers['category-update'], {
 279	      id: 'restaurants',
 280	      name: restaurants.name,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:51:56Z)**_
@@ -9451,6 +9637,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:51:56Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:52:16Z)**_
@@ -9464,6 +9651,7 @@ Exit code 1
 AssertionError: expected 'food' to be null
  ❯ src/server/budget/subcategories.test.ts:286:58
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:52:21Z)**_
@@ -9547,6 +9735,7 @@ packages\loot-core\src\server\aql\schema-helpers.ts-211-  }
 packages\loot-core\src\server\aql\schema-helpers.ts-212-  return result;
 packages\loot-core\src\server\aql\schema-helpers.ts-213-}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:52:36Z)**_
@@ -9564,14 +9753,14 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:37Z)**_
 201	  // oxlint-disable-next-line typescript/no-explicit-any
 202	  return rows[0] as any;
 203	}
-204	
+204
 205	export async function update(table, params) {
 206	  const fields = Object.keys(params).filter(k => k !== 'id');
-207	
+207
 208	  if (params.id == null) {
 209	    throw new Error('update: id is required');
 210	  }
-211	
+211
 212	  await sendMessages(
 213	    fields.map(k => {
 214	      return {
@@ -9584,27 +9773,27 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:37Z)**_
 221	    }),
 222	  );
 223	}
-224	
+224
 225	export async function insertWithUUID(table, row) {
 226	  if (!row.id) {
 227	    row = { ...row, id: uuidv4() };
 228	  }
-229	
+229
 230	  await insert(table, row);
-231	
+231
 232	  // We can't rely on the return value of insert because if the
 233	  // primary key is text, sqlite returns the internal row id which we
 234	  // don't care about. We want to return the generated UUID.
 235	  return row.id;
 236	}
-237	
+237
 238	export async function insert(table, row) {
 239	  const fields = Object.keys(row).filter(k => k !== 'id');
-240	
+240
 241	  if (row.id == null) {
 242	    throw new Error('insert: id is required');
 243	  }
-244	
+244
 245	  await sendMessages(
 246	    fields.map(k => {
 247	      return {
@@ -9617,7 +9806,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:37Z)**_
 254	    }),
 255	  );
 256	}
-257	
+257
 258	export async function delete_(table, id) {
 259	  await sendMessages([
 260	    {
@@ -9631,6 +9820,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:37Z)**_
 268	}
 269
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:52:42Z)**_
@@ -9649,15 +9839,15 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:42Z)**_
 ```text
 1	// @ts-strict-ignore
 2	import { Timestamp } from '@actual-app/crdt';
-3	
+3
 4	import { addSyncListener, applyMessages } from './index';
 5	import type { Message } from './index';
-6	
+6
 7	function migrateParentIds(_oldValues, newValues) {
 8	  newValues.forEach((items, table) => {
 9	    if (table === 'transactions') {
 10	      const toApply: Message[] = [];
-11	
+11
 12	      items.forEach(newValue => {
 13	        if (
 14	          newValue.isChild === 1 &&
@@ -9665,7 +9855,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:42Z)**_
 16	          newValue.id.includes('/')
 17	        ) {
 18	          const parentId = newValue.id.split('/')[0];
-19	
+19
 20	          toApply.push({
 21	            dataset: 'transactions',
 22	            row: newValue.id,
@@ -9675,20 +9865,20 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:42Z)**_
 26	          });
 27	        }
 28	      });
-29	
+29
 30	      if (toApply.length > 0) {
 31	        void applyMessages(toApply);
 32	      }
 33	    }
 34	  });
 35	}
-36	
+36
 37	let _unlisten = null;
 38	export function listen() {
 39	  unlisten();
 40	  _unlisten = addSyncListener(migrateParentIds);
 41	}
-42	
+42
 43	export function unlisten() {
 44	  if (_unlisten) {
 45	    _unlisten();
@@ -9697,6 +9887,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:42Z)**_
 48	}
 49
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:52:49Z)**_
@@ -9765,6 +9956,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:52:49Z)**_
 137-          return null;
 138-        }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:52:56Z)**_
@@ -9804,6 +9996,7 @@ yarn workspace @actual-app/core exec vitest --run src/server/budget/zz-debug.tes
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:53:46Z)**_
@@ -9824,6 +10017,7 @@ Show full debug test output
    Start at  01:53:38
    Duration  7.48s (transform 2.11s, setup 6.41s, import 624ms, tests 137ms, environment 0ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:53:49Z)**_
@@ -9841,6 +10035,7 @@ Rerun debug test surfacing values via error
 ```text
 Error: {"id":"r","name":"r","cat_group":"group1","is_income":0,"template_settings":"{\"source\":\"notes\"}"} |  | {"id":"r","name":"r","is_income":0,"cat_group":"group1","sort_order":8192,"tombstone":0,"hidden":0,"goal_def":null,"template_settings":"{\"source\":\"notes\"}","cleanup_def":null,"parent_id":"food"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:54:28Z)**_
@@ -9860,31 +10055,31 @@ _**Agent (claude-opus-5-5 2026-10-01 05:54:28Z)**_
 136	        if (obj[field] === undefined) {
 137	          return null;
 138	        }
-139	
+139
 140	        // This option removes null values (see `convertForInsert`)
 141	        if (skipNull && obj[field] == null) {
 142	          return null;
 143	        }
-144	
+144
 145	        return [fieldRef(field), convertInputType(obj[field], fieldDesc.type)];
 146	      })
 147	      .filter(Boolean),
 148	  );
 149	}
-150	
+150
 151	export function convertForInsert(schema, schemaConfig, table, rawObj) {
 152	  const obj = { ...rawObj };
-153	
+153
 154	  const tableSchema = schema[table];
 155	  if (tableSchema == null) {
 156	    throw new Error(`Error inserting: table "${table}" does not exist`);
 157	  }
-158	
+158
 159	  // Inserting checks all the fields in the table and adds any default
 160	  // values necessary
 161	  Object.keys(tableSchema).forEach(field => {
 162	    const fieldDesc = tableSchema[field];
-163	
+163
 164	    if (obj[field] == null) {
 165	      if (fieldDesc.default !== undefined) {
 166	        obj[field] =
@@ -9901,15 +10096,16 @@ _**Agent (claude-opus-5-5 2026-10-01 05:54:28Z)**_
 177	      }
 178	    }
 179	  });
-180	
+180
 181	  // We use `skipNull` to remove any null values. There's no need to
 182	  // set those when inserting, that will be the default and it reduces
 183	  // the amount of messages generated to sync
 184	  return conform(schema, schemaConfig, table, obj, { skipNull: true });
 185	}
-186	
+186
 187	export function convertForUpdate(schema, schemaConfig, table, rawObj) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:54:39Z)**_
@@ -9927,6 +10123,7 @@ _**Agent (claude-opus-5-5 2026-10-01 05:55:08Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\app.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:55:26Z)**_
@@ -9941,6 +10138,7 @@ Remove debug code and rerun subcategory tests
 0
       Tests  19 passed (19)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 05:55:37Z)**_
@@ -9958,6 +10156,7 @@ Run broader loot-core tests
       Tests  298 passed (298)
    Duration  93.53s (transform 5.02s, setup 121.41s, import 2.30s, tests 51.07s, environment 5ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 06:00:03Z)**_
@@ -9969,6 +10168,7 @@ Typecheck repo and lint changed folders
 ```text
 success: 6, skipped: 4, pending: 0, aborted: 0, failed: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 06:00:20Z)**_
@@ -9978,6 +10178,7 @@ Step 3 is done: budgeting a subcategory now takes the money from its parent, and
 **Design change from the plan:** the plan made `setBudget` charge the parent and added a raw version for bulk actions. I did the reverse. `setBudget` stays a raw write, and a new `setCategoryBudget` in [actions.ts](packages/loot-core/src/server/budget/actions.ts) charges the parent. About 25 places call `setBudget`, and many already say where the money comes from. If the plain function charged the parent, they would pay twice: for example, moving money from Food to Restaurants would take it out of Food two times. Only actions whose money comes from "To Budget" were switched.
 
 **Switched to charge the parent:**
+
 - **Typing in a budget cell** (`budget/budget-amount`), which also covers the public API's `setBudgetAmount`.
 - **Copy last month for one category** (`copySinglePreviousMonth`).
 - **Set one category to its N-month average** (`setNMonthAvg`). The 6- and 12-month "all categories" versions call a private copy that doesn't charge the parent.
@@ -9986,6 +10187,7 @@ Step 3 is done: budgeting a subcategory now takes the money from its parent, and
 - **Cover overspending, or transfer, from To Budget** (`coverOverspending`, `transferCategory`). When the money comes from a named category, that category pays and the parent isn't touched.
 
 **Unchanged, writing amounts as-is:**
+
 - The bulk actions: copy every category from last month, set all to zero, the averages for all categories.
 - Templates, cleanup, and the transfer when a category is deleted.
 
@@ -9996,6 +10198,7 @@ The bulk actions write parents too, and a parent's amount is already net of what
 **Existing bug I fixed:** the `category-update` handler dropped any field set to `null` before saving, so un-nesting a subcategory through it silently did nothing. I added a targeted fix for `parent_id` in [app.ts](packages/loot-core/src/server/budget/app.ts). The same problem would affect clearing any other field through that handler, but I left that alone because the general fix changes how `template_settings` defaults apply.
 
 **Behavior to be aware of:**
+
 - **Parent can go negative:** if a subcategory gets more than the parent holds, the parent goes below zero, the same way any envelope category can be over-assigned today.
 - **Move from To Budget on a subcategory:** that action still caps the amount at what's left in "To Budget", even though the parent pays. Step 5 can hide or relabel that menu item on subcategory rows.
 - **Templates don't follow the rule:** a template on a subcategory still draws from "To Budget". Making templates route through parents would need its own design.
@@ -10018,10 +10221,10 @@ Here's more detail on each of the three, with a concrete example and the choices
 
 Under the transfer model, Food's own `budget-food` cell holds only the part it kept. Its total is own plus its subcategories. If you give Food $100 and then give Restaurants $30, the rows look like this:
 
-| | Own budget | Parent total |
-|---|---|---|
-| Food | $70 | $100 |
-| Restaurants | $30 | — |
+|             | Own budget | Parent total |
+| ----------- | ---------- | ------------ |
+| Food        | $70        | $100         |
+| Restaurants | $30        | —            |
 
 The group totals and "To Budget" add up the own cells. They come to $100, which is correct.
 
@@ -10034,11 +10237,13 @@ A write that skips the parent and puts money straight into Restaurants doesn't b
 **How it happens:** Food has $100, and you budget $150 to Restaurants. Food's own budget becomes −$50, and Food's total is still $100. The same thing happens if you lower Food after allocating to its subcategories.
 
 **What goes wrong:**
+
 - **This month:** Food's own balance is −$50 even with no spending, so the budget page shows Food as overspent (red).
 - **Next month, which is the real problem:** with rollover off, the envelope budget subtracts last month's overspending from next month's "To Budget". The −$50 on Food is taken from the main pool, while Restaurants carries its full $150 forward. Over two months the subcategory effectively got $50 from "To Budget", which breaks the acceptance criterion.
 - **Parent spending:** a related, milder effect. Transactions filed under Food itself only draw on Food's own share. If you gave everything to subcategories, a $10 Food purchase shows as overspent even though the subcategories have money.
 
 **Options:**
+
 - **(a) Cap at the parent's budget (my recommendation).** A subcategory increase is limited to what the parent has budgeted that month, so the parent's own budget never goes below zero. This matches "a portion of the parent's budget can be allocated". It's a small server change in `setCategoryBudget`, and the UI can show the cap.
 - **(b) Cap at the parent's available balance** (budget plus carryover minus spending). This is more flexible but harder to explain, because it changes as transactions come in.
 - **(c) Allow it and warn.** This keeps the current behavior and accepts the leak.
@@ -10050,12 +10255,14 @@ A related UI choice comes in step 5: when you type into the parent's row, are yo
 ### 2. "Move from To Budget" on a subcategory
 
 **How it happens:** this is `transferAvailable`, behind the "To Budget" menu's move-to-category option. It caps the amount at what's left in "To Budget". I switched it to charge the parent, so with a subcategory as the target:
+
 - if "To Budget" has $0, moving $50 to Restaurants moves nothing, even though Food has money;
 - if "To Budget" has $20, only $20 moves, and it comes from Food, not from "To Budget".
 
 The action's label says one thing and it does another.
 
 **Options:**
+
 - **(a) Leave subcategories out of that picker (my recommendation).** Moving money from "To Budget" into a subcategory goes against the rule anyway, and the user can fund the parent instead. This is a UI change in step 5, plus a server guard that rejects it.
 - **(b) Undo my change** so it writes the amount as-is. "To Budget" pays and Food's total grows by $50. That's consistent with the cap, but it lets a subcategory be funded straight from the main pool.
 
@@ -10066,10 +10273,12 @@ The action's label says one thing and it does another.
 **How it happens:** templates, cleanup, and the bulk actions write each category's amount as-is. Copy last month and set to zero are fine, because they write parents too and the values already balance.
 
 The averages and templates are different:
+
 - **Bulk "set 3-month average":** Restaurants gets its own average spending ($40), and Food gets its own ($60). Both come from "To Budget", so Food's total is $100. Restaurants was funded directly, so Food's total grew; nothing came out of Food's share.
 - **Templates:** a `#template $50` on Restaurants likewise draws $50 from "To Budget". If Food also has a template, the two are applied independently. If Food's template is something like "budget the remainder", the result can be surprising.
 
 **Options:**
+
 - **(a) Accept it as "funding the parent's total"** and document it. No accounting breaks, and the parent total in the UI shows the real amount.
 - **(b) Block templates on subcategories** for this issue, in both the UI and the server. This is simple, and it's the strict reading of "only through the parent".
 - **(c) Make templates go through parents.** That means deciding the order of parent and child templates and what "remainder" means. It's a design task of its own and too big for this issue.
@@ -10087,6 +10296,7 @@ _**Agent (claude-opus-5-5 2026-10-01 16:59:43Z)**_
 **When a subcategory would take more than its parent has, what should happen?**
 
 Options:
+
 - **Cap at parent budget (Recommended)** - A subcategory can't take more than its parent budgeted that month, so the parent's own share never goes below zero and nothing leaks into next month's To Budget.
 - **Cap at parent balance** - Limit by the parent's budget plus carryover minus spending. More flexible, but the limit shifts as transactions come in.
 - **Allow and warn** - Keep the current behavior. The parent goes negative, the UI warns, and the extra is taken from next month's To Budget.
@@ -10094,16 +10304,17 @@ Options:
 **How should 'Move from To Budget' treat subcategories?**
 
 Options:
+
 - **Exclude subcategories (Recommended)** - Leave subcategories out of that picker and reject the move on the server too. Users fund the parent instead.
 - **Write the amount as-is** - Undo the step 3 change for this action. To Budget pays and the parent's total grows.
 
 **How should templates on subcategories work for this issue?**
 
 Options:
+
 - **Block on subcategories (Recommended)** - Templates can't be set or applied on subcategories. Going through parents becomes a follow-up issue.
 - **Allow, grow parent total** - Keep the current behavior. A subcategory's template draws from To Budget and the parent's total grows. Document it.
 - **Route through parent now** - Decide parent and subcategory template order and make subcategory templates take from the parent. This is a much bigger change.
-
 
 **Answer:** Cap at parent budget (Recommended), Exclude subcategories (Recommended), Block on subcategories (Recommended)
 </details></tool-use>
@@ -10120,6 +10331,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:00:07Z)**_
 ```text
 The file C:\Users\icsab\.claude\plans\please-come-up-with-snug-lobster.md has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:00:13Z)**_
@@ -10171,6 +10383,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:25Z)**_
 367:export async function dryRunCategoryTemplate({
 380:    q('categories').filter({ id: categoryId }).select('*'),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
@@ -10184,7 +10397,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 41	  message: string;
 42	  sticky?: boolean | undefined;
 43	};
-44	
+44
 45	export async function storeTemplates({
 46	  categoriesWithTemplates,
 47	  source,
@@ -10217,7 +10430,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 74	    await tombstoneOrphanCleanupGroups();
 75	  }
 76	}
-77	
+77
 78	export async function applyTemplate({
 79	  month,
 80	}: {
@@ -10228,7 +10441,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 85	  const ret = await processTemplate(month, false, categoryTemplates, []);
 86	  return ret;
 87	}
-88	
+88
 89	export async function overwriteTemplate({
 90	  month,
 91	}: {
@@ -10239,7 +10452,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 96	  const ret = await processTemplate(month, true, categoryTemplates, []);
 97	  return ret;
 98	}
-99	
+99
 100	export async function applyMultipleCategoryTemplates({
 101	  month,
 102	  categoryIds,
@@ -10262,7 +10475,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 119	  );
 120	  return ret;
 121	}
-122	
+122
 123	export async function applySingleCategoryTemplate({
 124	  month,
 125	  category,
@@ -10283,18 +10496,18 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 140	  );
 141	  return ret;
 142	}
-143	
+143
 144	export function runCheckTemplates() {
 145	  return checkTemplateNotes();
 146	}
-147	
+147
 148	async function getCategories(): Promise<CategoryEntity[]> {
 149	  const { data: categoryGroups }: { data: CategoryGroupEntity[] } =
 150	    await aqlQuery(q('category_groups').filter({ hidden: false }).select('*'));
-151	
+151
 152	  return categoryGroups.flatMap(g => g.categories || []).filter(c => !c.hidden);
 153	}
-154	
+154
 155	async function getTemplates(
 156	  filter: (category: CategoryEntity) => boolean = () => true,
 157	): Promise<Record<CategoryEntity['id'], Template[]>> {
@@ -10305,7 +10518,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 162	        .filter({ goal_def: { $ne: null } })
 163	        .select('*'),
 164	    );
-165	
+165
 166	  const categoryTemplates: Record<CategoryEntity['id'], Template[]> = {};
 167	  for (const categoryWithGoalDef of categoriesWithGoalDef.filter(filter)) {
 168	    if (!categoryWithGoalDef.goal_def) continue;
@@ -10315,18 +10528,18 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 172	  }
 173	  return categoryTemplates;
 174	}
-175	
+175
 176	export async function getTemplatesForCategory(
 177	  categoryId: CategoryEntity['id'],
 178	): Promise<Record<CategoryEntity['id'], Template[]>> {
 179	  return getTemplates(c => c.id === categoryId);
 180	}
-181	
+181
 182	type TemplateBudget = {
 183	  category: CategoryEntity['id'];
 184	  budgeted: number;
 185	};
-186	
+186
 187	async function setBudgets(month: string, templateBudget: TemplateBudget[]) {
 188	  await batchMessages(async () => {
 189	    templateBudget.forEach(element => {
@@ -10338,13 +10551,13 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 195	    });
 196	  });
 197	}
-198	
+198
 199	type TemplateGoal = {
 200	  category: CategoryEntity['id'];
 201	  goal: number | null;
 202	  longGoal: number | null;
 203	};
-204	
+204
 205	async function setGoals(month: string, templateGoal: TemplateGoal[]) {
 206	  await batchMessages(async () => {
 207	    templateGoal.forEach(element => {
@@ -10357,13 +10570,13 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 214	    });
 215	  });
 216	}
-217	
+217
 218	type ComputedTemplates = {
 219	  contexts: CategoryTemplateContext[];
 220	  errors: string[];
 221	  orphanGoals: TemplateGoal[];
 222	};
-223	
+223
 224	async function computeTemplates(
 225	  month: string,
 226	  force: boolean,
@@ -10378,7 +10591,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 235	      c => isTracking || !c.is_income,
 236	    );
 237	  }
-238	
+238
 239	  // setup categories to process
 240	  const templateContexts: CategoryTemplateContext[] = [];
 241	  let availBudget = await getSheetValue(
@@ -10394,7 +10607,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 251	    const templates = categoryTemplates[id];
 252	    const budgeted = await getSheetValue(sheetName, `budget-${id}`);
 253	    const existingGoal = await getSheetValue(sheetName, `goal-${id}`);
-254	
+254
 255	    // only run categories that are unbudgeted or if we are forcing it
 256	    if ((budgeted === 0 || force) && templates) {
 257	      try {
@@ -10415,7 +10628,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 272	      } catch (e) {
 273	        errors.push(`${category.name}: ${e.message}`);
 274	      }
-275	
+275
 276	      // do a reset of the goals that are orphaned
 277	    } else if (existingGoal !== null && !templates) {
 278	      orphanGoals.push({
@@ -10425,11 +10638,11 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 282	      });
 283	    }
 284	  }
-285	
+285
 286	  if (errors.length > 0) {
 287	    return { contexts: templateContexts, errors, orphanGoals };
 288	  }
-289	
+289
 290	  const priorities = new Int32Array([...prioritiesSet]).sort((a, b) => a - b);
 291	  // run each priority level
 292	  for (const priority of priorities) {
@@ -10443,12 +10656,12 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 300	      availBudget -= budget;
 301	    }
 302	  }
-303	
+303
 304	  distributeRemainder(templateContexts, availBudget);
-305	
+305
 306	  return { contexts: templateContexts, errors, orphanGoals };
 307	}
-308	
+308
 309	async function processTemplate(
 310	  month: string,
 311	  force: boolean,
@@ -10461,7 +10674,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 318	    categoryTemplates,
 319	    categories,
 320	  );
-321	
+321
 322	  if (contexts.length === 0 && errors.length === 0) {
 323	    if (orphanGoals.length > 0) {
 324	      await setGoals(month, orphanGoals);
@@ -10478,7 +10691,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 335	      pre: errors.join(`\n\n`),
 336	    };
 337	  }
-338	
+338
 339	  const budgetList: TemplateBudget[] = [];
 340	  const goalList: TemplateGoal[] = [...orphanGoals];
 341	  contexts.forEach(context => {
@@ -10495,18 +10708,18 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 352	  });
 353	  await setBudgets(month, budgetList);
 354	  await setGoals(month, goalList);
-355	
+355
 356	  return {
 357	    type: 'message',
 358	    message: `Successfully applied templates to ${contexts.length} categories`,
 359	  };
 360	}
-361	
+361
 362	export type DryRunCategoryResult = {
 363	  budgeted: number;
 364	  perTemplate: number[];
 365	};
-366	
+366
 367	export async function dryRunCategoryTemplate({
 368	  month,
 369	  categoryId,
@@ -10542,6 +10755,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:28Z)**_
 399	}
 400
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:01:39Z)**_
@@ -10569,7 +10783,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:40Z)**_
 158	  };
 159	  const sinkCategory: SinkCategoryRow[] = [];
 160	  const db_month = parseInt(month.replace('-', ''));
-161	
+161
 162	  const categories = await db.all<db.DbViewCategory>(
 163	    'SELECT * FROM v_categories WHERE tombstone = 0',
 164	  );
@@ -10577,11 +10791,11 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:40Z)**_
 166	  const groupSource: GroupSourceRow[] = [];
 167	  const groupSink: GroupSinkRow[] = [];
 168	  const groupOverspend: GroupOverspendRow[] = [];
-169	
+169
 170	  for (const category of categories) {
 171	    const def = parseCleanupDef(category.cleanup_def);
 172	    if (!def) continue;
-173	
+173
 174	    for (const row of def) {
 175	      if (row.role === 'source' && row.groupId !== null) {
 176	        groupSource.push({ category: category.id, groupId: row.groupId });
@@ -10596,12 +10810,12 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:40Z)**_
 185	      }
 186	    }
 187	  }
-188	
+188
 189	  const groupRows = await db.all<{ id: string; name: string }>(
 190	    'SELECT id, name FROM cleanup_groups WHERE tombstone = 0',
 191	  );
 192	  const groupNamesById = new Map(groupRows.map(g => [g.id, g.name]));
-193	
+193
 194	  //run category groups
 195	  const newWarnings = await applyGroupCleanups(
 196	    month,
@@ -10611,14 +10825,15 @@ _**Agent (claude-opus-5-5 2026-10-01 17:01:40Z)**_
 200	    groupNamesById,
 201	  );
 202	  warnings.splice(1, 0, ...newWarnings);
-203	
+203
 204	  for (const category of categories) {
 205	    const def = parseCleanupDef(category.cleanup_def);
 206	    if (!def) continue;
-207	
+207
 208	    const globalSource = def.find(
 209	      r => r.role === 'source' && r.groupId === null,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:01:47Z)**_
@@ -10636,6 +10851,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:02:24Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:02:33Z)**_
@@ -10653,6 +10869,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:03:34Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:03:45Z)**_
@@ -10663,6 +10880,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:03:45Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:03:55Z)**_
@@ -10673,6 +10891,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:03:55Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:04:05Z)**_
@@ -10683,6 +10902,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:04:05Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:04:06Z)**_
@@ -10697,6 +10917,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:04:20Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:04:34Z)**_
@@ -10707,6 +10928,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:04:34Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:04:47Z)**_
@@ -10717,6 +10939,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:04:47Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\actions.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:04:52Z)**_
@@ -10734,6 +10957,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:05:11Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\goal-template.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:05:24Z)**_
@@ -10744,6 +10968,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:05:24Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\goal-template.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:05:38Z)**_
@@ -10754,6 +10979,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:05:38Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\cleanup-template.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:05:45Z)**_
@@ -10779,6 +11005,7 @@ packages\loot-core\src\server\budget\cleanup-template-notes.test.ts:27:    if (s
 packages\loot-core\src\server\budget\cleanup-template-notes.ts:139:    FROM categories c
 packages\loot-core\src\server\budget\cleanup-template.ts:165:    'SELECT * FROM v_categories WHERE tombstone = 0 AND parent_id IS NULL',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:05:56Z)**_
@@ -10813,6 +11040,7 @@ packages\loot-core\src\server\budget\goal-template.test.ts:372:          directi
 
 [Showing results with pagination = limit: 15]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:06:01Z)**_
@@ -10823,11 +11051,11 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:01Z)**_
 
 ```text
 125	  });
-126	
+126
 127	  it('budgets a single periodic template through the engine end-to-end', async () => {
 128	    setupSheetMock({ 'to-budget': 100000 });
 129	    setupAqlForCategoryLookup(category);
-130	
+130
 131	    const templates: Template[] = [
 132	      {
 133	        type: 'periodic',
@@ -10846,11 +11074,11 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:01Z)**_
 146	    expect(result.budgeted).toBe(10000);
 147	    expect(result.perTemplate).toEqual([10000]);
 148	  });
-149	
+149
 150	  it('clamps a periodic + percentage stack at the balance cap', async () => {
 151	    setupSheetMock({ 'to-budget': 1_000_000, 'total-income': 100000 });
 152	    setupAqlForCategoryLookup(category);
-153	
+153
 154	    const templates: Template[] = [
 155	      {
 156	        type: 'periodic',
@@ -10863,6 +11091,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:01Z)**_
 163	      {
 164	        type: 'percentage',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
@@ -10885,17 +11114,17 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
 183	    expect(getBudget({ category: 'food', month })).toBe(parentBefore);
 184	  });
 185	});
-186	
+186
 187	describe('Budgeting subcategories', () => {
 188	  const jan = '2024-01';
 189	  const feb = '2024-02';
-190	
+190
 191	  async function setupBudget() {
 192	    await setupCategories();
 193	    await sheet.loadSpreadsheet(db);
 194	    await createBudget([jan, feb, '2024-03']);
 195	  }
-196	
+196
 197	  async function budgetAmount(category: string, month: string, amount: number) {
 198	    await runHandler(app.handlers['budget/budget-amount'], {
 199	      category,
@@ -10904,68 +11133,68 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
 202	    });
 203	    await sheet.waitOnSpreadsheet();
 204	  }
-205	
+205
 206	  function cell(month: string, name: string) {
 207	    return getSheetValue(monthUtils.sheetForMonth(month), name);
 208	  }
-209	
+209
 210	  it('budgeting a subcategory takes the money from its parent', async () => {
 211	    await setupBudget();
 212	    await budgetAmount('food', jan, 10000);
 213	    const toBudgetBefore = await cell(jan, 'to-budget');
-214	
+214
 215	    await budgetAmount('restaurants', jan, 3000);
-216	
+216
 217	    expect(getBudget({ category: 'restaurants', month: jan })).toBe(3000);
 218	    expect(getBudget({ category: 'food', month: jan })).toBe(7000);
 219	    expect(await cell(jan, 'to-budget')).toBe(toBudgetBefore);
 220	    expect(await cell(jan, 'total-budgeted')).toBe(-10000);
 221	  });
-222	
+222
 223	  it('lowering a subcategory gives the money back to its parent', async () => {
 224	    await setupBudget();
 225	    await budgetAmount('food', jan, 10000);
 226	    await budgetAmount('restaurants', jan, 3000);
-227	
+227
 228	    await budgetAmount('restaurants', jan, 1000);
-229	
+229
 230	    expect(getBudget({ category: 'food', month: jan })).toBe(9000);
 231	  });
-232	
+232
 233	  it('a parent does not have to give anything to its subcategories', async () => {
 234	    await setupBudget();
 235	    await budgetAmount('food', jan, 10000);
-236	
+236
 237	    expect(getBudget({ category: 'food', month: jan })).toBe(10000);
 238	    expect(getBudget({ category: 'restaurants', month: jan })).toBe(0);
 239	    expect(getBudget({ category: 'food', month: feb })).toBe(0);
 240	  });
-241	
+241
 242	  it('budgeting a regular category still uses To Budget', async () => {
 243	    await setupBudget();
 244	    const toBudgetBefore = await cell(jan, 'to-budget');
-245	
+245
 246	    await budgetAmount('rent', jan, 5000);
-247	
+247
 248	    expect(await cell(jan, 'to-budget')).toBe(toBudgetBefore - 5000);
 249	  });
-250	
+250
 251	  it('shows the parent total across the parent and its subcategories', async () => {
 252	    await setupBudget();
 253	    await budgetAmount('food', jan, 10000);
 254	    await budgetAmount('restaurants', jan, 3000);
 255	    await budgetAmount('groceries', jan, 2000);
-256	
+256
 257	    expect(await cell(jan, 'budget-food')).toBe(5000);
 258	    expect(await cell(jan, 'parent-total-budget-food')).toBe(10000);
 259	    expect(await cell(jan, 'parent-total-budget-rent')).toBe(0);
 260	  });
-261	
+261
 262	  it('updates the parent total when subcategories are added or removed', async () => {
 263	    await setupBudget();
 264	    await budgetAmount('food', jan, 10000);
 265	    await budgetAmount('restaurants', jan, 3000);
-266	
+266
 267	    const id = await runHandler(app.handlers['category-create'], {
 268	      name: 'snacks',
 269	      groupId: 'group1',
@@ -10974,7 +11203,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
 272	    await sheet.waitOnSpreadsheet();
 273	    await budgetAmount(id, jan, 500);
 274	    expect(await cell(jan, 'parent-total-budget-food')).toBe(10000);
-275	
+275
 276	    // Un-nesting keeps the money where it is, so it leaves the total
 277	    const restaurants = await getCategory('restaurants');
 278	    await runHandler(app.handlers['category-update'], {
@@ -10987,48 +11216,48 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
 285	    await sheet.waitOnSpreadsheet();
 286	    expect(await cell(jan, 'parent-total-budget-food')).toBe(7000);
 287	  });
-288	
+288
 289	  it('copying last month for every category does not charge parents twice', async () => {
 290	    await setupBudget();
 291	    await budgetAmount('food', jan, 10000);
 292	    await budgetAmount('restaurants', jan, 3000);
-293	
+293
 294	    await copyPreviousMonth({ month: feb });
 295	    await sheet.waitOnSpreadsheet();
-296	
+296
 297	    expect(getBudget({ category: 'food', month: feb })).toBe(7000);
 298	    expect(getBudget({ category: 'restaurants', month: feb })).toBe(3000);
 299	  });
-300	
+300
 301	  it('setting every budget to zero clears parents and subcategories', async () => {
 302	    await setupBudget();
 303	    await budgetAmount('food', jan, 10000);
 304	    await budgetAmount('restaurants', jan, 3000);
-305	
+305
 306	    await setZero({ month: jan });
 307	    await sheet.waitOnSpreadsheet();
-308	
+308
 309	    expect(getBudget({ category: 'food', month: jan })).toBe(0);
 310	    expect(getBudget({ category: 'restaurants', month: jan })).toBe(0);
 311	  });
-312	
+312
 313	  it("copying a subcategory into later months charges each month's parent", async () => {
 314	    await setupBudget();
 315	    await budgetAmount('restaurants', jan, 3000);
-316	
+316
 317	    await copyUntilYearEnd({ month: jan, category: 'restaurants' });
 318	    await sheet.waitOnSpreadsheet();
-319	
+319
 320	    for (const month of [feb, '2024-03']) {
 321	      expect(getBudget({ category: 'restaurants', month })).toBe(3000);
 322	      expect(getBudget({ category: 'food', month })).toBe(-3000);
 323	    }
 324	  });
-325	
+325
 326	  it('a transfer from the parent to a subcategory is not charged twice', async () => {
 327	    await setupBudget();
 328	    await budgetAmount('food', jan, 10000);
-329	
+329
 330	    await transferCategory({
 331	      month: jan,
 332	      amount: 2000,
@@ -11037,11 +11266,11 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
 335	      currencyCode: 'USD',
 336	    });
 337	    await sheet.waitOnSpreadsheet();
-338	
+338
 339	    expect(getBudget({ category: 'food', month: jan })).toBe(8000);
 340	    expect(getBudget({ category: 'restaurants', month: jan })).toBe(2000);
 341	  });
-342	
+342
 343	  it('covering a subcategory from To Budget takes the money from its parent', async () => {
 344	    // Covering only works when there's money in To Budget, so add income
 345	    await setupCategories();
@@ -11068,7 +11297,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
 366	    await createBudget([jan, feb, '2024-03']);
 367	    await budgetAmount('food', jan, 10000);
 368	    const toBudgetBefore = await cell(jan, 'to-budget');
-369	
+369
 370	    await coverOverspending({
 371	      month: jan,
 372	      to: 'restaurants',
@@ -11076,7 +11305,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
 374	      currencyCode: 'USD',
 375	    });
 376	    await sheet.waitOnSpreadsheet();
-377	
+377
 378	    expect(getBudget({ category: 'restaurants', month: jan })).toBe(4000);
 379	    expect(getBudget({ category: 'food', month: jan })).toBe(6000);
 380	    expect(await cell(jan, 'to-budget')).toBe(toBudgetBefore);
@@ -11084,6 +11313,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:06:09Z)**_
 382	});
 383
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:06:12Z)**_
@@ -11101,6 +11331,7 @@ Find line where outdated tests start
 ```text
 313
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:06:52Z)**_
@@ -11324,6 +11555,7 @@ cp "$s" $f && tail -n 3 $f
   });
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:06:56Z)**_
@@ -11338,6 +11570,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:07:10Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts has been updated successfully. (note: the file had been modified on disk since you last read it — the edit applied cleanly, but the file contains other changes not in your context. Read it before edits that depend on surrounding content.)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:07:11Z)**_
@@ -11366,6 +11599,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:07:11Z)**_
 17-vi.mock('./actions', () => ({
 18-  getSheetValue: vi.fn(),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:07:26Z)**_
@@ -11376,6 +11610,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:07:26Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\budget\subcategories.test.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:07:51Z)**_
@@ -11388,6 +11623,7 @@ Run subcategory tests
       Tests  27 passed (27)
    Duration  11.98s (transform 2.56s, setup 8.18s, import 698ms, tests 2.66s, environment 0ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:07:57Z)**_
@@ -11409,6 +11645,7 @@ Run budget tests, typecheck and lint
    Duration  54.51s (transform 5.15s, setup 84.33s, import 2.12s, tests 10.51s, environment 3ms)
 success: 6, skipped: 4, pending: 0, aborted: 0, failed: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:11:43Z)**_
@@ -11425,7 +11662,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 
 ```text
 1	import { useTranslation } from 'react-i18next';
-2	
+2
 3	import { send } from '@actual-app/core/platform/client/connection';
 4	import type { IntegerAmount } from '@actual-app/core/shared/util';
 5	import type {
@@ -11436,20 +11673,20 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 10	import type { QueryClient, QueryKey } from '@tanstack/react-query';
 11	import type { TFunction } from 'i18next';
 12	import { v4 as uuidv4 } from 'uuid';
-13	
+13
 14	import { pushModal } from '#modals/modalsSlice';
 15	import { addNotification } from '#notifications/notificationsSlice';
 16	import { useDispatch } from '#redux';
 17	import type { AppDispatch } from '#redux/store';
-18	
+18
 19	import { categoryQueries } from './queries';
-20	
+20
 21	function invalidateQueries(queryClient: QueryClient, queryKey?: QueryKey) {
 22	  void queryClient.invalidateQueries({
 23	    queryKey: queryKey ?? categoryQueries.lists(),
 24	  });
 25	}
-26	
+26
 27	function dispatchErrorNotification(
 28	  dispatch: AppDispatch,
 29	  message: string,
@@ -11466,7 +11703,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 40	    }),
 41	  );
 42	}
-43	
+43
 44	function dispatchCategoryNameAlreadyExistsNotification(
 45	  dispatch: AppDispatch,
 46	  t: TFunction,
@@ -11484,9 +11721,9 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 58	    }),
 59	  );
 60	}
-61	
+61
 62	export const CATEGORY_NAME_MAX_LENGTH = 50;
-63	
+63
 64	function dispatchCategoryNameTooLongNotification(
 65	  dispatch: AppDispatch,
 66	  t: TFunction,
@@ -11502,19 +11739,19 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 76	    }),
 77	  );
 78	}
-79	
+79
 80	type CreateCategoryPayload = {
 81	  name: CategoryEntity['name'];
 82	  groupId: CategoryGroupEntity['id'];
 83	  isIncome: boolean;
 84	  isHidden: boolean;
 85	};
-86	
+86
 87	export function useCreateCategoryMutation() {
 88	  const queryClient = useQueryClient();
 89	  const dispatch = useDispatch();
 90	  const { t } = useTranslation();
-91	
+91
 92	  return useMutation({
 93	    mutationFn: async ({
 94	      name,
@@ -11526,7 +11763,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 100	        dispatchCategoryNameTooLongNotification(dispatch, t);
 101	        return;
 102	      }
-103	
+103
 104	      const id = await send('category-create', {
 105	        name,
 106	        groupId,
@@ -11546,16 +11783,16 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 120	    },
 121	  });
 122	}
-123	
+123
 124	type UpdateCategoryPayload = {
 125	  category: CategoryEntity;
 126	};
-127	
+127
 128	export function useUpdateCategoryMutation() {
 129	  const queryClient = useQueryClient();
 130	  const dispatch = useDispatch();
 131	  const { t } = useTranslation();
-132	
+132
 133	  return useMutation({
 134	    mutationFn: async ({ category }: UpdateCategoryPayload) => {
 135	      await send('category-update', category);
@@ -11571,28 +11808,28 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 145	    },
 146	  });
 147	}
-148	
+148
 149	type SaveCategoryPayload = {
 150	  category: CategoryEntity;
 151	};
-152	
+152
 153	export function useSaveCategoryMutation() {
 154	  const createCategory = useCreateCategoryMutation();
 155	  const updateCategory = useUpdateCategoryMutation();
 156	  const { t } = useTranslation();
 157	  const dispatch = useDispatch();
 158	  const queryClient = useQueryClient();
-159	
+159
 160	  return useMutation({
 161	    mutationFn: async ({ category }: SaveCategoryPayload) => {
 162	      if (category.name.length > CATEGORY_NAME_MAX_LENGTH) {
 163	        dispatchCategoryNameTooLongNotification(dispatch, t);
 164	        return;
 165	      }
-166	
+166
 167	      const { grouped: categoryGroups = [] } =
 168	        await queryClient.ensureQueryData(categoryQueries.list());
-169	
+169
 170	      const group = categoryGroups.find(g => g.id === category.group);
 171	      const categoriesInGroup = group?.categories ?? [];
 172	      const exists = categoriesInGroup.some(
@@ -11600,7 +11837,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 174	          c.id !== category.id &&
 175	          c.name.toUpperCase() === category.name.toUpperCase(),
 176	      );
-177	
+177
 178	      if (exists) {
 179	        dispatchCategoryNameAlreadyExistsNotification(
 180	          dispatch,
@@ -11609,7 +11846,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 183	        );
 184	        return;
 185	      }
-186	
+186
 187	      if (category.id === 'new') {
 188	        await createCategory.mutateAsync({
 189	          name: category.name,
@@ -11623,18 +11860,19 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 197	    },
 198	  });
 199	}
-200	
+200
 201	type DeleteCategoryPayload = {
 202	  id: CategoryEntity['id'];
 203	};
-204	
+204
 205	export function useDeleteCategoryMutation() {
 206	  const queryClient = useQueryClient();
 207	  const dispatch = useDispatch();
 208	  const { t } = useTranslation();
-209	
+209
 210	  const deleteCategory = async ({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
@@ -11657,12 +11895,12 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 11	} from '@actual-app/core/types/models';
 12	import type { SyncedPrefs } from '@actual-app/core/types/prefs';
 13	import { t } from 'i18next';
-14	
+14
 15	import type { DropPosition } from '#components/sort';
 16	import type { useSpreadsheet } from '#hooks/useSpreadsheet';
-17	
+17
 18	import { getValidMonthBounds } from './MonthsContext';
-19	
+19
 20	export function addToBeBudgetedGroup(groups: CategoryGroupEntity[]) {
 21	  return [
 22	    {
@@ -11679,15 +11917,15 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 33	    ...groups,
 34	  ];
 35	}
-36	
+36
 37	export function removeCategoriesFromGroups(
 38	  categoryGroups: CategoryGroupEntity[],
 39	  ...categoryIds: CategoryEntity['id'][]
 40	) {
 41	  if (categoryIds.length === 0) return categoryGroups;
-42	
+42
 43	  const categoryIdsSet = new Set(categoryIds);
-44	
+44
 45	  return categoryGroups
 46	    .map(group => ({
 47	      ...group,
@@ -11696,27 +11934,27 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 50	    }))
 51	    .filter(group => group.categories?.length);
 52	}
-53	
+53
 54	export function separateGroups(categoryGroups: CategoryGroupEntity[]) {
 55	  return [
 56	    categoryGroups.filter(g => !g.is_income),
 57	    categoryGroups.find(g => g.is_income),
 58	  ] as const;
 59	}
-60	
+60
 61	export function makeAmountGrey(value: number | string | null): CSSProperties {
 62	  return value === 0 || value === '0' || value === '' || value == null
 63	    ? { color: theme.budgetNumberZero }
 64	    : null;
 65	}
-66	
+66
 67	type BalanceAmountStyleOptions = {
 68	  /** Decimal places of the active currency. */
 69	  decimalPlaces?: number;
 70	  /** Whether the `hideFraction` pref is on. */
 71	  hideFraction?: boolean;
 72	};
-73	
+73
 74	export function makeBalanceAmountStyle(
 75	  value: number,
 76	  goalValue?: number | null,
@@ -11725,6 +11963,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:44Z)**_
 79	  { decimalPlaces = 2, hideFraction = false }: BalanceAmountStyleOptions = {},
 80	) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:11:58Z)**_
@@ -11743,6 +11982,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:12:14Z)**_
 ```text
 No files found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:12:14Z)**_
@@ -11754,6 +11994,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:12:14Z)**_
 ```text
 packages\desktop-client\src\components\budget\util.test.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:11:58Z)**_
@@ -11766,6 +12007,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:11:58Z)**_
 95:    "#shared/*": "./src/shared/*.ts",
 172:    "./shared/*": "./src/shared/*.ts",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:12:20Z)**_
@@ -11820,12 +12062,12 @@ export function nestCategories<T extends CategoryEntity>(
 export function isSubcategory(category: Pick<CategoryEntity, 'parent_id'>) {
   return category.parent_id != null;
 }
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\shared\categories.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:13:13Z)**_
@@ -11843,6 +12085,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:13:55Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\shared\categories.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:14:01Z)**_
@@ -11860,7 +12103,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:14:01Z)**_
 
 ```text
 1	// @ts-strict-ignore
-2	
+2
 3	import { isAggregateQuery } from '#server/aql/compiler';
 4	import type {
 5	  CompilerState,
@@ -11876,10 +12119,11 @@ _**Agent (claude-opus-5-5 2026-10-01 17:14:01Z)**_
 15	import type { QueryState } from '#shared/query';
 16	import type { CategoryEntity } from '#types/models';
 17	import { aqlQuery } from '..';
-18	
+18
 19	// Transactions executor
 20
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:14:02Z)**_
@@ -11925,6 +12169,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:14:02Z)**_
 358-  params: (string | number)[],
 359-  outputTypes: OutputTypes,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:14:46Z)**_
@@ -11935,6 +12180,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:14:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\aql\schema\executors.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:14:58Z)**_
@@ -11945,6 +12191,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:14:58Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\server\aql\schema\executors.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:15:02Z)**_
@@ -11962,6 +12209,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:15:22Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\budget\mutations.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:15:43Z)**_
@@ -11972,6 +12220,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:15:43Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\budget\mutations.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:15:50Z)**_
@@ -11990,6 +12239,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:15:54Z)**_
 ```text
 packages\desktop-client\src\budget\mutations.test.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:15:54Z)**_
@@ -12013,6 +12263,7 @@ packages\loot-core\src\shared\transactions.test.ts
 packages\loot-core\src\shared\transfer.test.ts
 packages\loot-core\src\shared\util.test.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:15:57Z)**_
@@ -12037,6 +12288,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:15:57Z)**_
 142:      'category-create': createCategoryHandler,
 146:    const { result } = renderHook(() => useSaveCategoryMutation(), {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:16:04Z)**_
@@ -12047,7 +12299,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:16:04Z)**_
 
 ```text
 1	import type { ReactNode } from 'react';
-2	
+2
 3	import {
 4	  clearServer,
 5	  initServer,
@@ -12056,85 +12308,85 @@ _**Agent (claude-opus-5-5 2026-10-01 17:16:04Z)**_
 8	import { renderHook, waitFor } from '@testing-library/react';
 9	import i18next from 'i18next';
 10	import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-11	
+11
 12	import { createTestAppStore, TestProviders } from '#mocks';
 13	import type { AppStore } from '#redux/store';
-14	
+14
 15	import {
 16	  CATEGORY_NAME_MAX_LENGTH,
 17	  useCreateCategoryMutation,
 18	  useSaveCategoryMutation,
 19	} from './mutations';
-20	
+20
 21	vi.mock(
 22	  '@actual-app/core/platform/client/connection',
 23	  () => import('#mocks/connection'),
 24	);
-25	
+25
 26	// With no translation resources loaded, i18next echoes the key back with
 27	// interpolation applied - matching what the notification messages render.
 28	void i18next.init({
 29	  lng: 'en',
 30	  interpolation: { escapeValue: false },
 31	});
-32	
+32
 33	function wrapperFor(store: AppStore) {
 34	  return function Wrapper({ children }: { children: ReactNode }) {
 35	    return <TestProviders store={store}>{children}</TestProviders>;
 36	  };
 37	}
-38	
+38
 39	function getNotifications(store: AppStore) {
 40	  return store.getState().notifications.notifications;
 41	}
-42	
+42
 43	const tooLongName = 'a'.repeat(CATEGORY_NAME_MAX_LENGTH + 1);
 44	const maxLengthName = 'a'.repeat(CATEGORY_NAME_MAX_LENGTH);
-45	
+45
 46	afterEach(async () => {
 47	  await clearServer();
 48	});
-49	
+49
 50	// Mobile's "new category" modal calls useCreateCategoryMutation directly.
 51	describe('useCreateCategoryMutation (mobile category creation)', () => {
 52	  it('rejects a name over the character limit without contacting the server', async () => {
 53	    const createCategoryHandler = vi.fn(async () => 'new-id');
 54	    initServer({ 'category-create': createCategoryHandler });
-55	
+55
 56	    const store = createTestAppStore();
 57	    const { result } = renderHook(() => useCreateCategoryMutation(), {
 58	      wrapper: wrapperFor(store),
 59	    });
-60	
+60
 61	    await result.current.mutateAsync({
 62	      name: tooLongName,
 63	      groupId: 'group1',
 64	      isIncome: false,
 65	      isHidden: false,
 66	    });
-67	
+67
 68	    expect(createCategoryHandler).not.toHaveBeenCalled();
 69	    expect(getNotifications(store)).toMatchObject([
 70	      { type: 'error', message: expect.stringContaining('50') },
 71	    ]);
 72	  });
-73	
+73
 74	  it('allows a name at the character limit', async () => {
 75	    const createCategoryHandler = vi.fn(async () => 'new-id');
 76	    initServer({ 'category-create': createCategoryHandler });
-77	
+77
 78	    const store = createTestAppStore();
 79	    const { result } = renderHook(() => useCreateCategoryMutation(), {
 80	      wrapper: wrapperFor(store),
 81	    });
-82	
+82
 83	    await result.current.mutateAsync({
 84	      name: maxLengthName,
 85	      groupId: 'group1',
 86	      isIncome: false,
 87	      isHidden: false,
 88	    });
-89	
+89
 90	    expect(createCategoryHandler).toHaveBeenCalledWith({
 91	      name: maxLengthName,
 92	      groupId: 'group1',
@@ -12144,7 +12396,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:16:04Z)**_
 96	    expect(getNotifications(store)).toEqual([]);
 97	  });
 98	});
-99	
+99
 100	// Desktop's "new category" row saves through useSaveCategoryMutation with id: 'new'.
 101	describe('useSaveCategoryMutation (desktop category creation)', () => {
 102	  function newCategory(name: string): CategoryEntity {
@@ -12156,53 +12408,54 @@ _**Agent (claude-opus-5-5 2026-10-01 17:16:04Z)**_
 108	      hidden: false,
 109	    };
 110	  }
-111	
+111
 112	  beforeEach(() => {
 113	    initServer({
 114	      'get-categories': async () => ({ grouped: [], list: [] }),
 115	    });
 116	  });
-117	
+117
 118	  it('rejects a name over the character limit without contacting the server', async () => {
 119	    const createCategoryHandler = vi.fn(async () => 'new-id');
 120	    initServer({
 121	      'get-categories': async () => ({ grouped: [], list: [] }),
 122	      'category-create': createCategoryHandler,
 123	    });
-124	
+124
 125	    const store = createTestAppStore();
 126	    const { result } = renderHook(() => useSaveCategoryMutation(), {
 127	      wrapper: wrapperFor(store),
 128	    });
-129	
+129
 130	    await result.current.mutateAsync({ category: newCategory(tooLongName) });
-131	
+131
 132	    expect(createCategoryHandler).not.toHaveBeenCalled();
 133	    expect(getNotifications(store)).toMatchObject([
 134	      { type: 'error', message: expect.stringContaining('50') },
 135	    ]);
 136	  });
-137	
+137
 138	  it('allows a name at the character limit', async () => {
 139	    const createCategoryHandler = vi.fn(async () => 'new-id');
 140	    initServer({
 141	      'get-categories': async () => ({ grouped: [], list: [] }),
 142	      'category-create': createCategoryHandler,
 143	    });
-144	
+144
 145	    const store = createTestAppStore();
 146	    const { result } = renderHook(() => useSaveCategoryMutation(), {
 147	      wrapper: wrapperFor(store),
 148	    });
-149	
+149
 150	    await result.current.mutateAsync({ category: newCategory(maxLengthName) });
-151	
+151
 152	    await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled());
 153	    expect(getNotifications(store)).toEqual([]);
 154	  });
 155	});
 156
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:16:12Z)**_
@@ -12220,6 +12473,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:16:29Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\budget\mutations.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:16:39Z)**_
@@ -12230,6 +12484,7 @@ _**Agent (claude-opus-5-5 2026-10-01 17:16:39Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\budget\mutations.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:16:51Z)**_
@@ -12242,10 +12497,7 @@ import type { CategoryEntity } from '#types/models';
 
 import { isSubcategory, nestCategories } from './categories';
 
-function category(
-  id: string,
-  parent_id: string | null = null,
-): CategoryEntity {
+function category(id: string, parent_id: string | null = null): CategoryEntity {
   return { id, name: id, group: 'group1', parent_id };
 }
 
@@ -12274,9 +12526,9 @@ describe('nestCategories', () => {
   });
 
   it('nests a subcategory listed before its parent', () => {
-    expect(shape([category('restaurants', 'food'), category('food')])).toEqual(
-      [['food', ['restaurants']]],
-    );
+    expect(shape([category('restaurants', 'food'), category('food')])).toEqual([
+      ['food', ['restaurants']],
+    ]);
   });
 
   it('shows a subcategory whose parent is missing as top-level', () => {
@@ -12309,12 +12561,12 @@ describe('isSubcategory', () => {
     expect(isSubcategory({})).toBe(false);
   });
 });
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\shared\categories.test.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:16:54Z)**_
@@ -12333,6 +12585,7 @@ Run helper, server and mutation tests
       Tests  6 passed (6)
    Duration  10.13s (transform 1.72s, setup 4.87s, import 826ms, tests 109ms, environment 3.93s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:22:59Z)**_
@@ -12344,6 +12597,7 @@ Typecheck and lint step 4 files
 ```text
 success: 6, skipped: 4, pending: 0, aborted: 0, failed: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 17:23:13Z)**_
@@ -12353,12 +12607,14 @@ Steps 3b and 4 are done. All tests pass, `yarn typecheck` passes, and lint is cl
 ## Step 3b: your three decisions, on the server
 
 **1. A subcategory is capped at its parent's budget.** In `setCategoryBudget`, an increase is limited to what the parent has budgeted that month, with a negative parent counting as $0. Decreases always work and give the money back.
+
 - Food has $100 and you ask for $150 on Restaurants: Restaurants gets $100 and Food goes to $0.
 - If Food has nothing, the subcategory stays at $0.
 
 The same cap applies to copy last month for one category, a single category's average, and copy until year end.
 
 **2. "To Budget" can't fund a subcategory.** The server now throws "A subcategory can only be funded from its parent category, not To Budget" in three actions:
+
 - `transferAvailable`, the "To Budget" move-to-category option;
 - `coverOverspending`, when covering from "To Budget";
 - `transferCategory`, when moving from "To Budget".
@@ -12366,6 +12622,7 @@ The same cap applies to copy last month for one category, a single category's av
 The check runs before any write, so a rejected request changes nothing. Covering or transferring from a named category, including the parent, still works. Those three actions are back to plain writes, because after the check the only money source left is a named category.
 
 **3. Templates skip subcategories.** I changed three places:
+
 - **`getTemplates`** ignores subcategories. Every apply path reads from it, so applying templates, overwriting, applying a selection, applying one category and the automations view all skip them.
 - **The template preview** (`dryRunCategoryTemplate`) gets its templates passed in, so it needed its own check. It shows $0 for a subcategory, so the preview doesn't promise money that will never come.
 - **End-of-month cleanup** leaves subcategories out of the categories it reads.
@@ -12375,6 +12632,7 @@ The check runs before any write, so a rejected request changes nothing. Covering
 ## Step 4: client data
 
 **Shared tree helper:** a new [shared/categories.ts](packages/loot-core/src/shared/categories.ts) has:
+
 - **`nestCategories`**, which turns a group's flat list into parents, each with its `subcategories`;
 - **`isSubcategory`**, which says whether a category has a parent.
 
@@ -12410,7 +12668,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 
 ```text
 1	import React, { memo, useMemo, useState } from 'react';
-2	
+2
 3	import { styles } from '@actual-app/components/styles';
 4	import { theme } from '@actual-app/components/theme';
 5	import { View } from '@actual-app/components/view';
@@ -12418,12 +12676,12 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 7	  CategoryEntity,
 8	  CategoryGroupEntity,
 9	} from '@actual-app/core/types/models';
-10	
+10
 11	import { DropHighlightPosContext } from '#components/sort';
 12	import type { DragState, OnDropCallback } from '#components/sort';
 13	import { Row } from '#components/table';
 14	import { useLocalPref } from '#hooks/useLocalPref';
-15	
+15
 16	import { ExpenseCategory } from './ExpenseCategory';
 17	import { ExpenseGroup } from './ExpenseGroup';
 18	import { IncomeCategory } from './IncomeCategory';
@@ -12432,7 +12690,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 21	import { SidebarCategory } from './SidebarCategory';
 22	import { SidebarGroup } from './SidebarGroup';
 23	import { separateGroups } from './util';
-24	
+24
 25	type BudgetItem =
 26	  | { type: 'new-group' }
 27	  | { type: 'new-category' }
@@ -12445,12 +12703,12 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 34	  | { type: 'income-separator' }
 35	  | { type: 'income-group'; value: CategoryGroupEntity }
 36	  | { type: 'income-category'; value: CategoryEntity };
-37	
+37
 38	type LocalDragState =
 39	  | DragState<CategoryEntity>
 40	  | DragState<CategoryGroupEntity>
 41	  | null;
-42	
+42
 43	type BudgetCategoriesProps = {
 44	  categoryGroups: CategoryGroupEntity[];
 45	  editingCell: { id: string; cell: string } | null;
@@ -12470,7 +12728,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 59	  onReorderCategory: OnDropCallback;
 60	  onReorderGroup: OnDropCallback;
 61	};
-62	
+62
 63	export const BudgetCategories = memo<BudgetCategoriesProps>(
 64	  ({
 65	    categoryGroups,
@@ -12494,33 +12752,33 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 83	    function onCollapse(value: Array<CategoryGroupEntity['id']>) {
 84	      setCollapsedGroupIdsPref(value);
 85	    }
-86	
+86
 87	    const [isAddingGroup, setIsAddingGroup] = useState(false);
 88	    const [newCategoryForGroup, setNewCategoryForGroup] = useState<
 89	      string | null
 90	    >(null);
 91	    const items: BudgetItem[] = useMemo(() => {
 92	      const [expenseGroups, incomeGroup] = separateGroups(categoryGroups);
-93	
+93
 94	      let items: BudgetItem[] = Array.prototype.concat.apply(
 95	        [],
 96	        expenseGroups.map(group => {
 97	          if (group.hidden && !showHiddenCategories) {
 98	            return [];
 99	          }
-100	
+100
 101	          const groupCategories = group.categories?.filter(
 102	            cat => showHiddenCategories || !cat.hidden,
 103	          );
-104	
+104
 105	          const items: BudgetItem[] = [
 106	            { type: 'expense-group', value: { ...group } },
 107	          ];
-108	
+108
 109	          if (newCategoryForGroup === group.id) {
 110	            items.push({ type: 'new-category' });
 111	          }
-112	
+112
 113	          return [
 114	            ...items,
 115	            ...(collapsedGroupIds.includes(group.id)
@@ -12536,21 +12794,21 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 125	          ];
 126	        }),
 127	      );
-128	
+128
 129	      if (isAddingGroup) {
 130	        items.push({ type: 'new-group' });
 131	      }
-132	
+132
 133	      if (incomeGroup) {
 134	        const incomeCategoryItems: BudgetItem[] = [
 135	          { type: 'income-separator' },
 136	          { type: 'income-group', value: incomeGroup },
 137	        ];
-138	
+138
 139	        if (newCategoryForGroup === incomeGroup.id) {
 140	          incomeCategoryItems.push({ type: 'new-category' });
 141	        }
-142	
+142
 143	        incomeCategoryItems.push(
 144	          ...(collapsedGroupIds.includes(incomeGroup.id)
 145	            ? []
@@ -12564,10 +12822,10 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 153	            }),
 154	          ),
 155	        );
-156	
+156
 157	        items = items.concat(incomeCategoryItems);
 158	      }
-159	
+159
 160	      return items;
 161	    }, [
 162	      categoryGroups,
@@ -12576,19 +12834,19 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 165	      isAddingGroup,
 166	      showHiddenCategories,
 167	    ]);
-168	
+168
 169	    const [dragState, setDragState] = useState<LocalDragState>(null);
 170	    const [savedCollapsed, setSavedCollapsed] = useState<Array<
 171	      CategoryGroupEntity['id']
 172	    > | null>(null);
-173	
+173
 174	    // TODO: If we turn this into a reducer, we could probably memoize
 175	    // each item in the list for better perf
 176	    function onDragChange(
 177	      newDragState: DragState<CategoryEntity> | DragState<CategoryGroupEntity>,
 178	    ) {
 179	      const { state } = newDragState;
-180	
+180
 181	      if (state === 'start-preview') {
 182	        // @ts-expect-error fix me
 183	        setDragState({
@@ -12609,7 +12867,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 198	        onCollapse(savedCollapsed || []);
 199	      }
 200	    }
-201	
+201
 202	    function onToggleCollapse(id: CategoryGroupEntity['id']) {
 203	      if (collapsedGroupIds.includes(id)) {
 204	        onCollapse(collapsedGroupIds.filter(id_ => id_ !== id));
@@ -12617,38 +12875,38 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 206	        onCollapse([...collapsedGroupIds, id]);
 207	      }
 208	    }
-209	
+209
 210	    function onShowNewGroup() {
 211	      setIsAddingGroup(true);
 212	    }
-213	
+213
 214	    function onHideNewGroup() {
 215	      setIsAddingGroup(false);
 216	    }
-217	
+217
 218	    function _onSaveGroup(group: CategoryGroupEntity) {
 219	      onSaveGroup?.(group);
 220	      if (group.id === 'new') {
 221	        onHideNewGroup();
 222	      }
 223	    }
-224	
+224
 225	    function onShowNewCategory(groupId: CategoryGroupEntity['id']) {
 226	      onCollapse(collapsedGroupIds.filter(c => c !== groupId));
 227	      setNewCategoryForGroup(groupId);
 228	    }
-229	
+229
 230	    function onHideNewCategory() {
 231	      setNewCategoryForGroup(null);
 232	    }
-233	
+233
 234	    function _onSaveCategory(category: CategoryEntity) {
 235	      onSaveCategory?.(category);
 236	      if (category.id === 'new') {
 237	        onHideNewCategory();
 238	      }
 239	    }
-240	
+240
 241	    return (
 242	      <View
 243	        style={{
@@ -12700,7 +12958,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 289	                </Row>
 290	              );
 291	              break;
-292	
+292
 293	            case 'expense-group':
 294	              content = (
 295	                <ExpenseGroup
@@ -12786,10 +13044,10 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 375	              // @ts-expect-error Error is expected here because "item.type" is "never"
 376	              throw new Error('Unknown item type: ' + item.type);
 377	          }
-378	
+378
 379	          const pos =
 380	            idx === 0 ? 'first' : idx === items.length - 1 ? 'last' : null;
-381	
+381
 382	          return (
 383	            <DropHighlightPosContext.Provider
 384	              key={
@@ -12819,10 +13077,11 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 408	    );
 409	  },
 410	);
-411	
+411
 412	BudgetCategories.displayName = 'BudgetCategories';
 413
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
@@ -12836,7 +13095,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 2	import React, { useRef } from 'react';
 3	import type { CSSProperties, Ref } from 'react';
 4	import { useTranslation } from 'react-i18next';
-5	
+5
 6	import { Button } from '@actual-app/components/button';
 7	import { SvgCheveronDown } from '@actual-app/components/icons/v1';
 8	import { TextOneLine } from '@actual-app/components/text-one-line';
@@ -12846,13 +13105,13 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 12	  CategoryEntity,
 13	  CategoryGroupEntity,
 14	} from '@actual-app/core/types/models';
-15	
+15
 16	import { InputCell } from '#components/table';
 17	import { useContextMenu } from '#hooks/useContextMenu';
 18	import { useGlobalPref } from '#hooks/useGlobalPref';
-19	
+19
 20	import { SidebarCategoryButtons } from './SidebarCategoryButtons';
-21	
+21
 22	type SidebarCategoryProps = {
 23	  innerRef: Ref<HTMLDivElement>;
 24	  category: CategoryEntity;
@@ -12876,7 +13135,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 42	      onDelete: (id: CategoryEntity['id']) => void;
 43	    }
 44	);
-45	
+45
 46	export function SidebarCategory({
 47	  innerRef,
 48	  category,
@@ -12895,7 +13154,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 61	  const { t } = useTranslation();
 62	  const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
 63	  const categoryExpandedState = categoryExpandedStatePref ?? 0;
-64	
+64
 65	  const temporary = category.id === 'new';
 66	  const triggerRef = useRef(null);
 67	  const { handleContextMenu } = useContextMenu({
@@ -12918,7 +13177,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 84	      },
 85	    ],
 86	  });
-87	
+87
 88	  const displayed = (
 89	    <View
 90	      style={{
@@ -12954,7 +13213,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 120	      />
 121	    </View>
 122	  );
-123	
+123
 124	  return (
 125	    <View
 126	      innerRef={innerRef}
@@ -13017,6 +13276,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:03Z)**_
 183	}
 184
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:10:12Z)**_
@@ -13094,6 +13354,7 @@ packages\desktop-client\src\components\budget\envelope\budgetsummary\ToBudgetMen
 packages\desktop-client\src\components\budget\envelope\budgetsummary\ToBudgetMenu.tsx:22:export function ToBudgetMenu({
 packages\desktop-client\src\components\budget\envelope\budgetsummary\ToBudgetMenu.tsx:30:}: ToBudgetMenuProps) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:10:21Z)**_
@@ -13111,12 +13372,12 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:21Z)**_
 31	  onClose,
 32	}: CoverMenuProps) {
 33	  const { t } = useTranslation();
-34	
+34
 35	  const { data: { grouped: originalCategoryGroups } = { grouped: [] } } =
 36	    useCategories();
-37	
+37
 38	  const [fromCategoryId, setFromCategoryId] = useState<string | null>(null);
-39	
+39
 40	  const filteredCategoryGroups = useMemo(() => {
 41	    const expenseGroups = originalCategoryGroups.filter(g => !g.is_income);
 42	    const categoryGroups = showToBeBudgeted
@@ -13126,9 +13387,10 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:21Z)**_
 46	      ? removeCategoriesFromGroups(categoryGroups, categoryId)
 47	      : categoryGroups;
 48	  }, [categoryId, showToBeBudgeted, originalCategoryGroups]);
-49	
+49
 50	  const [amount, setAmount] = useState<IntegerAmount>(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
@@ -13140,7 +13402,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
 ```text
 195	  );
 196	});
-197	
+197
 198	export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
 199	  month,
 200	  category,
@@ -13151,7 +13413,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
 205	}: CategoryMonthProps) {
 206	  const { t } = useTranslation();
 207	  const format = useFormat();
-208	
+208
 209	  const budgetMenuTriggerRef = useRef(null);
 210	  const balanceMenuTriggerRef = useRef(null);
 211	  const [budgetMenuOpen, setBudgetMenuOpen] = useState(false);
@@ -13161,7 +13423,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
 215	  });
 216	  const resetBudgetPosition = (crossOffset = 0, offset = 0) =>
 217	    setBudgetPosition({ crossOffset, offset });
-218	
+218
 219	  const handleBudgetContextMenu = (e: MouseEvent) => {
 220	    e.preventDefault();
 221	    const rect = e.currentTarget.getBoundingClientRect();
@@ -13171,7 +13433,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
 225	    });
 226	    setBudgetMenuOpen(true);
 227	  };
-228	
+228
 229	  const [balanceMenuOpen, setBalanceMenuOpen] = useState(false);
 230	  const [balancePosition, setBalancePosition] = useState({
 231	    crossOffset: 0,
@@ -13179,7 +13441,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
 233	  });
 234	  const resetBalancePosition = (crossOffset = 0, offset = 0) =>
 235	    setBalancePosition({ crossOffset, offset });
-236	
+236
 237	  const handleBalanceContextMenu = (e: MouseEvent) => {
 238	    e.preventDefault();
 239	    const rect = e.currentTarget.getBoundingClientRect();
@@ -13189,24 +13451,24 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
 243	    });
 244	    setBalanceMenuOpen(true);
 245	  };
-246	
+246
 247	  const onMenuAction = (...args: Parameters<typeof onBudgetAction>) => {
 248	    onBudgetAction(...args);
 249	    setBudgetMenuOpen(false);
 250	  };
-251	
+251
 252	  const { showUndoNotification } = useUndo();
-253	
+253
 254	  const navigate = useNavigate();
-255	
+255
 256	  const { schedule, scheduleStatus, isScheduleRecurring, description } =
 257	    useCategoryScheduleGoalTemplateIndicator({
 258	      category,
 259	      month,
 260	    });
-261	
+261
 262	  const showScheduleIndicator = schedule && scheduleStatus;
-263	
+263
 264	  return (
 265	    <View
 266	      style={{
@@ -13317,7 +13579,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
 371	                    ) {
 372	                      return;
 373	                    }
-374	
+374
 375	                    onMenuAction(month, `set-single-${numberOfMonths}-avg`, {
 376	                      category: category.id,
 377	                    });
@@ -13399,6 +13661,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:22Z)**_
 453	            <View title={description}>
 454	              <Button
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:10:23Z)**_
@@ -13411,11 +13674,11 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:23Z)**_
 1	import React from 'react';
 2	import type { ComponentPropsWithoutRef } from 'react';
 3	import { useTranslation } from 'react-i18next';
-4	
+4
 5	import { Menu } from '@actual-app/components/menu';
-6	
+6
 7	import { useFeatureFlag } from '#hooks/useFeatureFlag';
-8	
+8
 9	type BudgetMenuProps = Omit<
 10	  ComponentPropsWithoutRef<typeof Menu>,
 11	  'onMenuSelect' | 'items'
@@ -13431,7 +13694,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:23Z)**_
 21	  ...props
 22	}: BudgetMenuProps) {
 23	  const { t } = useTranslation();
-24	
+24
 25	  const isGoalTemplatesEnabled = useFeatureFlag('goalTemplatesEnabled');
 26	  const onMenuSelect = (name: string) => {
 27	    switch (name) {
@@ -13454,7 +13717,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:23Z)**_
 44	        throw new Error(`Unrecognized menu item: ${name}`);
 45	    }
 46	  };
-47	
+47
 48	  return (
 49	    <Menu
 50	      {...props}
@@ -13490,6 +13753,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:23Z)**_
 80	}
 81
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
@@ -13502,19 +13766,19 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 1	import { theme } from '@actual-app/components/theme';
 2	import { View } from '@actual-app/components/view';
 3	import type { CategoryEntity } from '@actual-app/core/types/models/category';
-4	
+4
 5	import { NotesButton } from '#components/NotesButton';
 6	import { useFeatureFlag } from '#hooks/useFeatureFlag';
 7	import { useNotes } from '#hooks/useNotes';
-8	
+8
 9	import { CategoryAutomationButton } from './goals/CategoryAutomationButton';
-10	
+10
 11	type SidebarCategoryButtonsProps = {
 12	  category: CategoryEntity;
 13	  dragging: boolean;
 14	  goalsShown: boolean;
 15	};
-16	
+16
 17	export const SidebarCategoryButtons = ({
 18	  category,
 19	  dragging,
@@ -13522,7 +13786,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 21	}: SidebarCategoryButtonsProps) => {
 22	  const isGoalTemplatesUIEnabled = useFeatureFlag('goalTemplatesUIEnabled');
 23	  const notes = useNotes(category.id) || '';
-24	
+24
 25	  return (
 26	    <>
 27	      <View style={{ flex: 1 }} />
@@ -13553,6 +13817,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 52	};
 53
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
@@ -13563,22 +13828,22 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 
 ```text
 105	  }, []);
-106	
+106
 107	  const onEditMonth = (id: string, month: string) => {
 108	    setEditing(id ? { id, cell: month } : null);
 109	  };
-110	
+110
 111	  const onEditName = (id: string) => {
 112	    setEditing(id ? { id, cell: 'name' } : null);
 113	  };
-114	
+114
 115	  const _onReorderCategory = (
 116	    id: string,
 117	    dropPos: DropPosition | null,
 118	    targetId: string,
 119	  ) => {
 120	    const isGroup = !!categoryGroups.find(g => g.id === targetId);
-121	
+121
 122	    if (isGroup) {
 123	      const { targetId: groupId } = findSortUp(
 124	        categoryGroups,
@@ -13586,7 +13851,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 126	        targetId,
 127	      );
 128	      const group = categoryGroups.find(g => g.id === groupId);
-129	
+129
 130	      if (group) {
 131	        const { categories = [] } = group;
 132	        onReorderCategory({
@@ -13602,7 +13867,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 142	      const group = categoryGroups.find(({ categories = [] }) =>
 143	        categories.some(cat => cat.id === targetId),
 144	      );
-145	
+145
 146	      if (group) {
 147	        onReorderCategory({
 148	          id,
@@ -13612,7 +13877,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 152	      }
 153	    }
 154	  };
-155	
+155
 156	  const _onReorderGroup = (
 157	    id: string,
 158	    dropPos: DropPosition | null,
@@ -13624,7 +13889,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 164	      ...findSortDown(expenseGroups, dropPos, targetId),
 165	    });
 166	  };
-167	
+167
 168	  const moveVertically = (dir: 1 | -1) => {
 169	    const flattened = categoryGroups.reduce(
 170	      (all, group) => {
@@ -13633,6 +13898,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:10:29Z)**_
 173	        }
 174	        return all.concat([
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:11:04Z)**_
@@ -13651,6 +13917,7 @@ packages\desktop-client\e2e\budget.mobile.test.ts
 packages\desktop-client\e2e\budget.test.ts
 packages\desktop-client\e2e\page-models\budget-page.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:11:06Z)**_
@@ -13668,6 +13935,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:11:06Z)**_
 171:                  if (!transferCategory) {
 174:                    onDelete(transferCategory);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:11:26Z)**_
@@ -13677,39 +13945,30 @@ Here are all the changes I plan for the rest of the work. Three choices in step 
 ## Step 5: budget page UI
 
 **Row building**, in [BudgetCategories.tsx](packages/desktop-client/src/components/budget/BudgetCategories.tsx):
+
 1. Build each group's rows with `nestCategories`, before filtering out hidden categories. When "show hidden" is off, a hidden parent's subcategories are hidden with it.
 2. Mark subcategory rows so they render indented.
 3. Add "new subcategory" state next to the existing "new category" state. The new-name input row appears under the parent, and its placeholder category carries `parent_id`, so saving goes through step 4.
 
-**Sidebar**, in [SidebarCategory.tsx](packages/desktop-client/src/components/budget/SidebarCategory.tsx) and its parents:
-4. Context menu:
-   - "Add subcategory" on top-level expense categories;
-   - "Remove from parent" on subcategories (the money stays where it is).
+**Sidebar**, in [SidebarCategory.tsx](packages/desktop-client/src/components/budget/SidebarCategory.tsx) and its parents: 4. Context menu:
+
+- "Add subcategory" on top-level expense categories;
+- "Remove from parent" on subcategories (the money stays where it is).
+
 5. Indent subcategory names, and use "New subcategory name" as the placeholder for the new row.
 6. Hide the automations button on subcategories in [SidebarCategoryButtons.tsx](packages/desktop-client/src/components/budget/SidebarCategoryButtons.tsx).
 
-**Month cells**, in [EnvelopeBudgetComponents.tsx](packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx) and the tracking equivalent:
-7. Show the parent total on parent rows. Question 1 below covers how.
-8. Remove "Overwrite with template" from the budget menu ([BudgetMenu.tsx](packages/desktop-client/src/components/budget/envelope/BudgetMenu.tsx)) on subcategory rows. Copy last month and the averages stay, since they're capped by the parent.
-9. Add a `catParentTotal` binding for the step 3 cell in `spreadsheet/bindings.ts`, for both envelope and tracking.
+**Month cells**, in [EnvelopeBudgetComponents.tsx](packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx) and the tracking equivalent: 7. Show the parent total on parent rows. Question 1 below covers how. 8. Remove "Overwrite with template" from the budget menu ([BudgetMenu.tsx](packages/desktop-client/src/components/budget/envelope/BudgetMenu.tsx)) on subcategory rows. Copy last month and the averages stay, since they're capped by the parent. 9. Add a `catParentTotal` binding for the step 3 cell in `spreadsheet/bindings.ts`, for both envelope and tracking.
 
-**Money menus:**
-10. Leave subcategories out of the "To Budget" move-to-category picker ([ToBudget.tsx](packages/desktop-client/src/components/budget/envelope/budgetsummary/ToBudget.tsx)), using a new `removeSubcategoriesFromGroups` helper next to `removeCategoriesFromGroups` in `util.ts`.
-11. When covering a subcategory's overspending, don't offer "To Budget" as a source ([BalanceMovementMenu.tsx](packages/desktop-client/src/components/budget/envelope/BalanceMovementMenu.tsx) and [CoverMenu.tsx](packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx)). Covering from any named category, including the parent, stays.
+**Money menus:** 10. Leave subcategories out of the "To Budget" move-to-category picker ([ToBudget.tsx](packages/desktop-client/src/components/budget/envelope/budgetsummary/ToBudget.tsx)), using a new `removeSubcategoriesFromGroups` helper next to `removeCategoriesFromGroups` in `util.ts`. 11. When covering a subcategory's overspending, don't offer "To Budget" as a source ([BalanceMovementMenu.tsx](packages/desktop-client/src/components/budget/envelope/BalanceMovementMenu.tsx) and [CoverMenu.tsx](packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx)). Covering from any named category, including the parent, stays.
 
-**Drag-and-drop**, in [BudgetTable.tsx](packages/desktop-client/src/components/budget/BudgetTable.tsx):
-12. A subcategory can only be dropped among its siblings. Dropping it elsewhere does nothing, rather than surfacing the server's rejection as an error.
-13. A top-level category dropped onto a subcategory row is placed after that parent's block, not inside it.
-14. Dragging a parent needs no change, because its subcategories follow it.
+**Drag-and-drop**, in [BudgetTable.tsx](packages/desktop-client/src/components/budget/BudgetTable.tsx): 12. A subcategory can only be dropped among its siblings. Dropping it elsewhere does nothing, rather than surfacing the server's rejection as an error. 13. A top-level category dropped onto a subcategory row is placed after that parent's block, not inside it. 14. Dragging a parent needs no change, because its subcategories follow it.
 
-**Delete:**
-15. In [ConfirmCategoryDeleteModal.tsx](packages/desktop-client/src/components/modals/ConfirmCategoryDeleteModal.tsx), when deleting a subcategory that has transactions, preselect its parent as the transfer target. The server already defaults to the parent when nothing is picked.
+**Delete:** 15. In [ConfirmCategoryDeleteModal.tsx](packages/desktop-client/src/components/modals/ConfirmCategoryDeleteModal.tsx), when deleting a subcategory that has transactions, preselect its parent as the transfer target. The server already defaults to the parent when nothing is picked.
 
-**Text:**
-16. Wrap every new string in `Trans` or `t()`, then run `yarn generate:i18n`.
+**Text:** 16. Wrap every new string in `Trans` or `t()`, then run `yarn generate:i18n`.
 
-**Tests:**
-17. Unit tests for row building (nesting, hidden parents, the new-subcategory row) and for `removeSubcategoriesFromGroups`.
+**Tests:** 17. Unit tests for row building (nesting, hidden parents, the new-subcategory row) and for `removeSubcategoriesFromGroups`.
 
 ## Step 6: release note, end-to-end test and verification
 
@@ -13733,21 +13992,23 @@ _**Agent (claude-opus-5-5 2026-10-01 18:29:21Z)**_
 **What should a parent category's Budgeted cell show?**
 
 Options:
+
 - **Own share + total hint (Recommended)** - The Budgeted cell keeps showing and editing the parent's own share, the part not given to subcategories, so Budgeted − Spent = Balance stays true on every row. A small 'Total: $X' line or tooltip shows the parent plus its subcategories.
 - **Total in the cell** - The Budgeted cell shows and edits the parent total; editing it sets own share = total − subcategories, capped at zero. Budgeted − Spent no longer equals Balance on parent rows.
 
 **Should existing categories be nestable, or only new ones created as subcategories?**
 
 Options:
+
 - **Also nest existing (Recommended)** - Add a 'Make subcategory of…' menu item with a picker limited to valid parents in the same group. The server already supports it. This is more UI, but users don't have to recreate categories.
 - **New subcategories only** - Only 'Add subcategory' and 'Remove from parent'. Smaller step 5. Existing categories can't be moved under a parent from the UI.
 
 **Should a parent's subcategories be collapsible on the budget page?**
 
 Options:
+
 - **No, always shown (Recommended)** - Subcategories always show under their parent; collapsing the group still hides everything. Keeps step 5 smaller.
 - **Yes, add a toggle** - A chevron on parent rows that collapses its subcategories, saved like group collapse. More UI and keyboard-navigation work.
-
 
 **Answer:** Own share + total hint (Recommended), Also nest existing (Recommended), No, always shown (Recommended)
 </details></tool-use>
@@ -13779,13 +14040,13 @@ _**Agent (claude-opus-5-5 2026-10-01 18:29:32Z)**_
 108	- **Tracking budget:** apply the same changes to `tracking/TrackingBudgetComponents.tsx`.
 109	- **i18n:** use `Trans` / `t()` for all new strings, then run `yarn generate:i18n`.
 110	- **Mobile and reports:** out of scope. They keep seeing children as ordinary flat categories, which is still correct for the totals.
-111	
+111
 112	### 6. Release note
-113	
+113
 114	Add `upcoming-release-notes/add-budget-subcategories.md`, following the writing-release-notes skill.
-115	
+115
 116	## Verification
-117	
+117
 118	- **Unit tests (loot-core):**
 119	  - `actions.test.ts`: setting a child's budget to X decreases the parent by X and leaves `to-budget` unchanged; bulk actions don't double-adjust.
 120	  - `db` / `app` tests: the nesting validation rejects a grandchild, an income parent, a cross-group parent and a tombstoned parent; deleting a parent un-nests its children; deleting a child returns its money to the parent.
@@ -13797,6 +14058,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:29:32Z)**_
 126	- **E2E:** add a Playwright test in `packages/desktop-client/e2e/budget.test.ts` for creating a subcategory and allocating to it.
 127
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:29:45Z)**_
@@ -13807,6 +14069,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:29:45Z)**_
 ```text
 The file C:\Users\icsab\.claude\plans\please-come-up-with-snug-lobster.md has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:29:49Z)**_
@@ -13843,14 +14106,14 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:39Z)**_
 1	// @ts-strict-ignore
 2	import React from 'react';
 3	import type { ComponentProps } from 'react';
-4	
+4
 5	import { theme } from '@actual-app/components/theme';
 6	import { View } from '@actual-app/components/view';
 7	import type {
 8	  CategoryEntity,
 9	  CategoryGroupEntity,
 10	} from '@actual-app/core/types/models';
-11	
+11
 12	import { DropHighlight, useDraggable, useDroppable } from '#components/sort';
 13	import type {
 14	  DragState,
@@ -13859,12 +14122,12 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:39Z)**_
 17	} from '#components/sort';
 18	import { Row } from '#components/table';
 19	import { useDragRef } from '#hooks/useDragRef';
-20	
+20
 21	import { RenderMonths } from './RenderMonths';
 22	import { SidebarCategory } from './SidebarCategory';
-23	
+23
 24	import { useBudgetComponents } from '.';
-25	
+25
 26	type ExpenseCategoryProps = {
 27	  cat: CategoryEntity;
 28	  categoryGroup?: CategoryGroupEntity;
@@ -13879,7 +14142,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:39Z)**_
 37	  onShowActivity: (id: CategoryEntity['id'], month: string) => void;
 38	  onReorder: OnDropCallback;
 39	};
-40	
+40
 41	export function ExpenseCategory({
 42	  cat,
 43	  categoryGroup,
@@ -13895,11 +14158,11 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:39Z)**_
 53	  onReorder,
 54	}: ExpenseCategoryProps) {
 55	  let dragging = dragState && dragState.item === cat;
-56	
+56
 57	  if (dragState && dragState.item.id === cat.group) {
 58	    dragging = true;
 59	  }
-60	
+60
 61	  const { dragRef } = useDraggable({
 62	    type: 'category',
 63	    onDragChange,
@@ -13907,15 +14170,15 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:39Z)**_
 65	    canDrag: editingCell === null,
 66	  });
 67	  const handleDragRef = useDragRef(dragRef);
-68	
+68
 69	  const { dropRef, dropPos } = useDroppable({
 70	    types: 'category',
 71	    id: cat.id,
 72	    onDrop: onReorder,
 73	  });
-74	
+74
 75	  const { ExpenseCategoryComponent: MonthComponent } = useBudgetComponents();
-76	
+76
 77	  return (
 78	    <Row
 79	      innerRef={dropRef}
@@ -13926,7 +14189,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:39Z)**_
 84	      }}
 85	    >
 86	      <DropHighlight pos={dropPos} offset={{ top: 1 }} />
-87	
+87
 88	      <View style={{ flex: 1, flexDirection: 'row' }}>
 89	        <SidebarCategory
 90	          innerRef={handleDragRef}
@@ -13943,7 +14206,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:39Z)**_
 101	          onSave={onSave}
 102	          onDelete={onDelete}
 103	        />
-104	
+104
 105	        <RenderMonths>
 106	          {({ month }) => (
 107	            <MonthComponent
@@ -13966,6 +14229,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:39Z)**_
 124	}
 125
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
@@ -13979,34 +14243,34 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 141	    query: uncategorizedTransactions().calculate({ $sum: '$amount' }),
 142	  } satisfies Binding<SheetName, 'uncategorized-balance'>;
 143	}
-144	
+144
 145	export function uncategorizedCount<SheetName extends SheetNames>() {
 146	  return {
 147	    name: 'uncategorized-amount',
 148	    query: uncategorizedTransactions().calculate({ $count: '$id' }),
 149	  } satisfies Binding<SheetName, 'uncategorized-amount'>;
 150	}
-151	
+151
 152	export const envelopeBudget = {
 153	  incomeAvailable: 'available-funds',
 154	  lastMonthOverspent: 'last-month-overspent',
 155	  forNextMonth: 'buffered-selected',
 156	  totalBudgeted: 'total-budgeted',
 157	  toBudget: 'to-budget',
-158	
+158
 159	  fromLastMonth: 'from-last-month',
 160	  manualBuffered: 'buffered',
 161	  autoBuffered: 'buffered-auto',
 162	  totalIncome: 'total-income',
 163	  totalSpent: 'total-spent',
 164	  totalBalance: 'total-leftover',
-165	
+165
 166	  groupSumAmount: envelopeParametrizedField('group-sum-amount'),
 167	  groupIncomeReceived: 'total-income',
-168	
+168
 169	  groupBudgeted: envelopeParametrizedField('group-budget'),
 170	  groupBalance: envelopeParametrizedField('group-leftover'),
-171	
+171
 172	  catBudgeted: envelopeParametrizedField('budget'),
 173	  catSumAmount: envelopeParametrizedField('sum-amount'),
 174	  catBalance: envelopeParametrizedField('leftover'),
@@ -14014,23 +14278,23 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 176	  catGoal: envelopeParametrizedField('goal'),
 177	  catLongGoal: envelopeParametrizedField('long-goal'),
 178	} satisfies BudgetType<'envelope-budget'>;
-179	
+179
 180	export const trackingBudget = {
 181	  totalBudgetedExpense: 'total-budgeted',
 182	  totalBudgetedIncome: 'total-budget-income',
 183	  totalBudgetedSaved: 'total-saved',
-184	
+184
 185	  totalIncome: 'total-income',
 186	  totalSpent: 'total-spent',
 187	  totalSaved: 'real-saved',
-188	
+188
 189	  totalLeftover: 'total-leftover',
 190	  groupSumAmount: trackingParametrizedField('group-sum-amount'),
 191	  groupIncomeReceived: 'total-income',
-192	
+192
 193	  groupBudgeted: trackingParametrizedField('group-budget'),
 194	  groupBalance: trackingParametrizedField('group-leftover'),
-195	
+195
 196	  catBudgeted: trackingParametrizedField('budget'),
 197	  catSumAmount: trackingParametrizedField('sum-amount'),
 198	  catBalance: trackingParametrizedField('leftover'),
@@ -14040,6 +14304,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 202	} satisfies BudgetType<'tracking-budget'>;
 203
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
@@ -14050,22 +14315,22 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 
 ```text
 1	import React, { useCallback, useRef, useState } from 'react';
-2	
+2
 3	import { useFormat } from '#hooks/useFormat';
 4	import { envelopeBudget } from '#spreadsheet/bindings';
-5	
+5
 6	import { BalanceMenu } from './BalanceMenu';
 7	import { CoverMenu } from './CoverMenu';
 8	import { useEnvelopeSheetValue } from './EnvelopeBudgetComponents';
 9	import { TransferMenu } from './TransferMenu';
-10	
+10
 11	type BalanceMovementMenuProps = {
 12	  categoryId: string;
 13	  month: string;
 14	  onBudgetAction: (month: string, action: string, arg?: unknown) => void;
 15	  onClose: () => void;
 16	};
-17	
+17
 18	export function BalanceMovementMenu({
 19	  categoryId,
 20	  month,
@@ -14073,12 +14338,12 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 22	  onClose,
 23	}: BalanceMovementMenuProps) {
 24	  const format = useFormat();
-25	
+25
 26	  const catBalance =
 27	    useEnvelopeSheetValue(envelopeBudget.catBalance(categoryId)) ?? 0;
-28	
+28
 29	  const [menu, _setMenu] = useState('menu');
-30	
+30
 31	  const ref = useRef<HTMLSpanElement>(null);
 32	  // Keep focus inside the popover on menu change
 33	  const setMenu = useCallback(
@@ -14088,7 +14353,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 37	    },
 38	    [ref],
 39	  );
-40	
+40
 41	  return (
 42	    <span tabIndex={-1} ref={ref}>
 43	      {menu === 'menu' && (
@@ -14105,7 +14370,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 54	          onCover={() => setMenu('cover')}
 55	        />
 56	      )}
-57	
+57
 58	      {menu === 'transfer' && (
 59	        <TransferMenu
 60	          categoryId={categoryId}
@@ -14122,7 +14387,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 71	          }}
 72	        />
 73	      )}
-74	
+74
 75	      {menu === 'cover' && (
 76	        <CoverMenu
 77	          categoryId={categoryId}
@@ -14143,6 +14408,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:41Z)**_
 92	}
 93
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:34:43Z)**_
@@ -14213,6 +14479,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:43Z)**_
 148	    </>
 149	  );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:34:47Z)**_
@@ -14225,13 +14492,13 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:47Z)**_
 1	import React, { useMemo, useState } from 'react';
 2	import { Form } from 'react-aria-components';
 3	import { Trans, useTranslation } from 'react-i18next';
-4	
+4
 5	import { Button } from '@actual-app/components/button';
 6	import { InitialFocus } from '@actual-app/components/initial-focus';
 7	import { View } from '@actual-app/components/view';
 8	import type { IntegerAmount } from '@actual-app/core/shared/util';
 9	import type { CategoryEntity } from '@actual-app/core/types/models';
-10	
+10
 11	import { CategoryAutocomplete } from '#components/autocomplete/CategoryAutocomplete';
 12	import {
 13	  addToBeBudgetedGroup,
@@ -14239,7 +14506,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:47Z)**_
 15	} from '#components/budget/util';
 16	import { FinancialInput } from '#components/util/FinancialInput';
 17	import { useCategories } from '#hooks/useCategories';
-18	
+18
 19	type TransferMenuProps = {
 20	  categoryId?: CategoryEntity['id'];
 21	  initialAmount?: IntegerAmount | null;
@@ -14247,7 +14514,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:47Z)**_
 23	  onSubmit: (amount: IntegerAmount, categoryId: CategoryEntity['id']) => void;
 24	  onClose: () => void;
 25	};
-26	
+26
 27	export function TransferMenu({
 28	  categoryId,
 29	  initialAmount = 0,
@@ -14256,7 +14523,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:47Z)**_
 32	  onClose,
 33	}: TransferMenuProps) {
 34	  const { t } = useTranslation();
-35	
+35
 36	  const { data: { grouped: originalCategoryGroups } = { grouped: [] } } =
 37	    useCategories();
 38	  const filteredCategoryGroups = useMemo(() => {
@@ -14270,9 +14537,10 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:47Z)**_
 46	      ? removeCategoriesFromGroups(categoryGroups, categoryId)
 47	      : categoryGroups;
 48	  }, [originalCategoryGroups, categoryId, showToBeBudgeted]);
-49	
+49
 50	  const [amount, setAmount] = useState<IntegerAmount>(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:34:48Z)**_
@@ -14283,9 +14551,9 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:48Z)**_
 
 ```text
 1	import { useQuery } from '@tanstack/react-query';
-2	
+2
 3	import { categoryQueries } from '#budget';
-4	
+4
 5	export function useCategory(id?: string | null) {
 6	  return useQuery({
 7	    ...categoryQueries.list(),
@@ -14295,6 +14563,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:48Z)**_
 11	}
 12
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:34:49Z)**_
@@ -14307,6 +14576,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:49Z)**_
 54:    'long-goal': number;
 77:    'long-goal': number;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:34:51Z)**_
@@ -14324,7 +14594,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:51Z)**_
 30	    // Common fields
 31	    'uncategorized-amount': number;
 32	    'uncategorized-balance': number;
-33	
+33
 34	    // Envelope budget fields
 35	    'available-funds': number;
 36	    'last-month-overspent': number;
@@ -14351,7 +14621,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:51Z)**_
 57	    // Common fields
 58	    'uncategorized-amount': number;
 59	    'uncategorized-balance': number;
-60	
+60
 61	    // Tracking budget fields
 62	    'total-budgeted': number;
 63	    'total-budget-income': number;
@@ -14374,9 +14644,10 @@ _**Agent (claude-opus-5-5 2026-10-01 18:34:51Z)**_
 80	    // Common fields
 81	    'uncategorized-amount': number;
 82	    'uncategorized-balance': number;
-83	
+83
 84	    // Balance fields
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:34:54Z)**_
@@ -14391,6 +14662,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:35:48Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\spreadsheet\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:35:52Z)**_
@@ -14401,6 +14673,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:35:52Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\spreadsheet\index.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:35:55Z)**_
@@ -14411,6 +14684,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:35:55Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\spreadsheet\bindings.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:35:59Z)**_
@@ -14421,6 +14695,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:35:59Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\spreadsheet\bindings.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:36:09Z)**_
@@ -14438,6 +14713,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:10Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\util.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:37:28Z)**_
@@ -14448,6 +14724,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:28Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\util.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:37:38Z)**_
@@ -14463,6 +14740,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:39Z)**_
 ```text
 File does not exist. Note: your current working directory is C:\Users\icsab\actual-budget\actual-budget. Did you mean useContextMenu.ts?
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:37:39Z)**_
@@ -14480,7 +14758,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:39Z)**_
 65	  const isGoalTemplatesEnabled = useFeatureFlag('goalTemplatesEnabled');
 66	  const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
 67	  const categoryExpandedState = categoryExpandedStatePref ?? 0;
-68	
+68
 69	  const temporary = group.id === 'new';
 70	  const canSortCategories =
 71	    !!onSortCategories && (group.categories?.length ?? 0) > 1;
@@ -14526,7 +14804,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:39Z)**_
 111	        },
 112	    ],
 113	  });
-114	
+114
 115	  const displayed = (
 116	    <View
 117	      style={{
@@ -14602,12 +14880,13 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:39Z)**_
 187	                <SvgAdd style={{ width: 10, height: 10, flexShrink: 0 }} />
 188	              </Button>
 189	            </Tooltip>
-190	
+190
 191	            <NotesButton id={group.id} defaultColor={theme.pageTextLight} />
 192	          </View>
 193	        </>
 194	      )}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:37:41Z)**_
@@ -14619,9 +14898,9 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:41Z)**_
 ```text
 1	import { useCallback, useRef } from 'react';
 2	import type { RefObject } from 'react';
-3	
+3
 4	import type { Falsy } from '@actual-app/core/types/util';
-5	
+5
 6	import {
 7	  addItems,
 8	  setContextMenuPosition,
@@ -14629,28 +14908,28 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:41Z)**_
 10	import type { ContextMenuItem } from '#contextmenu/types';
 11	import { useRefEventListener } from '#hooks/useRefEventListener';
 12	import { useDispatch } from '#redux';
-13	
+13
 14	type UseContextMenuProps = {
 15	  triggerRef: RefObject<HTMLElement | null>;
 16	  enabled?: boolean;
 17	  items: Falsy<ContextMenuItem>[];
 18	};
-19	
+19
 20	export function useContextMenu({
 21	  triggerRef,
 22	  enabled = true,
 23	  items,
 24	}: UseContextMenuProps) {
 25	  const dispatch = useDispatch();
-26	
+26
 27	  // Store actions in a ref to avoid re-binding the event listener on every render
 28	  const actionsRef = useRef(items);
 29	  actionsRef.current = items;
-30	
+30
 31	  const processedItems = items.filter(
 32	    item => item && (typeof item === 'symbol' || !item.hidden),
 33	  ) as ContextMenuItem[];
-34	
+34
 35	  useRefEventListener(triggerRef, 'contextmenu', (e: MouseEvent) => {
 36	    if (enabled) {
 37	      e.preventDefault();
@@ -14658,7 +14937,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:41Z)**_
 39	      dispatch(setContextMenuPosition({ x: e.clientX, y: e.clientY }));
 40	    }
 41	  });
-42	
+42
 43	  const handleContextMenu = useCallback(() => {
 44	    if (!triggerRef.current || !enabled) return;
 45	    const rect = triggerRef.current.getBoundingClientRect();
@@ -14672,11 +14951,12 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:41Z)**_
 53	      }),
 54	    );
 55	  }, [triggerRef, enabled]);
-56	
+56
 57	  return { handleContextMenu };
 58	}
 59
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:37:47Z)**_
@@ -14686,11 +14966,11 @@ _**Agent (claude-opus-5-5 2026-10-01 18:37:47Z)**_
 Inspect context menu item types
 
 ```text
-Name                    
-----                    
+Name
+----
 contextMenuSlice.test.ts
-contextMenuSlice.ts     
-types.ts                
+contextMenuSlice.ts
+types.ts
 import type { MenuItem } from '@actual-app/components/menu';
 
 export type ContextMenuItem =
@@ -14701,6 +14981,7 @@ export type ContextMenuItem =
     })
   | Extract<MenuItem, symbol>;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:38:06Z)**_
@@ -14755,6 +15036,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:38:06Z)**_
 73-          }}
 74-          {...props}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:38:07Z)**_
@@ -14823,6 +15105,7 @@ packages\desktop-client\src\components\budget\ExpenseCategory.tsx-83-        opa
 packages\desktop-client\src\components\budget\ExpenseCategory.tsx-84-      }}
 packages\desktop-client\src\components\budget\ExpenseCategory.tsx-85-    >
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:38:20Z)**_
@@ -14843,6 +15126,7 @@ packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.
 packages\desktop-client\src\components\FinancialText.tsx:13:export function FinancialText<T extends ElementType = typeof Text>({
 packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx:48:export function useEnvelopeSheetValue<
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:38:20Z)**_
@@ -14859,6 +15143,7 @@ packages\desktop-client\src\components\budget\goals\editor\BySaveAutomationReadO
 
 [Showing results with pagination = limit: 4]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:38:23Z)**_
@@ -14869,23 +15154,23 @@ _**Agent (claude-opus-5-5 2026-10-01 18:38:23Z)**_
 
 ```text
 1	import { Trans } from 'react-i18next';
-2	
+2
 3	import { amountToInteger } from '@actual-app/core/shared/util';
 4	import type {
 5	  ByTemplate,
 6	  SpendTemplate,
 7	} from '@actual-app/core/types/models/templates';
 8	import type { TransObjectLiteral } from '@actual-app/core/types/util';
-9	
+9
 10	import { formatMonthLabel } from '#components/budget/goals/formatMonthLabel';
 11	import { FinancialText } from '#components/FinancialText';
 12	import { useFormat } from '#hooks/useFormat';
 13	import { useLocale } from '#hooks/useLocale';
-14	
+14
 15	type BySaveAutomationReadOnlyProps = {
 16	  template: ByTemplate | SpendTemplate;
 17	};
-18	
+18
 19	export const BySaveAutomationReadOnly = ({
 20	  template,
 21	}: BySaveAutomationReadOnlyProps) => {
@@ -14899,7 +15184,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:38:23Z)**_
 29	  const repeat = template.repeat ?? 1;
 30	  const from =
 31	    template.type === 'spend' ? formatMonthLabel(template.from, locale) : null;
-32	
+32
 33	  if (template.annual) {
 34	    if (from) {
 35	      return (
@@ -14917,7 +15202,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:38:23Z)**_
 47	      </Trans>
 48	    );
 49	  }
-50	
+50
 51	  if (template.repeat && template.repeat > 0) {
 52	    if (from) {
 53	      return (
@@ -14935,7 +15220,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:38:23Z)**_
 65	      </Trans>
 66	    );
 67	  }
-68	
+68
 69	  if (from) {
 70	    return (
 71	      <Trans>
@@ -14944,7 +15229,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:38:23Z)**_
 74	      </Trans>
 75	    );
 76	  }
-77	
+77
 78	  return (
 79	    <Trans>
 80	      Save <FinancialText>{{ amount } as TransObjectLiteral}</FinancialText> by{' '}
@@ -14954,6 +15239,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:38:23Z)**_
 84	};
 85
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:38:25Z)**_
@@ -15029,6 +15315,7 @@ export function ParentTotalHint({ budgeted, total }: ParentTotalHintProps) {
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\ParentTotalHint.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:38:56Z)**_
@@ -15046,6 +15333,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:39:13Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\BudgetMenu.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:39:18Z)**_
@@ -15056,6 +15344,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:39:18Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\BudgetMenu.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:39:51Z)**_
@@ -15066,6 +15355,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:39:51Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:39:56Z)**_
@@ -15076,6 +15366,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:39:56Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:40:11Z)**_
@@ -15086,6 +15377,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:11Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:40:14Z)**_
@@ -15098,7 +15390,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:14Z)**_
 1	import React, { memo, useRef, useState } from 'react';
 2	import type { ComponentProps, CSSProperties, MouseEvent } from 'react';
 3	import { Trans, useTranslation } from 'react-i18next';
-4	
+4
 5	import { Button } from '@actual-app/components/button';
 6	import { SvgCheveronDown } from '@actual-app/components/icons/v1';
 7	import {
@@ -15112,7 +15404,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:14Z)**_
 15	import { View } from '@actual-app/components/view';
 16	import * as monthUtils from '@actual-app/core/shared/months';
 17	import { css } from '@emotion/css';
-18	
+18
 19	import type {
 20	  CategoryGroupMonthProps,
 21	  CategoryMonthProps,
@@ -15131,19 +15423,20 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:14Z)**_
 34	import { useUndo } from '#hooks/useUndo';
 35	import type { Binding, SheetFields } from '#spreadsheet';
 36	import { envelopeBudget } from '#spreadsheet/bindings';
-37	
+37
 38	import { BalanceMovementMenu } from './BalanceMovementMenu';
 39	import { BudgetMenu } from './BudgetMenu';
 40	import { IncomeMenu } from './IncomeMenu';
-41	
+41
 42	export function useEnvelopeSheetName<
 43	  FieldName extends SheetFields<'envelope-budget'>,
 44	>(binding: Binding<'envelope-budget', FieldName>) {
 45	  return useSheetName(binding);
 46	}
-47	
+47
 48	export function useEnvelopeSheetValue<
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:40:29Z)**_
@@ -15154,6 +15447,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:29Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:40:29Z)**_
@@ -15177,6 +15471,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:29Z)**_
 506:          </Popover>
 516:export const ExpenseCategoryMonth = CategoryMonth;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:40:32Z)**_
@@ -15192,9 +15487,9 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:33Z)**_
 ```text
 225	      month,
 226	    });
-227	
+227
 228	  const showScheduleIndicator = schedule && scheduleStatus;
-229	
+229
 230	  return (
 231	    <View
 232	      style={{
@@ -15272,7 +15567,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:33Z)**_
 304	                  className="hover-visible"
 305	                />
 306	              </Button>
-307	
+307
 308	              <Popover
 309	                triggerRef={triggerRef}
 310	                isOpen={menuOpen}
@@ -15296,7 +15591,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:33Z)**_
 328	                    ) {
 329	                      return;
 330	                    }
-331	
+331
 332	                    onMenuAction(month, `set-single-${numberOfMonths}-avg`, {
 333	                      category: category.id,
 334	                    });
@@ -15336,6 +15631,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:33Z)**_
 368	          onExpose={() => onEdit(category.id, month)}
 369	          style={{ ...(editing && { zIndex: 100 }), ...styles.tnum }}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:40:34Z)**_
@@ -15353,6 +15649,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:34Z)**_
 77:        ...(isGoalTemplatesEnabled
 80:                name: 'apply-single-category-template',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:40:35Z)**_
@@ -15366,7 +15663,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:35Z)**_
 2	import React, { memo, useRef, useState } from 'react';
 3	import type { ComponentProps, CSSProperties } from 'react';
 4	import { Trans } from 'react-i18next';
-5	
+5
 6	import { Button } from '@actual-app/components/button';
 7	import { SvgCheveronDown } from '@actual-app/components/icons/v1';
 8	import {
@@ -15381,7 +15678,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:35Z)**_
 17	import * as monthUtils from '@actual-app/core/shared/months';
 18	import { css } from '@emotion/css';
 19	import { t } from 'i18next';
-20	
+20
 21	import type {
 22	  CategoryGroupMonthProps,
 23	  CategoryMonthProps,
@@ -15399,10 +15696,10 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:35Z)**_
 35	import { useUndo } from '#hooks/useUndo';
 36	import type { Binding, SheetFields } from '#spreadsheet';
 37	import { trackingBudget } from '#spreadsheet/bindings';
-38	
+38
 39	import { BalanceMenu } from './BalanceMenu';
 40	import { BudgetMenu } from './BudgetMenu';
-41	
+41
 42	export const useTrackingSheetValue = <
 43	  FieldName extends SheetFields<'tracking-budget'>,
 44	>(
@@ -15410,19 +15707,20 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:35Z)**_
 46	) => {
 47	  return useSheetValue(binding);
 48	};
-49	
+49
 50	const TrackingCellValue = <FieldName extends SheetFields<'tracking-budget'>>(
 51	  props: ComponentProps<typeof CellValue<'tracking-budget', FieldName>>,
 52	) => {
 53	  return <CellValue {...props} />;
 54	};
-55	
+55
 56	const TrackingSheetCell = <FieldName extends SheetFields<'tracking-budget'>>(
 57	  props: SheetCellProps<'tracking-budget', FieldName>,
 58	) => {
 59	  return <SheetCell {...props} />;
 60	};
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:40:39Z)**_
@@ -15442,11 +15740,11 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:39Z)**_
 1	import React from 'react';
 2	import type { ComponentPropsWithoutRef } from 'react';
 3	import { useTranslation } from 'react-i18next';
-4	
+4
 5	import { Menu } from '@actual-app/components/menu';
-6	
+6
 7	import { useFeatureFlag } from '#hooks/useFeatureFlag';
-8	
+8
 9	type BudgetMenuProps = Omit<
 10	  ComponentPropsWithoutRef<typeof Menu>,
 11	  'onMenuSelect' | 'items'
@@ -15470,6 +15768,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:40:39Z)**_
 29	      case 'copy-single-last':
 30	        onCopyLastMonthAverage?.();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:42:37Z)**_
@@ -15480,6 +15779,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:42:37Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\BudgetMenu.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:42:55Z)**_
@@ -15490,6 +15790,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:42:55Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\BudgetMenu.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:43:02Z)**_
@@ -15500,6 +15801,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:43:02Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:43:31Z)**_
@@ -15510,6 +15812,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:43:31Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:43:41Z)**_
@@ -15520,6 +15823,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:43:41Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:44:43Z)**_
@@ -15530,6 +15834,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:44:43Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:44:48Z)**_
@@ -15547,6 +15852,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:46:31Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\TransferMenu.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:46:45Z)**_
@@ -15557,6 +15863,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:46:45Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\TransferMenu.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:46:55Z)**_
@@ -15567,6 +15874,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:46:55Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\budgetsummary\ToBudget.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:47:20Z)**_
@@ -15577,6 +15885,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:47:20Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\BalanceMovementMenu.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:47:28Z)**_
@@ -15587,6 +15896,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:47:28Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\BalanceMovementMenu.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:47:36Z)**_
@@ -15597,6 +15907,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:47:36Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\BalanceMovementMenu.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:47:39Z)**_
@@ -15611,6 +15922,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:47:51Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\SidebarCategoryButtons.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:47:56Z)**_
@@ -15628,6 +15940,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:48:57Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\SidebarCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:49:09Z)**_
@@ -15638,6 +15951,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:49:09Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\SidebarCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:49:43Z)**_
@@ -15648,6 +15962,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:49:43Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\SidebarCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:49:56Z)**_
@@ -15658,6 +15973,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:49:56Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\SidebarCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:50:08Z)**_
@@ -15668,6 +15984,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:50:08Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\SidebarCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:51:09Z)**_
@@ -15678,6 +15995,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:51:09Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\SidebarCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:51:13Z)**_
@@ -15699,6 +16017,7 @@ _**Agent (claude-opus-5-5 2026-10-01 18:51:14Z)**_
 62-  style?: CSSProperties;
 63-  className?: string;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 18:51:18Z)**_
@@ -15713,6 +16032,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:09:00Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\ExpenseCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:09:11Z)**_
@@ -15723,6 +16043,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:09:11Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\ExpenseCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:09:22Z)**_
@@ -15733,6 +16054,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:09:22Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\ExpenseCategory.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:09:43Z)**_
@@ -15750,6 +16072,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:09:56Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:10:19Z)**_
@@ -15760,6 +16083,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:10:19Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:10:32Z)**_
@@ -15770,6 +16094,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:10:32Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:10:39Z)**_
@@ -15780,6 +16105,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:10:39Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:12:01Z)**_
@@ -15790,6 +16116,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:12:01Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:12:32Z)**_
@@ -15800,6 +16127,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:12:32Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:12:46Z)**_
@@ -15810,6 +16138,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:12:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:13:00Z)**_
@@ -15820,6 +16149,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:13:00Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:13:19Z)**_
@@ -15862,6 +16192,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:13:19Z)**_
 224-
 225-export function findSortUp<T extends { id: string }>(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:13:36Z)**_
@@ -15879,6 +16210,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:14:02Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\util.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:17:01Z)**_
@@ -15889,6 +16221,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:01Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetTable.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:17:10Z)**_
@@ -15899,6 +16232,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:10Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetTable.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:17:11Z)**_
@@ -15930,6 +16264,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:11Z)**_
 171-      id,
 172:      ...findSortDown(expenseGroups, dropPos, targetId),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
@@ -15940,6 +16275,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BudgetTable.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
@@ -15952,24 +16288,24 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 1	// @ts-strict-ignore
 2	import React, { useState } from 'react';
 3	import { Trans, useTranslation } from 'react-i18next'; // Import useTranslation
-4	
+4
 5	import { Block } from '@actual-app/components/block';
 6	import { Button } from '@actual-app/components/button';
 7	import { Text } from '@actual-app/components/text';
 8	import { theme } from '@actual-app/components/theme';
 9	import { View } from '@actual-app/components/view';
 10	import type { TransObjectLiteral } from '@actual-app/core/types/util';
-11	
+11
 12	import { CategoryAutocomplete } from '#components/autocomplete/CategoryAutocomplete';
 13	import { Modal, ModalCloseButton, ModalHeader } from '#components/common/Modal';
 14	import { useCategories } from '#hooks/useCategories';
 15	import type { Modal as ModalType } from '#modals/modalsSlice';
-16	
+16
 17	type ConfirmCategoryDeleteModalProps = Extract<
 18	  ModalType,
 19	  { name: 'confirm-category-delete' }
 20	>['options'];
-21	
+21
 22	export function ConfirmCategoryDeleteModal({
 23	  group: groupId,
 24	  category: categoryId,
@@ -15986,10 +16322,10 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 35	  } = useCategories();
 36	  const group = categoryGroups.find(g => g.id === groupId);
 37	  const category = categories.find(c => c.id === categoryId);
-38	
+38
 39	  const renderError = (error: string) => {
 40	    let msg: string;
-41	
+41
 42	    switch (error) {
 43	      case 'required-transfer':
 44	        msg = 'You must select a category';
@@ -15997,7 +16333,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 46	      default:
 47	        msg = 'Something bad happened, sorry!';
 48	    }
-49	
+49
 50	    return (
 51	      <Text
 52	        style={{
@@ -16009,9 +16345,9 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 58	      </Text>
 59	    );
 60	  };
-61	
+61
 62	  const isIncome = !!(category || group).is_income;
-63	
+63
 64	  return (
 65	    <Modal
 66	      name="confirm-category-delete"
@@ -16075,9 +16411,9 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 124	                </Trans>
 125	              </Block>
 126	            )}
-127	
+127
 128	            {error && renderError(error)}
-129	
+129
 130	            <View
 131	              style={{
 132	                marginTop: 20,
@@ -16089,7 +16425,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 138	              <Text>
 139	                <Trans>Transfer to:</Trans>
 140	              </Text>
-141	
+141
 142	              <View style={{ flex: 1, marginLeft: 10, marginRight: 30 }}>
 143	                <CategoryAutocomplete
 144	                  categoryGroups={
@@ -16115,7 +16451,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 164	                  showHiddenCategories
 165	                />
 166	              </View>
-167	
+167
 168	              <Button
 169	                variant="primary"
 170	                onPress={() => {
@@ -16138,6 +16474,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:17:46Z)**_
 187	}
 188
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:17:55Z)**_
@@ -16155,6 +16492,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:20:07Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\modals\ConfirmCategoryDeleteModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:20:17Z)**_
@@ -16165,6 +16503,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:20:17Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\modals\ConfirmCategoryDeleteModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:20:26Z)**_
@@ -16175,6 +16514,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:20:26Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\modals\ConfirmCategoryDeleteModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:20:30Z)**_
@@ -16190,6 +16530,7 @@ Run repo typecheck
 ```text
 success: 3, skipped: 7, pending: 0, aborted: 0, failed: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:54:52Z)**_
@@ -16202,6 +16543,7 @@ Lint changed client files
 packages/desktop-client/src/components/budget/goals/editor/BySaveAutomation.tsx:242:16: warning jsx-a11y(no-static-element-interactions): Static HTML elements with event handlers require a role. help: Add a role attribute to this element, or use a semantic HTML element instead.
 packages/desktop-client/src/components/budget/goals/editor/BySaveAutomation.tsx:242:15: warning jsx-a11y(click-events-have-key-events): Enforce a clickable non-interactive element has at least one keyboard event listener. help: Visible, non-interactive elements with click handlers must have one of `keyup`, `keydown`, or `keypress` listener.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:55:06Z)**_
@@ -16220,9 +16562,9 @@ _**Agent (claude-opus-5-5 2026-10-01 22:55:06Z)**_
 ```text
 1	import { theme } from '@actual-app/components/theme';
 2	import { describe, expect, it } from 'vitest';
-3	
+3
 4	import { makeBalanceAmountStyle } from './util';
-5	
+5
 6	describe('makeBalanceAmountStyle', () => {
 7	  it('colours by the sign of the balance', () => {
 8	    expect(makeBalanceAmountStyle(-1)).toEqual({
@@ -16235,13 +16577,13 @@ _**Agent (claude-opus-5-5 2026-10-01 22:55:06Z)**_
 15	      color: theme.budgetNumberPositive,
 16	    });
 17	  });
-18	
+18
 19	  it('colors a negative balance red regardless of spending', () => {
 20	    expect(makeBalanceAmountStyle(-1000)).toEqual({
 21	      color: theme.budgetNumberNegative,
 22	    });
 23	  });
-24	
+24
 25	  it('colors a zero balance as the neutral zero color', () => {
 26	    expect(makeBalanceAmountStyle(0, null, 10000, -20000)).toEqual({
 27	      color: theme.budgetNumberZero,
@@ -16249,6 +16591,7 @@ _**Agent (claude-opus-5-5 2026-10-01 22:55:06Z)**_
 29	  });
 30
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:55:31Z)**_
@@ -16413,6 +16756,7 @@ import {
   removeSubcategoriesFromGroups,
 } from './util';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:55:34Z)**_
@@ -16454,6 +16798,7 @@ yarn workspace @actual-app/web exec vitest --run src/components/budget/util.test
 ```text
       Tests  30 passed (30)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:56:06Z)**_
@@ -16471,6 +16816,7 @@ Run client budget-related unit tests
       Tests  185 passed (185)
    Duration  34.24s (transform 12.33s, setup 25.25s, import 18.28s, tests 1.67s, environment 16.58s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:57:05Z)**_
@@ -16529,6 +16875,7 @@ Regenerate i18n strings and show changed files
 ?? packages/loot-core/src/shared/categories.test.ts
 ?? packages/loot-core/src/shared/categories.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-01 22:57:36Z)**_
@@ -16538,6 +16885,7 @@ Step 5 is implemented, but I haven't seen it running in the app yet. Typecheck p
 `yarn generate:i18n` rewrote `packages/desktop-client/locale/en.json`, but that file isn't in `git status`, so it looks like a generated file that isn't committed. I didn't check whether it's ignored.
 
 **Rows and sidebar:**
+
 - **Subcategories show under their parent, indented.** Rows are built by a new `getCategoryRows` in [util.ts](packages/desktop-client/src/components/budget/util.ts), which nests before filtering hidden categories, so a hidden parent hides its subcategories too.
 - **Category menu** ([SidebarCategory.tsx](packages/desktop-client/src/components/budget/SidebarCategory.tsx)):
   - "Add subcategory" opens an indented "New subcategory name" row under the parent.
@@ -16547,18 +16895,21 @@ Step 5 is implemented, but I haven't seen it running in the app yet. Typecheck p
 **Parent total:** when a parent's subcategories hold money, a small **Σ** appears next to the parent's budget number. Hovering shows "Total with subcategories: $X", and the same text is the marker's accessible label. Otherwise nothing extra shows. This is the new [ParentTotalHint.tsx](packages/desktop-client/src/components/budget/ParentTotalHint.tsx), used by both the envelope and tracking budgets.
 
 **What's hidden on subcategories:**
+
 - "Overwrite with template" in the budget menu, for both budget types.
 - The automations button in the sidebar.
 - In the "To Budget" picker for moving money, subcategories aren't listed.
 - When covering a subcategory's overspending, "To Budget" isn't offered as a source. Its parent and other categories still are.
 
 **Drag-and-drop** ([BudgetTable.tsx](packages/desktop-client/src/components/budget/BudgetTable.tsx), via the new `getCategoryDropTarget`):
+
 - A subcategory only moves among its siblings; other drops do nothing.
 - A top-level category dropped onto a subcategory row lands after that parent's block.
 
 **Deleting** a subcategory with transactions preselects its parent as the transfer target, and you can still pick another category.
 
 **Things to look at in the app:**
+
 - **The Σ marker:** it's my own choice for the "total hint", so it might look out of place.
 - **Indent:** subcategory rows are indented 16px, and I haven't seen how that looks.
 - **The picker popover:** it's anchored to the category name.
@@ -16585,36 +16936,36 @@ _**Agent (claude-opus-5-5 2026-10-02 02:53:06Z)**_
 
 ```text
 1	import type { Page } from '@playwright/test';
-2	
+2
 3	import { expect, test } from './fixtures';
 4	import type { BudgetPage } from './page-models/budget-page';
 5	import { ConfigurationPage } from './page-models/configuration-page';
-6	
+6
 7	test.describe('Budget', () => {
 8	  let page: Page;
 9	  let configurationPage: ConfigurationPage;
 10	  let budgetPage: BudgetPage;
-11	
+11
 12	  test.beforeEach(async ({ browser }) => {
 13	    page = await browser.newPage();
 14	    configurationPage = new ConfigurationPage(page);
-15	
+15
 16	    await page.goto('/');
 17	    budgetPage = await configurationPage.createTestFile();
-18	
+18
 19	    // Move mouse to corner of the screen;
 20	    // sometimes the mouse hovers on a budget element thus rendering an input box
 21	    // and this breaks screenshot tests
 22	    await page.mouse.move(0, 0);
 23	  });
-24	
+24
 25	  test.afterEach(async () => {
 26	    await page?.close();
 27	  });
-28	
+28
 29	  test('renders the summary information: available funds, overspent, budgeted and for next month', async () => {
 30	    const summary = budgetPage.budgetSummary.first();
-31	
+31
 32	    await expect(summary.getByText('Available funds')).toBeVisible({
 33	      timeout: 10000,
 34	    });
@@ -16623,19 +16974,19 @@ _**Agent (claude-opus-5-5 2026-10-02 02:53:06Z)**_
 37	    await expect(summary.getByText('For next month')).toBeVisible();
 38	    await expect(page).toMatchThemeScreenshots();
 39	  });
-40	
+40
 41	  test('transfer funds to another category', async () => {
 42	    const currentFundsA = await budgetPage.getBalanceForRow(1);
 43	    const currentFundsB = await budgetPage.getBalanceForRow(2);
-44	
+44
 45	    await budgetPage.transferAllBalance(1, 2);
-46	
+46
 47	    await expect
 48	      .poll(() => budgetPage.getBalanceForRow(2))
 49	      .toEqual(currentFundsA + currentFundsB);
 50	    await expect(page).toMatchThemeScreenshots();
 51	  });
-52	
+52
 53	  test('budget table is rendered', async () => {
 54	    await expect(budgetPage.budgetTable).toBeVisible();
 55	    expect(await budgetPage.getTableTotals()).toEqual({
@@ -16644,28 +16995,28 @@ _**Agent (claude-opus-5-5 2026-10-02 02:53:06Z)**_
 58	      balance: expect.any(Number),
 59	    });
 60	  });
-61	
+61
 62	  test('clicking on spent amounts opens a transaction page', async () => {
 63	    const accountPage = await budgetPage.clickOnSpentAmountForRow(1);
 64	    expect(page.url()).toContain('/accounts');
 65	    expect(await accountPage.accountName.textContent()).toMatch('All Accounts');
 66	    await page.getByRole('button', { name: 'Back' }).click();
 67	  });
-68	
+68
 69	  test('right clicking a category opens context menu', async () => {
 70	    await budgetPage.rightClickCategory(1);
 71	    const menu = page.getByRole('menu');
 72	    await expect(menu).toBeVisible();
 73	    await expect(menu.getByRole('button', { name: 'Rename' })).toBeVisible();
 74	  });
-75	
+75
 76	  test('right clicking a category group opens context menu', async () => {
 77	    await budgetPage.rightClickCategoryGroup('Usual Expenses');
 78	    const menu = page.getByRole('menu');
 79	    await expect(menu).toBeVisible();
 80	    await expect(menu.getByRole('button', { name: 'Rename' })).toBeVisible();
 81	  });
-82	
+82
 83	  test('right clicking budget name opens context menu', async () => {
 84	    await page.getByTestId('budget-name').click({ button: 'right' });
 85	    const menu = page.getByRole('menu');
@@ -16675,19 +17026,19 @@ _**Agent (claude-opus-5-5 2026-10-02 02:53:06Z)**_
 89	    ).toBeVisible();
 90	  });
 91	});
-92	
+92
 93	test.describe('Budget scroll position', () => {
 94	  let page: Page;
 95	  let configurationPage: ConfigurationPage;
 96	  let budgetPage: BudgetPage;
-97	
+97
 98	  test.beforeEach(async ({ browser }) => {
 99	    page = await browser.newPage();
 100	    configurationPage = new ConfigurationPage(page);
-101	
+101
 102	    await page.goto('/');
 103	    budgetPage = await configurationPage.createTestFile();
-104	
+104
 105	    // Add enough categories to make the budget table scrollable.
 106	    const categoryCount = 20;
 107	    await page.evaluate(async count => {
@@ -16711,33 +17062,34 @@ _**Agent (claude-opus-5-5 2026-10-02 02:53:06Z)**_
 125	    await page
 126	      .getByText(`Category ${categoryCount}`, { exact: true })
 127	      .waitFor({ state: 'visible' });
-128	
+128
 129	    await page.mouse.move(0, 0);
 130	  });
-131	
+131
 132	  test.afterEach(async () => {
 133	    await page?.close();
 134	  });
-135	
+135
 136	  test('scroll position is restored when navigating back from spent transactions page', async () => {
 137	    await budgetPage.scrollToBottom();
 138	    const scrollTopBeforeViewingSpent = await budgetPage.getScrollTop();
 139	    expect(scrollTopBeforeViewingSpent).toBeGreaterThan(0);
-140	
+140
 141	    // Click a spent-amount cell that is already visible at the current scroll position so the scroll does not change
 142	    // before the handler captures it.
 143	    await budgetPage.clickOnSpentAmountForLastVisibleRow();
 144	    expect(page.url()).toContain('/accounts');
-145	
+145
 146	    await page.getByRole('button', { name: 'Back' }).click();
 147	    await budgetPage.waitFor();
-148	
+148
 149	    const scrollTopAfterReturningFromSpent = await budgetPage.getScrollTop();
 150	    expect(scrollTopAfterReturningFromSpent).toBe(scrollTopBeforeViewingSpent);
 151	  });
 152	});
 153
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:53:07Z)**_
@@ -16767,6 +17119,7 @@ _**Agent (claude-opus-5-5 2026-10-02 02:53:07Z)**_
 242:  async rightClickCategory(idx: number) {
 250:  async rightClickCategoryGroup(name: string) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:54:37Z)**_
@@ -16776,8 +17129,8 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:37Z)**_
 Show example release note format
 
 ```text
-Name   
-----   
+Name
+----
 7829.md
 7952.md
 8100.md
@@ -16790,6 +17143,7 @@ authors: [matt-fidd]
 
 Switch from bcrypt to argon2id hashing algorithm
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:54:41Z)**_
@@ -16804,7 +17158,7 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:41Z)**_
 87	      balance: await this.getTotalLeftover(),
 88	    };
 89	  }
-90	
+90
 91	  async setBudgetedAmount(
 92	    categoryName: string,
 93	    amount: string,
@@ -16815,25 +17169,25 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:41Z)**_
 98	      .filter({ hasText: categoryName })
 99	      .first();
 100	    const budgetCell = row.getByTestId('budget').nth(monthIndex);
-101	
+101
 102	    await budgetCell.click();
 103	    const input = budgetCell.locator('input');
 104	    await input.waitFor({ state: 'visible' });
 105	    await input.fill(amount);
 106	    await input.press('Enter');
 107	  }
-108	
+108
 109	  async getSelectedMonth() {
 110	    const selectedMonth =
 111	      await this.selectedMonthButton.getAttribute('data-month');
-112	
+112
 113	    if (!selectedMonth) {
 114	      throw new Error('Failed to get the selected month.');
 115	    }
-116	
+116
 117	    return selectedMonth;
 118	  }
-119	
+119
 120	  async #waitForNewMonthToLoad({
 121	    currentMonth,
 122	    errorMessage,
@@ -16845,49 +17199,49 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:41Z)**_
 128	      'data-month',
 129	      currentMonth,
 130	    );
-131	
+131
 132	    return this.getSelectedMonth();
 133	  }
-134	
+134
 135	  async goToNextMonth() {
 136	    const currentMonth = await this.getSelectedMonth();
-137	
+137
 138	    await this.nextMonthButton.click();
-139	
+139
 140	    return await this.#waitForNewMonthToLoad({
 141	      currentMonth,
 142	      errorMessage: 'Failed to navigate to the next month.',
 143	    });
 144	  }
-145	
+145
 146	  async getBalanceForRow(idx: number) {
 147	    const balanceText = await this.budgetTable
 148	      .getByTestId('row')
 149	      .nth(idx)
 150	      .getByTestId('balance')
 151	      .textContent();
-152	
+152
 153	    if (!balanceText) {
 154	      throw new Error(`Failed to get balance on row index ${idx}.`);
 155	    }
-156	
+156
 157	    return Math.round(parseFloat(balanceText.replace(/,/g, '')) * 100);
 158	  }
-159	
+159
 160	  async getCategoryNameForRow(idx: number) {
 161	    const categoryNameText = this.budgetTable
 162	      .getByTestId('row')
 163	      .nth(idx)
 164	      .getByTestId('category-name')
 165	      .textContent();
-166	
+166
 167	    if (!categoryNameText) {
 168	      throw new Error(`Failed to get category name on row index ${idx}.`);
 169	    }
-170	
+170
 171	    return categoryNameText;
 172	  }
-173	
+173
 174	  async clickOnSpentAmountForRow(idx: number) {
 175	    await this.budgetTable
 176	      .getByTestId('row')
@@ -16896,7 +17250,7 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:41Z)**_
 179	      .click();
 180	    return new AccountPage(this.page);
 181	  }
-182	
+182
 183	  async clickOnSpentAmountForLastVisibleRow() {
 184	    // Click the last spent-amount cell currently visible in the scroll container
 185	    // without triggering Playwright's auto-scroll-into-view, so the scroll
@@ -16924,38 +17278,38 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:41Z)**_
 207	      }
 208	      return false;
 209	    });
-210	
+210
 211	    if (!clicked) {
 212	      throw new Error('No visible spent-amount cell found to click');
 213	    }
 214	    return new AccountPage(this.page);
 215	  }
-216	
+216
 217	  async transferAllBalance(fromIdx: number, toIdx: number) {
 218	    const toName = await this.getCategoryNameForRow(toIdx);
 219	    if (!toName) {
 220	      throw new Error(`Unable to get category name of row index ${toIdx}.`);
 221	    }
-222	
+222
 223	    await this.budgetTable
 224	      .getByTestId('row')
 225	      .nth(fromIdx)
 226	      .getByTestId('balance')
 227	      .getByTestId(/^budget/)
 228	      .click();
-229	
+229
 230	    await this.page
 231	      .getByRole('button', { name: 'Transfer to another category' })
 232	      .click();
-233	
+233
 234	    await this.page.getByPlaceholder('(none)').click();
-235	
+235
 236	    await this.page.keyboard.type(toName);
 237	    await this.page.keyboard.press('Enter');
-238	
+238
 239	    await this.page.getByRole('button', { name: 'Transfer' }).click();
 240	  }
-241	
+241
 242	  async rightClickCategory(idx: number) {
 243	    await this.budgetTable
 244	      .getByTestId('row')
@@ -16963,7 +17317,7 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:41Z)**_
 246	      .getByTestId('category-name')
 247	      .click({ button: 'right' });
 248	  }
-249	
+249
 250	  async rightClickCategoryGroup(name: string) {
 251	    // Assuming category groups have a specific text or role, or we can just find by text
 252	    await this.budgetTable
@@ -16973,6 +17327,7 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:41Z)**_
 256	}
 257
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:54:47Z)**_
@@ -16982,16 +17337,17 @@ _**Agent (claude-opus-5-5 2026-10-02 02:54:47Z)**_
 List budget e2e snapshots
 
 ```text
-Name                                                                                                             
-----                                                                                                             
+Name
+----
 Budget-renders-the-summary-information-available-funds-overspent-budgeted-and-for-next-month-1-chromium-linux.png
 Budget-renders-the-summary-information-available-funds-overspent-budgeted-and-for-next-month-2-chromium-linux.png
 Budget-renders-the-summary-information-available-funds-overspent-budgeted-and-for-next-month-3-chromium-linux.png
-Budget-transfer-funds-to-another-category-1-chromium-linux.png                                                   
-Budget-transfer-funds-to-another-category-2-chromium-linux.png                                                   
-Budget-transfer-funds-to-another-category-3-chromium-linux.png                                                   
+Budget-transfer-funds-to-another-category-1-chromium-linux.png
+Budget-transfer-funds-to-another-category-2-chromium-linux.png
+Budget-transfer-funds-to-another-category-3-chromium-linux.png
 6
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:55:00Z)**_
@@ -17015,6 +17371,7 @@ _**Agent (claude-opus-5-5 2026-10-02 02:55:00Z)**_
 43-          : 'yarn start',
 44-        url: 'http://localhost:3001',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:55:01Z)**_
@@ -17028,6 +17385,7 @@ _**Agent (claude-opus-5-5 2026-10-02 02:55:01Z)**_
 125:    "vrt": "cross-env VRT=true npx playwright test --browser=chromium",
 126:    "playwright": "playwright",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:55:22Z)**_
@@ -17039,6 +17397,7 @@ Here's the full plan for step 6. Unlike steps 1–5, it touches the app only thr
 **File:** `upcoming-release-notes/add-budget-subcategories.md`. The repo says a descriptive slug works and the PR link gets attached at release time. I'll load the release-notes skill first and follow its rules.
 
 The existing notes look like this:
+
 ```markdown
 ---
 category: Features
@@ -17047,11 +17406,13 @@ authors: [<GitHub username>]
 
 Add subcategories on the budget page, so a category like Food can give part of its budget to categories nested under it.
 ```
+
 The text will be one short, plain-language sentence, with no implementation details. The `authors` field needs a GitHub username, which I don't have; question 1 below asks for it.
 
 ## 2. End-to-end test (Playwright)
 
 **Page model** ([budget-page.ts](packages/desktop-client/e2e/page-models/budget-page.ts)), two new helpers that follow the existing ones:
+
 - **`addSubcategory(parentName, name)`:** right-clicks the parent's name, chooses "Add subcategory", types the name in the "New subcategory name" input, and presses Enter.
 - **`getBudgetedForCategory(name, monthIndex = 0)`:** reads the row's `budget` cell and returns the amount in cents, parsed the way `getBalanceForRow` already does it.
 
@@ -17084,6 +17445,7 @@ The budget page has 6 snapshots, all Linux/Chromium, so they can only be compare
 ## 4. Full checks
 
 In this order:
+
 1. **`yarn lint:fix`:** across the repo. It should only touch formatting in files I changed; I'll show the diff if it changes anything else.
 2. **`yarn typecheck`.**
 3. **`yarn test`:** the whole lage suite. I expect `main.test.ts > budget is successfully loaded` to fail with the Windows `EEXIST` problem from step 1. I'll report it as that known failure, not as passing, and won't try to fix it unless you ask.
@@ -17092,6 +17454,7 @@ In this order:
 ## 5. Manual check in the running app
 
 Using the run skill: `yarn start`, "Don't use a server", then "View demo". I'll walk through:
+
 1. **The plan's checks:** add a subcategory under Food, budget it, and confirm Food's own share drops while "To Budget" stays the same. Confirm the parent can keep money unallocated. Un-nest and delete, and check the totals.
 2. **The step 5 items I haven't seen:**
    - how the Σ hint and its tooltip look;
@@ -17116,15 +17479,16 @@ _**Agent (claude-opus-5-5 2026-10-02 02:56:50Z)**_
 **What GitHub username should go in the release note's `authors` field?**
 
 Options:
+
 - **I'll type it** - Choose 'Other' and enter your GitHub username.
 - **Leave a placeholder** - I'll write `authors: [TODO]` and you fill it in before the PR.
 
 **Should step 6 also add a user-facing docs page about subcategories (packages/docs)?**
 
 Options:
+
 - **No, release note only (Recommended)** - Keeps step 6 to tests and verification. Docs can come in a later issue once the feature has settled.
 - **Yes, add a docs page** - Write a short page or section under packages/docs/docs/budgeting, following the docs skill's style rules.
-
 
 **Answer:** icsasso, No, release note only (Recommended)". Read the answers carefully — they may request clarification, changes, or that you not proceed — and follow what they actually say.
 </details></tool-use>
@@ -17141,6 +17505,7 @@ _**Agent (claude-opus-5-5 2026-10-02 02:56:59Z)**_
 ```text
 The file C:\Users\icsab\.claude\plans\please-come-up-with-snug-lobster.md has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:57:01Z)**_
@@ -17210,7 +17575,6 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-10-02 02:59:39Z)**_
@@ -17225,12 +17589,12 @@ authors: [icsasso]
 ---
 
 Add subcategories to the budget page, so a category can pass part of its budget to categories nested under it
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\upcoming-release-notes\add-budget-subcategories.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:59:42Z)**_
@@ -17246,9 +17610,9 @@ _**Agent (claude-opus-5-5 2026-10-02 02:59:43Z)**_
 ```text
 1	import { expect } from '@playwright/test';
 2	import type { Locator, Page } from '@playwright/test';
-3	
+3
 4	import { AccountPage } from './account-page';
-5	
+5
 6	export class BudgetPage {
 7	  readonly page: Page;
 8	  readonly budgetSummary: Locator;
@@ -17257,10 +17621,10 @@ _**Agent (claude-opus-5-5 2026-10-02 02:59:43Z)**_
 11	  readonly selectedMonthButton: Locator;
 12	  readonly nextMonthButton: Locator;
 13	  readonly budgetTableScrollContainer: Locator;
-14	
+14
 15	  constructor(page: Page) {
 16	    this.page = page;
-17	
+17
 18	    this.budgetSummary = page.getByTestId('budget-summary');
 19	    this.budgetTable = page.getByTestId('budget-table');
 20	    this.budgetTableTotals = this.budgetTable.getByTestId('budget-totals');
@@ -17270,17 +17634,17 @@ _**Agent (claude-opus-5-5 2026-10-02 02:59:43Z)**_
 24	      'budget-table-scroll-container',
 25	    );
 26	  }
-27	
+27
 28	  async getScrollTop() {
 29	    return this.budgetTableScrollContainer.evaluate(el => el.scrollTop);
 30	  }
-31	
+31
 32	  async scrollToBottom() {
 33	    await this.budgetTableScrollContainer.evaluate(el => {
 34	      el.scrollTop = el.scrollHeight;
 35	    });
 36	  }
-37	
+37
 38	  /**
 39	   * Wait for the budget page to finish loading. The budget-table is
 40	   * inside AutoSizer which returns null until layout provides width/
@@ -17289,46 +17653,47 @@ _**Agent (claude-opus-5-5 2026-10-02 02:59:43Z)**_
 43	  async waitFor(...options: Parameters<Locator['waitFor']>) {
 44	    await this.budgetTable.waitFor(...options);
 45	  }
-46	
+46
 47	  async getTotalBudgeted() {
 48	    const totalBudgetedText = await this.budgetTableTotals
 49	      .getByTestId(/total-budgeted$/)
 50	      .textContent();
-51	
+51
 52	    if (!totalBudgetedText) {
 53	      throw new Error('Failed to get total budgeted.');
 54	    }
-55	
+55
 56	    return parseInt(totalBudgetedText, 10);
 57	  }
-58	
+58
 59	  async getTotalSpent() {
 60	    const totalSpentText = await this.budgetTableTotals
 61	      .getByTestId(/total-spent$/)
 62	      .textContent();
-63	
+63
 64	    if (!totalSpentText) {
 65	      throw new Error('Failed to get total spent.');
 66	    }
-67	
+67
 68	    return parseInt(totalSpentText, 10);
 69	  }
-70	
+70
 71	  async getTotalLeftover() {
 72	    const totalLeftoverText = await this.budgetTableTotals
 73	      .getByTestId(/total-leftover$/)
 74	      .textContent();
-75	
+75
 76	    if (!totalLeftoverText) {
 77	      throw new Error('Failed to get total leftover.');
 78	    }
-79	
+79
 80	    return parseInt(totalLeftoverText, 10);
 81	  }
-82	
+82
 83	  async getTableTotals() {
 84	    return {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 02:59:57Z)**_
@@ -17346,6 +17711,7 @@ _**Agent (claude-opus-5-5 2026-10-02 03:00:58Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\e2e\page-models\budget-page.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:01:04Z)**_
@@ -17449,6 +17815,7 @@ echo ok
 ```text
 ok
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:01:26Z)**_
@@ -17968,6 +18335,7 @@ Finished in 22144ms on 2356 files using 12 threads.
 ?? packages/loot-core/src/shared/categories.ts
 ?? upcoming-release-notes/add-budget-subcategories.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:02:57Z)**_
@@ -17999,6 +18367,7 @@ true
 00000000   3C 70 20 61 6C 69 67 6E 3D 22 63 65 6E 74 65 72  <p align="center
 00000010   22 3E                                            ">
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:03:41Z)**_
@@ -18079,6 +18448,7 @@ packages/loot-core/src/server/db/index.ts
 packages/loot-core/src/server/db/types/index.ts
 packages/loot-core/src/types/models/category.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:04:06Z)**_
@@ -18098,12 +18468,13 @@ Build list of files to restore, excluding mine
 cd "C:/Users/icsab/actual-budget/actual-budget" && mine='^(packages/desktop-client/e2e/budget\.test\.ts|packages/desktop-client/e2e/page-models/budget-page\.ts|packages/desktop-client/src/budget/mutations(\.test)?\.tsx?|packages/desktop-client/src/components/budget/(BudgetCategories|BudgetTable|ExpenseCategory|SidebarCategory|SidebarCategoryButtons|util|util\.test)\.tsx?|packages/desktop-client/src/components/budget/envelope/(BalanceMovementMenu|BudgetMenu|EnvelopeBudgetComponents|TransferMenu)\.tsx|packages/desktop-client/src/components/budget/envelope/budgetsummary/ToBudget\.tsx|packages/desktop-client/src/components/budget/tracking/(BudgetMenu|TrackingBudgetComponents)\.tsx|packages/desktop-client/src/components/modals/ConfirmCategoryDeleteModal\.tsx|packages/desktop-client/src/spreadsheet/(bindings|index)\.ts|packages/loot-core/src/server/aql/schema/(executors|index)\.ts|packages/loot-core/src/server/budget/(actions|app|base|cleanup-template|goal-template)\.ts|packages/loot-core/src/server/db/(index|index\.test)\.ts|packages/loot-core/src/server/db/types/index\.ts|packages/loot-core/src/types/models/category\.ts)$'
 git diff --name-only 2>/dev/null | grep -Ev "$mine" > "C:/Users/icsab/AppData/Local/Temp/claude/c--Users-icsab-actual-budget-actual-budget/ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52/scratchpad/restore.txt"
 wc -l < "C:/Users/icsab/AppData/Local/Temp/claude/c--Users-icsab-actual-budget-actual-budget/ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52/scratchpad/restore.txt"
-grep -E "budget|loot-core/src" "C:/Users/icsab/AppData/Local/Temp/claude/c--Users-icsab-actual-budget-actual-budget/ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52/scratchpad/restore.txt" | grep -v "^packages/docs\|^ai-logs\|^upcoming" 
+grep -E "budget|loot-core/src" "C:/Users/icsab/AppData/Local/Temp/claude/c--Users-icsab-actual-budget-actual-budget/ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52/scratchpad/restore.txt" | grep -v "^packages/docs\|^ai-logs\|^upcoming"
 ```
 
 ```text
 31
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:04:25Z)**_
@@ -18127,6 +18498,7 @@ echo "modified: $(wc -l < $S/modified.txt)  restore: $(wc -l < $S/restore.txt)  
 modified: 497  restore: 465  kept:
 32
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:04:42Z)**_
@@ -18151,6 +18523,7 @@ Restore formatter-touched unrelated files
 ?? packages/loot-core/src/shared/categories.ts
 ?? upcoming-release-notes/add-budget-subcategories.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:05:03Z)**_
@@ -18169,6 +18542,7 @@ Typecheck and lint changed files
 ```text
 success: 6, skipped: 4, pending: 0, aborted: 0, failed: 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:21:20Z)**_
@@ -18180,6 +18554,7 @@ Run full test suite with lage
 ```text
 Command did not complete within its 600s timeout and was moved to the background (ID: b4qydlphn). Output is being written to: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\tasks\b4qydlphn.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:21:25Z)**_
@@ -18195,12 +18570,13 @@ Check Playwright version and installed browsers
 ```text
 Version 1.59.1
 
-Name         
-----         
-.links       
+Name
+----
+.links
 chromium-1217
 __dirlock
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:21:53Z)**_
@@ -18234,25 +18610,25 @@ Show tail of full test output
      Ã— rejects a name over the character limit without contacting the server 23ms
      Ã— allows a name at the character limit 15ms
      Ã— creates a new subcategory under its parent 13ms
-stderr | src/payees/location-integration.test.ts > LocationService Integration Tests > Error Handling > propagates 
+stderr | src/payees/location-integration.test.ts > LocationService Integration Tests > Error Handling > propagates
 geolocation errors with meaningful messages
-stderr | src/payees/location-integration.test.ts > LocationService Integration Tests > Error Handling > propagates API 
+stderr | src/payees/location-integration.test.ts > LocationService Integration Tests > Error Handling > propagates API
 save errors
 Failed to save payee location: Error: Save failed
 âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯ Failed Tests 10 âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯âŽ¯
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > rejects a name over the
 character limit without contacting the server
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the
 character limit
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when
 creating a subcategory
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the
 character limit without contacting the server
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the
 character limit
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory
 under its parent
- FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move 
+ FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move
 around
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > text fields save when moved away from
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > adding a new split transaction works
@@ -18269,6 +18645,7 @@ around
 
 [exited with code 255]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:24:54Z)**_
@@ -18285,55 +18662,55 @@ _**Agent (claude-opus-5-5 2026-10-02 03:25:34Z)**_
 Show errors for failing tests
 
 ```text
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > rejects a name over the
 character limit without contacting the server
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the
 character limit
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when
 creating a subcategory
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the
 -----
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the
 character limit
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when
 creating a subcategory
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the
 character limit without contacting the server
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the
 -----
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when
 creating a subcategory
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the
 character limit without contacting the server
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the
 character limit
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory
 -----
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the
 character limit without contacting the server
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the
 character limit
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory
 under its parent
- FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move 
+ FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move
 -----
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the
 character limit
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory
 under its parent
- FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move 
+ FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move
 around
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > text fields save when moved away from
 -----
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > creates a new subcategory
 under its parent
- FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move 
+ FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move
 around
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > text fields save when moved away from
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > adding a new split transaction works
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > escape closes the new transaction rows
 -----
- FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move 
+ FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move
 around
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > text fields save when moved away from
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > adding a new split transaction works
@@ -18350,6 +18727,7 @@ around
  Test Files  2 passed (2)
 -----
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:25:36Z)**_
@@ -18371,73 +18749,74 @@ Exit code 255
      × rejects a name over the character limit without contacting the server 12ms
      × allows a name at the character limit 9ms
      × creates a new subcategory under its parent 6ms
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
-Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined 
+Error reading localStorage key “undefined-budget.showHiddenCategories”: TypeError: Cannot read properties of undefined
 (reading 'getItem')
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:28:54Z)**_
@@ -18473,7 +18852,7 @@ System.Management.Automation.RemoteException
    Start at  23:29:16
    Duration  10.23s (transform 2.85s, setup 6.90s, import 998ms, tests 140ms, environment 1.59s)
 
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > rejects a name over the
 character limit without contacting the server
 TypeError: Cannot read properties of null (reading 'mutateAsync')
  ❯ src/budget/mutations.test.tsx:61:26
@@ -18486,7 +18865,7 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 System.Management.Automation.RemoteException
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
 System.Management.Automation.RemoteException
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > allows a name at the
 character limit
 TypeError: Cannot read properties of null (reading 'mutateAsync')
  ❯ src/budget/mutations.test.tsx:83:26
@@ -18499,7 +18878,7 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 System.Management.Automation.RemoteException
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
 System.Management.Automation.RemoteException
- FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when 
+ FAIL  src/budget/mutations.test.tsx > useCreateCategoryMutation (mobile category creation) > sends the parent when
 creating a subcategory
 TypeError: Cannot read properties of null (reading 'mutateAsync')
  ❯ src/budget/mutations.test.tsx:108:26
@@ -18512,13 +18891,14 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 System.Management.Automation.RemoteException
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
 System.Management.Automation.RemoteException
- FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the 
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > rejects a name over the
 character limit without contacting the server
 TypeError: Cannot read properties of null (reading 'mutateAsync')
  ❯ src/budget/mutations.test.tsx:152:26
     150|     });
     151|
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:29:37Z)**_
@@ -18537,11 +18917,12 @@ Inspect generated locale file state
 ```text
 packages/desktop-client/.gitignore:35:locale/	packages/desktop-client/locale/en.json
 
-Length LastWriteTime       
------- -------------       
+Length LastWriteTime
+------ -------------
 208435 10/1/2026 6:57:24 PM
        10/1/2026 6:57:24 PM
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:30:27Z)**_
@@ -18561,13 +18942,14 @@ Move generated locale aside and rerun tests
 Exit code 1
  ❯ src/components/transactions/TransactionsTable.test.tsx (28 tests | 2 failed | 1 skipped) 70738ms
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
- FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move 
+ FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > keybindings enter/tab/alt should move
 around
  FAIL  src/components/transactions/TransactionsTable.test.tsx > Transactions > text fields save when moved away from
  Test Files  1 failed | 1 passed (2)
       Tests  2 failed | 31 passed | 1 skipped (34)
    Duration  128.11s (transform 37.21s, setup 17.19s, import 47.63s, tests 70.98s, environment 4.90s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:33:41Z)**_
@@ -18588,6 +18970,7 @@ Show errors for remaining TransactionsTable failures
       Tests  2 passed | 26 skipped (28)
    Duration  55.22s (transform 27.17s, setup 4.61s, import 34.67s, tests 13.66s, environment 1.89s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:35:09Z)**_
@@ -18609,6 +18992,7 @@ Run TransactionsTable test file alone
       Tests  27 passed | 1 skipped (28)
    Duration  91.51s (transform 23.45s, setup 3.52s, import 30.75s, tests 54.97s, environment 1.93s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:37:19Z)**_
@@ -18632,9 +19016,10 @@ Exit code 1
    Duration  12.74s (transform 3.98s, setup 8.25s, import 3.04s, tests 917ms, environment 0ms)
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
  FAIL  src/server/main.test.ts > Budgets > budget is successfully loaded
-Error: EEXIST: file already exists, mkdir 
+Error: EEXIST: file already exists, mkdir
 'C:\Users\icsab\actual-budget\actual-budget\packages\loot-core\src\mocks\files\budgets\test-budget'
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:38:04Z)**_
@@ -18653,6 +19038,7 @@ Run budget end-to-end tests in Chromium
 ```text
 Command running in background with ID: bdwbmxyil. Output is being written to: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\tasks\bdwbmxyil.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:39:37Z)**_
@@ -18667,8 +19053,8 @@ Check whether Docker is available
 
 ```text
 Exit code 1
-docker : failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is 
-correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file 
+docker : failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is
+correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file
 specified.
 At line:1 char:308
 + ...  } }; try { docker version --format '{{.Server.Version}}' 2>&1 } catc ...
@@ -18676,6 +19062,7 @@ At line:1 char:308
     + CategoryInfo          : NotSpecified: (failed to conne...file specified.:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:39:49Z)**_
@@ -18708,7 +19095,7 @@ Show end-to-end test output
     â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 
-[1A[2K  11) [chromium] â€º e2e\budget.test.ts:215:7 â€º Budget subcategories â€º removing a subcategory from its parent keeps its money 
+[1A[2K  11) [chromium] â€º e2e\budget.test.ts:215:7 â€º Budget subcategories â€º removing a subcategory from its parent keeps its money
 
     Error: browserType.launch: Executable doesn't exist at C:\Users\icsab\AppData\Local\ms-playwright\chromium_headless_shell-1217\chrome-headless-shell-win64\chrome-headless-shell.exe
     â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
@@ -18746,17 +19133,17 @@ Show end-to-end test output
 
 
 [1A[2K  11 failed
-    [chromium] â€º e2e\budget.test.ts:29:7 â€º Budget â€º renders the summary information: available funds, overspent, budgeted and for next month 
+    [chromium] â€º e2e\budget.test.ts:29:7 â€º Budget â€º renders the summary information: available funds, overspent, budgeted and for next month
     [chromium] â€º e2e\budget.test.ts:41:7 â€º Budget â€º transfer funds to another category â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     [chromium] â€º e2e\budget.test.ts:53:7 â€º Budget â€º budget table is rendered â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    [chromium] â€º e2e\budget.test.ts:62:7 â€º Budget â€º clicking on spent amounts opens a transaction page 
+    [chromium] â€º e2e\budget.test.ts:62:7 â€º Budget â€º clicking on spent amounts opens a transaction page
     [chromium] â€º e2e\budget.test.ts:69:7 â€º Budget â€º right clicking a category opens context menu â”€â”€â”€
-    [chromium] â€º e2e\budget.test.ts:76:7 â€º Budget â€º right clicking a category group opens context menu 
+    [chromium] â€º e2e\budget.test.ts:76:7 â€º Budget â€º right clicking a category group opens context menu
     [chromium] â€º e2e\budget.test.ts:83:7 â€º Budget â€º right clicking budget name opens context menu â”€â”€
-    [chromium] â€º e2e\budget.test.ts:136:7 â€º Budget scroll position â€º scroll position is restored when navigating back from spent transactions page 
-    [chromium] â€º e2e\budget.test.ts:179:7 â€º Budget subcategories â€º a subcategory is listed under its parent and funded from it 
-    [chromium] â€º e2e\budget.test.ts:201:7 â€º Budget subcategories â€º a subcategory cannot take more than its parent has 
-    [chromium] â€º e2e\budget.test.ts:215:7 â€º Budget subcategories â€º removing a subcategory from its parent keeps its money 
+    [chromium] â€º e2e\budget.test.ts:136:7 â€º Budget scroll position â€º scroll position is restored when navigating back from spent transactions page
+    [chromium] â€º e2e\budget.test.ts:179:7 â€º Budget subcategories â€º a subcategory is listed under its parent and funded from it
+    [chromium] â€º e2e\budget.test.ts:201:7 â€º Budget subcategories â€º a subcategory cannot take more than its parent has
+    [chromium] â€º e2e\budget.test.ts:215:7 â€º Budget subcategories â€º removing a subcategory from its parent keeps its money
 npm notice
 npm notice New major version of npm available! 11.19.0 -> 12.2.0
 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
@@ -18765,6 +19152,7 @@ npm notice
 
 [exited with code 1]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:43:03Z)**_
@@ -18783,6 +19171,7 @@ Install Playwright Chromium headless shell
 ```text
 Command did not complete within its 600s timeout and was moved to the background (ID: bj4ay70j5). Output is being written to: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\tasks\bj4ay70j5.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 03:53:58Z)**_
@@ -18804,12 +19193,13 @@ _**Agent (claude-opus-5-5 2026-10-02 04:01:35Z)**_
 Check headless shell download progress
 
 ```text
-Name                        
-----                        
-.links                      
+Name
+----
+.links
 chromium_headless_shell-1217
 __dirlock
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 04:01:47Z)**_
@@ -18817,6 +19207,7 @@ _**Agent (claude-opus-5-5 2026-10-02 04:01:47Z)**_
 Three things are left for step 6, and the end-to-end tests are blocked on a download.
 
 **Still to do:**
+
 1. **Run the end-to-end tests.** None of the 11 tests in [budget.test.ts](packages/desktop-client/e2e/budget.test.ts) actually ran, neither my 3 nor the 8 existing ones. Playwright needs a headless Chromium build that wasn't installed, and the download is still running in the background: its folder exists and is still locked. Once it finishes I'll rerun the tests and fix anything that fails in my tests or in the step 5 UI they exercise.
 2. **Manual check in the running app.** Using the demo budget, I'll look at the step 5 UI for the first time:
    - the Σ hint and its tooltip;
@@ -18829,6 +19220,7 @@ Three things are left for step 6, and the end-to-end tests are blocked on a down
 3. **Final report.** Results for everything, plus anything I had to change.
 
 **Done:**
+
 - **Release note:** [add-budget-subcategories.md](upcoming-release-notes/add-budget-subcategories.md), credited to `icsasso` under Features.
 - **Page model:** new helpers in [budget-page.ts](packages/desktop-client/e2e/page-models/budget-page.ts), and the 3 subcategory tests are written.
 - **`yarn lint:fix`:** it also rewrote 465 unrelated files, mostly line endings, plus real formatting changes to `STUDENTS.md`, `TransactionsTable.tsx` and about 30 teammates' AI logs. I restored all of them to their committed versions; none had uncommitted work. Only this feature's files and your untracked `ai-logs/sprint1/icsasso/` folder remain changed.
@@ -18839,9 +19231,11 @@ Three things are left for step 6, and the end-to-end tests are blocked on a down
   - **`main.test.ts > budget is successfully loaded`:** fails with `EEXIST` on the leftover `test-budget` folder, as before. Per your instruction, I'm leaving it for later. A second `main.test.ts` failure showed in the full run but not when run alone.
 
 **Won't be done here:**
+
 - **Visual regression check:** Docker's engine isn't running on this machine. I won't start it or regenerate snapshots, so this is reported as not run. I expect no changes, since the demo budget has no subcategories, but that's unconfirmed.
 
 **For you to know:**
+
 - **The `locale/` side effect:** if you or a teammate runs `yarn generate:i18n` locally, the mutation tests will fail the same way. That's a quirk of the repo setup, not of this feature.
 
 ---
@@ -18859,13 +19253,14 @@ _**Agent (claude-opus-5-5 2026-10-02 18:45:48Z)**_
 Check whether the headless shell is installed
 
 ```text
-Name                        
-----                        
-.links                      
+Name
+----
+.links
 chromium_headless_shell-1217
-__dirlock                   
+__dirlock
 False
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 18:45:51Z)**_
@@ -18881,8 +19276,8 @@ Inspect download folder size and node processes
 ```text
 257
 
-Name                        LastWriteTime        
-----                        -------------        
+Name                        LastWriteTime
+----                        -------------
 chrome-headless-shell-win64 10/1/2026 11:44:00 PM
 
 
@@ -18894,6 +19289,7 @@ chrome-headless-shell-win64 10/1/2026 11:44:00 PM
 23116 10/1/2026 11:43:56 PM 4.921875
 25028 10/1/2026 11:43:55 PM   2.8125
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 18:48:31Z)**_
@@ -18910,10 +19306,11 @@ _**Agent (claude-opus-5-5 2026-10-02 18:51:40Z)**_
 Stop hung installer and clear its partial download
 
 ```text
-Name  
-----  
+Name
+----
 .links
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 18:51:47Z)**_
@@ -18932,6 +19329,7 @@ Retry Playwright Chromium install
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Is there another way to go about doing what you're trying to do without installing anything? Installing this tool does not seem to be working and is taking too long.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 18:52:48Z)**_
@@ -19002,6 +19400,7 @@ export default defineConfig({
       },
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 18:53:04Z)**_
@@ -19030,12 +19429,12 @@ export default {
   reporter: [['line']],
   use: { ...base.use, channel: 'msedge' },
 };
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\scratchpad\pw-edge.config.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 18:53:29Z)**_
@@ -19047,6 +19446,7 @@ Run budget end-to-end tests with installed Edge
 ```text
 Command running in background with ID: bz7nmt4j8. Output is being written to: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\tasks\bz7nmt4j8.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 18:53:32Z)**_
@@ -19079,6 +19479,7 @@ Summarize Edge end-to-end results
 52\scratchpad\pw-results\budget-Budget-right-clicking-budget-name-opens-context-menu-retry1\test-failed-1.png
 [1A[2K  11 failed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 19:09:12Z)**_
@@ -19127,20 +19528,21 @@ Show start of Edge end-to-end output
 
 
 [1A[2K  11 failed
-    e2e\budget.test.ts:29:7 â€º Budget â€º renders the summary information: available funds, overspent, budgeted and for next month 
+    e2e\budget.test.ts:29:7 â€º Budget â€º renders the summary information: available funds, overspent, budgeted and for next month
     e2e\budget.test.ts:41:7 â€º Budget â€º transfer funds to another category â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     e2e\budget.test.ts:53:7 â€º Budget â€º budget table is rendered â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     e2e\budget.test.ts:62:7 â€º Budget â€º clicking on spent amounts opens a transaction page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     e2e\budget.test.ts:69:7 â€º Budget â€º right clicking a category opens context menu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     e2e\budget.test.ts:76:7 â€º Budget â€º right clicking a category group opens context menu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     e2e\budget.test.ts:83:7 â€º Budget â€º right clicking budget name opens context menu â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    e2e\budget.test.ts:136:7 â€º Budget scroll position â€º scroll position is restored when navigating back from spent transactions page 
-    e2e\budget.test.ts:179:7 â€º Budget subcategories â€º a subcategory is listed under its parent and funded from it 
-    e2e\budget.test.ts:201:7 â€º Budget subcategories â€º a subcategory cannot take more than its parent has 
-    e2e\budget.test.ts:215:7 â€º Budget subcategories â€º removing a subcategory from its parent keeps its money 
+    e2e\budget.test.ts:136:7 â€º Budget scroll position â€º scroll position is restored when navigating back from spent transactions page
+    e2e\budget.test.ts:179:7 â€º Budget subcategories â€º a subcategory is listed under its parent and funded from it
+    e2e\budget.test.ts:201:7 â€º Budget subcategories â€º a subcategory cannot take more than its parent has
+    e2e\budget.test.ts:215:7 â€º Budget subcategories â€º removing a subcategory from its parent keeps its money
 
 [exited with code 1]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 19:09:18Z)**_
@@ -19173,6 +19575,7 @@ Start the dev server for testing
 ```text
 Command running in background with ID: bwh72b57a. Output is being written to: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\tasks\bwh72b57a.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 19:26:20Z)**_
@@ -19190,6 +19593,7 @@ _**Agent (claude-opus-5-5 2026-10-02 19:26:20Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 19:26:25Z)**_
@@ -19207,6 +19611,7 @@ Wait for dev server on port 3001
 ```text
 ready after 1x5s
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 19:27:40Z)**_
@@ -19222,6 +19627,7 @@ Run budget e2e tests serially against running server
 ```text
 Command running in background with ID: b1mophmwl. Output is being written to: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\tasks\b1mophmwl.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 19:29:04Z)**_
@@ -19243,7 +19649,7 @@ _**Agent (claude-opus-5-5 2026-10-02 21:09:54Z)**_
 Check progress of serial e2e run
 
 ```text
-[1A[2K[1/11] e2e\budget.test.ts:29:7 â€º Budget â€º renders the summary information: available funds, overspent, 
+[1A[2K[1/11] e2e\budget.test.ts:29:7 â€º Budget â€º renders the summary information: available funds, overspent,
 budgeted and for next month
 [1A[2K[2/11] e2e\budget.test.ts:41:7 â€º Budget â€º transfer funds to another category
 [1A[2K[3/11] e2e\budget.test.ts:53:7 â€º Budget â€º budget table is rendered
@@ -19256,11 +19662,12 @@ budgeted and for next month
     Error: page.goto: Target page, context or browser has been closed
     ..\..\..\..\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff
 52\scratchpad\pw-results\budget-Budget-right-clicking-budget-name-opens-context-menu\test-failed-1.png
-[1A[2K[9/11] e2e\budget.test.ts:136:7 â€º Budget scroll position â€º scroll position is restored when navigating back 
+[1A[2K[9/11] e2e\budget.test.ts:136:7 â€º Budget scroll position â€º scroll position is restored when navigating back
 from spent transactions page
-[1A[2K[10/11] e2e\budget.test.ts:179:7 â€º Budget subcategories â€º a subcategory is listed under its parent and funded 
+[1A[2K[10/11] e2e\budget.test.ts:179:7 â€º Budget subcategories â€º a subcategory is listed under its parent and funded
 from it
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:10:01Z)**_
@@ -19286,6 +19693,7 @@ Wait for e2e run to finish and show results
 [1A[2K  2 failed
   9 passed (1.8h)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:16:10Z)**_
@@ -19309,6 +19717,7 @@ Name : budget-Budget-subcategorie-f3b7a-s-parent-and-funded-from-it
 
 Name : budget-Budget-subcategorie-f3b7a-s-parent-and-funded-from-it-retry1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:16:36Z)**_
@@ -19325,10 +19734,11 @@ try1\error-context.md' because it does not exist.
 At line:1 char:571
 + ... tory, Name; Get-Content "$d\budget-Budget-subcategorie-f3b7a-s-parent ...
 +                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : ObjectNotFound: (C:\Users\icsab\...rror-context.md:String) [Get-Content], ItemNotFoundEx 
+    + CategoryInfo          : ObjectNotFound: (C:\Users\icsab\...rror-context.md:String) [Get-Content], ItemNotFoundEx
    ception
     + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.GetContentCommand
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:16:52Z)**_
@@ -19338,12 +19748,13 @@ _**Agent (claude-opus-5-5 2026-10-02 21:16:52Z)**_
 List artifacts for failing test
 
 ```text
-FullName                                                                                                               
---------                                                                                                               
+FullName
+--------
 C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2e...
 C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2e...
 C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2e...
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:17:03Z)**_
@@ -19359,6 +19770,7 @@ budget-Budget-subcategorie-f3b7a-s-parent-and-funded-from-it/error-context.md
 budget-Budget-subcategorie-f3b7a-s-parent-and-funded-from-it/test-failed-1.png
 budget-Budget-subcategorie-f3b7a-s-parent-and-funded-from-it-retry1/trace.zip
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:17:08Z)**_
@@ -19380,48 +19792,48 @@ _**Agent (claude-opus-5-5 2026-10-02 21:17:11Z)**_
 
 ````text
 1	# Instructions
-2	
+2
 3	- Following Playwright test failed.
 4	- Explain why, be concise, respect Playwright best practices.
 5	- Provide a snippet of code with the fix, if possible.
-6	
+6
 7	# Test info
-8	
+8
 9	- Name: budget.test.ts >> Budget subcategories >> a subcategory is listed under its parent and funded from it
 10	- Location: e2e\budget.test.ts:179:7
-11	
+11
 12	# Error details
-13	
+13
 14	```
 15	Test timeout of 120000ms exceeded while running "beforeEach" hook.
 16	```
-17	
+17
 18	```
 19	Error: locator.click: Target page, context or browser has been closed
 20	Call log:
 21	  - waiting for getByRole('button', { name: 'Create test file', exact: true })
-22	
+22
 23	```
-24	
+24
 25	# Test source
-26	
+26
 27	```ts
 28	  1  | import type { Locator, Page } from '@playwright/test';
-29	  2  | 
+29	  2  |
 30	  3  | import { AccountPage } from './account-page';
 31	  4  | import { BootstrapPage } from './bootstrap-page';
 32	  5  | import { BudgetPage } from './budget-page';
-33	  6  | 
+33	  6  |
 34	  7  | export class ConfigurationPage {
 35	  8  |   readonly page: Page;
 36	  9  |   readonly heading: Locator;
-37	  10 | 
+37	  10 |
 38	  11 |   constructor(page: Page) {
 39	  12 |     this.page = page;
-40	  13 | 
+40	  13 |
 41	  14 |     this.heading = page.getByRole('heading');
 42	  15 |   }
-43	  16 | 
+43	  16 |
 44	  17 |   async createTestFile() {
 45	  18 |     await this.page
 46	  19 |       .getByRole('button', { name: 'Create test file', exact: true })
@@ -19433,13 +19845,14 @@ _**Agent (claude-opus-5-5 2026-10-02 21:17:11Z)**_
 52	  24 |     await budgetPage.waitFor();
 53	  25 |     return budgetPage;
 54	  26 |   }
-55	  27 | 
+55	  27 |
 56	  28 |   async createDemoFile() {
 57	  29 |     await this.page.getByRole('button', { name: 'View demo' }).click();
 58	  30 |     const budgetPage = new BudgetPage(this.page);
 59	  31 |     await budgetPage.waitFor();
 60	  32 |     return budgetPage;
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:17:18Z)**_
@@ -19458,6 +19871,7 @@ Rerun the main subcategory e2e test alone
 ```text
 [1A[2K  1 passed (18.3s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:18:40Z)**_
@@ -19477,6 +19891,7 @@ Locate the Playwright test package
 True
 False
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:19:00Z)**_
@@ -19487,7 +19902,10 @@ _**Agent (claude-opus-5-5 2026-10-02 21:19:00Z)**_
 ```typescript
 // Temporary manual-check script: captures screenshots of the subcategory
 // UI so it can be reviewed by eye. Not part of the repo.
-import { expect, test } from 'C:/Users/icsab/actual-budget/actual-budget/node_modules/@playwright/test/index.mjs';
+import {
+  expect,
+  test,
+} from 'C:/Users/icsab/actual-budget/actual-budget/node_modules/@playwright/test/index.mjs';
 
 import { ConfigurationPage } from 'C:/Users/icsab/actual-budget/actual-budget/packages/desktop-client/e2e/page-models/configuration-page';
 
@@ -19548,12 +19966,12 @@ test('subcategory UI walkthrough', async ({ page }) => {
   await page.mouse.move(0, 0);
   await page.screenshot({ path: `${out}/6-after-nesting.png` });
 });
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\scratchpad\manual\subcategories-ui.spec.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:19:04Z)**_
@@ -19580,12 +19998,12 @@ export default {
     screenshot: 'only-on-failure',
   },
 };
-
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\scratchpad\pw-manual.config.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:24:36Z)**_
@@ -19606,6 +20024,7 @@ Exit code 1
 9267-f35d0e2eff52\scratchpad\manual\results\subcategories-ui-subcategory-UI-walkthrough\error-context.md
   1 failed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:24:42Z)**_
@@ -19644,6 +20063,7 @@ _**Agent (claude-opus-5-5 2026-10-02 21:25:03Z)**_
 ```text
 The file C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\ec1d1b6f-0fd4-4eaa-9267-f35d0e2eff52\scratchpad\manual\subcategories-ui.spec.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:26:16Z)**_
@@ -19655,6 +20075,7 @@ Rerun manual-check screenshot script
 ```text
 [1A[2K  1 passed (23.3s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:26:18Z)**_
@@ -19711,6 +20132,7 @@ _**Agent (claude-opus-5-5 2026-10-02 21:26:40Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:26:43Z)**_
@@ -19721,6 +20143,7 @@ _**Agent (claude-opus-5-5 2026-10-02 21:26:43Z)**_
 ```text
 {"message":"Successfully stopped task: bwh72b57a (yarn start)","task_id":"bwh72b57a","task_type":"local_bash","command":"yarn start"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:26:49Z)**_
@@ -19770,6 +20193,7 @@ Confirm final working tree state
 ?? packages/loot-core/src/shared/categories.ts
 ?? upcoming-release-notes/add-budget-subcategories.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-02 21:27:02Z)**_
@@ -19779,12 +20203,14 @@ Step 6 is done, and the feature works in a real browser: all three subcategory e
 **How I ran the browser tests without installing anything:** the Playwright browser download stalled, so I pointed Playwright at the Microsoft Edge already on your machine. That used a temporary config in the scratchpad, so nothing in the repo changed. I also started the dev server myself and ran the tests one at a time, because the first attempts timed out before the app even loaded.
 
 **Results:**
+
 - **End-to-end tests:** all 3 of mine pass. Of the 8 existing tests in `budget.test.ts`, 7 pass. The eighth, "right clicking budget name opens context menu", timed out before the app loaded. My first subcategory test hit the same timeout in the full run, then passed in 18 seconds when rerun alone, so I believe the existing test failed for the same reason. I didn't rerun it.
 - **Unit tests and typecheck:** pass, except the known `main.test.ts` `EEXIST` failure, which I've left alone as you asked. `yarn generate:i18n` creates a gitignored `locale/` folder that breaks the client mutation tests, so I moved it to the scratchpad. Anyone who runs that command locally will see the same failures.
 - **Lint:** clean on my files. `yarn lint:fix` also reformatted about 465 files I hadn't touched, including teammates' AI logs. I restored all of them; none had uncommitted work.
 - **Release note:** [add-budget-subcategories.md](upcoming-release-notes/add-budget-subcategories.md), credited to `icsasso` under Features.
 
 **What the screenshots showed:**
+
 - Subcategories sit indented under their parent.
 - Budgeting 50.00 and 30.00 to two subcategories lowered Food from 200.00 to 120.00. "To Budget" stayed at 200.00, and the totals didn't move.
 - The Σ tooltip on Food reads "Total with subcategories: 200.00".
@@ -19792,6 +20218,7 @@ Step 6 is done, and the feature works in a real browser: all three subcategory e
 - The "Move under" picker lists only top-level categories in the same group. Moving Restaurants under Food indented it, kept its 300.00, and left the totals unchanged.
 
 **Not checked:**
+
 - **Visual regression snapshots:** Docker isn't running here, so they weren't compared. I don't expect changes, because the demo budget has no subcategories.
 - **In the browser:** drag-and-drop, the delete dialog preselecting the parent, and the hidden template and "To Budget" options. Their logic is unit-tested, but I didn't see them on screen. The template option is behind a feature flag that's off in the test budget.
 

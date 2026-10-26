@@ -88,7 +88,10 @@ export function PasswordEnableModal({
                   buttons={
                     <Button
                       variant="bare"
-                      style={{ fontSize: 'var(--font-size-15)', marginRight: 10 }}
+                      style={{
+                        fontSize: 'var(--font-size-15)',
+                        marginRight: 10,
+                      }}
                       onPress={() => dispatch(popModal())}
                     >
                       <Trans>Cancel</Trans>
@@ -105,7 +108,10 @@ export function PasswordEnableModal({
                   buttons={
                     <Button
                       variant="bare"
-                      style={{ fontSize: 'var(--font-size-15)', marginRight: 10 }}
+                      style={{
+                        fontSize: 'var(--font-size-15)',
+                        marginRight: 10,
+                      }}
                       onPress={() => dispatch(popModal())}
                     >
                       <Trans>Cancel</Trans>

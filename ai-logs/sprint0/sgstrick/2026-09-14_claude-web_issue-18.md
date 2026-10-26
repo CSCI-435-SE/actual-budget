@@ -3,7 +3,7 @@
 **Created:** 9/14/2026 15:00:34  
 **Updated:** 9/15/2026 0:45:23  
 **Exported:** 9/15/2026 17:13:43  
-**Link:** [https://claude.ai/chat/ba496261-cf31-4396-980c-4be3fbc04c27](https://claude.ai/chat/ba496261-cf31-4396-980c-4be3fbc04c27)  
+**Link:** [https://claude.ai/chat/ba496261-cf31-4396-980c-4be3fbc04c27](https://claude.ai/chat/ba496261-cf31-4396-980c-4be3fbc04c27)
 
 ## User:
 
@@ -32,6 +32,7 @@ Here's a clear breakdown of all the relevant files:
 ---
 
 ### Primary File
+
 **`packages/desktop-client/src/components/transactions/TransactionsTable.tsx`**
 
 This is the main file controlling how categories appear on the All Accounts page. It handles three different category cell types depending on the transaction:
@@ -45,10 +46,10 @@ This is the main file controlling how categories appear on the All Accounts page
 
 ### Supporting Files
 
-| File | Role |
-|---|---|
+| File                                                          | Role                                                                                                                          |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | `packages/desktop-client/src/components/accounts/Account.tsx` | Controls `showCategory` prop — passes `true` to `TransactionsTable` when on All Accounts, `false` on individual account pages |
-| `packages/desktop-client/src/components/accounts/Header.tsx` | Renders the column headers row above the transactions list |
+| `packages/desktop-client/src/components/accounts/Header.tsx`  | Renders the column headers row above the transactions list                                                                    |
 
 ---
 
@@ -84,6 +85,7 @@ The category cell for normal transactions uses a `<CustomCell>` that currently j
 **File:** `packages/desktop-client/src/components/transactions/TransactionsTable.tsx`
 
 **Find (~line 1710):**
+
 ```tsx
 formatter={value =>
   value
@@ -95,6 +97,7 @@ formatter={value =>
 ```
 
 **Change it to:**
+
 ```tsx
 formatter={value => {
   const label = value
@@ -135,6 +138,7 @@ Then find the closing `</CustomCell>` area and locate where the category label t
 ---
 
 ### What This Does
+
 - Adds a **`∨` chevron** next to the category name, visually signalling it's a dropdown
 - Adds `cursor: 'pointer'` so the hand cursor appears on hover
 - The actual dropdown (`CategoryAutocomplete`) already works — this is purely a **visual affordance** fix, which is exactly what the UI bug description asked for
@@ -164,11 +168,12 @@ Now I can be precise. The `CustomCell` works in two states:
 1. **Unexposed (closed)** — shows the `formatter` output as plain text (the category name label the user sees)
 2. **Exposed (open)** — shows the `children` render prop, which is the `<CategoryAutocomplete>` dropdown
 
-The chevron needs to go into the **unexposed state** — i.e. what the user sees *before* clicking. That's controlled by the `formatter` prop. Currently it just returns a plain string. You need to change it to return a JSX element instead.
+The chevron needs to go into the **unexposed state** — i.e. what the user sees _before_ clicking. That's controlled by the `formatter` prop. Currently it just returns a plain string. You need to change it to return a JSX element instead.
 
 Here is the **exact change** — find these lines (~line 1708):
 
 **Find:**
+
 ```tsx
 formatter={value =>
   value
@@ -180,6 +185,7 @@ formatter={value =>
 ```
 
 **Replace with:**
+
 ```tsx
 formatter={value => {
   const label = value

@@ -226,7 +226,9 @@ export function EditSyncAccount({ account }: EditSyncAccountProps) {
             setMapping={setMapping}
           />
 
-          <Text style={{ fontSize: 'var(--font-size-15)', margin: '1em 0 .5em 0' }}>
+          <Text
+            style={{ fontSize: 'var(--font-size-15)', margin: '1em 0 .5em 0' }}
+          >
             <Trans>Options</Trans>
           </Text>
 

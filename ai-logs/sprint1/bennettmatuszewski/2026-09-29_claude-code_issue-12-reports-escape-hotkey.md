@@ -41,6 +41,7 @@ packages\desktop-client\src\components\reports\reports\Spending.tsx:274:        
 packages\desktop-client\src\components\reports\reports\Summary.tsx:31:import { MobileBackButton } from '#components/mobile/MobileBackButton';
 packages\desktop-client\src\components\reports\reports\Summary.tsx:330:              <MobileBackButton onPress={() => navigate('/reports')} />
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:52:21Z)**_
@@ -52,13 +53,13 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:21Z)**_
 ```text
 280	    });
 281	  };
-282	
+282
 283	  const [earliestTransaction, setEarliestTransaction] = useState('');
-284	
+284
 285	  if (!allMonths || !data) {
 286	    return null;
 287	  }
-288	
+288
 289	  return (
 290	    <Page
 291	      header={
@@ -91,6 +92,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:21Z)**_
 318	        start={start}
 319	        end={end}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:52:34Z)**_
@@ -102,6 +104,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:34Z)**_
 ```text
 packages\desktop-client\src\components\mobile\MobileBackButton.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:52:36Z)**_
@@ -114,16 +117,16 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:36Z)**_
 1	import React from 'react';
 2	import type { ComponentPropsWithoutRef } from 'react';
 3	import { Trans } from 'react-i18next';
-4	
+4
 5	import { Button } from '@actual-app/components/button';
 6	import { SvgCheveronLeft } from '@actual-app/components/icons/v1';
 7	import { styles } from '@actual-app/components/styles';
 8	import { Text } from '@actual-app/components/text';
-9	
+9
 10	import { useNavigate } from '#hooks/useNavigate';
-11	
+11
 12	type MobileBackButtonProps = ComponentPropsWithoutRef<typeof Button>;
-13	
+13
 14	export function MobileBackButton({
 15	  onPress,
 16	  style,
@@ -158,6 +161,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:36Z)**_
 45	}
 46
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:52:39Z)**_
@@ -171,6 +175,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:39Z)**_
 326:              <Button variant="bare" onPress={() => navigate(-1)}>
 332:                <Trans>Back</Trans>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:52:41Z)**_
@@ -200,7 +205,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:41Z)**_
 317	          />
 318	        </Button>
 319	      )}
-320	
+320
 321	      <Routes>
 322	        <Route
 323	          path="*"
@@ -217,9 +222,9 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:41Z)**_
 334	            ) : null
 335	          }
 336	        />
-337	
+337
 338	        <Route path="/accounts/:id" element={<AccountSyncCheck />} />
-339	
+339
 340	        <Route path="/budget" element={<BudgetTitlebar />} />
 341	      </Routes>
 342	      <View style={{ flex: 1 }} />
@@ -231,6 +236,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:41Z)**_
 348	        <SharedArrayBufferWarning />
 349	        <LoggedInUser />
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:52:44Z)**_
@@ -251,6 +257,7 @@ packages\desktop-client\src\components\reports\graphs\showActivity.ts:130:      
 packages\desktop-client\src\components\tags\TagRow.tsx:72:          goBack: true,
 packages\desktop-client\src\components\Titlebar.tsx:325:            location.state?.goBack ? (
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:52:49Z)**_
@@ -267,7 +274,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:49Z)**_
 104	      {isInViewport || hasRendered ? children : null}
 105	    </View>
 106	  );
-107	
+107
 108	  if (to && !isEditing && !disableClick) {
 109	    return (
 110	      <Layout {...layoutProps}>
@@ -281,6 +288,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:52:49Z)**_
 118	            padding: 0,
 119	            textAlign: 'left',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:52:58Z)**_
@@ -315,6 +323,7 @@ onPress={() => navigate(to, { state: { goBack: true } })}
 ```
 
 So if you open `/reports/net-worth` directly by URL or refresh the page, there's no `goBack` state and the button doesn't appear. A few other places set the same flag:
+
 - [showActivity.ts:129-130](packages/desktop-client/src/components/reports/graphs/showActivity.ts#L129-L130) (clicking through from a graph to its transactions)
 - [budget/index.tsx:146](packages/desktop-client/src/components/budget/index.tsx#L146)
 - [TagRow.tsx:72](packages/desktop-client/src/components/tags/TagRow.tsx#L72)
@@ -404,6 +413,7 @@ packages\desktop-client\src\hooks\useSearchHotkey.ts:14:  useHotkeys(
 packages\desktop-client\src\components\reports\Overview.tsx:6:import { useHotkeys } from 'react-hotkeys-hook';
 packages\desktop-client\src\components\reports\Overview.tsx:217:  useHotkeys(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:55:27Z)**_
@@ -562,6 +572,7 @@ components/accounts/Header.tsx:654:              onEscape={() => setEditingName(
 ./components/Titlebar.tsx
 ./hooks/useNavigate.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:55:33Z)**_
@@ -652,6 +663,7 @@ function isSamePath(to: To, location: Location) {
 ./components/Titlebar.tsx:327:                <SvgArrowLeft
 ./index.tsx:120:document.addEventListener('keydown', e => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:55:37Z)**_
@@ -742,6 +754,7 @@ components/App.tsx:6:import { HotkeysProvider } from 'react-hotkeys-hook';
 components/App.tsx:199:      <HotkeysProvider initiallyActiveScopes={['app']}>
 components/App.tsx:238:      </HotkeysProvider>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:55:41Z)**_
@@ -753,6 +766,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:55:41Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:55:58Z)**_
@@ -762,6 +776,7 @@ No component in the app goes back when you press Escape. There's no keyboard sho
 ## What Escape does today
 
 Each component handles Escape itself with an `onKeyDown` check like `e.key === 'Escape'`. For example:
+
 - [TransactionsTable.tsx:2002](packages/desktop-client/src/components/transactions/TransactionsTable.tsx#L2002) and [line 2202](packages/desktop-client/src/components/transactions/TransactionsTable.tsx#L2202) cancel editing a transaction row.
 - [Autocomplete.tsx:586](packages/desktop-client/src/components/autocomplete/Autocomplete.tsx#L586), [TagAutocomplete.tsx:143](packages/desktop-client/src/components/autocomplete/TagAutocomplete.tsx#L143), [DateSelect.tsx:325](packages/desktop-client/src/components/select/DateSelect.tsx#L325) and [CleanupGroupPicker.tsx:97](packages/desktop-client/src/components/budget/goals/editor/CleanupGroupPicker.tsx#L97) close their popovers.
 - [TagCreationRow.tsx:77](packages/desktop-client/src/components/tags/TagCreationRow.tsx#L77) and [FormulaEditor.tsx:258](packages/desktop-client/src/components/formula/FormulaEditor.tsx#L258) cancel the edit.
@@ -797,7 +812,7 @@ _**User (2026-09-29 02:58:28Z)**_
 
 <ide_opened_file>The user opened the file c:\Actual Budget\packages\desktop-client\src\components\Titlebar.tsx in the IDE. This may or may not be related to the current task.</ide_opened_file>
 
-Ok, let's use the useHotkeys approach to add escape functionality to report drill downs. I'm attaching more details. Prompt me if questions arise. 
+Ok, let's use the useHotkeys approach to add escape functionality to report drill downs. I'm attaching more details. Prompt me if questions arise.
 
 <pasted_content id="e9a7">
 When users click into a drill-down report (e.g. Net Worth, Cash Flow, Spending) from the reports overview, they are navigated to /reports/:id via the app's router. Returning to the overview currently requires a mouse click on a back button — there's no keyboard equivalent, even though other parts of the app (autocomplete dropdowns, the search box, date pickers) already treat Escape as a "dismiss/back out" key. Adding a scoped Escape handler to report drill-down pages would make that navigation pattern consistent across the app.
@@ -815,7 +830,6 @@ Escape handling on non-report pages (budget, accounts, etc.).
 Any change to Escape behavior already implemented in modals, autocompletes, or dropdowns elsewhere in the app.
 A generalized/global keyboard shortcut system — this is one scoped listener for report drill-down pages.
 </pasted_content id="e9a7">
-
 
 ---
 
@@ -1097,6 +1111,7 @@ export function ReportRouter() {
 4:  "version": "5.3.2",
 ls: cannot access '../node_modules/react-hotkeys-hook/dist': No such file or directory
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:58:56Z)**_
@@ -1119,6 +1134,7 @@ ls: cannot access 'dist': No such file or directory
 ls: cannot access 'dist/*.js': No such file or directory
 grep: dist/*.js: No such file or directory
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:59:01Z)**_
@@ -1137,6 +1153,7 @@ packages
 12:  "type": "module",
 13:  "main": "packages/react-hotkeys-hook/dist/index.js",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:59:06Z)**_
@@ -1168,6 +1185,7 @@ index.js
 287:      d.has(c) || (i.preventDefault(), i.stopPropagation(), u((n) => {
 302:      return document.addEventListener("keydown", l), () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:59:08Z)**_
@@ -1303,6 +1321,7 @@ _**Agent (claude-opus-5-5 2026-09-29 02:59:08Z)**_
 263	        )
 264	      );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:59:22Z)**_
@@ -1440,6 +1459,7 @@ export const Popover = ({
 ----
 find: 'node_modules/@react-aria/overlays/dist': No such file or directory
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:59:39Z)**_
@@ -1505,6 +1525,7 @@ components/reports/spreadsheets/budgetDataQuery.test.ts
 components/reports/spreadsheets/sankey-spreadsheet.test.ts
 components/reports/spreadsheets/spending-spreadsheet.test.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 02:59:57Z)**_
@@ -1540,6 +1561,7 @@ src/components/budget/MonthCountSelector.test.tsx
 149:    "@testing-library/react": "16.3.2",
 150:    "@testing-library/user-event": "14.6.1",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:00:04Z)**_
@@ -1585,12 +1607,12 @@ export function useEscapeToReportsOverview() {
     [navigate, cameFromOverview],
   );
 }
-
 ```
 
 ```text
 File created successfully at: C:\Actual Budget\packages\desktop-client\src\components\reports\useEscapeToReportsOverview.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:00:33Z)**_
@@ -1626,7 +1648,7 @@ index ec14d5f1c..8ea1b4746 100644
  import { Summary } from './reports/Summary';
  import { ReportsDashboardRouter } from './ReportsDashboardRouter';
 +import { useEscapeToReportsOverview } from './useEscapeToReportsOverview';
- 
+
  function ReportBoundary({ children }: { children: ReactNode }) {
    const location = useLocation();
 +  useEscapeToReportsOverview();
@@ -1635,6 +1657,7 @@ index ec14d5f1c..8ea1b4746 100644
      <ErrorBoundary
        FallbackComponent={FeatureErrorFallback}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:00:35Z)**_
@@ -1774,6 +1797,7 @@ describe('useEscapeToReportsOverview', () => {
 ```text
 File created successfully at: C:\Actual Budget\packages\desktop-client\src\components\reports\useEscapeToReportsOverview.test.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:00:52Z)**_
@@ -1830,6 +1854,7 @@ case "$out" in
 esac
 exit 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:01:00Z)**_
@@ -1850,6 +1875,7 @@ Check react-router version and data router usage
 ```text
   "version": "7.17.0",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:01:17Z)**_
@@ -1984,6 +2010,7 @@ describe('useEscapeToReportsOverview', () => {
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\reports\useEscapeToReportsOverview.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:02:14Z)**_
@@ -2004,6 +2031,7 @@ Run the new hook tests
    Start at  23:01:23
    Duration  49.84s (transform 1.75s, setup 17.13s, import 5.55s, tests 555ms, environment 25.90s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:02:21Z)**_
@@ -2037,6 +2065,7 @@ Mutation-check that guard tests fail without the guard
       Tests  3 failed | 4 passed (7)
 29:      ignoreEventWhen: e => e.defaultPrevented || isOverlayOpen(),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:02:51Z)**_
@@ -2054,6 +2083,7 @@ Checking formatting...
 All matched files use the correct format.
 Finished in 266ms on 3 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:02:58Z)**_
@@ -2071,6 +2101,7 @@ _**Agent (claude-opus-5-5 2026-09-29 03:03:03Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\reports\useEscapeToReportsOverview.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:05:02Z)**_
@@ -2098,6 +2129,7 @@ worker restarts: 0, max worker memory usage: 50.60 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 43.01s to complete.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:05:12Z)**_
@@ -2105,6 +2137,7 @@ _**Agent (claude-opus-5-5 2026-09-29 03:05:12Z)**_
 Pressing Escape on a report drill-down page now takes you back to the reports overview. The new tests (7), typecheck and lint all pass. I haven't tried it in the running app yet, and nothing is committed.
 
 **How it works**
+
 - **The hook:** [useEscapeToReportsOverview.ts](packages/desktop-client/src/components/reports/useEscapeToReportsOverview.ts) registers Escape with `useHotkeys` in the `app` scope.
 - **Where it's called:** `ReportBoundary` in [ReportRouter.tsx:24-25](packages/desktop-client/src/components/reports/ReportRouter.tsx#L24-L25) calls it. That component wraps every drill-down route and none of the overview routes (`/reports` and `/reports/:dashboardId`), so Escape does nothing on the overview.
 - **Where Escape goes:**
@@ -2112,6 +2145,7 @@ Pressing Escape on a report drill-down page now takes you back to the reports ov
   - If you opened the report directly by URL or after a refresh, it goes to `/reports`, the same as the mobile back button.
 
 **When Escape is left alone**
+
 - **An input is focused:** the library already ignores keys typed in inputs. This covers autocompletes, the search box and date pickers.
 - **Another handler already dealt with Escape:** the hook checks `e.defaultPrevented`.
 - **A popover or modal is open:** the hook checks the page for an open popover (`[data-popover]`) or dialog (`[role="dialog"]`).
@@ -2186,7 +2220,6 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-09-29 03:09:56Z)**_
@@ -2201,12 +2234,12 @@ authors: [BenBonk]
 ---
 
 Press Escape to go back to the reports dashboard from an open report
-
 ```
 
 ```text
 File created successfully at: C:\Actual Budget\upcoming-release-notes\escape-back-from-report.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-29 03:10:22Z)**_
@@ -2235,7 +2268,9 @@ function isOverlayOpen() {
   return document.querySelector('[data-popover], [role="dialog"]') !== null;
 }
 ```
+
 This helper checks whether a popover or modal is currently on the page:
+
 - **`[data-popover]`**: the shared `Popover` component in `packages/component-library/src/Popover.tsx` puts this attribute on every popover. That covers menus, dropdowns, the report filter pickers and similar.
 - **`[role="dialog"]`**: `Modal.tsx` wraps its content in React Aria's `Dialog`, which renders `role="dialog"`. That covers every modal.
 
@@ -2246,6 +2281,7 @@ const navigate = useNavigate();
 const location = useLocation();
 const cameFromOverview = Boolean(location.state?.goBack);
 ```
+
 - **`useNavigate`** is the app's wrapper around react-router's `navigate`, not the raw one. The raw import is lint-restricted so that every navigation goes through the wrapper.
 - **`location.state?.goBack`** is the flag `ReportCard.tsx` sets when you click a card on a dashboard: `navigate(to, { state: { goBack: true } })`. The title bar uses the same flag to decide whether to show its Back button. If it's set, you arrived from a dashboard, so going back in history is safe.
 
@@ -2261,7 +2297,9 @@ useHotkeys(
   },
   ...
 ```
+
 This is the handler that runs when you press Escape.
+
 - **`navigate(-1)`**: steps back one entry in history. This returns you to the dashboard you came from. The app supports several dashboards (`/reports/:dashboardId`), so going to `/reports` would sometimes send you to the wrong one. This matches the title bar's Back button.
 - **`navigate('/reports')`**: used when you opened the report by URL, bookmark or refresh. History might point outside the app, or have nothing behind it, so it goes to a fixed route instead. This matches the mobile back button.
 - **`void`**: `navigate` returns a promise. `void` marks it as intentionally not awaited, which the linter requires.
@@ -2274,6 +2312,7 @@ This is the handler that runs when you press Escape.
   [navigate, cameFromOverview],
 );
 ```
+
 - **`scopes: ['app']`**: `App.tsx` starts the hotkey provider with `app` as the active scope, and every other global shortcut (Ctrl+S sync, privacy mode) uses it too.
 - **`ignoreEventWhen`**: the library calls this before the handler, and a `true` result skips it. It returns `true` in two cases:
   - **`e.defaultPrevented`**: another component already called `preventDefault()` on this Escape, meaning it handled the key itself.
@@ -2282,14 +2321,14 @@ This is the handler that runs when you press Escape.
 
 Here is every way Escape is kept from navigating when it shouldn't:
 
-| Situation | What stops the navigation |
-| --- | --- |
-| Typing in an input (autocomplete, search, date picker, report name) | The library ignores keys from `input`, `textarea` and `select` by default |
-| A component called `stopPropagation()` (Autocomplete and DateSelect do when their list is open; React Aria overlays do too) | The event never reaches the library's listener on `document` |
-| A component called `preventDefault()` | `e.defaultPrevented` |
-| A popover or modal is open but doesn't have focus | `isOverlayOpen()` |
+| Situation                                                                                                                   | What stops the navigation                                                 |
+| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Typing in an input (autocomplete, search, date picker, report name)                                                         | The library ignores keys from `input`, `textarea` and `select` by default |
+| A component called `stopPropagation()` (Autocomplete and DateSelect do when their list is open; React Aria overlays do too) | The event never reaches the library's listener on `document`              |
+| A component called `preventDefault()`                                                                                       | `e.defaultPrevented`                                                      |
+| A popover or modal is open but doesn't have focus                                                                           | `isOverlayOpen()`                                                         |
 
-The last row is why the DOM check exists. React Aria closes a popover on Escape only if focus is inside it. If focus is still on the button that opened it, Escape reaches `document` and nothing else stops it. Scopes can't help either: the comment in `Modal.tsx` says opening a modal switches off `app` shortcuts, but the library code *adds* the modal's scope next to `app`, so `app` shortcuts keep firing.
+The last row is why the DOM check exists. React Aria closes a popover on Escape only if focus is inside it. If focus is still on the button that opened it, Escape reaches `document` and nothing else stops it. Scopes can't help either: the comment in `Modal.tsx` says opening a modal switches off `app` shortcuts, but the library code _adds_ the modal's scope next to `app`, so `app` shortcuts keep firing.
 
 ### 2. Calling the hook: [ReportRouter.tsx](packages/desktop-client/src/components/reports/ReportRouter.tsx#L24-L25)
 
@@ -2299,7 +2338,9 @@ function ReportBoundary({ children }: { children: ReactNode }) {
   useEscapeToReportsOverview();
   ...
 ```
+
 `ReportBoundary` already wraps each drill-down route (Net Worth, Cash Flow, Spending, Custom and the rest) in an error boundary. The overview routes, `/` and `/:dashboardId`, render `ReportsDashboardRouter` directly without it. So calling the hook here covers two acceptance criteria at once:
+
 - **It works on every report:** new reports get Escape automatically as long as they're wrapped in `ReportBoundary`. No report file had to change.
 - **It does nothing on the overview:** the hook is never mounted there. When you leave a report, `ReportBoundary` unmounts and `useHotkeys` removes its listener.
 
@@ -2310,6 +2351,7 @@ function ReportBoundary({ children }: { children: ReactNode }) {
 - **Keyboard only:** each test presses Escape with `userEvent.keyboard('{Escape}')`, which meets the keyboard-only criterion.
 
 The seven tests:
+
 1. **Opened from a dashboard** (history has `/reports/my-dashboard` and then the report with `goBack: true`): Escape returns to that dashboard.
 2. **Opened directly:** Escape goes to `/reports`.
 3. **Popover open:** the path doesn't change.

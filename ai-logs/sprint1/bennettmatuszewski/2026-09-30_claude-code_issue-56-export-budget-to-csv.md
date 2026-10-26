@@ -35,6 +35,7 @@ packages\loot-core\src\server\transactions\app.ts:128:  return exportQueryToCSV(
 packages\desktop-client\src\components\reports\spreadsheets\budget-analysis-export.ts:2:// Use the browser ESM build: the default `csv-stringify/sync` entry pulls in
 packages\desktop-client\src\components\reports\spreadsheets\budget-analysis-export.ts:5:import { stringify as csvStringify } from 'csv-stringify/browser/esm/sync';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:28:14Z)**_
@@ -274,6 +275,7 @@ desktop-client/src/components/settings/Export.tsx:36:      void window.Actual.sa
 desktop-client/src/components/settings/Export.tsx:49:          <ButtonWithLoading onPress={onExport} isLoading={isLoading}>
 loot-core/src/types/api-handlers.ts:98:  'api/transactions-export': (arg: {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:28:20Z)**_
@@ -371,6 +373,7 @@ loot-core/src/server/transactions/app.ts:167:app.method('transactions-export-que
 loot-core/src/types/api-handlers.ts:98:  'api/transactions-export': (arg: {
 desktop-electron/preload.ts:54:  saveFile: async (
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:28:31Z)**_
@@ -446,6 +449,7 @@ desktop-client/src/browser-preload.js:187:  saveFile: (contents, defaultFilename
 41:        onMenuSelect(item);
 80:        { name: 'export', text: t('Export') },
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:28:37Z)**_
@@ -691,6 +695,7 @@ handlers['api/transactions-import'] = withMutation(async function ({
 
   const onImport = async () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:28:44Z)**_
@@ -743,6 +748,7 @@ export function buildBudgetAnalysisCsv(
       header: true,
       columns,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:29:06Z)**_
@@ -764,6 +770,7 @@ const exportedTransactions = await send('transactions-export-query', {
 ```
 
 The important part is `this.currentQuery`. It is the same AQL query that drives the visible transaction list:
+
 - It starts as `rootQuery` in `fetchTransactions` ([Account.tsx:456](packages/desktop-client/src/components/accounts/Account.tsx#L456)).
 - Active filters narrow it ([Account.tsx:1568](packages/desktop-client/src/components/accounts/Account.tsx#L1568)).
 - Column sorting changes its order (around lines 1620–1696).
@@ -777,6 +784,7 @@ So **the export matches what's on screen**: the same filters and the same sort o
 **4. CSV generation** — [export-to-csv.ts:69](packages/loot-core/src/server/transactions/export/export-to-csv.ts#L69)
 
 `exportQueryToCSV`:
+
 - **Selects the columns**, following relations to get names instead of IDs: `account.name`, `payee.name`, `category.group.name`, and so on.
 - **Includes split transactions** with `.options({ splits: 'all' })`, which returns both parent and child rows.
 - **Numbers the splits.** It first loops over the rows to count each parent's children and each child's position. Then:
@@ -789,6 +797,7 @@ So **the export matches what's on screen**: the same filters and the same sort o
 **CSV injection protection** ([export-to-csv.ts:7-15](packages/loot-core/src/server/transactions/export/export-to-csv.ts#L7-L15)): if a string value starts with `=`, `+`, `-`, `@`, tab, or CR, it gets a leading `'`. This stops Excel or Sheets from running it as a formula.
 
 **5. Saving the file** — `window.Actual.saveFile(contents, filename, title)`. The implementation depends on the platform:
+
 - **Browser** ([browser-preload.js:187](packages/desktop-client/src/browser-preload.js#L187)): puts the text in a `Blob`, creates a hidden `<a download>` pointing to it, and clicks it.
 - **Electron**: [preload.ts:54](packages/desktop-electron/preload.ts#L54) sends a `save-file-dialog` IPC message. The main process ([index.ts:604](packages/desktop-electron/index.ts#L604)) shows `dialog.showSaveDialog` and writes the file with `fs.writeFile`.
 
@@ -863,6 +872,7 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512\tasks\ae5ee8299f476557e.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:40:29Z)**_
@@ -879,6 +889,7 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512\tasks\a00dba04bc2983584.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-30 16:40:29Z)**_
@@ -891,7 +902,7 @@ In the Actual Budget monorepo at c:\Actual Budget (desktop-client at packages/de
 4. How categories/groups are ordered and filtered on the page: which hook provides category groups (useCategories / useCategoryGroups?), how the "show hidden categories" toggle works (pref name e.g. 'budget.showHiddenCategories'), how collapsed groups work, and how income groups are rendered separately.
 5. How to get the budget name on the client (e.g. useMetadataPref('budgetName')) — see components/settings/Export.tsx for an example.
 6. How the number format / decimal places are obtained on client (useFormat, format.currency.decimalPlaces) as used in components/reports/reports/BudgetAnalysis.tsx.
-Only report findings, keep excerpts short.
+   Only report findings, keep excerpts short.
 
 _**Agent - sidechain (2026-09-30 16:40:29Z)**_
 
@@ -902,7 +913,7 @@ In the Actual Budget monorepo at c:\Actual Budget, explore how monthly budget va
 3. In loot-core server budget code (packages/loot-core/src/server/budget/), how carryover and balance are computed (leftover, carryover flag), and what cells exist per category/group/total for envelope vs tracking mode (e.g. 'sum-amount-<id>', 'budget-<id>', 'leftover-<id>', 'group-budget-<id>', 'total-budgeted', 'total-spent', 'total-leftover', 'to-budget', income cells).
 4. Whether totals (group and grand totals) on the page include hidden categories, and how income categories' Spent/Balance are shown.
 5. Is there any server handler like 'budget/get-month' or similar that returns a month's budget data in one call?
-Only report findings, keep excerpts short.
+   Only report findings, keep excerpts short.
 
 _**Agent (claude-opus-5-5 2026-09-30 16:40:31Z)**_
 
@@ -953,6 +964,7 @@ spreadsheet.test.ts
 spreadsheet.ts
 util.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:43Z)**_
@@ -1025,6 +1037,7 @@ loot-core\src\mocks\budget.ts:706:          const toBudget: number = sheet.getCe
 loot-core\src\mocks\budget.ts:728:  const toBudget: number = sheet.getCellValue(sheetName, 'to-budget') as number;
 loot-core\src\mocks\budget.ts:740:  // let toBudget = sheet.getCellValue(sheetName, 'to-budget');
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:38Z)**_
@@ -1123,6 +1136,7 @@ LimitAutomation.tsx
   344 BudgetTable.tsx
  1191 total
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:43:49Z)**_
@@ -1132,18 +1146,21 @@ _**Agent (claude-opus-5-5 2026-09-30 16:43:49Z)**_
 **Which budget modes should the CSV export support in this ticket?**
 
 Options:
+
 - **Both modes (Recommended)** - Envelope and tracking. Same builder, mode-specific cell bindings and summary rows. Pushes scope to the high end of medium.
 - **Envelope only** - Hide/disable the Export action in tracking mode; follow up later.
 
 **How should hidden categories and groups be handled?**
 
 Options:
+
 - **Follow show-hidden toggle (Recommended)** - Export exactly what the page shows: hidden items included only when 'Show hidden categories' is on. Matches 'every visible category'.
 - **Always exclude hidden** - Ignore the toggle; never export hidden categories/groups.
 
 **How should income be handled?**
 
 Options:
+
 - **Include income + summary (Recommended)** - Income group with its own subtotal, plus a summary row (envelope: To Budget; tracking: income vs expenses) after the grand total.
 - **Include income, no summary** - Income categories listed like the page, but no To Budget / summary row.
 - **Expenses only** - Skip income categories entirely; grand total covers expense groups.
@@ -1151,9 +1168,9 @@ Options:
 **Should the budget export share code with the Budget Analysis CSV builder?**
 
 Options:
+
 - **Shared CSV helper (Recommended)** - Extract a small shared helper (csv-stringify browser build + formula-injection guard) used by both; budget export gets its own row builder.
 - **Fully separate builder** - New standalone builder; leave budget-analysis-export.ts untouched.
-
 
 **Answer:** Both modes (Recommended), Follow show-hidden toggle (Recommended), Include income + summary (Recommended), Shared CSV helper (Recommended)
 </details></tool-use>
@@ -1168,7 +1185,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 1	// @ts-strict-ignore
 2	import React, { useEffect, useEffectEvent, useMemo, useState } from 'react';
 3	import type { ComponentType } from 'react';
-4	
+4
 5	import { styles } from '@actual-app/components/styles';
 6	import { View } from '@actual-app/components/view';
 7	import { send } from '@actual-app/core/platform/client/connection';
@@ -1177,7 +1194,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 10	  CategoryEntity,
 11	  CategoryGroupEntity,
 12	} from '@actual-app/core/types/models';
-13	
+13
 14	import {
 15	  useBudgetActions,
 16	  useDeleteCategoryGroupMutation,
@@ -1195,14 +1212,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 28	import { SheetNameProvider } from '#hooks/useSheetName';
 29	import { useSpreadsheet } from '#hooks/useSpreadsheet';
 30	import { useSyncedPref } from '#hooks/useSyncedPref';
-31	
+31
 32	import { AutoSizingBudgetTable } from './DynamicBudgetTable';
 33	import * as envelopeBudget from './envelope/EnvelopeBudgetComponents';
 34	import { EnvelopeBudgetProvider } from './envelope/EnvelopeBudgetContext';
 35	import * as trackingBudget from './tracking/TrackingBudgetComponents';
 36	import { TrackingBudgetProvider } from './tracking/TrackingBudgetContext';
 37	import { prewarmAllMonths, prewarmMonth } from './util';
-38	
+38
 39	export function Budget() {
 40	  const currentMonth = monthUtils.currentMonth();
 41	  const spreadsheet = useSpreadsheet();
@@ -1222,26 +1239,26 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 55	  const [initialized, setInitialized] = useState(false);
 56	  const { data: { grouped: categoryGroups } = { grouped: [] } } =
 57	    useCategories();
-58	
+58
 59	  const init = useEffectEvent(() => {
 60	    async function run() {
 61	      const { start, end } = await send('get-budget-bounds');
 62	      setBounds({ start, end });
-63	
+63
 64	      await prewarmAllMonths(
 65	        budgetType,
 66	        spreadsheet,
 67	        { start, end },
 68	        startMonth,
 69	      );
-70	
+70
 71	      setInitialized(true);
 72	    }
-73	
+73
 74	    void run();
 75	  });
 76	  useEffect(() => init(), []);
-77	
+77
 78	  const loadBoundBudgets = useEffectEvent(() => {
 79	    void send('get-budget-bounds').then(({ start, end }) => {
 80	      if (bounds.start !== start || bounds.end !== end) {
@@ -1250,12 +1267,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 83	    });
 84	  });
 85	  useEffect(() => loadBoundBudgets(), []);
-86	
+86
 87	  const onMonthSelect = async (month, numDisplayed) => {
 88	    setStartMonthPref(month);
-89	
+89
 90	    const warmingMonth = month;
-91	
+91
 92	    // We could be smarter about this, but this is a good start. We
 93	    // optimize for the case where users press the left/right button
 94	    // to move between months. This loads the month data all at once
@@ -1277,16 +1294,16 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 110	        monthUtils.addMonths(month, numDisplayed),
 111	      );
 112	    }
-113	
+113
 114	    if (warmingMonth === month) {
 115	      setStartMonthPref(month);
 116	    }
 117	  };
-118	
+118
 119	  const onToggleCollapse = () => {
 120	    setSummaryCollapsedPref(!summaryCollapsed);
 121	  };
-122	
+122
 123	  const onApplyBudgetTemplatesInGroup = async categories => {
 124	    applyBudgetAction.mutate({
 125	      month: startMonth,
@@ -1296,7 +1313,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 129	      },
 130	    });
 131	  };
-132	
+132
 133	  const onShowActivity = (categoryId, month) => {
 134	    const filterConditions = [
 135	      { field: 'category', op: 'is', value: categoryId, type: 'id' },
@@ -1316,7 +1333,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 149	      },
 150	    });
 151	  };
-152	
+152
 153	  const saveCategory = useSaveCategoryMutation();
 154	  const onSaveCategory = category => {
 155	    saveCategory.mutate({ category });
@@ -1337,15 +1354,15 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 170	  const reorderCategoryGroup = useReorderCategoryGroupMutation();
 171	  const sortCategories = useSortCategoriesMutation();
 172	  const applyBudgetAction = useBudgetActions();
-173	
+173
 174	  const onBudgetAction = (month, type, args) => {
 175	    applyBudgetAction.mutate({ month, type, args });
 176	  };
-177	
+177
 178	  if (!initialized || !categoryGroups) {
 179	    return null;
 180	  }
-181	
+181
 182	  let table;
 183	  if (budgetType === 'tracking') {
 184	    table = (
@@ -1406,7 +1423,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 239	      </EnvelopeBudgetProvider>
 240	    );
 241	  }
-242	
+242
 243	  return (
 244	    <SheetNameProvider name={monthUtils.sheetForMonth(startMonth)}>
 245	      {/*
@@ -1428,11 +1445,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 261	    </SheetNameProvider>
 262	  );
 263	}
-264	
+264
 265	export type BudgetSummaryProps = {
 266	  month: string;
 267	};
-268	
+268
 269	export type CategoryMonthProps = {
 270	  month: string;
 271	  category: CategoryEntity;
@@ -1442,12 +1459,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 275	  onBudgetAction: (month: string, action: string, arg: unknown) => void;
 276	  onShowActivity: (id: CategoryEntity['id'], month: string) => void;
 277	};
-278	
+278
 279	export type CategoryGroupMonthProps = {
 280	  month: string;
 281	  group: CategoryGroupEntity;
 282	};
-283	
+283
 284	export type BudgetComponents = {
 285	  SummaryComponent: ComponentType<BudgetSummaryProps>;
 286	  ExpenseCategoryComponent: ComponentType<CategoryMonthProps>;
@@ -1457,15 +1474,15 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 290	  BudgetTotalsComponent: ComponentType;
 291	  IncomeHeaderComponent: ComponentType;
 292	};
-293	
+293
 294	export function useBudgetComponents(): BudgetComponents {
 295	  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
 296	  const envelopeComponents = useEnvelopeBudgetComponents();
 297	  const trackingComponents = useTrackingBudgetComponents();
-298	
+298
 299	  return budgetType === 'envelope' ? envelopeComponents : trackingComponents;
 300	}
-301	
+301
 302	function useTrackingBudgetComponents(): BudgetComponents {
 303	  return useMemo(
 304	    () => ({
@@ -1480,7 +1497,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 313	    [],
 314	  );
 315	}
-316	
+316
 317	function useEnvelopeBudgetComponents(): BudgetComponents {
 318	  return useMemo(
 319	    () => ({
@@ -1497,6 +1514,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:40Z)**_
 330	}
 331
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
@@ -1509,27 +1527,27 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 1	// @ts-strict-ignore
 2	import React, { memo } from 'react';
 3	import type { ComponentProps } from 'react';
-4	
+4
 5	import { View } from '@actual-app/components/view';
-6	
+6
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
-8	
+8
 9	import { MonthPicker } from './MonthPicker';
 10	import { getScrollbarWidth } from './util';
-11	
+11
 12	type BudgetPageHeaderProps = {
 13	  startMonth: string;
 14	  onMonthSelect: (month: string) => void;
 15	  numMonths: number;
 16	  monthBounds: ComponentProps<typeof MonthPicker>['monthBounds'];
 17	};
-18	
+18
 19	export const BudgetPageHeader = memo<BudgetPageHeaderProps>(
 20	  ({ startMonth, onMonthSelect, numMonths, monthBounds }) => {
 21	    const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
 22	    const categoryExpandedState = categoryExpandedStatePref ?? 0;
 23	    const offsetMultipleMonths = numMonths === 1 ? 4 : 0;
-24	
+24
 25	    return (
 26	      <View
 27	        style={{
@@ -1555,10 +1573,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 47	    );
 48	  },
 49	);
-50	
+50
 51	BudgetPageHeader.displayName = 'BudgetPageHeader';
 52
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
@@ -1574,21 +1593,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 4	import { ErrorBoundary } from 'react-error-boundary';
 5	import { useHotkeys } from 'react-hotkeys-hook';
 6	import { AutoSizer } from 'react-virtualized-auto-sizer';
-7	
+7
 8	import { View } from '@actual-app/components/view';
 9	import * as monthUtils from '@actual-app/core/shared/months';
-10	
+10
 11	import { FeatureErrorFallback } from '#components/FeatureErrorFallback';
 12	import { useFeatureFlag } from '#hooks/useFeatureFlag';
 13	import { useGlobalPref } from '#hooks/useGlobalPref';
-14	
+14
 15	import { useBudgetMonthCount } from './BudgetMonthCountContext';
 16	import { BudgetPageHeader } from './BudgetPageHeader';
 17	import { BudgetTable } from './BudgetTable';
-18	
+18
 19	function getNumPossibleMonths(width: number, categoryWidth: number) {
 20	  const estimatedTableWidth = width - categoryWidth;
-21	
+21
 22	  if (estimatedTableWidth < 500) {
 23	    return 1;
 24	  } else if (estimatedTableWidth < 750) {
@@ -1600,15 +1619,15 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 30	  } else if (estimatedTableWidth < 1500) {
 31	    return 5;
 32	  }
-33	
+33
 34	  return 6;
 35	}
-36	
+36
 37	type DynamicBudgetTableProps = {
 38	  width: number;
 39	  height: number;
 40	} & AutoSizingBudgetTableProps;
-41	
+41
 42	const DynamicBudgetTable = ({
 43	  type,
 44	  width,
@@ -1625,22 +1644,22 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 55	  const [categoryExpandedStatePref] = useGlobalPref('categoryExpandedState');
 56	  const isGoalTemplatesEnabled = useFeatureFlag('goalTemplatesEnabled');
 57	  const categoryExpandedState = categoryExpandedStatePref ?? 0;
-58	
+58
 59	  const numPossible = getNumPossibleMonths(
 60	    width,
 61	    200 + 100 * categoryExpandedState,
 62	  );
 63	  const numMonths = Math.min(numPossible, maxMonths);
 64	  const maxWidth = 200 + 100 * categoryExpandedState + 500 * numMonths;
-65	
+65
 66	  useEffect(() => {
 67	    setDisplayMax(numPossible);
 68	  }, [setDisplayMax, numPossible]);
-69	
+69
 70	  function getValidMonth(month) {
 71	    const start = monthBounds.start;
 72	    const end = monthUtils.subMonths(monthBounds.end, numMonths - 1);
-73	
+73
 74	    if (month < start) {
 75	      return start;
 76	    } else if (month > end) {
@@ -1648,11 +1667,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 78	    }
 79	    return month;
 80	  }
-81	
+81
 82	  function _onMonthSelect(month) {
 83	    onMonthSelect(getValidMonth(month), numMonths);
 84	  }
-85	
+85
 86	  useHotkeys(
 87	    'left',
 88	    () => {
@@ -1707,7 +1726,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 137	    },
 138	    [onBudgetAction, startMonth, isGoalTemplatesEnabled],
 139	  );
-140	
+140
 141	  return (
 142	    <View
 143	      style={{
@@ -1740,9 +1759,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 170	    </View>
 171	  );
 172	};
-173	
+173
 174	DynamicBudgetTable.displayName = 'DynamicBudgetTable';
-175	
+175
 176	type AutoSizingBudgetTableProps = Omit<
 177	  ComponentProps<typeof BudgetTable>,
 178	  'numMonths' | 'onMonthSelect'
@@ -1750,7 +1769,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 180	  maxMonths: number;
 181	  onMonthSelect: (month: string, numMonths: number) => void;
 182	};
-183	
+183
 184	export const AutoSizingBudgetTable = (props: AutoSizingBudgetTableProps) => {
 185	  return (
 186	    <AutoSizer
@@ -1758,16 +1777,17 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:41Z)**_
 188	        if (width === 0 || height === 0) {
 189	          return null;
 190	        }
-191	
+191
 192	        return <DynamicBudgetTable width={width} height={height} {...props} />;
 193	      }}
 194	    />
 195	  );
 196	};
-197	
+197
 198	AutoSizingBudgetTable.displayName = 'AutoSizingBudgetTable';
 199
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
@@ -1779,7 +1799,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 ```text
 1	import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 2	import type { KeyboardEvent } from 'react';
-3	
+3
 4	import { styles } from '@actual-app/components/styles';
 5	import { theme } from '@actual-app/components/theme';
 6	import { View } from '@actual-app/components/view';
@@ -1788,13 +1808,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 9	  CategoryEntity,
 10	  CategoryGroupEntity,
 11	} from '@actual-app/core/types/models';
-12	
+12
 13	import type { DropPosition } from '#components/sort';
 14	import { SchedulesProvider } from '#hooks/useCachedSchedules';
 15	import { useCategories } from '#hooks/useCategories';
 16	import { useGlobalPref } from '#hooks/useGlobalPref';
 17	import { useLocalPref } from '#hooks/useLocalPref';
-18	
+18
 19	import { BudgetCategories } from './BudgetCategories';
 20	import { BudgetSummaries } from './BudgetSummaries';
 21	import { BudgetTotals } from './BudgetTotals';
@@ -1806,7 +1826,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 27	  getScrollbarWidth,
 28	  separateGroups,
 29	} from './util';
-30	
+30
 31	type BudgetTableProps = {
 32	  type: string;
 33	  prewarmStartMonth: string;
@@ -1837,7 +1857,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 58	  onBudgetAction: (month: string, type: string, args: unknown) => void;
 59	  onMonthSelect: (month: string) => void;
 60	};
-61	
+61
 62	export function BudgetTable(props: BudgetTableProps) {
 63	  const {
 64	    type,
@@ -1857,7 +1877,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 78	    onBudgetAction,
 79	    onMonthSelect,
 80	  } = props;
-81	
+81
 82	  const { data: { grouped: categoryGroups } = { grouped: [] } } =
 83	    useCategories();
 84	  const [collapsedGroupIds = [], setCollapsedGroupIdsPref] =
@@ -1870,9 +1890,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 91	  const [editing, setEditing] = useState<{ id: string; cell: string } | null>(
 92	    null,
 93	  );
-94	
+94
 95	  const scrollContainerRef = useRef<HTMLDivElement>(null);
-96	
+96
 97	  useLayoutEffect(() => {
 98	    const savedScrollPosition = sessionStorage.getItem(
 99	      'budget-scroll-position',
@@ -1882,22 +1902,22 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 103	      sessionStorage.removeItem('budget-scroll-position');
 104	    }
 105	  }, []);
-106	
+106
 107	  const onEditMonth = (id: string, month: string) => {
 108	    setEditing(id ? { id, cell: month } : null);
 109	  };
-110	
+110
 111	  const onEditName = (id: string) => {
 112	    setEditing(id ? { id, cell: 'name' } : null);
 113	  };
-114	
+114
 115	  const _onReorderCategory = (
 116	    id: string,
 117	    dropPos: DropPosition | null,
 118	    targetId: string,
 119	  ) => {
 120	    const isGroup = !!categoryGroups.find(g => g.id === targetId);
-121	
+121
 122	    if (isGroup) {
 123	      const { targetId: groupId } = findSortUp(
 124	        categoryGroups,
@@ -1905,7 +1925,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 126	        targetId,
 127	      );
 128	      const group = categoryGroups.find(g => g.id === groupId);
-129	
+129
 130	      if (group) {
 131	        const { categories = [] } = group;
 132	        onReorderCategory({
@@ -1921,7 +1941,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 142	      const group = categoryGroups.find(({ categories = [] }) =>
 143	        categories.some(cat => cat.id === targetId),
 144	      );
-145	
+145
 146	      if (group) {
 147	        onReorderCategory({
 148	          id,
@@ -1931,7 +1951,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 152	      }
 153	    }
 154	  };
-155	
+155
 156	  const _onReorderGroup = (
 157	    id: string,
 158	    dropPos: DropPosition | null,
@@ -1943,7 +1963,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 164	      ...findSortDown(expenseGroups, dropPos, targetId),
 165	    });
 166	  };
-167	
+167
 168	  const moveVertically = (dir: 1 | -1) => {
 169	    const flattened = categoryGroups.reduce(
 170	      (all, group) => {
@@ -1959,14 +1979,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 180	        { id: CategoryGroupEntity['id']; isGroup: boolean } | CategoryEntity
 181	      >,
 182	    );
-183	
+183
 184	    if (editing) {
 185	      const idx = flattened.findIndex(item => item.id === editing.id);
 186	      let nextIdx = idx + dir;
-187	
+187
 188	      while (nextIdx >= 0 && nextIdx < flattened.length) {
 189	        const next = flattened[nextIdx];
-190	
+190
 191	        if ('isGroup' in next && next.isGroup) {
 192	          nextIdx += dir;
 193	          continue;
@@ -1982,38 +2002,38 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 203	      }
 204	    }
 205	  };
-206	
+206
 207	  const onKeyDown = (e: KeyboardEvent) => {
 208	    if (!editing) {
 209	      return null;
 210	    }
-211	
+211
 212	    if (e.key === 'Enter' || e.key === 'Tab') {
 213	      e.preventDefault();
 214	      moveVertically(e.shiftKey ? -1 : 1);
 215	    }
 216	  };
-217	
+217
 218	  const onCollapse = (collapsedIds: string[]) => {
 219	    setCollapsedGroupIdsPref(collapsedIds);
 220	  };
-221	
+221
 222	  const onToggleHiddenCategories = () => {
 223	    setShowHiddenCategoriesPef(!showHiddenCategories);
 224	  };
-225	
+225
 226	  const toggleHiddenCategories = () => {
 227	    onToggleHiddenCategories();
 228	  };
-229	
+229
 230	  const expandAllCategories = () => {
 231	    onCollapse([]);
 232	  };
-233	
+233
 234	  const collapseAllCategories = () => {
 235	    onCollapse(categoryGroups.map(g => g.id));
 236	  };
-237	
+237
 238	  const _onShowActivity = (id: string, month?: string) => {
 239	    if (scrollContainerRef.current) {
 240	      sessionStorage.setItem(
@@ -2023,9 +2043,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 244	    }
 245	    onShowActivity(id, month);
 246	  };
-247	
+247
 248	  const schedulesQuery = useMemo(() => q('schedules').select('*'), []);
-249	
+249
 250	  return (
 251	    <View
 252	      data-testid="budget-table"
@@ -2066,7 +2086,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 287	          />
 288	        </MonthsProvider>
 289	      </View>
-290	
+290
 291	      <MonthsProvider
 292	        startMonth={startMonth}
 293	        numMonths={numMonths}
@@ -2119,10 +2139,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 340	    </View>
 341	  );
 342	}
-343	
+343
 344	BudgetTable.displayName = 'BudgetTable';
 345
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
@@ -2136,7 +2157,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 2	import React, { useState } from 'react';
 3	import type { CSSProperties } from 'react';
 4	import { useTranslation } from 'react-i18next';
-5	
+5
 6	import {
 7	  SvgCheveronLeft,
 8	  SvgCheveronRight,
@@ -2146,13 +2167,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 12	import { theme } from '@actual-app/components/theme';
 13	import { View } from '@actual-app/components/view';
 14	import * as monthUtils from '@actual-app/core/shared/months';
-15	
+15
 16	import { Link } from '#components/common/Link';
 17	import { useLocale } from '#hooks/useLocale';
 18	import { useResizeObserver } from '#hooks/useResizeObserver';
-19	
+19
 20	import type { MonthBounds } from './MonthsContext';
-21	
+21
 22	type MonthPickerProps = {
 23	  startMonth: string;
 24	  numDisplayed: number;
@@ -2160,7 +2181,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 26	  style: CSSProperties;
 27	  onSelect: (month: string) => void;
 28	};
-29	
+29
 30	export const MonthPicker = ({
 31	  startMonth,
 32	  numDisplayed,
@@ -2172,15 +2193,15 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 38	  const { t } = useTranslation();
 39	  const [hoverId, setHoverId] = useState(null);
 40	  const [targetMonthCount, setTargetMonthCount] = useState(12);
-41	
+41
 42	  const currentMonth = monthUtils.currentMonth();
 43	  const firstSelectedMonth = startMonth;
-44	
+44
 45	  const lastSelectedMonth = monthUtils.addMonths(
 46	    firstSelectedMonth,
 47	    numDisplayed - 1,
 48	  );
-49	
+49
 50	  const range = monthUtils.rangeInclusive(
 51	    monthUtils.subMonths(
 52	      firstSelectedMonth,
@@ -2191,11 +2212,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 57	      Math.floor(targetMonthCount / 2 - numDisplayed / 2),
 58	    ),
 59	  );
-60	
+60
 61	  const firstSelectedIndex =
 62	    Math.floor(range.length / 2) - Math.floor(numDisplayed / 2);
 63	  const lastSelectedIndex = firstSelectedIndex + numDisplayed - 1;
-64	
+64
 65	  const [size, setSize] = useState('small');
 66	  const containerRef = useResizeObserver(rect => {
 67	    setSize(rect.width <= 400 ? 'small' : 'big');
@@ -2203,9 +2224,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 69	      Math.min(Math.max(Math.floor(rect.width / 50), 12), 24),
 70	    );
 71	  });
-72	
+72
 73	  const yearHeadersShown = [];
-74	
+74
 75	  return (
 76	    <View
 77	      style={{
@@ -2213,6 +2234,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:44Z)**_
 79	        alignItems: 'center',
 80	        justifyContent: 'space-between',
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
@@ -2225,14 +2247,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext } from 'react';
 3	import type { ReactNode } from 'react';
-4	
+4
 5	import * as monthUtils from '@actual-app/core/shared/months';
-6	
+6
 7	export type MonthBounds = {
 8	  start: string;
 9	  end: string;
 10	};
-11	
+11
 12	export function getValidMonthBounds(
 13	  bounds: MonthBounds,
 14	  startMonth: undefined | string,
@@ -2243,14 +2265,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 19	    end: endMonth > bounds.end ? bounds.end : endMonth,
 20	  };
 21	}
-22	
+22
 23	type MonthsContextProps = {
 24	  months: string[];
 25	  type: string;
 26	};
-27	
+27
 28	export const MonthsContext = createContext<MonthsContextProps>(null);
-29	
+29
 30	type MonthsProviderProps = {
 31	  startMonth: string | undefined;
 32	  numMonths: number;
@@ -2258,7 +2280,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 34	  type: string;
 35	  children: ReactNode;
 36	};
-37	
+37
 38	export function MonthsProvider({
 39	  startMonth,
 40	  numMonths,
@@ -2269,7 +2291,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 45	  const endMonth = monthUtils.addMonths(startMonth, numMonths - 1);
 46	  const bounds = getValidMonthBounds(monthBounds, startMonth, endMonth);
 47	  const months = monthUtils.rangeInclusive(bounds.start, bounds.end);
-48	
+48
 49	  return (
 50	    <MonthsContext.Provider value={{ months, type }}>
 51	      {children}
@@ -2278,6 +2300,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 54	}
 55
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
@@ -2288,7 +2311,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 
 ```text
 1	import React, { memo, useMemo, useState } from 'react';
-2	
+2
 3	import { styles } from '@actual-app/components/styles';
 4	import { theme } from '@actual-app/components/theme';
 5	import { View } from '@actual-app/components/view';
@@ -2296,12 +2319,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 7	  CategoryEntity,
 8	  CategoryGroupEntity,
 9	} from '@actual-app/core/types/models';
-10	
+10
 11	import { DropHighlightPosContext } from '#components/sort';
 12	import type { DragState, OnDropCallback } from '#components/sort';
 13	import { Row } from '#components/table';
 14	import { useLocalPref } from '#hooks/useLocalPref';
-15	
+15
 16	import { ExpenseCategory } from './ExpenseCategory';
 17	import { ExpenseGroup } from './ExpenseGroup';
 18	import { IncomeCategory } from './IncomeCategory';
@@ -2310,7 +2333,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 21	import { SidebarCategory } from './SidebarCategory';
 22	import { SidebarGroup } from './SidebarGroup';
 23	import { separateGroups } from './util';
-24	
+24
 25	type BudgetItem =
 26	  | { type: 'new-group' }
 27	  | { type: 'new-category' }
@@ -2323,12 +2346,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 34	  | { type: 'income-separator' }
 35	  | { type: 'income-group'; value: CategoryGroupEntity }
 36	  | { type: 'income-category'; value: CategoryEntity };
-37	
+37
 38	type LocalDragState =
 39	  | DragState<CategoryEntity>
 40	  | DragState<CategoryGroupEntity>
 41	  | null;
-42	
+42
 43	type BudgetCategoriesProps = {
 44	  categoryGroups: CategoryGroupEntity[];
 45	  editingCell: { id: string; cell: string } | null;
@@ -2348,7 +2371,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 59	  onReorderCategory: OnDropCallback;
 60	  onReorderGroup: OnDropCallback;
 61	};
-62	
+62
 63	export const BudgetCategories = memo<BudgetCategoriesProps>(
 64	  ({
 65	    categoryGroups,
@@ -2372,33 +2395,33 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 83	    function onCollapse(value: Array<CategoryGroupEntity['id']>) {
 84	      setCollapsedGroupIdsPref(value);
 85	    }
-86	
+86
 87	    const [isAddingGroup, setIsAddingGroup] = useState(false);
 88	    const [newCategoryForGroup, setNewCategoryForGroup] = useState<
 89	      string | null
 90	    >(null);
 91	    const items: BudgetItem[] = useMemo(() => {
 92	      const [expenseGroups, incomeGroup] = separateGroups(categoryGroups);
-93	
+93
 94	      let items: BudgetItem[] = Array.prototype.concat.apply(
 95	        [],
 96	        expenseGroups.map(group => {
 97	          if (group.hidden && !showHiddenCategories) {
 98	            return [];
 99	          }
-100	
+100
 101	          const groupCategories = group.categories?.filter(
 102	            cat => showHiddenCategories || !cat.hidden,
 103	          );
-104	
+104
 105	          const items: BudgetItem[] = [
 106	            { type: 'expense-group', value: { ...group } },
 107	          ];
-108	
+108
 109	          if (newCategoryForGroup === group.id) {
 110	            items.push({ type: 'new-category' });
 111	          }
-112	
+112
 113	          return [
 114	            ...items,
 115	            ...(collapsedGroupIds.includes(group.id)
@@ -2414,21 +2437,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 125	          ];
 126	        }),
 127	      );
-128	
+128
 129	      if (isAddingGroup) {
 130	        items.push({ type: 'new-group' });
 131	      }
-132	
+132
 133	      if (incomeGroup) {
 134	        const incomeCategoryItems: BudgetItem[] = [
 135	          { type: 'income-separator' },
 136	          { type: 'income-group', value: incomeGroup },
 137	        ];
-138	
+138
 139	        if (newCategoryForGroup === incomeGroup.id) {
 140	          incomeCategoryItems.push({ type: 'new-category' });
 141	        }
-142	
+142
 143	        incomeCategoryItems.push(
 144	          ...(collapsedGroupIds.includes(incomeGroup.id)
 145	            ? []
@@ -2442,10 +2465,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 153	            }),
 154	          ),
 155	        );
-156	
+156
 157	        items = items.concat(incomeCategoryItems);
 158	      }
-159	
+159
 160	      return items;
 161	    }, [
 162	      categoryGroups,
@@ -2454,19 +2477,19 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 165	      isAddingGroup,
 166	      showHiddenCategories,
 167	    ]);
-168	
+168
 169	    const [dragState, setDragState] = useState<LocalDragState>(null);
 170	    const [savedCollapsed, setSavedCollapsed] = useState<Array<
 171	      CategoryGroupEntity['id']
 172	    > | null>(null);
-173	
+173
 174	    // TODO: If we turn this into a reducer, we could probably memoize
 175	    // each item in the list for better perf
 176	    function onDragChange(
 177	      newDragState: DragState<CategoryEntity> | DragState<CategoryGroupEntity>,
 178	    ) {
 179	      const { state } = newDragState;
-180	
+180
 181	      if (state === 'start-preview') {
 182	        // @ts-expect-error fix me
 183	        setDragState({
@@ -2487,7 +2510,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 198	        onCollapse(savedCollapsed || []);
 199	      }
 200	    }
-201	
+201
 202	    function onToggleCollapse(id: CategoryGroupEntity['id']) {
 203	      if (collapsedGroupIds.includes(id)) {
 204	        onCollapse(collapsedGroupIds.filter(id_ => id_ !== id));
@@ -2495,38 +2518,38 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 206	        onCollapse([...collapsedGroupIds, id]);
 207	      }
 208	    }
-209	
+209
 210	    function onShowNewGroup() {
 211	      setIsAddingGroup(true);
 212	    }
-213	
+213
 214	    function onHideNewGroup() {
 215	      setIsAddingGroup(false);
 216	    }
-217	
+217
 218	    function _onSaveGroup(group: CategoryGroupEntity) {
 219	      onSaveGroup?.(group);
 220	      if (group.id === 'new') {
 221	        onHideNewGroup();
 222	      }
 223	    }
-224	
+224
 225	    function onShowNewCategory(groupId: CategoryGroupEntity['id']) {
 226	      onCollapse(collapsedGroupIds.filter(c => c !== groupId));
 227	      setNewCategoryForGroup(groupId);
 228	    }
-229	
+229
 230	    function onHideNewCategory() {
 231	      setNewCategoryForGroup(null);
 232	    }
-233	
+233
 234	    function _onSaveCategory(category: CategoryEntity) {
 235	      onSaveCategory?.(category);
 236	      if (category.id === 'new') {
 237	        onHideNewCategory();
 238	      }
 239	    }
-240	
+240
 241	    return (
 242	      <View
 243	        style={{
@@ -2578,7 +2601,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 289	                </Row>
 290	              );
 291	              break;
-292	
+292
 293	            case 'expense-group':
 294	              content = (
 295	                <ExpenseGroup
@@ -2664,10 +2687,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 375	              // @ts-expect-error Error is expected here because "item.type" is "never"
 376	              throw new Error('Unknown item type: ' + item.type);
 377	          }
-378	
+378
 379	          const pos =
 380	            idx === 0 ? 'first' : idx === items.length - 1 ? 'last' : null;
-381	
+381
 382	          return (
 383	            <DropHighlightPosContext.Provider
 384	              key={
@@ -2697,10 +2720,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:45Z)**_
 408	    );
 409	  },
 410	);
-411	
+411
 412	BudgetCategories.displayName = 'BudgetCategories';
 413
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
@@ -2715,22 +2739,22 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 3	  AccountEntity,
 4	  CategoryEntity,
 5	} from '@actual-app/core/types/models';
-6	
+6
 7	import { uncategorizedTransactions } from '#queries';
-8	
+8
 9	import { parametrizedField } from '.';
 10	import type { Binding, SheetFields, SheetNames } from '.';
-11	
+11
 12	type BudgetType<SheetName extends SheetNames> = Record<
 13	  string,
 14	  SheetFields<SheetName> | ((id: string) => SheetFields<SheetName>)
 15	>;
-16	
+16
 17	const accountParametrizedField = parametrizedField<'account'>();
 18	const categoryParametrizedField = parametrizedField<'category'>();
 19	const envelopeParametrizedField = parametrizedField<'envelope-budget'>();
 20	const trackingParametrizedField = parametrizedField<'tracking-budget'>();
-21	
+21
 22	export function accountBalance(accountId: AccountEntity['id']) {
 23	  return {
 24	    name: accountParametrizedField('balance')(accountId),
@@ -2740,7 +2764,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 28	      .calculate({ $sum: '$amount' }),
 29	  } satisfies Binding<'account', 'balance'>;
 30	}
-31	
+31
 32	export function accountBalanceCleared(accountId: AccountEntity['id']) {
 33	  return {
 34	    name: accountParametrizedField('balanceCleared')(accountId),
@@ -2750,7 +2774,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 38	      .calculate({ $sum: '$amount' }),
 39	  } satisfies Binding<'account', 'balanceCleared'>;
 40	}
-41	
+41
 42	export function accountBalanceUncleared(accountId: AccountEntity['id']) {
 43	  return {
 44	    name: accountParametrizedField('balanceUncleared')(accountId),
@@ -2760,7 +2784,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 48	      .calculate({ $sum: '$amount' }),
 49	  } satisfies Binding<'account', 'balanceUncleared'>;
 50	}
-51	
+51
 52	export function allAccountBalance() {
 53	  return {
 54	    query: q('transactions')
@@ -2769,7 +2793,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 57	    name: 'accounts-balance',
 58	  } satisfies Binding<'account', 'accounts-balance'>;
 59	}
-60	
+60
 61	export function onBudgetAccountBalance() {
 62	  return {
 63	    name: `onbudget-accounts-balance`,
@@ -2778,7 +2802,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 66	      .calculate({ $sum: '$amount' }),
 67	  } satisfies Binding<'account', 'onbudget-accounts-balance'>;
 68	}
-69	
+69
 70	export function offBudgetAccountBalance() {
 71	  return {
 72	    name: `offbudget-accounts-balance`,
@@ -2787,7 +2811,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 75	      .calculate({ $sum: '$amount' }),
 76	  } satisfies Binding<'account', 'offbudget-accounts-balance'>;
 77	}
-78	
+78
 79	export function closedAccountBalance() {
 80	  return {
 81	    name: `closed-accounts-balance`,
@@ -2796,7 +2820,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 84	      .calculate({ $sum: '$amount' }),
 85	  } satisfies Binding<'account', 'closed-accounts-balance'>;
 86	}
-87	
+87
 88	export function categoryBalance(
 89	  categoryId: CategoryEntity['id'],
 90	  month: string,
@@ -2812,7 +2836,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 100	      .calculate({ $sum: '$amount' }),
 101	  } satisfies Binding<'category', 'balance'>;
 102	}
-103	
+103
 104	export function categoryBalanceCleared(
 105	  categoryId: CategoryEntity['id'],
 106	  month: string,
@@ -2829,7 +2853,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 117	      .calculate({ $sum: '$amount' }),
 118	  } satisfies Binding<'category', 'balanceCleared'>;
 119	}
-120	
+120
 121	export function categoryBalanceUncleared(
 122	  categoryId: CategoryEntity['id'],
 123	  month: string,
@@ -2846,41 +2870,41 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 134	      .calculate({ $sum: '$amount' }),
 135	  } satisfies Binding<'category', 'balanceUncleared'>;
 136	}
-137	
+137
 138	export function uncategorizedBalance<SheetName extends SheetNames>() {
 139	  return {
 140	    name: 'uncategorized-balance',
 141	    query: uncategorizedTransactions().calculate({ $sum: '$amount' }),
 142	  } satisfies Binding<SheetName, 'uncategorized-balance'>;
 143	}
-144	
+144
 145	export function uncategorizedCount<SheetName extends SheetNames>() {
 146	  return {
 147	    name: 'uncategorized-amount',
 148	    query: uncategorizedTransactions().calculate({ $count: '$id' }),
 149	  } satisfies Binding<SheetName, 'uncategorized-amount'>;
 150	}
-151	
+151
 152	export const envelopeBudget = {
 153	  incomeAvailable: 'available-funds',
 154	  lastMonthOverspent: 'last-month-overspent',
 155	  forNextMonth: 'buffered-selected',
 156	  totalBudgeted: 'total-budgeted',
 157	  toBudget: 'to-budget',
-158	
+158
 159	  fromLastMonth: 'from-last-month',
 160	  manualBuffered: 'buffered',
 161	  autoBuffered: 'buffered-auto',
 162	  totalIncome: 'total-income',
 163	  totalSpent: 'total-spent',
 164	  totalBalance: 'total-leftover',
-165	
+165
 166	  groupSumAmount: envelopeParametrizedField('group-sum-amount'),
 167	  groupIncomeReceived: 'total-income',
-168	
+168
 169	  groupBudgeted: envelopeParametrizedField('group-budget'),
 170	  groupBalance: envelopeParametrizedField('group-leftover'),
-171	
+171
 172	  catBudgeted: envelopeParametrizedField('budget'),
 173	  catSumAmount: envelopeParametrizedField('sum-amount'),
 174	  catBalance: envelopeParametrizedField('leftover'),
@@ -2888,23 +2912,23 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 176	  catGoal: envelopeParametrizedField('goal'),
 177	  catLongGoal: envelopeParametrizedField('long-goal'),
 178	} satisfies BudgetType<'envelope-budget'>;
-179	
+179
 180	export const trackingBudget = {
 181	  totalBudgetedExpense: 'total-budgeted',
 182	  totalBudgetedIncome: 'total-budget-income',
 183	  totalBudgetedSaved: 'total-saved',
-184	
+184
 185	  totalIncome: 'total-income',
 186	  totalSpent: 'total-spent',
 187	  totalSaved: 'real-saved',
-188	
+188
 189	  totalLeftover: 'total-leftover',
 190	  groupSumAmount: trackingParametrizedField('group-sum-amount'),
 191	  groupIncomeReceived: 'total-income',
-192	
+192
 193	  groupBudgeted: trackingParametrizedField('group-budget'),
 194	  groupBalance: trackingParametrizedField('group-leftover'),
-195	
+195
 196	  catBudgeted: trackingParametrizedField('budget'),
 197	  catSumAmount: trackingParametrizedField('sum-amount'),
 198	  catBalance: trackingParametrizedField('leftover'),
@@ -2914,6 +2938,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 202	} satisfies BudgetType<'tracking-budget'>;
 203
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
@@ -2926,21 +2951,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 1	import { createApp } from '#server/app';
 2	import * as sheet from '#server/sheet';
 3	import type { QueryState } from '#shared/query';
-4	
+4
 5	import { resolveName, unresolveName } from './util';
-6	
+6
 7	export type SpreadsheetHandlers = {
 8	  'get-cell': typeof getCell;
 9	  'get-cell-names': typeof getCellNames;
 10	  'create-query': typeof createQuery;
 11	};
-12	
+12
 13	// Expose functions to the client
 14	export const app = createApp<SpreadsheetHandlers>();
 15	app.method('get-cell', getCell);
 16	app.method('get-cell-names', getCellNames);
 17	app.method('create-query', createQuery);
-18	
+18
 19	async function getCell({
 20	  sheetName,
 21	  name,
@@ -2951,7 +2976,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 26	  const node = sheet.get()._getNode(resolveName(sheetName, name));
 27	  return { name: node.name, value: node.value };
 28	}
-29	
+29
 30	async function getCellNames({ sheetName }: { sheetName: string }) {
 31	  const names = [];
 32	  for (const name of sheet.get().getNodes().keys()) {
@@ -2962,7 +2987,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 37	  }
 38	  return names;
 39	}
-40	
+40
 41	async function createQuery({
 42	  sheetName,
 43	  name,
@@ -2979,6 +3004,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 54	}
 55
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
@@ -2990,16 +3016,16 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 ```text
 1	import { createContext, useContext, useEffect, useMemo } from 'react';
 2	import type { ReactNode } from 'react';
-3	
+3
 4	import { listen, send } from '@actual-app/core/platform/client/connection';
 5	import type { Query } from '@actual-app/core/shared/query';
 6	import { LRUCache } from 'lru-cache';
-7	
+7
 8	type SpreadsheetContextValue = ReturnType<typeof makeSpreadsheet>;
 9	const SpreadsheetContext = createContext<SpreadsheetContextValue | undefined>(
 10	  undefined,
 11	);
-12	
+12
 13	export function useSpreadsheet() {
 14	  const context = useContext(SpreadsheetContext);
 15	  if (!context) {
@@ -3007,51 +3033,51 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 17	  }
 18	  return context;
 19	}
-20	
+20
 21	// TODO: Make this generic and replace the Binding type in the desktop-client package.
 22	type Binding = string | { name: string; query?: Query | undefined };
-23	
+23
 24	type CellCacheValue = { name: string; value: string | number | boolean | null };
 25	type CellCache = { [name: string]: Promise<CellCacheValue> | null };
 26	type CellObserverCallback = (node: CellCacheValue) => void;
 27	type CellObservers = { [name: string]: CellObserverCallback[] };
-28	
+28
 29	const GLOBAL_SHEET_NAME = '__global';
-30	
+30
 31	function makeSpreadsheet() {
 32	  const cellObservers: CellObservers = {};
 33	  const LRUValueCache = new LRUCache<string, CellCacheValue>({ max: 1200 });
 34	  const cellCache: CellCache = {};
 35	  let observersDisabled = false;
-36	
+36
 37	  class Spreadsheet {
 38	    observeCell(name: string, callback: CellObserverCallback): () => void {
 39	      if (!cellObservers[name]) {
 40	        cellObservers[name] = [];
 41	      }
 42	      cellObservers[name].push(callback);
-43	
+43
 44	      return () => {
 45	        cellObservers[name] = cellObservers[name].filter(cb => cb !== callback);
-46	
+46
 47	        if (cellObservers[name].length === 0) {
 48	          cellCache[name] = null;
 49	        }
 50	      };
 51	    }
-52	
+52
 53	    disableObservers(): void {
 54	      observersDisabled = true;
 55	    }
-56	
+56
 57	    enableObservers(): void {
 58	      observersDisabled = false;
 59	    }
-60	
+60
 61	    prewarmCache(name: string, value: CellCacheValue): void {
 62	      LRUValueCache.set(name, value);
 63	    }
-64	
+64
 65	    listen(): () => void {
 66	      return listen('cells-changed', event => {
 67	        if (!observersDisabled) {
@@ -3067,21 +3093,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 77	        }
 78	      });
 79	    }
-80	
+80
 81	    bind(
 82	      sheetName: string = GLOBAL_SHEET_NAME,
 83	      binding: Binding,
 84	      callback: CellObserverCallback,
 85	    ): () => void {
 86	      binding = typeof binding === 'string' ? { name: binding } : binding;
-87	
+87
 88	      if (binding.query) {
 89	        void this.createQuery(sheetName, binding.name, binding.query);
 90	      }
-91	
+91
 92	      const resolvedName = `${sheetName}!${binding.name}`;
 93	      const cleanup = this.observeCell(resolvedName, callback);
-94	
+94
 95	      // Always synchronously call with the existing value if it has one.
 96	      // This is a display optimization to avoid flicker. The LRU cache
 97	      // will keep a number of recent nodes in memory.
@@ -3091,13 +3117,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 101	          callback(node);
 102	        }
 103	      }
-104	
+104
 105	      if (cellCache[resolvedName] != null) {
 106	        void cellCache[resolvedName].then(callback);
 107	      } else {
 108	        const req = this.get(sheetName, binding.name);
 109	        cellCache[resolvedName] = req;
-110	
+110
 111	        void req.then(result => {
 112	          // We only want to call the callback if it's still waiting on
 113	          // the same request. If we've received a `cells-changed` event
@@ -3110,18 +3136,18 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 120	          }
 121	        });
 122	      }
-123	
+123
 124	      return cleanup;
 125	    }
-126	
+126
 127	    get(sheetName: string, name: string) {
 128	      return send('get-cell', { sheetName, name });
 129	    }
-130	
+130
 131	    getCellNames(sheetName: string) {
 132	      return send('get-cell-names', { sheetName });
 133	    }
-134	
+134
 135	    createQuery(sheetName: string, name: string, query: Query) {
 136	      return send('create-query', {
 137	        sheetName,
@@ -3130,21 +3156,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 140	      });
 141	    }
 142	  }
-143	
+143
 144	  return new Spreadsheet();
 145	}
-146	
+146
 147	type SpreadsheetProviderProps = {
 148	  children: ReactNode;
 149	};
-150	
+150
 151	export function SpreadsheetProvider({ children }: SpreadsheetProviderProps) {
 152	  const spreadsheet = useMemo(() => makeSpreadsheet(), []);
-153	
+153
 154	  useEffect(() => {
 155	    return spreadsheet.listen();
 156	  }, [spreadsheet]);
-157	
+157
 158	  return (
 159	    <SpreadsheetContext.Provider value={spreadsheet}>
 160	      {children}
@@ -3153,6 +3179,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:46Z)**_
 163	}
 164
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
@@ -3175,7 +3202,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 11	import * as monthUtils from '#shared/months';
 12	import { q } from '#shared/query';
 13	import type { CategoryEntity, CategoryGroupEntity } from '#types/models';
-14	
+14
 15	import * as actions from './actions';
 16	import * as budget from './base';
 17	import * as cleanupGroupActions from './cleanup-groups';
@@ -3184,7 +3211,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 20	import * as goalActions from './goal-template';
 21	import { sortCategories } from './sort-categories';
 22	import * as goalNoteActions from './template-notes';
-23	
+23
 24	export type BudgetHandlers = {
 25	  'budget/budget-amount': typeof actions.setBudget;
 26	  'budget/copy-previous-month': typeof actions.copyPreviousMonth;
@@ -3232,9 +3259,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 68	  'budget/render-note-templates': typeof goalNoteActions.unparse;
 69	  'budget/create-cleanup-group': typeof cleanupGroupActions.createCleanupGroup;
 70	};
-71	
+71
 72	export const app = createApp<BudgetHandlers>();
-73	
+73
 74	app.method('budget/budget-amount', mutator(undoable(actions.setBudget)));
 75	app.method(
 76	  'budget/copy-previous-month',
@@ -3321,7 +3348,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 157	app.method('category-group-move', mutator(undoable(moveCategoryGroup)));
 158	app.method('category-group-delete', mutator(undoable(deleteCategoryGroup)));
 159	app.method('must-category-transfer', isCategoryTransferRequired);
-160	
+160
 161	app.method(
 162	  'budget/get-category-automations',
 163	  goalActions.getTemplatesForCategory,
@@ -3344,7 +3371,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 180	  'budget/create-cleanup-group',
 181	  mutator(undoable(cleanupGroupActions.createCleanupGroup)),
 182	);
-183	
+183
 184	// Server must return AQL entities not the raw DB data
 185	async function getCategories({ hidden }: { hidden?: boolean } = {}) {
 186	  const categoryGroups = await getCategoryGroups({ hidden });
@@ -3365,39 +3392,39 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 201	    list,
 202	  };
 203	}
-204	
+204
 205	async function getBudgetBounds() {
 206	  return await budget.createAllBudgets();
 207	}
-208	
+208
 209	async function envelopeBudgetMonth({ month }: { month: string }) {
 210	  const groups = await db.getCategoriesGrouped();
 211	  const sheetName = monthUtils.sheetForMonth(month);
-212	
+212
 213	  function value(name: string) {
 214	    const v = sheet.getCellValue(sheetName, name);
 215	    return { value: v === '' ? 0 : v, name: resolveName(sheetName, name) };
 216	  }
-217	
+217
 218	  let values = [
 219	    value('available-funds'),
 220	    value('last-month-overspent'),
 221	    value('buffered'),
 222	    value('total-budgeted'),
 223	    value('to-budget'),
-224	
+224
 225	    value('from-last-month'),
 226	    value('total-income'),
 227	    value('total-spent'),
 228	    value('total-leftover'),
 229	  ];
-230	
+230
 231	  for (const group of groups) {
 232	    const categories = group.categories ?? [];
-233	
+233
 234	    if (group.is_income) {
 235	      values.push(value('total-income'));
-236	
+236
 237	      for (const cat of categories) {
 238	        values.push(value(`sum-amount-${cat.id}`));
 239	      }
@@ -3407,7 +3434,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 243	        value(`group-sum-amount-${group.id}`),
 244	        value(`group-leftover-${group.id}`),
 245	      ]);
-246	
+246
 247	      for (const cat of categories) {
 248	        values = values.concat([
 249	          value(`budget-${cat.id}`),
@@ -3420,19 +3447,19 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 256	      }
 257	    }
 258	  }
-259	
+259
 260	  return values;
 261	}
-262	
+262
 263	async function trackingBudgetMonth({ month }: { month: string }) {
 264	  const groups = await db.getCategoriesGrouped();
 265	  const sheetName = monthUtils.sheetForMonth(month);
-266	
+266
 267	  function value(name: string) {
 268	    const v = sheet.getCellValue(sheetName, name);
 269	    return { value: v === '' ? 0 : v, name: resolveName(sheetName, name) };
 270	  }
-271	
+271
 272	  let values = [
 273	    value('total-budgeted'),
 274	    value('total-budget-income'),
@@ -3442,16 +3469,16 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 278	    value('real-saved'),
 279	    value('total-leftover'),
 280	  ];
-281	
+281
 282	  for (const group of groups) {
 283	    values = values.concat([
 284	      value(`group-budget-${group.id}`),
 285	      value(`group-sum-amount-${group.id}`),
 286	      value(`group-leftover-${group.id}`),
 287	    ]);
-288	
+288
 289	    const categories = group.categories ?? [];
-290	
+290
 291	    for (const cat of categories) {
 292	      values = values.concat([
 293	        value(`budget-${cat.id}`),
@@ -3460,16 +3487,16 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 296	        value(`goal-${cat.id}`),
 297	        value(`long-goal-${cat.id}`),
 298	      ]);
-299	
+299
 300	      if (!group.is_income) {
 301	        values.push(value(`carryover-${cat.id}`));
 302	      }
 303	    }
 304	  }
-305	
+305
 306	  return values;
 307	}
-308	
+308
 309	async function createCategory({
 310	  name,
 311	  groupId,
@@ -3484,7 +3511,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 320	  if (!groupId) {
 321	    throw APIError('Creating a category: groupId is required');
 322	  }
-323	
+323
 324	  return await db.insertCategory({
 325	    name: name.trim(),
 326	    cat_group: groupId,
@@ -3492,7 +3519,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 328	    hidden: hidden ? 1 : 0,
 329	  });
 330	}
-331	
+331
 332	async function updateCategory(category: CategoryEntity): Promise<void> {
 333	  try {
 334	    await db.updateCategory(
@@ -3514,7 +3541,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 350	    throw e;
 351	  }
 352	}
-353	
+353
 354	async function moveCategory({
 355	  id,
 356	  groupId,
@@ -3528,7 +3555,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 364	    await db.moveCategory(id, groupId, targetId);
 365	  });
 366	}
-367	
+367
 368	async function deleteCategory({
 369	  id,
 370	  transferId,
@@ -3544,14 +3571,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 380	    if (!row) {
 381	      throw new Error(`Category with id ${id} not found.`);
 382	    }
-383	
+383
 384	    const transfer =
 385	      transferId &&
 386	      (await db.first<Pick<db.DbCategory, 'is_income'>>(
 387	        'SELECT is_income FROM categories WHERE id = ?',
 388	        [transferId],
 389	      ));
-390	
+390
 391	    if (transferId && !transfer) {
 392	      throw new Error(`Transfer category with id ${transferId} not found.`);
 393	    } else if (
@@ -3562,7 +3589,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 398	    ) {
 399	      throw new Error('Cannot transfer between income and expense categories.');
 400	    }
-401	
+401
 402	    // Update spreadsheet values if it's an expense category
 403	    // TODO: We should do this for income too if it's a tracking budget
 404	    if (row.is_income === 0) {
@@ -3570,11 +3597,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 406	        await budget.doTransfer([id], transferId);
 407	      }
 408	    }
-409	
+409
 410	    await db.deleteCategory({ id }, transferId);
 411	  });
 412	}
-413	
+413
 414	// Server must return AQL entities not the raw DB data
 415	async function getCategoryGroups({ hidden }: { hidden?: boolean } = {}) {
 416	  const baseQuery = q('category_groups').select('*');
@@ -3589,7 +3616,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 425	    categories: g.categories?.filter(c => Boolean(c.hidden) === hidden),
 426	  }));
 427	}
-428	
+428
 429	async function createCategoryGroup({
 430	  name,
 431	  isIncome,
@@ -3605,11 +3632,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 441	    hidden: hidden ? 1 : 0,
 442	  });
 443	}
-444	
+444
 445	async function updateCategoryGroup(group: CategoryGroupEntity) {
 446	  await db.updateCategoryGroup(categoryGroupModel.toDb(group));
 447	}
-448	
+448
 449	async function moveCategoryGroup({
 450	  id,
 451	  targetId,
@@ -3621,7 +3648,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 457	    await db.moveCategoryGroup(id, targetId);
 458	  });
 459	}
-460	
+460
 461	async function deleteCategoryGroup({
 462	  id,
 463	  transferId,
@@ -3633,7 +3660,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 469	    'SELECT id FROM categories WHERE cat_group = ? AND tombstone = 0',
 470	    [id],
 471	  );
-472	
+472
 473	  await batchMessages(async () => {
 474	    if (transferId) {
 475	      await budget.doTransfer(
@@ -3644,7 +3671,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 480	    await db.deleteCategoryGroup({ id }, transferId);
 481	  });
 482	}
-483	
+483
 484	async function isCategoryTransferRequired({
 485	  id,
 486	}: {
@@ -3657,24 +3684,25 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:49Z)**_
 493	    [id],
 494	    true,
 495	  );
-496	
+496
 497	  // If there are transactions with this category, return early since
 498	  // we already know it needs to be tranferred
 499	  if (res[0].count !== 0) {
 500	    return true;
 501	  }
-502	
+502
 503	  // If there are any non-zero budget values, also force the user to
 504	  // transfer the category.
 505	  return [...(sheet.get().meta().createdMonths as Set<string>)].some(month => {
 506	    const sheetName = monthUtils.sheetForMonth(month);
 507	    const value = sheet.get().getCellValue(sheetName, 'budget-' + id);
-508	
+508
 509	    return value != null && value !== 0;
 510	  });
 511	}
 512
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
@@ -3693,37 +3721,37 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 7	import { q } from '#shared/query';
 8	import { getChangedValues } from '#shared/util';
 9	import type { CategoryGroupEntity } from '#types/models';
-10	
+10
 11	import * as budgetActions from './actions';
 12	import * as envelopeBudget from './envelope';
 13	import * as trackingBudget from './tracking';
-14	
+14
 15	export function getBudgetType() {
 16	  const meta = sheet.get().meta();
 17	  return meta.budgetType || 'envelope';
 18	}
-19	
+19
 20	export function getBudgetRange(start: string, end: string) {
 21	  start = monthUtils.getMonth(start);
 22	  end = monthUtils.getMonth(end);
-23	
+23
 24	  // The start date should never be after the end date. If that
 25	  // happened, the month range might be a valid range and weird
 26	  // things happen
 27	  if (start > end) {
 28	    start = end;
 29	  }
-30	
+30
 31	  // Budgets should exist 3 months before the earliest needed date
 32	  // (either the oldest transaction or the current month if no
 33	  // transactions yet), and a year from the current date. There's no
 34	  // need to ever have budgets outside that range.
 35	  start = monthUtils.subMonths(start, 3);
 36	  end = monthUtils.addMonths(end, 12);
-37	
+37
 38	  return { start, end, range: monthUtils.rangeInclusive(start, end) };
 39	}
-40	
+40
 41	// Computes the spend total for every category in every month within the
 42	// given day range using a single grouped query. This is used to seed the
 43	// `sum-amount` cells on a cold build so we avoid running one
@@ -3748,14 +3776,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 62	    [],
 63	    true,
 64	  );
-65	
+65
 66	  const sums = new Map<string, number>();
 67	  for (const row of rows) {
 68	    sums.set(`${row.month}-${row.category}`, row.amount || 0);
 69	  }
 70	  return sums;
 71	}
-72	
+72
 73	export function createCategory(cat, sheetName, prevSheetName, start, end) {
 74	  sheet.get().createDynamic(sheetName, 'sum-amount-' + cat.id, {
 75	    initialValue: 0,
@@ -3774,14 +3802,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 88	      return amount || 0;
 89	    },
 90	  });
-91	
+91
 92	  if (getBudgetType() === 'envelope') {
 93	    envelopeBudget.createCategory(cat, sheetName, prevSheetName);
 94	  } else {
 95	    void trackingBudget.createCategory(cat, sheetName, prevSheetName);
 96	  }
 97	}
-98	
+98
 99	function handleAccountChange(months, oldValue, newValue) {
 100	  if (!oldValue || oldValue.offbudget !== newValue.offbudget) {
 101	    const rows = db.runQuery<Pick<db.DbTransaction, 'category'>>(
@@ -3792,10 +3820,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 106	      [newValue.id],
 107	      true,
 108	    );
-109	
+109
 110	    months.forEach(month => {
 111	      const sheetName = monthUtils.sheetForMonth(month);
-112	
+112
 113	      rows.forEach(row => {
 114	        sheet
 115	          .get()
@@ -3804,7 +3832,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 118	    });
 119	  }
 120	}
-121	
+121
 122	function handleTransactionChange(transaction, changedFields) {
 123	  if (
 124	    (changedFields.has('date') ||
@@ -3818,13 +3846,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 132	  ) {
 133	    const month = monthUtils.monthFromDate(db.fromDateRepr(transaction.date));
 134	    const sheetName = monthUtils.sheetForMonth(month);
-135	
+135
 136	    sheet
 137	      .get()
 138	      .recompute(resolveName(sheetName, 'sum-amount-' + transaction.category));
 139	  }
 140	}
-141	
+141
 142	function handleCategoryMappingChange(months, oldValue, newValue) {
 143	  months.forEach(month => {
 144	    const sheetName = monthUtils.sheetForMonth(month);
@@ -3838,12 +3866,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 152	      .recompute(resolveName(sheetName, 'sum-amount-' + newValue.transferId));
 153	  });
 154	}
-155	
+155
 156	function handleBudgetMonthChange(budget) {
 157	  const sheetName = monthUtils.sheetForMonth(budget.id);
 158	  sheet.get().set(`${sheetName}!buffered`, budget.buffered);
 159	}
-160	
+160
 161	function handleBudgetChange(budget) {
 162	  if (budget.category) {
 163	    const sheetName = monthUtils.sheetForMonth(budget.month.toString());
@@ -3862,19 +3890,19 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 176	      .set(`${sheetName}!long-goal-${budget.category}`, budget.long_goal);
 177	  }
 178	}
-179	
+179
 180	export function triggerBudgetChanges(oldValues, newValues) {
 181	  const { createdMonths = new Set() } = sheet.get().meta();
 182	  const budgetType = getBudgetType();
 183	  sheet.startTransaction();
-184	
+184
 185	  try {
 186	    newValues.forEach((items, table) => {
 187	      const old = oldValues.get(table);
-188	
+188
 189	      items.forEach(newValue => {
 190	        const oldValue = old && old.get(newValue.id);
-191	
+191
 192	        if (table === 'zero_budget_months') {
 193	          handleBudgetMonthChange(newValue);
 194	        } else if (table === 'zero_budgets' || table === 'reflect_budgets') {
@@ -3883,7 +3911,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 197	          const changed = new Set(
 198	            Object.keys(getChangedValues(oldValue || {}, newValue) || {}),
 199	          );
-200	
+200
 201	          if (oldValue) {
 202	            handleTransactionChange(oldValue, changed);
 203	          }
@@ -3927,22 +3955,22 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 241	    sheet.endTransaction();
 242	  }
 243	}
-244	
+244
 245	export async function doTransfer(categoryIds, transferId) {
 246	  const { createdMonths: months } = sheet.get().meta();
-247	
+247
 248	  [...months].forEach(month => {
 249	    const totalValue = categoryIds
 250	      .map(id => {
 251	        return budgetActions.getBudget({ month, category: id });
 252	      })
 253	      .reduce((total, value) => total + value, 0);
-254	
+254
 255	    const transferValue = budgetActions.getBudget({
 256	      month,
 257	      category: transferId,
 258	    });
-259	
+259
 260	    void budgetActions.setBudget({
 261	      month,
 262	      category: transferId,
@@ -3950,26 +3978,26 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 264	    });
 265	  });
 266	}
-267	
+267
 268	export async function createBudget(months) {
 269	  const { data: groups }: { data: CategoryGroupEntity[] } = await aqlQuery(
 270	    q('category_groups').select('*'),
 271	  );
 272	  const categories = groups.flatMap(group => group.categories);
-273	
+273
 274	  sheet.startTransaction();
 275	  const meta = sheet.get().meta();
 276	  meta.createdMonths = meta.createdMonths || new Set();
-277	
+277
 278	  const budgetType = getBudgetType();
-279	
+279
 280	  if (budgetType === 'envelope') {
 281	    envelopeBudget.createBudget(meta, categories, months);
 282	  }
-283	
+283
 284	  // Only months that don't already exist need to be created and seeded.
 285	  const monthsToCreate = months.filter(month => !meta.createdMonths.has(month));
-286	
+286
 287	  // Spend totals for every category in the months being created, computed
 288	  // once via a single grouped query and used to seed the `sum-amount` cells so
 289	  // they don't each run their own query. Scoped to the uncached month span so
@@ -3998,14 +4026,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 312	    return sumAmounts;
 313	  };
 314	  const seededCells: string[] = [];
-315	
+315
 316	  monthsToCreate.forEach(month => {
 317	    const prevMonth = monthUtils.prevMonth(month);
 318	    const { start, end } = monthUtils.bounds(month);
 319	    const sheetName = monthUtils.sheetForMonth(month);
 320	    const prevSheetName = monthUtils.sheetForMonth(prevMonth);
 321	    const dbMonth = parseInt(month.replace('-', ''));
-322	
+322
 323	    categories.forEach(cat => {
 324	      // Seed the spend total before creating the dynamic cell so the cell
 325	      // skips its per-category query. Only happens on a cold build, when
@@ -4027,7 +4055,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 341	        trackingBudget.createCategoryGroup(group, sheetName);
 342	      }
 343	    });
-344	
+344
 345	    if (budgetType === 'envelope') {
 346	      envelopeBudget.createSummary(
 347	        groups,
@@ -4038,13 +4066,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 352	    } else {
 353	      trackingBudget.createSummary(groups, sheetName);
 354	    }
-355	
+355
 356	    meta.createdMonths.add(month);
 357	  });
-358	
+358
 359	  sheet.get().setMeta(meta);
 360	  sheet.endTransaction();
-361	
+361
 362	  // Persist the seeded spend totals to the cache. Because they were loaded
 363	  // directly (rather than recomputed) they aren't part of the computation
 364	  // queue that normally gets cached, so without this a warm load would have
@@ -4052,13 +4080,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 366	  if (seededCells.length > 0) {
 367	    sheet.get().saveCachedCells(seededCells);
 368	  }
-369	
+369
 370	  // Wait for the spreadsheet to finish computing. Normally this won't
 371	  // do anything (as values are cached) but on first run this need to
 372	  // show the loading screen while it initially sets up.
 373	  await sheet.waitOnSpreadsheet();
 374	}
-375	
+375
 376	export async function createAllBudgets() {
 377	  const earliestTransaction = await db.first<db.DbTransaction>(
 378	    'SELECT * FROM transactions WHERE isChild=0 AND date IS NOT NULL ORDER BY date ASC LIMIT 1',
@@ -4066,7 +4094,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 380	  const earliestDate =
 381	    earliestTransaction && db.fromDateRepr(earliestTransaction.date);
 382	  const currentMonth = monthUtils.currentMonth();
-383	
+383
 384	  // Get the range based off of the earliest transaction and the
 385	  // current month. If no transactions currently exist the current
 386	  // month is also used as the starting month
@@ -4074,27 +4102,27 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 388	    earliestDate || currentMonth,
 389	    currentMonth,
 390	  );
-391	
+391
 392	  const meta = sheet.get().meta();
 393	  const createdMonths = meta.createdMonths || new Set();
 394	  const newMonths = range.filter(m => !createdMonths.has(m));
-395	
+395
 396	  if (newMonths.length > 0) {
 397	    await createBudget(range);
 398	  }
-399	
+399
 400	  return { start, end };
 401	}
-402	
+402
 403	export async function setType(type) {
 404	  const meta = sheet.get().meta();
 405	  if (type === meta.budgetType) {
 406	    return;
 407	  }
-408	
+408
 409	  meta.budgetType = type;
 410	  meta.createdMonths = new Set();
-411	
+411
 412	  // Go through and force all the cells to be recomputed
 413	  const nodes = sheet.get().getNodes();
 414	  db.transaction(() => {
@@ -4105,16 +4133,17 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 419	      }
 420	    }
 421	  });
-422	
+422
 423	  sheet.get().startCacheBarrier();
 424	  void sheet.loadUserBudgets(db);
 425	  const bounds = await createAllBudgets();
 426	  sheet.get().endCacheBarrier();
-427	
+427
 428	  return bounds;
 429	}
 430
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
@@ -4130,7 +4159,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 ```text
 1	import React, { memo, useRef, useState } from 'react';
 2	import { Trans, useTranslation } from 'react-i18next';
-3	
+3
 4	import { Button } from '@actual-app/components/button';
 5	import { SvgDotsHorizontalTriple } from '@actual-app/components/icons/v1';
 6	import {
@@ -4143,20 +4172,20 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 13	import { styles } from '@actual-app/components/styles';
 14	import { theme } from '@actual-app/components/theme';
 15	import { View } from '@actual-app/components/view';
-16	
+16
 17	import { useGlobalPref } from '#hooks/useGlobalPref';
-18	
+18
 19	import { RenderMonths } from './RenderMonths';
 20	import { getScrollbarWidth } from './util';
-21	
+21
 22	import { useBudgetComponents } from '.';
-23	
+23
 24	type BudgetTotalsProps = {
 25	  toggleHiddenCategories: () => void;
 26	  expandAllCategories: () => void;
 27	  collapseAllCategories: () => void;
 28	};
-29	
+29
 30	export const BudgetTotals = memo(function BudgetTotals({
 31	  toggleHiddenCategories,
 32	  expandAllCategories,
@@ -4168,12 +4197,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 38	  const categoryExpandedState = categoryExpandedStatePref ?? 0;
 39	  const [menuOpen, setMenuOpen] = useState(false);
 40	  const triggerRef = useRef(null);
-41	
+41
 42	  const cycleExpandedState = () => {
 43	    const nextState = (categoryExpandedState + 1) % 3;
 44	    setCategoryExpandedStatePref(nextState);
 45	  };
-46	
+46
 47	  const getExpandStateLabel = () => {
 48	    switch (categoryExpandedState) {
 49	      case 0:
@@ -4186,9 +4215,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 56	        return t('Expand');
 57	    }
 58	  };
-59	
+59
 60	  const { BudgetTotalsComponent: MonthComponent } = useBudgetComponents();
-61	
+61
 62	  return (
 63	    <View
 64	      data-testid="budget-totals"
@@ -4274,7 +4303,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 144	            style={{ color: theme.tableHeaderText }}
 145	          />
 146	        </Button>
-147	
+147
 148	        <Popover
 149	          triggerRef={triggerRef}
 150	          isOpen={menuOpen}
@@ -4317,6 +4346,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:50Z)**_
 187	});
 188
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:51Z)**_
@@ -4332,6 +4362,7 @@ loot-core\src\shared\months.ts-406-}
 loot-core\src\shared\months.ts-407-
 loot-core\src\shared\months.ts-408-export function nameForMonth(month: DateLike, locale?: Locale): string {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:52Z)**_
@@ -4361,6 +4392,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:52Z)**_
 204-  month: string,
 205-) {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:52Z)**_
@@ -4375,6 +4407,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:52Z)**_
 20:  const [encryptKeyId] = useMetadataPref('encryptKeyId');
 38:        `${format(new Date(), 'yyyy-MM-dd')}-${budgetName}.zip`,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
@@ -4388,6 +4421,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 146:  const format = useFormat();
 336:      format.currency.decimalPlaces,
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
@@ -4403,15 +4437,15 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 4	// @ts-strict-ignore
 5	import * as monthUtils from '#shared/months';
 6	import { safeNumber } from '#shared/util';
-7	
+7
 8	import { createCategory as createCategoryFromBase } from './base';
 9	import { flatten2, number, sumAmounts, unflatten2 } from './util';
-10	
+10
 11	function getBlankSheet(months) {
 12	  const blankMonth = monthUtils.prevMonth(months[0]);
 13	  return monthUtils.sheetForMonth(blankMonth);
 14	}
-15	
+15
 16	export function createBlankCategory(cat, months) {
 17	  if (months.length > 0) {
 18	    const sheetName = getBlankSheet(months);
@@ -4420,19 +4454,19 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 21	    sheet.get().createStatic(sheetName, `leftover-pos-${cat.id}`, 0);
 22	  }
 23	}
-24	
+24
 25	function createBlankMonth(categories, sheetName, months) {
 26	  sheet.get().createStatic(sheetName, 'is-blank', true);
 27	  sheet.get().createStatic(sheetName, 'to-budget', 0);
 28	  sheet.get().createStatic(sheetName, 'buffered', 0);
-29	
+29
 30	  categories.forEach(cat => createBlankCategory(cat, months));
 31	}
-32	
+32
 33	export function createCategory(cat, sheetName, prevSheetName) {
 34	  if (!cat.is_income) {
 35	    sheet.get().createStatic(sheetName, `budget-${cat.id}`, 0);
-36	
+36
 37	    // This makes the app more robust by "fixing up" null budget values.
 38	    // Those should not be allowed, but in case somehow a null value
 39	    // ends up there, we are resilient to it. Preferrably the
@@ -4441,9 +4475,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 42	    if (sheet.get().getCellValue(sheetName, `budget-${cat.id}`) == null) {
 43	      sheet.get().set(resolveName(sheetName, `budget-${cat.id}`), 0);
 44	    }
-45	
+45
 46	    sheet.get().createStatic(sheetName, `carryover-${cat.id}`, false);
-47	
+47
 48	    sheet.get().createDynamic(sheetName, `leftover-${cat.id}`, {
 49	      initialValue: 0,
 50	      dependencies: [
@@ -4461,7 +4495,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 62	        );
 63	      },
 64	    });
-65	
+65
 66	    sheet.get().createDynamic(sheetName, 'leftover-pos-' + cat.id, {
 67	      initialValue: 0,
 68	      dependencies: [`leftover-${cat.id}`],
@@ -4471,21 +4505,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 72	    });
 73	  }
 74	}
-75	
+75
 76	export function createCategoryGroup(group, sheetName) {
 77	  sheet.get().createDynamic(sheetName, 'group-sum-amount-' + group.id, {
 78	    initialValue: 0,
 79	    dependencies: group.categories.map(cat => `sum-amount-${cat.id}`),
 80	    run: sumAmounts,
 81	  });
-82	
+82
 83	  if (!group.is_income) {
 84	    sheet.get().createDynamic(sheetName, 'group-budget-' + group.id, {
 85	      initialValue: 0,
 86	      dependencies: group.categories.map(cat => `budget-${cat.id}`),
 87	      run: sumAmounts,
 88	    });
-89	
+89
 90	    sheet.get().createDynamic(sheetName, 'group-leftover-' + group.id, {
 91	      initialValue: 0,
 92	      dependencies: group.categories.map(cat => `leftover-${cat.id}`),
@@ -4493,14 +4527,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 94	    });
 95	  }
 96	}
-97	
+97
 98	export function createSummary(groups, categories, prevSheetName, sheetName) {
 99	  const incomeGroup = groups.filter(group => group.is_income)[0];
 100	  const expenseCategories = categories.filter(cat => !cat.is_income);
 101	  const incomeCategories = categories.filter(cat => cat.is_income);
-102	
+102
 103	  sheet.get().createStatic(sheetName, 'buffered', 0);
-104	
+104
 105	  sheet.get().createDynamic(sheetName, 'from-last-month', {
 106	    initialValue: 0,
 107	    dependencies: [
@@ -4510,21 +4544,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 111	    run: (toBudget, buffered) =>
 112	      safeNumber(number(toBudget) + number(buffered)),
 113	  });
-114	
+114
 115	  // Alias the group income total to `total-income`
 116	  sheet.get().createDynamic(sheetName, 'total-income', {
 117	    initialValue: 0,
 118	    dependencies: [`group-sum-amount-${incomeGroup.id}`],
 119	    run: amount => amount,
 120	  });
-121	
+121
 122	  sheet.get().createDynamic(sheetName, 'available-funds', {
 123	    initialValue: 0,
 124	    dependencies: ['total-income', 'from-last-month'],
 125	    run: (income, fromLastMonth) =>
 126	      safeNumber(number(income) + number(fromLastMonth)),
 127	  });
-128	
+128
 129	  sheet.get().createDynamic(sheetName, 'last-month-overspent', {
 130	    initialValue: 0,
 131	    dependencies: flatten2(
@@ -4545,7 +4579,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 146	      );
 147	    },
 148	  });
-149	
+149
 150	  sheet.get().createDynamic(sheetName, 'total-budgeted', {
 151	    initialValue: 0,
 152	    dependencies: groups
@@ -4556,7 +4590,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 157	      return -sumAmounts(...amounts);
 158	    },
 159	  });
-160	
+160
 161	  sheet.get().createDynamic(sheetName, 'buffered', { initialValue: 0 });
 162	  sheet.get().createDynamic(sheetName, 'buffered-auto', {
 163	    initialValue: 0,
@@ -4588,7 +4622,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 189	      return auto;
 190	    },
 191	  });
-192	
+192
 193	  sheet.get().createDynamic(sheetName, 'to-budget', {
 194	    initialValue: 0,
 195	    dependencies: [
@@ -4606,7 +4640,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 207	      );
 208	    },
 209	  });
-210	
+210
 211	  sheet.get().createDynamic(sheetName, 'total-spent', {
 212	    initialValue: 0,
 213	    dependencies: groups
@@ -4614,7 +4648,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 215	      .map(group => `group-sum-amount-${group.id}`),
 216	    run: sumAmounts,
 217	  });
-218	
+218
 219	  sheet.get().createDynamic(sheetName, 'total-leftover', {
 220	    initialValue: 0,
 221	    dependencies: groups
@@ -4623,7 +4657,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 224	    run: sumAmounts,
 225	  });
 226	}
-227	
+227
 228	export function createBudget(meta, categories, months) {
 229	  // The spreadsheet is now strict - so we need to fill in some
 230	  // default values for the month before the first month. Only do this
@@ -4635,7 +4669,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 236	    meta.blankSheet = blankSheet;
 237	  }
 238	}
-239	
+239
 240	export function handleCategoryChange(months, oldValue, newValue) {
 241	  function addDeps(sheetName, groupId, catId) {
 242	    sheet
@@ -4654,7 +4688,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 255	        `leftover-${catId}`,
 256	      ]);
 257	  }
-258	
+258
 259	  function removeDeps(sheetName, groupId, catId) {
 260	    sheet
 261	      .get()
@@ -4672,11 +4706,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 273	        `leftover-${catId}`,
 274	      ]);
 275	  }
-276	
+276
 277	  if (oldValue && oldValue.tombstone === 0 && newValue.tombstone === 1) {
 278	    const id = newValue.id;
 279	    const groupId = newValue.cat_group;
-280	
+280
 281	    months.forEach(month => {
 282	      const sheetName = monthUtils.sheetForMonth(month);
 283	      removeDeps(sheetName, groupId, id);
@@ -4686,25 +4720,25 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 287	    (!oldValue || oldValue.tombstone === 1)
 288	  ) {
 289	    createBlankCategory(newValue, months);
-290	
+290
 291	    months.forEach(month => {
 292	      const prevMonth = monthUtils.prevMonth(month);
 293	      const prevSheetName = monthUtils.sheetForMonth(prevMonth);
 294	      const sheetName = monthUtils.sheetForMonth(month);
 295	      const { start, end } = monthUtils.bounds(month);
-296	
+296
 297	      createCategoryFromBase(newValue, sheetName, prevSheetName, start, end);
-298	
+298
 299	      const id = newValue.id;
 300	      const groupId = newValue.cat_group;
-301	
+301
 302	      sheet
 303	        .get()
 304	        .addDependencies(sheetName, 'last-month-overspent', [
 305	          `${prevSheetName}!leftover-${id}`,
 306	          `${prevSheetName}!carryover-${id}`,
 307	        ]);
-308	
+308
 309	      addDeps(sheetName, groupId, id);
 310	      if (newValue.is_income) {
 311	        sheet
@@ -4722,7 +4756,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 323	  } else if (oldValue && oldValue.cat_group !== newValue.cat_group) {
 324	    // The category moved so we need to update the dependencies
 325	    const id = newValue.id;
-326	
+326
 327	    months.forEach(month => {
 328	      const sheetName = monthUtils.sheetForMonth(month);
 329	      removeDeps(sheetName, oldValue.cat_group, id);
@@ -4730,7 +4764,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 331	    });
 332	  }
 333	}
-334	
+334
 335	export function handleCategoryGroupChange(months, oldValue, newValue) {
 336	  function addDeps(sheetName, groupId) {
 337	    sheet
@@ -4749,7 +4783,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 350	        `group-leftover-${groupId}`,
 351	      ]);
 352	  }
-353	
+353
 354	  function removeDeps(sheetName, groupId) {
 355	    sheet
 356	      .get()
@@ -4767,7 +4801,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 368	        `group-leftover-${groupId}`,
 369	      ]);
 370	  }
-371	
+371
 372	  if (newValue.tombstone === 1 && oldValue && oldValue.tombstone === 0) {
 373	    const id = newValue.id;
 374	    months.forEach(month => {
@@ -4779,11 +4813,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 380	    (!oldValue || oldValue.tombstone === 1)
 381	  ) {
 382	    const group = newValue;
-383	
+383
 384	    if (!group.is_income) {
 385	      months.forEach(month => {
 386	        const sheetName = monthUtils.sheetForMonth(month);
-387	
+387
 388	        // Dirty, dirty hack. These functions should not be async, but this is
 389	        // OK because we're leveraging the sync nature of queries. Ideally we
 390	        // wouldn't be querying here. But I think we have to. At least for now
@@ -4794,7 +4828,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 395	          true,
 396	        );
 397	        createCategoryGroup({ ...group, categories }, sheetName);
-398	
+398
 399	        addDeps(sheetName, group.id);
 400	      });
 401	    }
@@ -4802,6 +4836,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:53Z)**_
 403	}
 404
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
@@ -4817,13 +4852,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 4	// @ts-strict-ignore
 5	import * as monthUtils from '#shared/months';
 6	import { safeNumber } from '#shared/util';
-7	
+7
 8	import { createCategory as createCategoryFromBase } from './base';
 9	import { number, sumAmounts } from './util';
-10	
+10
 11	export async function createCategory(cat, sheetName, prevSheetName) {
 12	  sheet.get().createStatic(sheetName, `budget-${cat.id}`, 0);
-13	
+13
 14	  // This makes the app more robust by "fixing up" null budget values.
 15	  // Those should not be allowed, but in case somehow a null value
 16	  // ends up there, we are resilient to it. Preferrably the
@@ -4832,7 +4867,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 19	  if (sheet.get().getCellValue(sheetName, `budget-${cat.id}`) == null) {
 20	    sheet.get().set(resolveName(sheetName, `budget-${cat.id}`), 0);
 21	  }
-22	
+22
 23	  sheet.get().createDynamic(sheetName, `leftover-${cat.id}`, {
 24	    initialValue: 0,
 25	    dependencies: [
@@ -4849,7 +4884,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 36	            (prevCarryover ? number(prevLeftover) : 0),
 37	        );
 38	      }
-39	
+39
 40	      return safeNumber(
 41	        number(budgeted) +
 42	          number(sumAmount) +
@@ -4872,10 +4907,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 59	        : sumAmount;
 60	    },
 61	  });
-62	
+62
 63	  sheet.get().createStatic(sheetName, `carryover-${cat.id}`, false);
 64	}
-65	
+65
 66	export function createCategoryGroup(group, sheetName) {
 67	  // different sum amount dependencies
 68	  sheet.get().createDynamic(sheetName, 'group-sum-amount-' + group.id, {
@@ -4900,44 +4935,44 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 87	    run: sumAmounts,
 88	  });
 89	}
-90	
+90
 91	export function createSummary(groups, sheetName) {
 92	  const incomeGroup = groups.filter(group => group.is_income)[0];
 93	  const expenseGroups = groups.filter(
 94	    group => !group.is_income && !group.hidden,
 95	  );
-96	
+96
 97	  sheet.get().createDynamic(sheetName, 'total-budgeted', {
 98	    initialValue: 0,
 99	    dependencies: expenseGroups.map(group => `group-budget-${group.id}`),
 100	    run: sumAmounts,
 101	  });
-102	
+102
 103	  sheet.get().createDynamic(sheetName, 'total-spent', {
 104	    initialValue: 0,
 105	    refresh: true,
 106	    dependencies: expenseGroups.map(group => `group-sum-amount-${group.id}`),
 107	    run: sumAmounts,
 108	  });
-109	
+109
 110	  sheet.get().createDynamic(sheetName, 'total-income', {
 111	    initialValue: 0,
 112	    dependencies: [`group-sum-amount-${incomeGroup.id}`],
 113	    run: amount => amount,
 114	  });
-115	
+115
 116	  sheet.get().createDynamic(sheetName, 'total-leftover', {
 117	    initialValue: 0,
 118	    dependencies: expenseGroups.map(g => `group-leftover-${g.id}`),
 119	    run: sumAmounts,
 120	  });
-121	
+121
 122	  sheet.get().createDynamic(sheetName, 'total-budget-income', {
 123	    initialValue: 0,
 124	    dependencies: [`group-budget-${incomeGroup.id}`],
 125	    run: amount => amount,
 126	  });
-127	
+127
 128	  sheet.get().createDynamic(sheetName, 'total-saved', {
 129	    initialValue: 0,
 130	    dependencies: ['total-budget-income', 'total-budgeted'],
@@ -4945,7 +4980,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 132	      return income - budgeted;
 133	    },
 134	  });
-135	
+135
 136	  sheet.get().createDynamic(sheetName, 'real-saved', {
 137	    initialValue: 0,
 138	    dependencies: ['total-income', 'total-spent'],
@@ -4954,7 +4989,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 141	    },
 142	  });
 143	}
-144	
+144
 145	export function handleCategoryChange(months, oldValue, newValue) {
 146	  function addDeps(sheetName, groupId, catId) {
 147	    sheet
@@ -4973,7 +5008,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 160	        `leftover-${catId}`,
 161	      ]);
 162	  }
-163	
+163
 164	  function removeDeps(sheetName, groupId, catId) {
 165	    sheet
 166	      .get()
@@ -4991,11 +5026,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 178	        `leftover-${catId}`,
 179	      ]);
 180	  }
-181	
+181
 182	  if (oldValue && oldValue.tombstone === 0 && newValue.tombstone === 1) {
 183	    const id = newValue.id;
 184	    const groupId = newValue.cat_group;
-185	
+185
 186	    months.forEach(month => {
 187	      const sheetName = monthUtils.sheetForMonth(month);
 188	      removeDeps(sheetName, groupId, id);
@@ -5009,18 +5044,18 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 196	      const prevSheetName = monthUtils.sheetForMonth(prevMonth);
 197	      const sheetName = monthUtils.sheetForMonth(month);
 198	      const { start, end } = monthUtils.bounds(month);
-199	
+199
 200	      createCategoryFromBase(newValue, sheetName, prevSheetName, start, end);
-201	
+201
 202	      const id = newValue.id;
 203	      const groupId = newValue.cat_group;
-204	
+204
 205	      addDeps(sheetName, groupId, id);
 206	    });
 207	  } else if (oldValue && oldValue.cat_group !== newValue.cat_group) {
 208	    // The category moved so we need to update the dependencies
 209	    const id = newValue.id;
-210	
+210
 211	    months.forEach(month => {
 212	      const sheetName = monthUtils.sheetForMonth(month);
 213	      removeDeps(sheetName, oldValue.cat_group, id);
@@ -5029,7 +5064,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 216	  } else if (oldValue && oldValue.hidden !== newValue.hidden) {
 217	    const id = newValue.id;
 218	    const groupId = newValue.cat_group;
-219	
+219
 220	    months.forEach(month => {
 221	      const sheetName = monthUtils.sheetForMonth(month);
 222	      if (newValue.hidden) {
@@ -5040,7 +5075,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 227	    });
 228	  }
 229	}
-230	
+230
 231	export function handleCategoryGroupChange(months, oldValue, newValue) {
 232	  function addDeps(sheetName, groupId) {
 233	    sheet
@@ -5059,7 +5094,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 246	        `group-leftover-${groupId}`,
 247	      ]);
 248	  }
-249	
+249
 250	  function removeDeps(sheetName, groupId) {
 251	    sheet
 252	      .get()
@@ -5077,7 +5112,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 264	        `group-leftover-${groupId}`,
 265	      ]);
 266	  }
-267	
+267
 268	  if (newValue.tombstone === 1 && oldValue && oldValue.tombstone === 0) {
 269	    const id = newValue.id;
 270	    months.forEach(month => {
@@ -5089,10 +5124,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 276	    (!oldValue || oldValue.tombstone === 1)
 277	  ) {
 278	    const group = newValue;
-279	
+279
 280	    months.forEach(month => {
 281	      const sheetName = monthUtils.sheetForMonth(month);
-282	
+282
 283	      // Dirty, dirty hack. These functions should not be async, but this is
 284	      // OK because we're leveraging the sync nature of queries. Ideally we
 285	      // wouldn't be querying here. But I think we have to. At least for now
@@ -5103,12 +5138,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 290	        true,
 291	      );
 292	      createCategoryGroup({ ...group, categories }, sheetName);
-293	
+293
 294	      addDeps(sheetName, group.id);
 295	    });
 296	  } else if (oldValue && oldValue.hidden !== newValue.hidden) {
 297	    const group = newValue;
-298	
+298
 299	    months.forEach(month => {
 300	      const sheetName = monthUtils.sheetForMonth(month);
 301	      if (newValue.hidden) {
@@ -5121,6 +5156,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:54Z)**_
 308	}
 309
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:55Z)**_
@@ -5153,6 +5189,7 @@ desktop-client\src\components\reports\spreadsheets\budgetMonthCell.ts:5:  | Retu
 desktop-client\src\components\reports\spreadsheets\budgetDataQuery.ts:218:      ? 'tracking-budget-month'
 desktop-client\src\components\reports\spreadsheets\budgetDataQuery.ts:219:      : 'envelope-budget-month';
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:57Z)**_
@@ -5173,7 +5210,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:57Z)**_
 328	      },
 329	    );
 330	  }
-331	
+331
 332	  const onExportCsv = () => {
 333	    if (!data) return;
 334	    const csv = buildBudgetAnalysisCsv(
@@ -5189,10 +5226,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:57Z)**_
 344	      t('Export budget analysis'),
 345	    );
 346	  };
-347	
+347
 348	  if (!data || !allMonths) {
 349	    return <LoadingIndicator />;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:58Z)**_
@@ -5204,38 +5242,38 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:58Z)**_
 ```text
 1	import React, { useState } from 'react';
 2	import { Trans, useTranslation } from 'react-i18next';
-3	
+3
 4	import { Block } from '@actual-app/components/block';
 5	import { ButtonWithLoading } from '@actual-app/components/button';
 6	import { Text } from '@actual-app/components/text';
 7	import { theme } from '@actual-app/components/theme';
 8	import { send } from '@actual-app/core/platform/client/connection';
 9	import { format } from 'date-fns';
-10	
+10
 11	import { useMetadataPref } from '#hooks/useMetadataPref';
-12	
+12
 13	import { Setting } from './UI';
-14	
+14
 15	export function ExportBudget() {
 16	  const { t } = useTranslation();
 17	  const [isLoading, setIsLoading] = useState(false);
 18	  const [error, setError] = useState<string | null>(null);
 19	  const [budgetName] = useMetadataPref('budgetName');
 20	  const [encryptKeyId] = useMetadataPref('encryptKeyId');
-21	
+21
 22	  async function onExport() {
 23	    setIsLoading(true);
 24	    setError(null);
-25	
+25
 26	    const response = await send('export-budget');
-27	
+27
 28	    if ('error' in response && response.error) {
 29	      setError(response.error);
 30	      setIsLoading(false);
 31	      console.log('Export error code:', response.error);
 32	      return;
 33	    }
-34	
+34
 35	    if (response.data) {
 36	      void window.Actual.saveFile(
 37	        response.data,
@@ -5245,7 +5283,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:58Z)**_
 41	    }
 42	    setIsLoading(false);
 43	  }
-44	
+44
 45	  return (
 46	    <Setting
 47	      primaryAction={
@@ -5263,6 +5301,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:58Z)**_
 59	        </>
 60	      }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:59Z)**_
@@ -5287,6 +5326,7 @@ desktop-client\src\components\budget\BudgetMonthCountContext.tsx:19:}: BudgetMon
 desktop-client\src\components\Titlebar.tsx:39:import { MonthCountSelector } from './budget/MonthCountSelector';
 desktop-client\src\components\Titlebar.tsx:259:      <MonthCountSelector
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:59Z)**_
@@ -5298,11 +5338,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:59Z)**_
 ```text
 180	  } else {
 181	    const idx = arr.findIndex(item => item.id === targetId);
-182	
+182
 183	    if (idx === -1) {
 184	      throw new Error('findSort: item not found: ' + targetId);
 185	    }
-186	
+186
 187	    const newIdx = idx - 1;
 188	    if (newIdx >= 0) {
 189	      return { targetId: arr[newIdx].id };
@@ -5312,11 +5352,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:59Z)**_
 193	    }
 194	  }
 195	}
-196	
+196
 197	export function getScrollbarWidth() {
 198	  return Math.max(styles.scrollbarWidth - 2, 0);
 199	}
-200	
+200
 201	export async function prewarmMonth(
 202	  budgetType: SyncedPrefs['budgetType'],
 203	  spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -5326,14 +5366,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:59Z)**_
 207	    budgetType === 'tracking'
 208	      ? 'tracking-budget-month'
 209	      : 'envelope-budget-month';
-210	
+210
 211	  const values = await send(method, { month });
-212	
+212
 213	  for (const value of values) {
 214	    spreadsheet.prewarmCache(value.name, value);
 215	  }
 216	}
-217	
+217
 218	export async function prewarmAllMonths(
 219	  budgetType: SyncedPrefs['budgetType'],
 220	  spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -5341,20 +5381,21 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:40:59Z)**_
 222	  startMonth: string,
 223	) {
 224	  const numMonths = 3;
-225	
+225
 226	  bounds = getValidMonthBounds(
 227	    bounds,
 228	    monthUtils.subMonths(startMonth, 1),
 229	    monthUtils.addMonths(startMonth, numMonths + 1),
 230	  );
 231	  const months = monthUtils.rangeInclusive(bounds.start, bounds.end);
-232	
+232
 233	  await Promise.all(
 234	    months.map(month => prewarmMonth(budgetType, spreadsheet, month)),
 235	  );
 236	}
 237
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:01Z)**_
@@ -5460,6 +5501,7 @@ useFormatList.ts
 useMetadataPref.ts
 useOverspentCategories.ts
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:00Z)**_
@@ -5470,13 +5512,14 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:00Z)**_
 
 ```text
 1	import type { Handlers } from '@actual-app/core/types/handlers';
-2	
+2
 3	export type BudgetMonthCell = Awaited<
 4	  | ReturnType<Handlers['envelope-budget-month']>
 5	  | ReturnType<Handlers['tracking-budget-month']>
 6	>[number];
 7
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:00Z)**_
@@ -5498,25 +5541,25 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:00Z)**_
 199	  const groupById = new Map(categoryGroups.map(g => [g.id, g] as const));
 200	  const assets: QueryDataEntity[] = [];
 201	  const debts: QueryDataEntity[] = [];
-202	
+202
 203	  const filteredCategories = filterCategoriesByConditions(
 204	    categories,
 205	    categoryGroups,
 206	    conditions,
 207	    conditionsOp,
 208	  );
-209	
+209
 210	  const months = monthUtils.rangeInclusive(
 211	    monthUtils.getMonth(startDate),
 212	    monthUtils.getMonth(endDate),
 213	  );
-214	
+214
 215	  const monthFetchConcurrency = 8;
 216	  const endpointName: keyof Handlers =
 217	    budgetType === 'tracking'
 218	      ? 'tracking-budget-month'
 219	      : 'envelope-budget-month';
-220	
+220
 221	  const monthDataList = await mapWithConcurrency(
 222	    months,
 223	    monthFetchConcurrency,
@@ -5525,26 +5568,26 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:00Z)**_
 226	      monthData: await send(endpointName, { month }),
 227	    }),
 228	  );
-229	
+229
 230	  for (const { month, monthData } of monthDataList) {
 231	    const dateKey = interval === 'Yearly' ? month.slice(0, 4) : month;
-232	
+232
 233	    for (const cat of filteredCategories) {
 234	      if (cat.is_income) {
 235	        continue;
 236	      }
-237	
+237
 238	      const budgetCell = monthData.find((cell: BudgetMonthCell) =>
 239	        cell.name.endsWith(`budget-${cat.id}`),
 240	      );
-241	
+241
 242	      const amount = Number(budgetCell?.value) || 0;
 243	      if (amount === 0) {
 244	        continue;
 245	      }
-246	
+246
 247	      const group = cat.group ? groupById.get(cat.group) : undefined;
-248	
+248
 249	      const entry: QueryDataEntity = {
 250	        date: dateKey,
 251	        category: cat.id,
@@ -5557,7 +5600,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:00Z)**_
 258	        transferAccount: '',
 259	        amount,
 260	      };
-261	
+261
 262	      if (amount > 0) {
 263	        assets.push(entry);
 264	      } else {
@@ -5567,6 +5610,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:00Z)**_
 268	  }
 269
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:01Z)**_
@@ -5578,9 +5622,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:01Z)**_
 ```text
 170	      monthUtils.getMonth(endDate),
 171	    );
-172	
+172
 173	    const intervalData: BudgetAnalysisIntervalData[] = [];
-174	
+174
 175	    // Track running balance that respects carryover flags
 176	    // Get the balance from the month before the start period to initialize properly
 177	    let runningBalance = 0;
@@ -5591,7 +5635,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:01Z)**_
 182	    const prevMonthData = await send('envelope-budget-month', {
 183	      month: monthBeforeStart,
 184	    });
-185	
+185
 186	    // Calculate the carryover from the previous month
 187	    for (const cat of categoriesToInclude) {
 188	      const balanceCell = prevMonthData.find((cell: BudgetMonthCell) =>
@@ -5600,37 +5644,37 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:01Z)**_
 191	      const carryoverCell = prevMonthData.find((cell: BudgetMonthCell) =>
 192	        cell.name.endsWith(`carryover-${cat.id}`),
 193	      );
-194	
+194
 195	      const catBalance = (balanceCell?.value as number) || 0;
 196	      const hasCarryover = Boolean(carryoverCell?.value);
-197	
+197
 198	      // Add to running balance if it would carry over
 199	      if (catBalance > 0 || (catBalance < 0 && hasCarryover)) {
 200	        runningBalance += catBalance;
 201	      }
 202	    }
-203	
+203
 204	    // Track totals across all months
 205	    let totalBudgeted = 0;
 206	    let totalSpent = 0;
 207	    let totalOverspendingAdjustment = 0;
-208	
+208
 209	    // Track overspending from previous month to apply in next month
 210	    let overspendingFromPrevMonth = 0;
-211	
+211
 212	    // Process each month
 213	    for (const month of intervals) {
 214	      // Get budget values from the server for this month
 215	      // This uses the same calculations as the budget page
 216	      const monthData = await send('envelope-budget-month', { month });
-217	
+217
 218	      let budgeted = 0;
 219	      let spent = 0;
 220	      let overspendingThisMonth = 0;
-221	
+221
 222	      // Track what will carry over to next month
 223	      let carryoverToNextMonth = 0;
-224	
+224
 225	      // Sum up values for categories we're interested in
 226	      for (const cat of categoriesToInclude) {
 227	        // Find the budget, spent, balance, and carryover flag for this category
@@ -5646,17 +5690,18 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:01Z)**_
 237	        const carryoverCell = monthData.find((cell: BudgetMonthCell) =>
 238	          cell.name.endsWith(`carryover-${cat.id}`),
 239	        );
-240	
+240
 241	        const catBudgeted = (budgetCell?.value as number) || 0;
 242	        const catSpent = (spentCell?.value as number) || 0;
 243	        const catBalance = (balanceCell?.value as number) || 0;
 244	        const hasCarryover = Boolean(carryoverCell?.value);
-245	
+245
 246	        budgeted += catBudgeted;
 247	        spent += catSpent;
-248	
+248
 249	        // Add to next month's carryover if:
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
@@ -5670,7 +5715,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 181	        background: theme.mobileHeaderTextHover,
 182	      }
 183	    : {};
-184	
+184
 185	  const mobileIconStyle = {
 186	    color: mobileColor,
 187	    justifyContent: 'center',
@@ -5678,16 +5723,16 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 189	    paddingLeft: 5,
 190	    paddingRight: 3,
 191	  };
-192	
+192
 193	  const mobileTextStyle = {
 194	    ...styles.text,
 195	    fontWeight: 500,
 196	    marginLeft: 2,
 197	    marginRight: 5,
 198	  };
-199	
+199
 200	  const onSync = () => dispatch(sync());
-201	
+201
 202	  useHotkeys(
 203	    'ctrl+s, cmd+s, meta+s',
 204	    onSync,
@@ -5698,7 +5743,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 209	    },
 210	    [onSync],
 211	  );
-212	
+212
 213	  return (
 214	    <Button
 215	      variant="bare"
@@ -5739,10 +5784,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 250	    </Button>
 251	  );
 252	}
-253	
+253
 254	function BudgetTitlebar() {
 255	  const [maxMonths, setMaxMonthsPref] = useGlobalPref('maxMonths');
-256	
+256
 257	  return (
 258	    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
 259	      <MonthCountSelector
@@ -5752,11 +5797,11 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 263	    </View>
 264	  );
 265	}
-266	
+266
 267	type TitlebarProps = {
 268	  style?: CSSProperties;
 269	};
-270	
+270
 271	export function Titlebar({ style }: TitlebarProps) {
 272	  const { t } = useTranslation();
 273	  const navigate = useNavigate();
@@ -5766,7 +5811,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 277	  const serverURL = useServerURL();
 278	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 279	  const isTestEnv = useIsTestEnv();
-280	
+280
 281	  return isNarrowWidth ? null : (
 282	    <View
 283	      style={{
@@ -5806,7 +5851,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 317	          />
 318	        </Button>
 319	      )}
-320	
+320
 321	      <Routes>
 322	        <Route
 323	          path="*"
@@ -5817,6 +5862,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 328	                  width={10}
 329	                  height={10}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
@@ -5827,27 +5873,27 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 
 ```text
 360	};
-361	
+361
 362	handlers['api/budget-months'] = async function () {
 363	  checkFileOpen();
 364	  const { start, end } = await handlers['get-budget-bounds']();
 365	  return monthUtils.range(start, end);
 366	};
-367	
+367
 368	handlers['api/budget-month'] = async function ({ month }) {
 369	  checkFileOpen();
 370	  await validateMonth(month);
-371	
+371
 372	  const { data: groups }: { data: CategoryGroupEntity[] } = await aqlQuery(
 373	    q('category_groups').select('*'),
 374	  );
 375	  const sheetName = monthUtils.sheetForMonth(month);
-376	
+376
 377	  function value(name) {
 378	    const v = sheet.get().getCellValue(sheetName, name);
 379	    return v === '' ? 0 : v;
 380	  }
-381	
+381
 382	  // This is duplicated from main.js because the return format is
 383	  // different (for now)
 384	  return {
@@ -5857,12 +5903,12 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 388	    forNextMonth: value('buffered') as number,
 389	    totalBudgeted: value('total-budgeted') as number,
 390	    toBudget: value('to-budget') as number,
-391	
+391
 392	    fromLastMonth: value('from-last-month') as number,
 393	    totalIncome: value('total-income') as number,
 394	    totalSpent: value('total-spent') as number,
 395	    totalBalance: value('total-leftover') as number,
-396	
+396
 397	    categoryGroups: groups.map(group => {
 398	      if (group.is_income) {
 399	        if (isTrackingBudget()) {
@@ -5871,7 +5917,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 402	            budgeted: value(`group-budget-${group.id}`),
 403	            received: value(`group-sum-amount-${group.id}`),
 404	            balance: value(`group-leftover-${group.id}`),
-405	
+405
 406	            categories: group.categories.map(cat => ({
 407	              ...categoryModel.toExternal(cat),
 408	              budgeted: value(`budget-${cat.id}`),
@@ -5881,22 +5927,23 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:05Z)**_
 412	            })),
 413	          };
 414	        }
-415	
+415
 416	        return {
 417	          ...categoryGroupModel.toExternal(group),
 418	          received: value('total-income'),
-419	
+419
 420	          categories: group.categories.map(cat => ({
 421	            ...categoryModel.toExternal(cat),
 422	            received: value(`sum-amount-${cat.id}`),
 423	          })),
 424	        };
 425	      }
-426	
+426
 427	      return {
 428	        ...categoryGroupModel.toExternal(group),
 429	        budgeted: value(`group-budget-${group.id}`),
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
@@ -5908,13 +5955,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
 ```text
 1	import { groupById } from '@actual-app/core/shared/util';
 2	import { useQuery } from '@tanstack/react-query';
-3	
+3
 4	import { categoryQueries } from '#budget';
-5	
+5
 6	export function useCategories() {
 7	  return useQuery(categoryQueries.list());
 8	}
-9	
+9
 10	export function useCategoriesById() {
 11	  return useQuery({
 12	    ...categoryQueries.list(),
@@ -5928,6 +5975,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
 20	}
 21
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
@@ -5940,36 +5988,37 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext, useContext, useState } from 'react';
 3	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-4	
+4
 5	type BudgetMonthCountContextValue = {
 6	  displayMax: number;
 7	  setDisplayMax: Dispatch<SetStateAction<number>>;
 8	};
-9	
+9
 10	const BudgetMonthCountContext =
 11	  createContext<BudgetMonthCountContextValue>(null);
-12	
+12
 13	type BudgetMonthCountProviderProps = {
 14	  children: ReactNode;
 15	};
-16	
+16
 17	export function BudgetMonthCountProvider({
 18	  children,
 19	}: BudgetMonthCountProviderProps) {
 20	  const [displayMax, setDisplayMax] = useState(1);
-21	
+21
 22	  return (
 23	    <BudgetMonthCountContext.Provider value={{ displayMax, setDisplayMax }}>
 24	      {children}
 25	    </BudgetMonthCountContext.Provider>
 26	  );
 27	}
-28	
+28
 29	export function useBudgetMonthCount() {
 30	  return useContext(BudgetMonthCountContext);
 31	}
 32
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
@@ -5984,7 +6033,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
 487	    return Array.from(firstSet);
 488	  }
 489	}
-490	
+490
 491	// Helper: Get month data from envelope-budget-month RPC
 492	async function getMonthBudgetData(
 493	  month: string,
@@ -5992,7 +6041,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
 495	  const monthData = await send('envelope-budget-month', { month });
 496	  return monthData || [];
 497	}
-498	
+498
 499	// Helper: Extract value from month data by field pattern
 500	function getMonthDataValue(
 501	  monthData: Array<{ name: string; value: string | number | boolean }>,
@@ -6003,7 +6052,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
 506	  const cell = monthData.find(c => c.name.endsWith(fieldName));
 507	  return cell?.value ?? 0;
 508	}
-509	
+509
 510	// Helper: Extract categories from a named query (for QUERY_EXTRACT_CATEGORIES)
 511	async function extractQueryCategories(
 512	  queryName: string,
@@ -6014,12 +6063,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:06Z)**_
 517	    console.warn(`Query "${queryName}" not found in queries config`);
 518	    return [];
 519	  }
-520	
+520
 521	  const categoryConditions = extractCategoryConditions(
 522	    queryConfig.conditions || [],
 523	  );
 524	  const { list: allCategories } = await send('get-categories');
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:08Z)**_
@@ -6078,6 +6128,7 @@ TrackingBudgetComponents.tsx
 TrackingBudgetContext.tsx
 budgetsummary
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:11Z)**_
@@ -6102,6 +6153,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:11Z)**_
 347:        {serverURL ? <ServerSyncButton /> : null}
 350:        <HelpMenu />
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:11Z)**_
@@ -6112,26 +6164,26 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:11Z)**_
 
 ```text
 28	}
-29	
+29
 30	type MonthCountSelectorProps = {
 31	  maxMonths: number;
 32	  onChange: (value: number) => void;
 33	};
-34	
+34
 35	export function MonthCountSelector({
 36	  maxMonths,
 37	  onChange,
 38	}: MonthCountSelectorProps) {
 39	  const { t } = useTranslation();
-40	
+40
 41	  const { displayMax } = useBudgetMonthCount();
-42	
+42
 43	  // It doesn't make sense to show anything if we can only fit one
 44	  // month
 45	  if (displayMax <= 1) {
 46	    return null;
 47	  }
-48	
+48
 49	  const calendars = [];
 50	  for (let i = 1; i <= displayMax; i++) {
 51	    calendars.push(
@@ -6142,7 +6194,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:11Z)**_
 56	      />,
 57	    );
 58	  }
-59	
+59
 60	  return (
 61	    <View
 62	      style={{
@@ -6165,6 +6217,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:11Z)**_
 79	}
 80
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:12Z)**_
@@ -6207,6 +6260,7 @@ desktop-client\src\components\budget\tracking\budgetsummary\ExpenseProgress.tsx:
 desktop-client\src\components\budget\tracking\budgetsummary\ExpenseProgress.tsx:31:    frac = fraction(totalSpent, totalBudgeted);
 desktop-client\src\components\budget\tracking\budgetsummary\ExpenseTotal.tsx:18:      current={trackingBudget.totalSpent}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:12Z)**_
@@ -6218,6 +6272,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:12Z)**_
 ```text
 desktop-client\src\hooks\useCategoryGroup.ts:5:export function useCategoryGroup(id?: string | null) {
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:12Z)**_
@@ -6234,6 +6289,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:12Z)**_
 166:      showHiddenCategories,
 246:          overflow: 'hidden',
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:15Z)**_
@@ -6245,7 +6301,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:15Z)**_
 ```text
 555	  );
 556	});
-557	
+557
 558	type IncomeGroupMonthProps = {
 559	  month: string;
 560	};
@@ -6272,7 +6328,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:15Z)**_
 581	    </View>
 582	  );
 583	}
-584	
+584
 585	export function IncomeCategoryMonth({
 586	  category,
 587	  isLast,
@@ -6288,7 +6344,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:15Z)**_
 597	  });
 598	  const resetIncomePosition = (crossOffset = 0, offset = 0) =>
 599	    setIncomePosition({ crossOffset, offset });
-600	
+600
 601	  const handleIncomeContextMenu = (e: MouseEvent) => {
 602	    e.preventDefault();
 603	    const rect = e.currentTarget.getBoundingClientRect();
@@ -6298,7 +6354,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:15Z)**_
 607	    });
 608	    setIncomeMenuOpen(true);
 609	  };
-610	
+610
 611	  return (
 612	    <View style={{ flex: 1 }}>
 613	      <Field
@@ -6364,6 +6420,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:15Z)**_
 673	          >
 674	            <IncomeMenu
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:16Z)**_
@@ -6415,7 +6472,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:16Z)**_
 459	          </TrackingCellValue>
 460	        </View>
 461	      </Field>
-462	
+462
 463	      {!category.is_income && (
 464	        <Field
 465	          name="balance"
@@ -6443,7 +6500,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:16Z)**_
 487	              longGoal={trackingBudget.catLongGoal(category.id)}
 488	            />
 489	          </Button>
-490	
+490
 491	          <Popover
 492	            triggerRef={triggerBalanceMenuRef}
 493	            isOpen={balanceMenuOpen}
@@ -6465,15 +6522,16 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:16Z)**_
 509	    </View>
 510	  );
 511	});
-512	
+512
 513	export { BudgetSummary } from './budgetsummary/BudgetSummary';
-514	
+514
 515	export const ExpenseGroupMonth = GroupMonth;
 516	export const ExpenseCategoryMonth = CategoryMonth;
-517	
+517
 518	export const IncomeGroupMonth = GroupMonth;
 519	export const IncomeCategoryMonth = CategoryMonth;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:17Z)**_
@@ -6485,6 +6543,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:17Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:17Z)**_
@@ -6495,9 +6554,9 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:17Z)**_
 
 ```text
 336	        />
-337	
+337
 338	        <Route path="/accounts/:id" element={<AccountSyncCheck />} />
-339	
+339
 340	        <Route path="/budget" element={<BudgetTitlebar />} />
 341	      </Routes>
 342	      <View style={{ flex: 1 }} />
@@ -6515,6 +6574,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:17Z)**_
 354	}
 355
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:20Z)**_
@@ -6533,6 +6593,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:20Z)**_
 472:            onPress={() => !category.is_income && setBalanceMenuOpen(true)}
 481:              isDisabled={category.is_income}
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:20Z)**_
@@ -6552,6 +6613,7 @@ desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx:308: 
 desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx:491:          <Popover
 desktop-client\src\components\budget\tracking\budgetsummary\BudgetSummary.tsx:163:              <Popover
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:20Z)**_
@@ -6578,6 +6640,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:20Z)**_
 117:            setMenuOpen(false);
 135:      </Popover>
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:21Z)**_
@@ -6595,6 +6658,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:21Z)**_
 190:          binding: envelopeBudget.groupBalance(id),
 198:export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:23Z)**_
@@ -6633,7 +6697,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:23Z)**_
 166	                  style={{ color: theme.pageTextLight }}
 167	                />
 168	              </Button>
-169	
+169
 170	              <Popover
 171	                triggerRef={triggerRef}
 172	                isOpen={menuOpen}
@@ -6665,6 +6729,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:23Z)**_
 198	                    onMenuClose();
 199	                    showUndoNotification({
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:23Z)**_
@@ -6718,7 +6783,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:23Z)**_
 114	    </View>
 115	  );
 116	});
-117	
+117
 118	export function IncomeHeaderMonth() {
 119	  return (
 120	    <View
@@ -6741,13 +6806,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:23Z)**_
 137	    </View>
 138	  );
 139	}
-140	
+140
 141	export const GroupMonth = memo(function GroupMonth({
 142	  month,
 143	  group,
 144	}: CategoryGroupMonthProps) {
 145	  const { id } = group;
-146	
+146
 147	  return (
 148	    <View
 149	      style={{
@@ -6797,9 +6862,10 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:23Z)**_
 193	    </View>
 194	  );
 195	});
-196	
+196
 197	export const CategoryMonth = memo(function CategoryMonth({
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:24Z)**_
@@ -6855,7 +6921,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:24Z)**_
 123	    </View>
 124	  );
 125	});
-126	
+126
 127	export function IncomeHeaderMonth() {
 128	  return (
 129	    <Row
@@ -6874,6 +6940,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:24Z)**_
 142	}
 143
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:28Z)**_
@@ -6883,13 +6950,13 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:28Z)**_
  `C:\Actual Budget\packages\loot-core\src\server\api.ts`
 
 ```text
-426	
+426
 427	      return {
 428	        ...categoryGroupModel.toExternal(group),
 429	        budgeted: value(`group-budget-${group.id}`),
 430	        spent: value(`group-sum-amount-${group.id}`),
 431	        balance: value(`group-leftover-${group.id}`),
-432	
+432
 433	        categories: group.categories.map(cat => ({
 434	          ...categoryModel.toExternal(cat),
 435	          budgeted: value(`budget-${cat.id}`),
@@ -6901,7 +6968,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:28Z)**_
 441	    }),
 442	  };
 443	};
-444	
+444
 445	handlers['api/budget-set-amount'] = withMutation(async function ({
 446	  month,
 447	  categoryId,
@@ -6909,6 +6976,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:28Z)**_
 449	}) {
 450	  checkFileOpen();
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:28Z)**_
@@ -6918,32 +6986,33 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:28Z)**_
  `C:\Actual Budget\packages\loot-core\src\server\sheet.ts`
 
 ```text
-245	
+245
 246	  sheet.endTransaction();
 247	}
-248	
+248
 249	export function getCell(sheet: string, name: string) {
 250	  return globalSheet._getNode(resolveName(sheet, name));
 251	}
-252	
+252
 253	export function getCellValue(
 254	  sheet: string,
 255	  name: string,
 256	): string | number | boolean {
 257	  return globalSheet.getValue(resolveName(sheet, name));
 258	}
-259	
+259
 260	export function startTransaction(): void {
 261	  if (globalSheet) {
 262	    globalSheet.startTransaction();
 263	  }
 264	}
-265	
+265
 266	export function endTransaction(): void {
 267	  if (globalSheet) {
 268	    globalSheet.endTransaction();
 269	  }
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:29Z)**_
@@ -6968,6 +7037,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:29Z)**_
 93-export type SheetFields<SheetName extends SheetNames> =
 94-  keyof Spreadsheets[SheetName] & string;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:33Z)**_
@@ -6993,6 +7063,7 @@ desktop-client\src\spreadsheet\index.ts-117-  <SheetFieldName extends SheetField
 desktop-client\src\spreadsheet\index.ts-118-  (id?: string): SheetFieldName =>
 desktop-client\src\spreadsheet\index.ts-119-    `${field}-${id}` as SheetFieldName;
 ```
+
 </details></tool-use>
 
 _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:53Z)**_
@@ -7000,6 +7071,7 @@ _**Agent - sidechain (claude-opus-5-5 2026-09-30 16:41:53Z)**_
 I found everything you asked about. All paths are under `c:\Actual Budget\packages\desktop-client\src\`.
 
 ## 1. Top-level page and envelope vs tracking mode
+
 - **`components\budget\index.tsx`**, `export function Budget()` (line 39).
   - Line 52: `const [budgetType = 'envelope'] = useSyncedPref('budgetType');`
   - Lines 183–241: if `budgetType === 'tracking'` it wraps `<AutoSizingBudgetTable>` in `TrackingBudgetProvider`. Otherwise it uses `EnvelopeBudgetProvider`.
@@ -7008,6 +7080,7 @@ I found everything you asked about. All paths are under `c:\Actual Budget\packag
 - The order of components is: `Budget` → `AutoSizingBudgetTable` / `DynamicBudgetTable` (`components\budget\DynamicBudgetTable.tsx`) → `BudgetPageHeader` + `BudgetTable`.
 
 ## 2. Header, top-right area and where an Export button fits
+
 - **`components\budget\BudgetPageHeader.tsx`** (lines 19–49) holds only the `<MonthPicker>`, with a left margin of `200 + 100*categoryExpandedState`. It has no buttons.
 - **`components\budget\MonthPicker.tsx`** (line 30) is the month strip itself.
 - **The top-right of the desktop page is the app Titlebar**, `components\Titlebar.tsx`:
@@ -7034,6 +7107,7 @@ I found everything you asked about. All paths are under `c:\Actual Budget\packag
   - Other Popovers in the budget area: `envelope\EnvelopeBudgetComponents.tsx` (lines 348, 534, 665), `tracking\TrackingBudgetComponents.tsx` (308, 491), `tracking\budgetsummary\BudgetSummary.tsx` (163), `envelope\budgetsummary\ToBudget.tsx` (86).
 
 ## 3. How the displayed months are determined
+
 - **Start month:** `index.tsx` lines 46–47: `useLocalPref('budget.startMonth')`, falling back to `monthUtils.currentMonth()`.
 - **Months the user wants to see:** `index.tsx` lines 53–54: `useGlobalPref('maxMonths')`, default 1. It is set in `Titlebar.tsx` line 255.
 - **Months that fit on screen:** `DynamicBudgetTable.tsx` lines 19–35, `getNumPossibleMonths(width, categoryWidth)`, returns 1 to 6 based on width.
@@ -7049,6 +7123,7 @@ I found everything you asked about. All paths are under `c:\Actual Budget\packag
   Children read it with `useContext(MonthsContext).months` (used by `RenderMonths.tsx`). `BudgetTable.tsx` lines 278 and 291 set up `MonthsProvider`.
 
 ## 4. Category ordering, filtering, collapsed groups and income
+
 - **Hook:** `hooks\useCategories.ts` line 6, `useCategories()` → `useQuery(categoryQueries.list())`, which returns `{ list, grouped }`.
   - The page uses `data.grouped` (`index.tsx` lines 56–57, `BudgetTable.tsx` lines 82–83). The order is the server sort order as returned.
   - `useCategoriesById()` is at line 10. There is no `useCategoryGroups`; only `useCategoryGroup(id)` in `hooks\useCategoryGroup.ts`.
@@ -7060,18 +7135,25 @@ I found everything you asked about. All paths are under `c:\Actual Budget\packag
   - Expand/collapse all is in `BudgetTable.tsx` lines 230–236; the per-group toggle is in `BudgetCategories.tsx` lines 202–208.
 - **Income:** `components\budget\util.ts` lines 54–59:
   ```ts
-  export function separateGroups(categoryGroups) { return [categoryGroups.filter(g => !g.is_income), categoryGroups.find(g => g.is_income)] as const; }
+  export function separateGroups(categoryGroups) {
+    return [
+      categoryGroups.filter(g => !g.is_income),
+      categoryGroups.find(g => g.is_income),
+    ] as const;
+  }
   ```
   - Expense groups render first. Then comes an `income-separator` item (`IncomeHeader`), then the single `income-group` and its `income-category` rows (`BudgetCategories.tsx` lines 133–158, rendered at lines 331–373).
   - The row components are `ExpenseGroup.tsx`, `ExpenseCategory.tsx`, `IncomeGroup.tsx` and `IncomeCategory.tsx`.
 
 ## 5. Budget name
+
 - `components\settings\Export.tsx` line 11 imports `useMetadataPref` from `#hooks/useMetadataPref`.
 - Line 19: `const [budgetName] = useMetadataPref('budgetName');`
 - Line 38 builds the filename as `` `${format(new Date(), 'yyyy-MM-dd')}-${budgetName}.zip` `` (`format` from date-fns).
 - Lines 36–40 save it with `window.Actual.saveFile(data, filename, t('Export budget'))`.
 
 ## 6. Number format and decimal places
+
 - `hooks\useFormat.ts` exports `useFormat()`. Its result (`UseFormatResult`) includes `currency: Currency`, `hideFraction`, `toAmount(IntegerAmount)`, `fromAmount`, `forEdit`, and a call form `format(value, type)` where type is `'financial'`, `'financial-no-decimals'`, `'number'`, etc.
 - `components\reports\reports\BudgetAnalysis.tsx`:
   - Line 40: `import { useFormat } from '#hooks/useFormat';`
@@ -7085,6 +7167,7 @@ I checked all five points in the code. Line numbers are from the current files.
 ## 1. Binding helpers and sheet names
 
 **`C:\Actual Budget\packages\desktop-client\src\spreadsheet\bindings.ts`**
+
 - `envelopeBudget` (lines 152-178):
   - Totals: `incomeAvailable:'available-funds'`, `lastMonthOverspent:'last-month-overspent'`, `forNextMonth:'buffered-selected'`, `totalBudgeted:'total-budgeted'`, `toBudget:'to-budget'`, `fromLastMonth:'from-last-month'`, `manualBuffered:'buffered'`, `autoBuffered:'buffered-auto'`, `totalIncome:'total-income'`, `totalSpent:'total-spent'`, `totalBalance:'total-leftover'`
   - Per group: `groupSumAmount('group-sum-amount')`, `groupIncomeReceived:'total-income'`, `groupBudgeted('group-budget')`, `groupBalance('group-leftover')`
@@ -7100,20 +7183,23 @@ I checked all five points in the code. Line numbers are from the current files.
 ## 2. Reading cells without a hook
 
 **One cell at a time:** `send('get-cell', { sheetName, name })` returns `{ name, value }`.
+
 - Server side: `C:\Actual Budget\packages\loot-core\src\server\spreadsheet\app.ts:15-28`.
 - `send('get-cell-names', { sheetName })` (line 30) lists every cell on a sheet.
 - The client wrapper is `spreadsheet.get(sheetName, name)` in `C:\Actual Budget\packages\desktop-client\src\hooks\useSpreadsheet.tsx:127-129`, reached through `useSpreadsheet()`.
 
 **A whole month in one call:** `send('envelope-budget-month', { month })` or `send('tracking-budget-month', { month })`.
+
 - Both return a flat array of `{ name: 'budget202601!<cell>', value }`, with `''` turned into 0.
 - Server: `C:\Actual Budget\packages\loot-core\src\server\budget\app.ts:209-261` (envelope) and `263-307` (tracking). Both use `sheet.getCellValue(sheetName, name)`.
 - The element type is `BudgetMonthCell` in `C:\Actual Budget\packages\desktop-client\src\components\reports\spreadsheets\budgetMonthCell.ts`.
 
 Existing code that reads many cells this way:
+
 - `C:\Actual Budget\packages\desktop-client\src\components\budget\util.ts:201-216` (`prewarmMonth`): calls the month endpoint for the budget type, then `spreadsheet.prewarmCache(value.name, value)` for each cell.
 - `C:\Actual Budget\packages\desktop-client\src\components\reports\spreadsheets\budget-analysis-spreadsheet.ts:182, 216-244`: calls `envelope-budget-month` (envelope only) and looks cells up with suffix matching:
   ```ts
-  monthData.find(cell => cell.name.endsWith(`budget-${cat.id}`))
+  monthData.find(cell => cell.name.endsWith(`budget-${cat.id}`));
   ```
   It does the same for `sum-amount-`, `leftover-` and `carryover-`.
 - `C:\Actual Budget\packages\desktop-client\src\components\reports\spreadsheets\budgetDataQuery.ts:216-242`: picks the endpoint by budget type and fetches months 8 at a time with `mapWithConcurrency`.
@@ -7124,11 +7210,13 @@ Existing code that reads many cells this way:
 ## 3. How the server computes the cells
 
 **Shared, in `C:\Actual Budget\packages\loot-core\src\server\budget\base.ts`:**
+
 - `sum-amount-<id>` (lines 73-90) is the sum of transaction amounts in the month for on-budget accounts.
 - The `budget-`, `carryover-`, `goal-` and `long-goal-` cells are set from the `zero_budgets` / `reflect_budgets` tables in `handleBudgetChange` (lines 161-178).
 - `buffered` comes from `zero_budget_months` (line 158).
 
 **Envelope, in `C:\Actual Budget\packages\loot-core\src\server\budget\envelope.ts`:**
+
 - Expense categories only (lines 33-73): `budget-<id>`, `carryover-<id>` (false by default), `leftover-<id>` and `leftover-pos-<id>`.
   ```
   leftover = budgeted + spent + (prevCarryover ? prevLeftover : prevLeftoverPos)
@@ -7148,6 +7236,7 @@ Existing code that reads many cells this way:
 - A blank sheet for the month before the first month is seeded with `to-budget`, `buffered` and per-category `carryover`/`leftover`/`leftover-pos` (lines 16-31).
 
 **Tracking, in `C:\Actual Budget\packages\loot-core\src\server\budget\tracking.ts`:**
+
 - All categories, income included (lines 11-64): `budget-<id>`, `carryover-<id>`, `leftover-<id>` and `spent-with-carryover-<id>`.
   - Expense: `leftover = budgeted + sumAmount + (prevCarryover ? prevLeftover : 0)`
   - Income: `leftover = budgeted - sumAmount + (prevCarryover ? prevLeftover : 0)`
@@ -7158,11 +7247,13 @@ Existing code that reads many cells this way:
 ## 4. Hidden categories and income display
 
 **Hidden categories are treated differently by budget type:**
+
 - **Envelope:** group cells include hidden categories, since there is no hidden filter (envelope.ts:76-95). The grand totals include hidden expense groups, filtered only by `!group.is_income` (lines 150-225).
 - **Tracking:** group cells skip hidden categories (tracking.ts:71, 78, 85, `.filter(cat => !cat.hidden)`). The grand totals skip hidden groups (lines 93-95). When `hidden` changes, dependencies are removed or re-added (lines 216-227, 296-306).
 - On the page, hiding is display-only through the `budget.showHiddenCategories` pref (`C:\Actual Budget\packages\desktop-client\src\components\budget\BudgetCategories.tsx:82-102`). It does not change any totals.
 
 **Income display:**
+
 - **Envelope:** the income header shows only "Received" (`EnvelopeBudgetComponents.tsx:127-142`).
   - The group row shows `total-income` (lines 561-583).
   - Each category row shows `catSumAmount` inside `BalanceWithCarryover` (lines 657-663). There are no Budgeted or Balance columns.
@@ -7365,6 +7456,7 @@ export async function prewarmAllMonths(
   budgetType: SyncedPrefs['budgetType'],
   spreadsheet: ReturnType<typeof useSpreadsheet>,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:44:24Z)**_
@@ -7378,27 +7470,30 @@ _**Agent (claude-opus-5-5 2026-09-30 16:46:03Z)**_
 **Where should the Export button live? The ticket says 'budget page header (top right)'.**
 
 Options:
+
 - **App titlebar, budget route (Recommended)** - Next to the month-count calendar icons in BudgetTitlebar (Titlebar.tsx). Truly top-right-ish and page-level; needs to re-derive visible months from prefs + bounds.
 - **Right end of month-picker row** - Inside BudgetPageHeader, which already has startMonth/numMonths. Easier data access, but squeezes the month picker.
 
 **When several months are shown, how should the user pick the month to export?**
 
 Options:
+
 - **Month list in the menu (Recommended)** - Export → popover lists 'CSV' section with one item per visible month (e.g. 'January 2026'). With one month shown, a single 'Export as CSV' item. A future 'PDF' section slots in the same way.
 - **Small export dialog** - Export opens a modal with a month dropdown + format radio (CSV only for now). More clicks, most extensible.
 
 **Collapsed groups hide their category rows on the page. Should the CSV still list their categories?**
 
 Options:
+
 - **Yes, list all categories (Recommended)** - Collapse is a temporary view state; export full detail. Only the show-hidden toggle filters rows.
 - **No, match collapse state** - Collapsed groups export only their subtotal row.
 
 **The ticket says the file ends with a grand total row, but you chose an income summary row too. What order do you want?**
 
 Options:
+
 - **Expenses, Income, Total, Summary (Recommended)** - Expense groups+subtotals, income group+subtotal, grand Total (expenses, matching the page's totals row), then summary (To Budget / Saved) as the final lines.
 - **Summary before grand total** - Expenses, income, summary rows, then the grand Total as the very last row, which is literally what the ticket says.
-
 
 **Answer:** App titlebar, budget route (Recommended), Month list in the menu (Recommended), Yes, list all categories (Recommended), Expenses, Income, Total, Summary (Recommended)
 </details></tool-use>
@@ -7608,6 +7703,7 @@ export type BudgetMonthCell = Awaited<
   | ReturnType<Handlers['tracking-budget-month']>
 >[number];
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:46:42Z)**_
@@ -7823,6 +7919,7 @@ desktop-client/src/components/budget/tracking/budgetsummary/Saved.tsx:53:       
 desktop-client/src/components/budget/tracking/budgetsummary/Saved.tsx:54:                  {format(budgetedSaved, 'financial-with-sign')}
 desktop-client/src/components/budget/envelope/budgetsummary/ToBudgetAmount.tsx:59:      <Block>{isNegative ? t('Overbudgeted:') : t('To Budget:')}</Block>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:46:53Z)**_
@@ -7904,6 +8001,7 @@ Check totals row sign transforms
     </View>
   );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:47:04Z)**_
@@ -7933,6 +8031,7 @@ desktop-client/src/components/transactions/SelectedTransactionsButton.tsx:402:  
 408:export function nameForMonth(month: DateLike, locale?: Locale): string {
 412:export function format(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:47:07Z)**_
@@ -7948,9 +8047,11 @@ _**Agent (claude-opus-5-5 2026-09-30 16:47:45Z)**_
 # Plan: Export a budget month as CSV (desktop budget page)
 
 ## Context
+
 The desktop budget page has no way to get a month's data out of Actual. The ticket adds an **Export** action to the top-right header of the budget page. It downloads one month as a CSV, and the menu leaves room to add PDF later. Everything runs on the client. The pattern to follow is the Budget Analysis CSV export ([BudgetAnalysis.tsx:332](packages/desktop-client/src/components/reports/reports/BudgetAnalysis.tsx#L332)): build a CSV string, then call `window.Actual.saveFile`. That call already works in both the browser and Electron.
 
 **Decisions confirmed with the user**
+
 - Both **envelope and tracking** budgets are supported.
 - Hidden categories and groups follow the page's `budget.showHiddenCategories` toggle.
 - **Collapsed** groups still export all of their categories.
@@ -7961,20 +8062,21 @@ The desktop budget page has no way to get a month's data out of Actual. The tick
 - When more than one month is shown, the popover lists **one item per visible month**.
 
 ## CSV shape
+
 Columns (translated): `Category Group, Category, Budgeted, Spent, Balance`
 
 Rows follow the page order: expense groups first, then the single income group. This uses `separateGroups()` from [budget/util.ts:54](packages/desktop-client/src/components/budget/util.ts#L54).
 
-| Row type | Category Group | Category | Budgeted | Spent | Balance |
-|---|---|---|---|---|---|
-| Group subtotal (above its categories, as on the page) | group name | *(blank)* | `group-budget-<id>` | `group-sum-amount-<id>` | `group-leftover-<id>` |
-| Category | group name | cat name | `budget-<id>` | `sum-amount-<id>` | `leftover-<id>` (already includes carryover) |
-| Envelope income group | name | – | blank | `total-income` | blank |
-| Envelope income category | group | name | blank | `sum-amount-<id>` | blank |
-| Tracking income group / category | … | … | `group-budget` / `budget` | `group-sum-amount` / `sum-amount` | blank (the page hides it) |
-| **Total** | `Total` | – | envelope: `-total-budgeted` (the page negates it); tracking: `total-budgeted` | `total-spent` | `total-leftover` |
-| Summary (envelope) | `To Budget` / `Overbudgeted` (label depends on sign) | – | – | – | `to-budget` |
-| Summary (tracking) | `Saved` / `Overspent` | – | `total-saved` | `real-saved` | – |
+| Row type                                              | Category Group                                       | Category  | Budgeted                                                                      | Spent                             | Balance                                      |
+| ----------------------------------------------------- | ---------------------------------------------------- | --------- | ----------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------- |
+| Group subtotal (above its categories, as on the page) | group name                                           | _(blank)_ | `group-budget-<id>`                                                           | `group-sum-amount-<id>`           | `group-leftover-<id>`                        |
+| Category                                              | group name                                           | cat name  | `budget-<id>`                                                                 | `sum-amount-<id>`                 | `leftover-<id>` (already includes carryover) |
+| Envelope income group                                 | name                                                 | –         | blank                                                                         | `total-income`                    | blank                                        |
+| Envelope income category                              | group                                                | name      | blank                                                                         | `sum-amount-<id>`                 | blank                                        |
+| Tracking income group / category                      | …                                                    | …         | `group-budget` / `budget`                                                     | `group-sum-amount` / `sum-amount` | blank (the page hides it)                    |
+| **Total**                                             | `Total`                                              | –         | envelope: `-total-budgeted` (the page negates it); tracking: `total-budgeted` | `total-spent`                     | `total-leftover`                             |
+| Summary (envelope)                                    | `To Budget` / `Overbudgeted` (label depends on sign) | –         | –                                                                             | –                                 | `to-budget`                                  |
+| Summary (tracking)                                    | `Saved` / `Overspent`                                | –         | `total-saved`                                                                 | `real-saved`                      | –                                            |
 
 - **Subtotals come from the spreadsheet's group and total cells. They are not re-summed from the exported rows.** That way they always match the page, including the envelope/tracking difference in whether hidden categories count toward totals.
 - Hidden-item filtering matches [BudgetCategories.tsx:91-167](packages/desktop-client/src/components/budget/BudgetCategories.tsx#L91-L167): when the toggle is off, skip hidden groups and use `showHidden || !cat.hidden`.
@@ -7984,11 +8086,13 @@ Rows follow the page order: expense groups first, then the single income group. 
 ## Implementation
 
 ### 1. Shared CSV helper — new `packages/desktop-client/src/util/csv.ts`
+
 - Move `FORMULA_TRIGGERS` and the `csv-stringify/browser/esm/sync` import out of [budget-analysis-export.ts](packages/desktop-client/src/components/reports/spreadsheets/budget-analysis-export.ts). Keep the comment explaining why the browser build is needed.
 - Export `stringifyCsv(rows: unknown[][], columns: string[]): string` with `header: true`, `columns`, and the `cast.string` guard.
 - Refactor `buildBudgetAnalysisCsv` to call it. The existing `budget-analysis-export.test.ts` must pass unchanged.
 
 ### 2. Pure builder — new `packages/desktop-client/src/components/budget/export/budgetMonthCsv.ts`
+
 - `buildBudgetMonthCsv({ budgetType, month, categoryGroups, cells, showHiddenCategories, decimalPlaces }): string`
   - `cells` is a `Map<string, number>` keyed by the full cell name.
   - Lookups use `` `${monthUtils.sheetForMonth(month)}!${binding}` ``, with names from `envelopeBudget` / `trackingBudget` in [spreadsheet/bindings.ts:152-202](packages/desktop-client/src/spreadsheet/bindings.ts#L152-L202). Examples: `envelopeBudget.catBalance(id)`, `trackingBudget.totalSaved`.
@@ -7998,9 +8102,11 @@ Rows follow the page order: expense groups first, then the single income group. 
 - `fetchBudgetMonthCells(budgetType, month)` calls `send('envelope-budget-month' | 'tracking-budget-month', { month })` and builds the Map. It uses the same method choice as `prewarmMonth` in [budget/util.ts:200](packages/desktop-client/src/components/budget/util.ts#L200). Both endpoints already return every cell listed above, hidden categories included.
 
 ### 3. Visible months helper
+
 - Add `getVisibleMonths(startMonth, numMonths, bounds)` to [MonthsContext.tsx](packages/desktop-client/src/components/budget/MonthsContext.tsx). It uses the existing `getValidMonthBounds` and `monthUtils.rangeInclusive`, and `MonthsProvider` is switched to use it so there is one source of truth.
 
 ### 4. Export menu — new `packages/desktop-client/src/components/budget/BudgetExportMenu.tsx`
+
 - A Button that opens a Popover containing a Menu, following the pattern in [BudgetTotals.tsx:134-180](packages/desktop-client/src/components/budget/BudgetTotals.tsx#L134-L180). The button is labelled "Export" with an `aria-label`.
 - Visible months:
   - `startMonth`: `useLocalPref('budget.startMonth')`, falling back to `currentMonth()`.
@@ -8018,9 +8124,11 @@ Rows follow the page order: expense groups first, then the single income group. 
 - All user-facing text goes through `Trans` / `t`.
 
 ### 5. Wire into the Titlebar
+
 - In [Titlebar.tsx:254](packages/desktop-client/src/components/Titlebar.tsx#L254), `BudgetTitlebar` renders `<BudgetExportMenu />` next to `MonthCountSelector`. It is desktop-only because the Titlebar isn't used on mobile budget.
 
 ### 6. Tests — new `budgetMonthCsv.test.ts` (Vitest, real builder, hand-built `cells` Map, no mocks)
+
 - **Envelope:** header row; group subtotal row followed by its categories in order; income section; Total row with `-total-budgeted`; To Budget summary; Overbudgeted label when negative.
 - **Tracking:** income Budgeted column filled, Balance blank; Saved/Overspent summary.
 - **Carryover:** Balance equals `leftover` even when it differs from budgeted + spent.
@@ -8030,25 +8138,28 @@ Rows follow the page order: expense groups first, then the single income group. 
 - **Filename:** sanitisation and fallback in `getBudgetMonthCsvFilename`.
 
 ### 7. Release note
+
 - `upcoming-release-notes/export-budget-month-csv.md`, written with the `writing-release-notes` skill.
 
 ## Critical files
+
 - New: `desktop-client/src/util/csv.ts`, `components/budget/export/budgetMonthCsv.ts` (+ `.test.ts`), `components/budget/BudgetExportMenu.tsx`
 - Modified: `components/Titlebar.tsx`, `components/budget/MonthsContext.tsx`, `components/reports/spreadsheets/budget-analysis-export.ts`
 
 ## Verification
+
 1. `yarn typecheck`, `yarn lint:fix`, and `yarn workspace @actual-app/web run test` (runs the new tests and the existing budget-analysis export tests).
 2. `yarn start` → "View demo":
    - **Envelope:** with 1 month and then 3 months shown, export each month and compare every row with the page, including To Budget. Toggle show-hidden and collapse a group, then re-export.
    - **Tracking:** switch the budget type in settings and repeat.
    - Rename a category to `Food, "Fun"` and check that it opens in Google Sheets or LibreOffice without splitting columns.
 3. `yarn start:desktop`: export once and confirm the native Save dialog appears with a `<budget-name>-<YYYY-MM>.csv` default name.
-
 ```
 
 ```text
 File created successfully at: C:\Users\Kirby\.claude\plans\create-a-plan-to-dapper-wigderson.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 16:47:49Z)**_
@@ -8066,6 +8177,7 @@ _**Agent (claude-opus-5-5 2026-09-30 16:47:49Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:44:30Z)**_
@@ -8076,6 +8188,7 @@ _**Agent (claude-opus-5-5 2026-09-30 19:44:30Z)**_
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Let's change the plan to only support the envelope method for simplicity.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:44:35Z)**_
@@ -8090,13 +8203,13 @@ _**Agent (claude-opus-5-5 2026-09-30 19:44:35Z)**_
 
 ```text
 1	# Plan: Export a budget month as CSV (desktop budget page)
-2	
+2
 3	## Context
-4	
+4
 5	The desktop budget page has no way to get a month's data out of Actual. The ticket adds an **Export** action to the top-right header of the budget page. It downloads one month as a CSV, and the menu leaves room to add PDF later. Everything runs on the client. The pattern to follow is the Budget Analysis CSV export ([BudgetAnalysis.tsx:332](packages/desktop-client/src/components/reports/reports/BudgetAnalysis.tsx#L332)): build a CSV string, then call `window.Actual.saveFile`. That call already works in both the browser and Electron.
-6	
+6
 7	**Decisions confirmed with the user**
-8	
+8
 9	- Both **envelope and tracking** budgets are supported.
 10	- Hidden categories and groups follow the page's `budget.showHiddenCategories` toggle.
 11	- **Collapsed** groups still export all of their categories.
@@ -8105,13 +8218,13 @@ _**Agent (claude-opus-5-5 2026-09-30 19:44:35Z)**_
 14	- A small **shared CSV helper** is extracted and used by both the Budget Analysis export and the new budget export. The budget export gets its own row builder.
 15	- The button goes in the **app Titlebar on the `/budget` route**, next to `MonthCountSelector`.
 16	- When more than one month is shown, the popover lists **one item per visible month**.
-17	
+17
 18	## CSV shape
-19	
+19
 20	Columns (translated): `Category Group, Category, Budgeted, Spent, Balance`
-21	
+21
 22	Rows follow the page order: expense groups first, then the single income group. This uses `separateGroups()` from [budget/util.ts:54](packages/desktop-client/src/components/budget/util.ts#L54).
-23	
+23
 24	| Row type                                              | Category Group                                       | Category  | Budgeted                                                                      | Spent                             | Balance                                      |
 25	| ----------------------------------------------------- | ---------------------------------------------------- | --------- | ----------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------- |
 26	| Group subtotal (above its categories, as on the page) | group name                                           | _(blank)_ | `group-budget-<id>`                                                           | `group-sum-amount-<id>`           | `group-leftover-<id>`                        |
@@ -8122,22 +8235,22 @@ _**Agent (claude-opus-5-5 2026-09-30 19:44:35Z)**_
 31	| **Total**                                             | `Total`                                              | –         | envelope: `-total-budgeted` (the page negates it); tracking: `total-budgeted` | `total-spent`                     | `total-leftover`                             |
 32	| Summary (envelope)                                    | `To Budget` / `Overbudgeted` (label depends on sign) | –         | –                                                                             | –                                 | `to-budget`                                  |
 33	| Summary (tracking)                                    | `Saved` / `Overspent`                                | –         | `total-saved`                                                                 | `real-saved`                      | –                                            |
-34	
+34
 35	- **Subtotals come from the spreadsheet's group and total cells. They are not re-summed from the exported rows.** That way they always match the page, including the envelope/tracking difference in whether hidden categories count toward totals.
 36	- Hidden-item filtering matches [BudgetCategories.tsx:91-167](packages/desktop-client/src/components/budget/BudgetCategories.tsx#L91-L167): when the toggle is off, skip hidden groups and use `showHidden || !cat.hidden`.
 37	- Amounts use `integerToAmount(value, decimalPlaces)` and stay **numbers**. Formatting them as strings would break negatives: the formula-injection guard prefixes any string starting with `-`. The CSV has no currency symbols or thousands separators.
 38	- Signs match the page. The only transform is negating envelope `total-budgeted`, as [EnvelopeBudgetComponents.tsx:95-101](packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx#L95-L101) does.
-39	
+39
 40	## Implementation
-41	
+41
 42	### 1. Shared CSV helper — new `packages/desktop-client/src/util/csv.ts`
-43	
+43
 44	- Move `FORMULA_TRIGGERS` and the `csv-stringify/browser/esm/sync` import out of [budget-analysis-export.ts](packages/desktop-client/src/components/reports/spreadsheets/budget-analysis-export.ts). Keep the comment explaining why the browser build is needed.
 45	- Export `stringifyCsv(rows: unknown[][], columns: string[]): string` with `header: true`, `columns`, and the `cast.string` guard.
 46	- Refactor `buildBudgetAnalysisCsv` to call it. The existing `budget-analysis-export.test.ts` must pass unchanged.
-47	
+47
 48	### 2. Pure builder — new `packages/desktop-client/src/components/budget/export/budgetMonthCsv.ts`
-49	
+49
 50	- `buildBudgetMonthCsv({ budgetType, month, categoryGroups, cells, showHiddenCategories, decimalPlaces }): string`
 51	  - `cells` is a `Map<string, number>` keyed by the full cell name.
 52	  - Lookups use `` `${monthUtils.sheetForMonth(month)}!${binding}` ``, with names from `envelopeBudget` / `trackingBudget` in [spreadsheet/bindings.ts:152-202](packages/desktop-client/src/spreadsheet/bindings.ts#L152-L202). Examples: `envelopeBudget.catBalance(id)`, `trackingBudget.totalSaved`.
@@ -8145,13 +8258,13 @@ _**Agent (claude-opus-5-5 2026-09-30 19:44:35Z)**_
 54	  - A missing cell counts as 0.
 55	- `getBudgetMonthCsvFilename(budgetName, month)` returns `<budget-name>-<YYYY-MM>.csv`. It strips filesystem-unsafe characters (`\/:*?"<>|`) from the budget name and falls back to `budget`.
 56	- `fetchBudgetMonthCells(budgetType, month)` calls `send('envelope-budget-month' | 'tracking-budget-month', { month })` and builds the Map. It uses the same method choice as `prewarmMonth` in [budget/util.ts:200](packages/desktop-client/src/components/budget/util.ts#L200). Both endpoints already return every cell listed above, hidden categories included.
-57	
+57
 58	### 3. Visible months helper
-59	
+59
 60	- Add `getVisibleMonths(startMonth, numMonths, bounds)` to [MonthsContext.tsx](packages/desktop-client/src/components/budget/MonthsContext.tsx). It uses the existing `getValidMonthBounds` and `monthUtils.rangeInclusive`, and `MonthsProvider` is switched to use it so there is one source of truth.
-61	
+61
 62	### 4. Export menu — new `packages/desktop-client/src/components/budget/BudgetExportMenu.tsx`
-63	
+63
 64	- A Button that opens a Popover containing a Menu, following the pattern in [BudgetTotals.tsx:134-180](packages/desktop-client/src/components/budget/BudgetTotals.tsx#L134-L180). The button is labelled "Export" with an `aria-label`.
 65	- Visible months:
 66	  - `startMonth`: `useLocalPref('budget.startMonth')`, falling back to `currentMonth()`.
@@ -8167,13 +8280,13 @@ _**Agent (claude-opus-5-5 2026-09-30 19:44:35Z)**_
 76	  - Read `budgetType` (`useSyncedPref`), `showHiddenCategories` (`useLocalPref`), categories (`useCategories().data.grouped`), `format.currency.decimalPlaces` (`useFormat`), and `budgetName` (`useMetadataPref`).
 77	  - Fetch the cells, build the CSV, and call `window.Actual.saveFile(csv, filename, t('Export budget month'))`.
 78	- All user-facing text goes through `Trans` / `t`.
-79	
+79
 80	### 5. Wire into the Titlebar
-81	
+81
 82	- In [Titlebar.tsx:254](packages/desktop-client/src/components/Titlebar.tsx#L254), `BudgetTitlebar` renders `<BudgetExportMenu />` next to `MonthCountSelector`. It is desktop-only because the Titlebar isn't used on mobile budget.
-83	
+83
 84	### 6. Tests — new `budgetMonthCsv.test.ts` (Vitest, real builder, hand-built `cells` Map, no mocks)
-85	
+85
 86	- **Envelope:** header row; group subtotal row followed by its categories in order; income section; Total row with `-total-budgeted`; To Budget summary; Overbudgeted label when negative.
 87	- **Tracking:** income Budgeted column filled, Balance blank; Saved/Overspent summary.
 88	- **Carryover:** Balance equals `leftover` even when it differs from budgeted + spent.
@@ -8181,18 +8294,18 @@ _**Agent (claude-opus-5-5 2026-09-30 19:44:35Z)**_
 90	- **Decimals:** `decimalPlaces` 0 and 2; negative amounts stay numeric.
 91	- **Escaping:** names containing `,`, `"`, and a newline are quoted and escaped correctly; a name starting with `=` or `@` gets the `'` prefix.
 92	- **Filename:** sanitisation and fallback in `getBudgetMonthCsvFilename`.
-93	
+93
 94	### 7. Release note
-95	
+95
 96	- `upcoming-release-notes/export-budget-month-csv.md`, written with the `writing-release-notes` skill.
-97	
+97
 98	## Critical files
-99	
+99
 100	- New: `desktop-client/src/util/csv.ts`, `components/budget/export/budgetMonthCsv.ts` (+ `.test.ts`), `components/budget/BudgetExportMenu.tsx`
 101	- Modified: `components/Titlebar.tsx`, `components/budget/MonthsContext.tsx`, `components/reports/spreadsheets/budget-analysis-export.ts`
-102	
+102
 103	## Verification
-104	
+104
 105	1. `yarn typecheck`, `yarn lint:fix`, and `yarn workspace @actual-app/web run test` (runs the new tests and the existing budget-analysis export tests).
 106	2. `yarn start` → "View demo":
 107	   - **Envelope:** with 1 month and then 3 months shown, export each month and compare every row with the page, including To Budget. Toggle show-hidden and collapse a group, then re-export.
@@ -8201,6 +8314,7 @@ _**Agent (claude-opus-5-5 2026-09-30 19:44:35Z)**_
 110	3. `yarn start:desktop`: export once and confirm the native Save dialog appears with a `<budget-name>-<YYYY-MM>.csv` default name.
 111
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:45:07Z)**_
@@ -8232,14 +8346,14 @@ Columns (translated): `Category Group, Category, Budgeted, Spent, Balance`
 
 Rows follow the page order: expense groups first, then the single income group. This uses `separateGroups()` from [budget/util.ts:54](packages/desktop-client/src/components/budget/util.ts#L54).
 
-| Row type                                                      | Category Group                                       | Category  | Budgeted                              | Spent                   | Balance                                      |
-| ------------------------------------------------------------- | ---------------------------------------------------- | --------- | ------------------------------------- | ----------------------- | -------------------------------------------- |
-| Expense group subtotal (above its categories, as on the page) | group name                                           | _(blank)_ | `group-budget-<id>`                   | `group-sum-amount-<id>` | `group-leftover-<id>`                        |
-| Expense category                                              | group name                                           | cat name  | `budget-<id>`                         | `sum-amount-<id>`       | `leftover-<id>` (already includes carryover) |
-| Income group                                                  | group name                                           | _(blank)_ | blank                                 | `total-income`          | blank                                        |
-| Income category                                               | group name                                           | cat name  | blank                                 | `sum-amount-<id>`       | blank                                        |
-| **Total**                                                     | `Total`                                              | –         | `-total-budgeted` (the page negates it) | `total-spent`         | `total-leftover`                             |
-| Summary                                                       | `To Budget` / `Overbudgeted` (label depends on sign) | –         | –                                     | –                       | `to-budget`                                  |
+| Row type                                                      | Category Group                                       | Category  | Budgeted                                | Spent                   | Balance                                      |
+| ------------------------------------------------------------- | ---------------------------------------------------- | --------- | --------------------------------------- | ----------------------- | -------------------------------------------- |
+| Expense group subtotal (above its categories, as on the page) | group name                                           | _(blank)_ | `group-budget-<id>`                     | `group-sum-amount-<id>` | `group-leftover-<id>`                        |
+| Expense category                                              | group name                                           | cat name  | `budget-<id>`                           | `sum-amount-<id>`       | `leftover-<id>` (already includes carryover) |
+| Income group                                                  | group name                                           | _(blank)_ | blank                                   | `total-income`          | blank                                        |
+| Income category                                               | group name                                           | cat name  | blank                                   | `sum-amount-<id>`       | blank                                        |
+| **Total**                                                     | `Total`                                              | –         | `-total-budgeted` (the page negates it) | `total-spent`           | `total-leftover`                             |
+| Summary                                                       | `To Budget` / `Overbudgeted` (label depends on sign) | –         | –                                       | –                       | `to-budget`                                  |
 
 - **Subtotals come from the spreadsheet's group and total cells. They are not re-summed from the exported rows.** That way they always match the page, even when hidden categories are filtered out of the rows (in envelope, group totals still include hidden categories).
 - Income rows show only the received amount, in the Spent column, because that is all the envelope income section shows ([EnvelopeBudgetComponents.tsx:127-142](packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx#L127-L142)).
@@ -8320,12 +8434,12 @@ Rows follow the page order: expense groups first, then the single income group. 
    - Switch to tracking in settings and confirm the Export button disappears.
    - Rename a category to `Food, "Fun"` and check that it opens in Google Sheets or LibreOffice without splitting columns.
 3. `yarn start:desktop`: export once and confirm the native Save dialog appears with a `<budget-name>-<YYYY-MM>.csv` default name.
-
 ```
 
 ```text
 The file C:\Users\Kirby\.claude\plans\create-a-plan-to-dapper-wigderson.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:45:14Z)**_
@@ -8452,6 +8566,7 @@ Rows follow the page order: expense groups first, then the single income group. 
    - Rename a category to `Food, "Fun"` and check that it opens in Google Sheets or LibreOffice without splitting columns.
 3. `yarn start:desktop`: export once and confirm the native Save dialog appears with a `<budget-name>-<YYYY-MM>.csv` default name.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:45:19Z)**_
@@ -8720,6 +8835,7 @@ export const BudgetTotals = memo(function BudgetTotals({
       </RenderMonths>
     </View>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:45:25Z)**_
@@ -8950,6 +9066,7 @@ export const HelpMenu = () => {
 ../../loot-core/src/types/models/category.ts-13-  hidden?: boolean;
 ../../loot-core/src/types/models/category.ts-14-};
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:45:38Z)**_
@@ -9021,6 +9138,7 @@ desktop-client/src/components/budget/BudgetTable.tsx:11:} from '@actual-app/core
 200:        decimalPlaces: displayDecimalPlaces,
 207:        activeCurrency.decimalPlaces,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:45:40Z)**_
@@ -9052,12 +9170,12 @@ export function stringifyCsv(rows: unknown[][], columns: string[]): string {
     },
   });
 }
-
 ```
 
 ```text
 File created successfully at: c:\Actual Budget\packages\desktop-client\src\util\csv.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:46:08Z)**_
@@ -9102,12 +9220,12 @@ export function buildBudgetAnalysisCsv(
     columns,
   );
 }
-
 ```
 
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\reports\spreadsheets\budget-analysis-export.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:46:17Z)**_
@@ -9142,6 +9260,7 @@ Verify #util import alias exists
 src/app/appSlice.ts:9:import { getUploadError } from '#util/error';
 src/app/appSlice.ts:10:import { getIsOutdated, getLatestVersion } from '#util/versions';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:46:26Z)**_
@@ -9183,6 +9302,7 @@ export function makeAmountGrey(value: number | string | null): CSSProperties {
 89:    "#hooks/*": "./src/hooks/*.ts",
 113:    "#util/*": "./src/util/*.ts"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:46:40Z)**_
@@ -9206,33 +9326,33 @@ _**Agent (claude-opus-5-5 2026-09-30 19:46:40Z)**_
 83	    function onCollapse(value: Array<CategoryGroupEntity['id']>) {
 84	      setCollapsedGroupIdsPref(value);
 85	    }
-86	
+86
 87	    const [isAddingGroup, setIsAddingGroup] = useState(false);
 88	    const [newCategoryForGroup, setNewCategoryForGroup] = useState<
 89	      string | null
 90	    >(null);
 91	    const items: BudgetItem[] = useMemo(() => {
 92	      const [expenseGroups, incomeGroup] = separateGroups(categoryGroups);
-93	
+93
 94	      let items: BudgetItem[] = Array.prototype.concat.apply(
 95	        [],
 96	        expenseGroups.map(group => {
 97	          if (group.hidden && !showHiddenCategories) {
 98	            return [];
 99	          }
-100	
+100
 101	          const groupCategories = group.categories?.filter(
 102	            cat => showHiddenCategories || !cat.hidden,
 103	          );
-104	
+104
 105	          const items: BudgetItem[] = [
 106	            { type: 'expense-group', value: { ...group } },
 107	          ];
-108	
+108
 109	          if (newCategoryForGroup === group.id) {
 110	            items.push({ type: 'new-category' });
 111	          }
-112	
+112
 113	          return [
 114	            ...items,
 115	            ...(collapsedGroupIds.includes(group.id)
@@ -9248,21 +9368,21 @@ _**Agent (claude-opus-5-5 2026-09-30 19:46:40Z)**_
 125	          ];
 126	        }),
 127	      );
-128	
+128
 129	      if (isAddingGroup) {
 130	        items.push({ type: 'new-group' });
 131	      }
-132	
+132
 133	      if (incomeGroup) {
 134	        const incomeCategoryItems: BudgetItem[] = [
 135	          { type: 'income-separator' },
 136	          { type: 'income-group', value: incomeGroup },
 137	        ];
-138	
+138
 139	        if (newCategoryForGroup === incomeGroup.id) {
 140	          incomeCategoryItems.push({ type: 'new-category' });
 141	        }
-142	
+142
 143	        incomeCategoryItems.push(
 144	          ...(collapsedGroupIds.includes(incomeGroup.id)
 145	            ? []
@@ -9276,10 +9396,10 @@ _**Agent (claude-opus-5-5 2026-09-30 19:46:40Z)**_
 153	            }),
 154	          ),
 155	        );
-156	
+156
 157	        items = items.concat(incomeCategoryItems);
 158	      }
-159	
+159
 160	      return items;
 161	    }, [
 162	      categoryGroups,
@@ -9288,10 +9408,11 @@ _**Agent (claude-opus-5-5 2026-09-30 19:46:40Z)**_
 165	      isAddingGroup,
 166	      showHiddenCategories,
 167	    ]);
-168	
+168
 169	    const [dragState, setDragState] = useState<LocalDragState>(null);
 170	    const [savedCollapsed, setSavedCollapsed] = useState<Array<
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:46:43Z)**_
@@ -9437,12 +9558,12 @@ export async function fetchBudgetMonthCells(
   const values = await send('envelope-budget-month', { month });
   return new Map(values.map(({ name, value }) => [name, value]));
 }
-
 ```
 
 ```text
 File created successfully at: c:\Actual Budget\packages\desktop-client\src\components\budget\export\budgetMonthCsv.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:47:03Z)**_
@@ -9467,6 +9588,7 @@ export function integerToAmount(
 // number format, because the user could be importing from many
 // currencies. We extract out the numbers and just ignore separators.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:47:07Z)**_
@@ -9481,6 +9603,7 @@ _**Agent (claude-opus-5-5 2026-09-30 19:47:13Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\budget\MonthsContext.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:47:16Z)**_
@@ -9491,6 +9614,7 @@ _**Agent (claude-opus-5-5 2026-09-30 19:47:16Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\budget\MonthsContext.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:47:20Z)**_
@@ -9563,6 +9687,7 @@ const HelpButton = forwardRef<HTMLButtonElement, HelpButtonProps>(
   },
 );
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:47:28Z)**_
@@ -9576,6 +9701,7 @@ Find download/export icons
 ```text
 v2/index.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:47:31Z)**_
@@ -9606,6 +9732,7 @@ components/admin/UserAccess/UserAccess.tsx:26:import { addNotification } from '#
 352-            type: 'error',
 353-            message: t(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:47:51Z)**_
@@ -9637,6 +9764,7 @@ loot-core/typings/window.ts-25-  ) => Promise<void>;
 17-      };
 18-    },
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:48:10Z)**_
@@ -9799,6 +9927,7 @@ export function BudgetExportMenu() {
 ```text
 File created successfully at: c:\Actual Budget\packages\desktop-client\src\components\budget\BudgetExportMenu.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:48:12Z)**_
@@ -9813,6 +9942,7 @@ _**Agent (claude-opus-5-5 2026-09-30 19:48:19Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\Titlebar.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:48:22Z)**_
@@ -9823,6 +9953,7 @@ _**Agent (claude-opus-5-5 2026-09-30 19:48:22Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\Titlebar.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:48:27Z)**_
@@ -10044,12 +10175,12 @@ describe('getBudgetMonthCsvFilename', () => {
     expect(getBudgetMonthCsvFilename('???', month)).toBe('budget-2026-01.csv');
   });
 });
-
 ```
 
 ```text
 File created successfully at: c:\Actual Budget\packages\desktop-client\src\components\budget\export\budgetMonthCsv.test.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:48:59Z)**_
@@ -10075,6 +10206,7 @@ Run new and existing CSV export tests
    Start at  15:49:22
    Duration  39.61s (transform 6.46s, setup 18.73s, import 732ms, tests 46ms, environment 57.66s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:50:04Z)**_
@@ -10116,6 +10248,7 @@ worker restarts: 0, max worker memory usage: 50.30 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 25.58s to complete.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:52:31Z)**_
@@ -10129,6 +10262,7 @@ Lint the changed files
 ```text
 (Bash completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:52:35Z)**_
@@ -10155,6 +10289,7 @@ Format issues found in above 1 files. Run without `--check` to fix.
 Finished in 227ms on 7 files using 16 threads.
 fmt exit=1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:53:00Z)**_
@@ -10172,6 +10307,7 @@ Finished in 189ms on 1 files using 16 threads.
 9d9
 < import { separateGroups } from '#components/budget/util';
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:53:03Z)**_
@@ -10227,7 +10363,6 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-09-30 19:53:09Z)**_
@@ -10242,12 +10377,12 @@ authors: [BenBonk]
 ---
 
 Add an Export button to the budget page to download an envelope budget month as a CSV file
-
 ```
 
 ```text
 File created successfully at: c:\Actual Budget\upcoming-release-notes\export-budget-month-csv.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 19:53:22Z)**_
@@ -10255,11 +10390,13 @@ _**Agent (claude-opus-5-5 2026-09-30 19:53:22Z)**_
 I've implemented the envelope-only budget month CSV export from the plan. Unit tests, typecheck and lint all pass, but I haven't tried it in the running app (browser or Electron) yet, and nothing is committed.
 
 **How it works:** on the budget page, an Export button (download icon) now sits in the top bar next to the month-count calendar icons. It only appears for envelope budgets.
+
 - With one month on screen, the menu has a single "Export as CSV" item.
 - With several months, it has a "CSV" heading and one entry per visible month. A PDF section can be added the same way later.
 - The file is named `<budget-name>-<YYYY-MM>.csv`, with characters that aren't allowed in filenames removed.
 
 **CSV contents:**
+
 - **Columns:** Category Group, Category, Budgeted, Spent, Balance.
 - **Row order:** each expense group's subtotal row, then its categories; then income (received amount only); then Total; then To Budget, or Overbudgeted when it's negative.
 - **Values:** taken straight from the budget page's own cells, so balances include carryover and group totals always match the page.
@@ -10268,6 +10405,7 @@ I've implemented the envelope-only budget month CSV export from the plan. Unit t
 - **Amounts:** plain numbers using the user's decimal places. Names containing commas, quotes or line breaks are quoted properly, and names starting with `=`, `@` and similar get a leading `'` so spreadsheet apps don't run them as formulas.
 
 **Files:**
+
 - **Shared CSV helper:** [util/csv.ts](packages/desktop-client/src/util/csv.ts). [budget-analysis-export.ts](packages/desktop-client/src/components/reports/spreadsheets/budget-analysis-export.ts) now uses it, and its 8 existing tests still pass.
 - **Builder:** [budgetMonthCsv.ts](packages/desktop-client/src/components/budget/export/budgetMonthCsv.ts), with 14 tests in [budgetMonthCsv.test.ts](packages/desktop-client/src/components/budget/export/budgetMonthCsv.test.ts) covering order, subtotals, totals, carryover, hidden items, the income group, decimal places, escaping and the filename.
 - **Menu:** [BudgetExportMenu.tsx](packages/desktop-client/src/components/budget/BudgetExportMenu.tsx), added to the budget top bar in [Titlebar.tsx](packages/desktop-client/src/components/Titlebar.tsx).
@@ -10275,6 +10413,7 @@ I've implemented the envelope-only budget month CSV export from the plan. Unit t
 - **Release note:** [upcoming-release-notes/export-budget-month-csv.md](upcoming-release-notes/export-budget-month-csv.md).
 
 **Still to do:**
+
 - Try it in the app: `yarn start`, choose "View demo", export with 1 and 3 months shown and compare each row with the page, then try the desktop Save dialog with `yarn start:desktop`.
 - Run `yarn generate:i18n` if your workflow needs the new strings in the translation files.
 - Commit the changes whenever you're ready.
@@ -10283,7 +10422,7 @@ I've implemented the envelope-only budget month CSV export from the plan. Unit t
 
 _**User (2026-09-30 21:19:34Z)**_
 
-I'm getting an error when tryin got yarn start 
+I'm getting an error when tryin got yarn start
 
 <pasted_content id="2581">
 failed to load config from C:\Actual
@@ -10301,9 +10440,9 @@ Error: Build failed with 1 error:
     at async resolveConfig (file:///C:/Actual%20Budget/node_modules/vite/dist/node/chunks/node.js:34465:22)
     at async createBuilder (file:///C:/Actual%20Budget/node_modules/vite/dist/node/chunks/node.js:33650:17)
     at async CAC.<anonymous> (file:///C:/Actual%20Budget/node_modules/vite/dist/node/cli.js:766:19) {
-  errors: [Getter/Setter]
-</pasted_content id="2581">
 
+errors: [Getter/Setter]
+</pasted_content id="2581">
 
 ---
 
@@ -10346,6 +10485,7 @@ packages/plugins-service/package.json:10:    "build-dev": "cross-env NODE_ENV=de
 packages/plugins-service/package.json:11:    "watch": "cross-env NODE_ENV=development vite build --watch",
 packages/sync-server/package.json:79:    "build": "vite build",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:19:53Z)**_
@@ -10364,6 +10504,7 @@ remove-untranslated-languages
 serve-build.mjs
 validate-theme-catalog.mts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:20:02Z)**_
@@ -10380,6 +10521,7 @@ package.json:34:    "start:browser-frontend": "yarn workspace @actual-app/web st
 package.json:38:    "build:browser": "./bin/package-browser",
 packages/desktop-client/package.json:120:    "build:browser": "vite build --mode=browser",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:20:05Z)**_
@@ -10396,13 +10538,15 @@ Build plugins-service once to reproduce
 
 ```text
 vite v8.0.16 building client environment for production...
-[2Ktransforming...✓ 54 modules transformed.
+[2K
+transforming...✓ 54 modules transformed.
 rendering chunks...
 computing gzip size...
 dist/plugin-sw.js  94.73 kB │ gzip: 23.51 kB │ map: 173.32 kB
 
 ✓ built in 81ms
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:20:15Z)**_
@@ -10426,6 +10570,7 @@ vite.config.mts
 176:        `loot-core backend failed to spawn: ${err.message}`,
 255:      const stageKcab = build({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:20:20Z)**_
@@ -10437,7 +10582,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:20:20Z)**_
 ```text
 130	    cp(sqlWasmPath, path.resolve(publicDir, 'sql-wasm.wasm')),
 131	  ]);
-132	
+132
 133	  const entries = await readdir(publicDataDir, {
 134	    recursive: true,
 135	    withFileTypes: true,
@@ -10459,7 +10604,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:20:20Z)**_
 151	    files.join('\n') + '\n',
 152	  );
 153	}
-154	
+154
 155	const lootCoreBackend = (): Plugin => ({
 156	  name: 'loot-core-backend',
 157	  configureServer(server) {
@@ -10491,7 +10636,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:20:20Z)**_
 183	    process.once('SIGINT', cleanup);
 184	    process.once('SIGTERM', cleanup);
 185	    process.once('exit', cleanup);
-186	
+186
 187	    server.middlewares.use('/kcab', (req, res, next) => {
 188	      const url = new URL(req.url ?? '/', 'http://localhost');
 189	      const filePath = path.join(lootCoreOutDir, url.pathname);
@@ -10506,6 +10651,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:20:20Z)**_
 198	          stream.pipe(res);
 199	        })
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:20:25Z)**_
@@ -10540,6 +10686,7 @@ f684cf9fe Setup done for 'Actual project'
 8ad218b7d [AI] api: make the browser build work in consumer production bundles (#8289)
 c4775bf28 wire tests up to depot test results analysis (#8262)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:20:35Z)**_
@@ -10557,6 +10704,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:20:36Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\vite.config.mts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:20:39Z)**_
@@ -10575,6 +10723,7 @@ Start dev server in background, logging output
 Command running in background with ID: b5hiff88w. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512\tasks\b5hiff88w.output. You will be notified when it completes. To check interim output, use Read on that file path.
 Session cwd remains C:\Actual Budget\packages\desktop-client; directory changes made by the backgrounded command do not apply to subsequent commands.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:20:43Z)**_
@@ -10592,6 +10741,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:20:43Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:21:02Z)**_
@@ -10605,6 +10755,7 @@ Wait for backend build result in dev log
 ```text
 built in 92ms.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:21:05Z)**_
@@ -10622,6 +10773,7 @@ Wait for dev server and loot-core build output
 ```text
 Command did not complete within its 320s timeout and was moved to the background (ID: bvgs0jc1e). Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512\tasks\bvgs0jc1e.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:29:22Z)**_
@@ -10658,6 +10810,7 @@ built in 7081ms.
 5:29:18 PM [vite] (client) [optimizer] bundling dependencies...
 1948 /c/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512/scratchpad/start.log
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:29:27Z)**_
@@ -10682,6 +10835,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:29:27Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:29:30Z)**_
@@ -10692,6 +10846,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:29:30Z)**_
 ```text
 {"message":"Successfully stopped task: b5hiff88w (cd \"/c/Actual Budget\"; yarn start > /c/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512/scratchpad/start.log 2>&1)","task_id":"b5hiff88w","task_type":"local_bash","command":"cd \"/c/Actual Budget\"; yarn start > /c/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512/scratchpad/start.log 2>&1"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:29:30Z)**_
@@ -10702,6 +10857,7 @@ _**Agent (claude-opus-5-5 2026-09-30 21:29:30Z)**_
 ```text
 {"message":"Successfully stopped task: bvgs0jc1e (L=/c/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512/scratchpad/start.log; for i in $(seq 1 280); do if grep -qaE \"failed to load config|UNRESOLVED_ENTRY|error during build|kcab|browser/|loot-core\" \"$L\" && grep -qaE \"Local:\" \"$L\"; then break; fi; sleep 1; done; sed 's/\\x1b\\[[0-9;]*[a-zA-Z]//g' \"$L\" | grep -avE \"^\\s*$|transforming|rendering|computing\" | tail -30)","task_id":"bvgs0jc1e","task_type":"local_bash","command":"L=/c/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/cc7b8598-9aa8-4ef6-a1c8-e6a77d31c512/scratchpad/start.log; for i in $(seq 1 280); do if grep -qaE \"failed to load config|UNRESOLVED_ENTRY|error during build|kcab|browser/|loot-core\" \"$L\" && grep -qaE \"Local:\" \"$L\"; then break; fi; sleep 1; done; sed 's/\\x1b\\[[0-9;]*[a-zA-Z]//g' \"$L\" | grep -avE \"^\\s*$|transforming|rendering|computing\" | tail -30"}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:29:33Z)**_
@@ -10720,6 +10876,7 @@ LocalPort OwningProcess Name
      3002         68700 node
      3001         60840 node
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:29:43Z)**_
@@ -10738,6 +10895,7 @@ Count
 -----
     0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:29:55Z)**_
@@ -10802,6 +10960,7 @@ ca62ef25d [AI] Add Escape shortcut to back out of report drill-downs
  upcoming-release-notes/escape-back-from-report.md  |   6 +
  4 files changed, 164 insertions(+)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:36:51Z)**_
@@ -10822,12 +10981,12 @@ Author: Bennett Matuszewski <164584687+bennettmatuszewski@users.noreply.github.c
 Date:   Mon Sep 28 23:21:32 2026 -0400
 
     [AI] Add Escape shortcut to back out of report drill-downs
-    
+
     Pressing Escape on a report page returns to the dashboard it was opened
     from, or to the reports overview when opened directly. Escape is ignored
     while typing in an input, when another handler already consumed it, or
     while a popover or modal is open.
-    
+
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 
 diff --git a/packages/desktop-client/src/components/reports/ReportRouter.tsx b/packages/desktop-client/src/components/reports/ReportRouter.tsx
@@ -10839,7 +10998,7 @@ index ec14d5f1c..8ea1b4746 100644
  import { Summary } from './reports/Summary';
  import { ReportsDashboardRouter } from './ReportsDashboardRouter';
 +import { useEscapeToReportsOverview } from './useEscapeToReportsOverview';
- 
+
  function ReportBoundary({ children }: { children: ReactNode }) {
    const location = useLocation();
 +  useEscapeToReportsOverview();
@@ -10899,6 +11058,7 @@ index 000000000..6bcc9e344
 +
 +Press Escape to go back to the reports dashboard from an open report
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-09-30 21:37:20Z)**_
@@ -10907,11 +11067,11 @@ There's no PR open yet. The export changes are all uncommitted, and they're sitt
 
 ## What's on the branch now
 
-| Change | State | Ticket |
-|---|---|---|
-| Escape shortcut to back out of reports | Committed (`ca62ef25d`) | Issue #12 |
-| Export a budget month as CSV | Uncommitted | Export sub-issue of #39 |
-| Fix for `yarn start` failing when the folder path has a space | Uncommitted | None (existing bug) |
+| Change                                                        | State                   | Ticket                  |
+| ------------------------------------------------------------- | ----------------------- | ----------------------- |
+| Escape shortcut to back out of reports                        | Committed (`ca62ef25d`) | Issue #12               |
+| Export a budget month as CSV                                  | Uncommitted             | Export sub-issue of #39 |
+| Fix for `yarn start` failing when the folder path has a space | Uncommitted             | None (existing bug)     |
 
 If you commit everything here and open a PR, that one PR will cover all three changes. I'd split them before committing (see the end).
 

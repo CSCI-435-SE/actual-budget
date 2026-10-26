@@ -6,7 +6,7 @@
 
 _**User (2026-10-04 20:45:06Z)**_
 
-When the sidebar component @actual-budget/packages/desktop-client/src/components/sidebar/Sidebar.tsx  is pinned, it behaves like it shares a container with the main content, but when unpinned and you hover over the 3 lines in the top right, opening the sidebar overlays the main content instead of shrinking it to resize. How does this work and what files affect it?
+When the sidebar component @actual-budget/packages/desktop-client/src/components/sidebar/Sidebar.tsx is pinned, it behaves like it shares a container with the main content, but when unpinned and you hover over the 3 lines in the top right, opening the sidebar overlays the main content instead of shrinking it to resize. How does this work and what files affect it?
 
 ---
 
@@ -35,6 +35,7 @@ index.test.tsx
 index.tsx
 (eval):1: no matches found: --include=*.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:45:14Z)**_
@@ -87,6 +88,7 @@ components/settings/Format.tsx:68:                sidebar.floating
 components/banksync/index.tsx:29:  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 components/banksync/index.tsx:96:        marginInline: floatingSidebar && !isNarrowWidth ? 'auto' : 0,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:45:14Z)**_
@@ -97,23 +99,23 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:14Z)**_
 
 ```text
 1	import React from 'react';
-2	
+2
 3	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 4	import { View } from '@actual-app/components/view';
-5	
+5
 6	import { useGlobalPref } from '#hooks/useGlobalPref';
-7	
+7
 8	import { Sidebar } from './Sidebar';
 9	import { useSidebar } from './SidebarProvider';
-10	
+10
 11	export function FloatableSidebar() {
 12	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
-13	
+13
 14	  const sidebar = useSidebar();
 15	  const { isNarrowWidth } = useResponsive();
-16	
+16
 17	  const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
-18	
+18
 19	  return isNarrowWidth ? null : (
 20	    <View
 21	      onMouseOver={
@@ -153,6 +155,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:14Z)**_
 55	}
 56
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
@@ -172,15 +175,15 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 8	  useState,
 9	} from 'react';
 10	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-11	
+11
 12	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-13	
+13
 14	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 15	import { useGlobalPref } from '#hooks/useGlobalPref';
 16	import { useDispatch } from '#redux';
-17	
+17
 18	const HOVER_HIDE_DELAY = 350;
-19	
+19
 20	type SidebarContextValue = {
 21	  hidden: boolean;
 22	  setHidden: Dispatch<SetStateAction<boolean>>;
@@ -188,13 +191,13 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 24	  floating: boolean;
 25	  alwaysFloats: boolean;
 26	};
-27	
+27
 28	const SidebarContext = createContext<SidebarContextValue>(null);
-29	
+29
 30	type SidebarProviderProps = {
 31	  children: ReactNode;
 32	};
-33	
+33
 34	export function SidebarProvider({ children }: SidebarProviderProps) {
 35	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 36	  const [hidden, setHidden] = useState(true);
@@ -202,7 +205,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 38	  const alwaysFloats = width < 668;
 39	  const floating = floatingSidebar || alwaysFloats;
 40	  const dispatch = useDispatch();
-41	
+41
 42	  // A dropdown menu opened from the sidebar (e.g. BudgetName's) renders in a
 43	  // portal, outside the sidebar's own DOM subtree, so hovering it never
 44	  // triggers the sidebar's onMouseOver/onMouseLeave. Track hover of the
@@ -211,7 +214,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 47	  // is being used, and only hide together once neither is hovered anymore.
 48	  const [hoveringSidebar, setHoveringSidebar] = useState(false);
 49	  const [hoveringPopover, setHoveringPopover] = useState(false);
-50	
+50
 51	  useEffect(() => {
 52	    function handlePointerOver(e: PointerEvent) {
 53	      const target = e.target as Element | null;
@@ -220,7 +223,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 56	    document.addEventListener('pointerover', handlePointerOver);
 57	    return () => document.removeEventListener('pointerover', handlePointerOver);
 58	  }, []);
-59	
+59
 60	  useLayoutEffect(() => {
 61	    if (hoveringSidebar || hoveringPopover) {
 62	      setHidden(false);
@@ -229,13 +232,13 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 65	    const timeout = setTimeout(() => setHidden(true), HOVER_HIDE_DELAY);
 66	    return () => clearTimeout(timeout);
 67	  }, [hoveringSidebar, hoveringPopover]);
-68	
+68
 69	  useEffect(() => {
 70	    if (hidden && !hoveringPopover) {
 71	      dispatch(closeContextMenu());
 72	    }
 73	  }, [hidden, hoveringPopover, dispatch]);
-74	
+74
 75	  return (
 76	    <SidebarContext.Provider
 77	      value={{ hidden, setHidden, setHoveringSidebar, floating, alwaysFloats }}
@@ -244,11 +247,11 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 80	    </SidebarContext.Provider>
 81	  );
 82	}
-83	
+83
 84	export function useSidebar() {
 85	  const { hidden, setHidden, setHoveringSidebar, floating, alwaysFloats } =
 86	    useContext(SidebarContext);
-87	
+87
 88	  return useMemo(
 89	    () => ({ hidden, setHidden, setHoveringSidebar, floating, alwaysFloats }),
 90	    [hidden, setHidden, setHoveringSidebar, floating, alwaysFloats],
@@ -256,6 +259,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 92	}
 93
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
@@ -268,19 +272,19 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 1	import React from 'react';
 2	import type { ComponentPropsWithoutRef, CSSProperties } from 'react';
 3	import { useTranslation } from 'react-i18next';
-4	
+4
 5	import { Button } from '@actual-app/components/button';
 6	import { SvgPin } from '@actual-app/components/icons/v1';
 7	import { SvgArrowButtonLeft1 } from '@actual-app/components/icons/v2';
 8	import { theme } from '@actual-app/components/theme';
 9	import { View } from '@actual-app/components/view';
-10	
+10
 11	type ToggleButtonProps = {
 12	  isFloating: boolean;
 13	  onFloat: ComponentPropsWithoutRef<typeof Button>['onPress'];
 14	  style?: CSSProperties;
 15	};
-16	
+16
 17	export function ToggleButton({
 18	  style,
 19	  isFloating,
@@ -313,6 +317,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:15Z)**_
 46	}
 47
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:45:16Z)**_
@@ -326,7 +331,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:18Z)**_
  `./actual-budget/packages/desktop-client/src/components/Titlebar.tsx`
 
 ```text
-270	
+270
 271	export function Titlebar({ style }: TitlebarProps) {
 272	  const { t } = useTranslation();
 273	  const navigate = useNavigate();
@@ -336,7 +341,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:18Z)**_
 277	  const serverURL = useServerURL();
 278	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 279	  const isTestEnv = useIsTestEnv();
-280	
+280
 281	  return isNarrowWidth ? null : (
 282	    <View
 283	      style={{
@@ -377,6 +382,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:18Z)**_
 318	        </Button>
 319	      )}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:45:18Z)**_
@@ -409,6 +415,7 @@ components/sidebar/index.test.tsx:54:    return render(<FloatableSidebar />);
 438:      </View>
 439:    </View>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:45:20Z)**_
@@ -418,7 +425,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:20Z)**_
  `./actual-budget/packages/desktop-client/src/components/FinancesApp.tsx`
 
 ```text
-196	
+196
 197	  return (
 198	    <View style={{ height: '100%' }}>
 199	      <RouterBehaviors />
@@ -433,7 +440,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:20Z)**_
 208	        }}
 209	      >
 210	        <FloatableSidebar />
-211	
+211
 212	        <View
 213	          style={{
 214	            color: theme.pageText,
@@ -467,6 +474,7 @@ _**Agent (claude-opus-5-5 2026-10-04 20:45:20Z)**_
 242	                  }}
 243	                />
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:45:39Z)**_
@@ -476,14 +484,17 @@ The trick is one CSS change. When the sidebar is pinned it sits in the normal pa
 ## How it works
 
 ### 1. The layout container: [FinancesApp.tsx:203-220](packages/desktop-client/src/components/FinancesApp.tsx#L203-L220)
+
 ```
 <View flexDirection: row>
   <FloatableSidebar />            ← sidebar
   <View flex: 1, width: 100%>     ← main content (Titlebar + routes)
 ```
+
 The sidebar and the main content sit side by side in a row. The main content uses `flex: 1`, so it fills whatever width the sidebar leaves free.
 
 ### 2. The switch: [sidebar/index.tsx:17-50](packages/desktop-client/src/components/sidebar/index.tsx#L17-L50)
+
 ```ts
 const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
 ...
@@ -493,6 +504,7 @@ transform: `translateY(${!sidebarShouldFloat ? -8 : 0}px)
             translateX(${sidebarShouldFloat && sidebar.hidden ? '-100' : '0'}%)`,
 transition: 'transform .5s, box-shadow .5s, border-radius .5s, bottom .5s',
 ```
+
 - **Pinned** (`position` is unset, so it stays static): the sidebar is a normal item in the row and takes up its own width. The main content gets what's left. That's why it looks like they share a container.
 - **Unpinned** (`position: absolute`): the sidebar no longer takes up space, so the main content expands to the full width. To hide the sidebar, it's moved off-screen with `translateX(-100%)` instead of being removed. Hovering sets `hidden = false`, which animates it back to `translateX(0)`. Because it sits above the page (`zIndex: 1001`, higher than the Titlebar's `1000`), it covers the content. It also gets a drop shadow and rounded corners so it looks like a panel on top.
 - The `onMouseOver` and `onMouseLeave` handlers are only attached when the sidebar is floating. They keep it open while your mouse is over it.
@@ -500,28 +512,32 @@ transition: 'transform .5s, box-shadow .5s, border-radius .5s, bottom .5s',
 Width changes, like dragging the edge, are handled in `Sidebar.tsx` by `re-resizable`. In pinned mode, changing the width pushes the content over. In floating mode it doesn't.
 
 ### 3. Hover state: [SidebarProvider.tsx](packages/desktop-client/src/components/sidebar/SidebarProvider.tsx)
+
 - `hidden` starts as `true`.
 - It tracks two kinds of hover: over the sidebar itself, and over any open popover (any element with `[data-popover]`). It needs the second one because a dropdown opened from the sidebar renders in a portal, outside the sidebar's own DOM. Hovering either one shows the sidebar. When the mouse leaves both, it waits `HOVER_HIDE_DELAY = 350`ms and then hides it.
 - `alwaysFloats = width < 668`: on narrow windows the sidebar always floats, whatever the pin setting is.
 - It also exposes `floating`, which other pages use to adjust their own layout.
 
 ### 4. The hamburger trigger: [Titlebar.tsx:298-318](packages/desktop-client/src/components/Titlebar.tsx#L298-L318)
+
 The three-lines button only appears when the sidebar is floating. Hovering it with a mouse calls `sidebar.setHidden(false)`, which slides the sidebar in. On touch or keyboard, pressing it toggles the sidebar open and closed. Once the sidebar slides under your mouse, `FloatableSidebar`'s own hover handler takes over and keeps it open.
 
 ### 5. The pin toggle: [Sidebar.tsx:59-61](packages/desktop-client/src/components/sidebar/Sidebar.tsx#L59-L61) and [ToggleButton.tsx](packages/desktop-client/src/components/sidebar/ToggleButton.tsx)
+
 `onFloat` flips the global pref `floatingSidebar`. That pref is what every file above reads. The CSS at [Sidebar.tsx:98-106](packages/desktop-client/src/components/sidebar/Sidebar.tsx#L98-L106) keeps the `.float` button invisible until you hover the sidebar, unless it's already floating. The button is hidden entirely when `alwaysFloats` is true.
 
 ## Files involved
-| File | Role |
-|---|---|
-| `components/FinancesApp.tsx` | The row layout holding the sidebar and main content |
-| `components/sidebar/index.tsx` (`FloatableSidebar`) | **Switches between pinned and floating**: absolute positioning, slide transform, shadow, hover handlers |
-| `components/sidebar/SidebarProvider.tsx` | The `hidden`, `floating` and `alwaysFloats` state; hover tracking with the hide delay |
-| `components/Titlebar.tsx` | The hamburger button that opens the floating sidebar |
-| `components/sidebar/Sidebar.tsx` | Resizing, and the pin toggle that writes the pref |
-| `components/sidebar/ToggleButton.tsx` | The pin/unpin button |
-| `components/App.tsx` | Wraps the app in `SidebarProvider` |
-| `settings/index.tsx`, `banksync/index.tsx`, `settings/{Themes,Currency,Format}.tsx` | Read the floating state to adjust their own layout (centering, columns) |
+
+| File                                                                                | Role                                                                                                    |
+| ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `components/FinancesApp.tsx`                                                        | The row layout holding the sidebar and main content                                                     |
+| `components/sidebar/index.tsx` (`FloatableSidebar`)                                 | **Switches between pinned and floating**: absolute positioning, slide transform, shadow, hover handlers |
+| `components/sidebar/SidebarProvider.tsx`                                            | The `hidden`, `floating` and `alwaysFloats` state; hover tracking with the hide delay                   |
+| `components/Titlebar.tsx`                                                           | The hamburger button that opens the floating sidebar                                                    |
+| `components/sidebar/Sidebar.tsx`                                                    | Resizing, and the pin toggle that writes the pref                                                       |
+| `components/sidebar/ToggleButton.tsx`                                               | The pin/unpin button                                                                                    |
+| `components/App.tsx`                                                                | Wraps the app in `SidebarProvider`                                                                      |
+| `settings/index.tsx`, `banksync/index.tsx`, `settings/{Themes,Currency,Format}.tsx` | Read the floating state to adjust their own layout (centering, columns)                                 |
 
 If you want the floating sidebar to push the content instead of covering it, change `FloatableSidebar`. For example, keep it in the normal layout and animate its width or margin rather than using `position: absolute` with `translateX`.
 
@@ -551,6 +567,7 @@ Check sidebar tests and e2e coverage of floating mode
 65:  it('reports the sidebar as no longer hovered on mouse leave when floating', () => {
 73:  it('does not attach hover handlers when the sidebar is docked (not floating)', () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:52:16Z)**_
@@ -574,6 +591,7 @@ Either one is about 20–40 lines. The current hover handlers, the `hidden` stat
    - Lengthen the hide delay or add hysteresis.
 
    This is the trickiest part, and it's mostly a UX decision.
+
 2. **Reflow on every animation frame.** With the overlay, only the sidebar moves. With pushing, the budget table, the virtualized transaction lists and any `useResizeObserver` or auto-size consumers re-layout on every frame of the 0.5s transition. Large budgets may stutter. Common workarounds are to skip the animation, or to let the sidebar overlay while it animates and push the content only when it finishes.
 3. **Content jumping on hover.** Hover-to-open becomes much more disruptive when the whole page moves every time the mouse passes the left edge. You might switch floating mode to click-to-open, or add an open delay.
 4. **Narrow windows.** When `alwaysFloats` is true (width under 668px), the sidebar should probably keep overlaying, because pushing would squeeze the content too much. That means keeping both code paths in `FloatableSidebar`.
@@ -584,10 +602,10 @@ Either one is about 20–40 lines. The current hover handlers, the `hidden` stat
 
 ## Estimate
 
-| Scope | Files | Effort |
-|---|---|---|
-| Push the content, accept the loop and reflow cost | `sidebar/index.tsx` (+ possibly `SidebarProvider.tsx` for width) | An hour or two |
-| Production-quality: fix the loop, smooth animation, narrow-window fallback, Titlebar padding, check the pages that use `floating`, tests | ~4–6 files | A day or so, plus UX decisions |
+| Scope                                                                                                                                    | Files                                                            | Effort                         |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------ |
+| Push the content, accept the loop and reflow cost                                                                                        | `sidebar/index.tsx` (+ possibly `SidebarProvider.tsx` for width) | An hour or two                 |
+| Production-quality: fix the loop, smooth animation, narrow-window fallback, Titlebar padding, check the pages that use `floating`, tests | ~4–6 files                                                       | A day or so, plus UX decisions |
 
 Before building it, decide what floating mode is for once it pushes the content. Today the only difference from pinned is that it hides itself when you move away. If that auto-hide is the whole point, consider whether you want hover-to-open at all, or just a collapse button on the pinned sidebar. A collapse button avoids most of the problems above.
 
@@ -615,6 +633,7 @@ origin	git@github.com:CSCI-435-SE/actual-budget.git (push)
 ===== #69
 (eval):1: command not found: gh
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:56:10Z)**_
@@ -647,7 +666,7 @@ As a developer, I want the side panel and main content to share a common layout 
 - The panel and main content live in the same layout context.
 - The panel opens and closes exactly as before, with no change to its contents or styling.
 - No regressions to existing navigation or budget functionality.
-- Findings from the audit are written up in the issue or PR for reviewers. 
+- Findings from the audit are written up in the issue or PR for reviewers.
 ===== #69
 Resize main content when side panel is open or closed
 open labels=['scope: medium']
@@ -672,6 +691,7 @@ As a user who opens the side panel while reviewing my budget, I want the main co
 - The main content remains fully visible and interactive while the panel is open.
 - Opening or closing the panel never causes horizontal clipping or makes content inaccessible.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-04 20:56:30Z)**_
@@ -682,20 +702,22 @@ On paper, #68 is the structural refactor with no visible change, and #69 makes t
 
 ## #68: Audit and move the panel into the layout
 
-| Task | State in the codebase |
-|---|---|
-| Document how the panel is positioned | Still needs doing. It's mostly a write-up of the earlier explanation: `FloatableSidebar` switches between in-flow and `position: absolute` + `translateX(-100%)`, and `alwaysFloats` applies under 668px. |
-| Wrap panel and content in a shared flex/grid container | **Already done.** [FinancesApp.tsx:203-220](packages/desktop-client/src/components/FinancesApp.tsx#L203-L220) is a `flexDirection: row` with the sidebar and a `flex: 1` content pane. |
-| Remove the absolute positioning | **Conflicts with its own acceptance criteria** (see below). |
-| Expose open/closed state | **Mostly done.** `useSidebar()` already exposes `hidden`, `floating` and `alwaysFloats` through context. The missing piece is the sidebar's **width**, which is local state in [Sidebar.tsx:45](packages/desktop-client/src/components/sidebar/Sidebar.tsx#L45). The layout needs it if you collapse the sidebar with a negative margin. |
+| Task                                                   | State in the codebase                                                                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Document how the panel is positioned                   | Still needs doing. It's mostly a write-up of the earlier explanation: `FloatableSidebar` switches between in-flow and `position: absolute` + `translateX(-100%)`, and `alwaysFloats` applies under 668px.                                                                                                                                |
+| Wrap panel and content in a shared flex/grid container | **Already done.** [FinancesApp.tsx:203-220](packages/desktop-client/src/components/FinancesApp.tsx#L203-L220) is a `flexDirection: row` with the sidebar and a `flex: 1` content pane.                                                                                                                                                   |
+| Remove the absolute positioning                        | **Conflicts with its own acceptance criteria** (see below).                                                                                                                                                                                                                                                                              |
+| Expose open/closed state                               | **Mostly done.** `useSidebar()` already exposes `hidden`, `floating` and `alwaysFloats` through context. The missing piece is the sidebar's **width**, which is local state in [Sidebar.tsx:45](packages/desktop-client/src/components/sidebar/Sidebar.tsx#L45). The layout needs it if you collapse the sidebar with a negative margin. |
 
 The conflict: #68 says to remove the absolute positioning, but also says the panel must open and close exactly as before. Once you remove `position: absolute`, the hidden sidebar still takes up its width. You then have two options:
+
 - Leave a blank gap where it was. That's a regression.
 - Collapse its space. That's the content resizing, which is #69's job.
 
 So nothing can actually be removed in #68 without doing #69.
 
 **What #68 can realistically deliver:**
+
 1. The audit write-up.
 2. Move the sidebar width from `Sidebar.tsx` into `SidebarProvider` and expose it from `useSidebar()`, alongside `hidden`.
 3. Optionally, pull the positioning styles out of `FloatableSidebar` into a helper so that #69's change is a single swap.

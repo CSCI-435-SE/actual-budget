@@ -27,18 +27,18 @@ How much larger should the font be made so that it makes a meaningful change but
 </pasted_content id="bf68">
 
 <pasted_content id="bf68">
+
 ## Code Review
 
-| Criterion | Score (1–10) | Notes |
-|---|---|---|
-| Correctness — does the change do what the issue asked? | | |
-| Test coverage — are tests present and meaningful? | | |
-| Code quality — consistent style, clear naming, no unnecessary duplication | | |
-| Documentation — inline comments and PR description are clear | | |
-| AI transparency — if AI was used, is there evidence of human verification? | | |
-| Overall — would you merge this as-is? | | |
-</pasted_content id="bf68">
-
+| Criterion                                                                  | Score (1–10) | Notes |
+| -------------------------------------------------------------------------- | ------------ | ----- |
+| Correctness — does the change do what the issue asked?                     |              |       |
+| Test coverage — are tests present and meaningful?                          |              |       |
+| Code quality — consistent style, clear naming, no unnecessary duplication  |              |       |
+| Documentation — inline comments and PR description are clear               |              |       |
+| AI transparency — if AI was used, is there evidence of human verification? |              |       |
+| Overall — would you merge this as-is?                                      |              |       |
+| </pasted_content id="bf68">                                                |
 
 ---
 
@@ -63,6 +63,7 @@ e63159208 feat: add font size settings (#52)
  packages/loot-core/src/types/prefs.ts              |  2 +
  9 files changed, 104 insertions(+), 9 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:49:37Z)**_
@@ -245,7 +246,7 @@ index 73724dd76..bfb6cdb56 100644
 @@ -65,6 +65,11 @@ export const loadPrefs = createAppAsyncThunk(
      // We need to load translations before the app renders
      setI18NextLanguage(globalPrefs.language ?? '');
- 
+
 +
 +    document.documentElement.style.setProperty(
 +      '--base-font-size',
@@ -309,7 +310,7 @@ index 1a4afbd46..e4140e382 100644
 +  if (prefs.fontSize !== undefined) {
 +    await asyncStorage.setItem('font-size', prefs.fontSize);
 +  }
- 
+
    if (prefs.maxMonths !== undefined) {
      await asyncStorage.setItem('max-months', '' + prefs.maxMonths);
 @@ -145,6 +148,7 @@ async function saveGlobalPrefs(prefs: GlobalPrefs) {
@@ -341,7 +342,7 @@ index 4c22befc6..531987fb8 100644
 --- a/packages/loot-core/src/types/prefs.ts
 +++ b/packages/loot-core/src/types/prefs.ts
 @@ -103,6 +103,7 @@ export type DarkTheme = 'dark' | 'midnight';
- 
+
  // GlobalPrefs are the parsed global-store.json values
  export type GlobalPrefs = Partial<{
 +  fontSize: string;
@@ -349,7 +350,7 @@ index 4c22befc6..531987fb8 100644
    maxMonths: number;
    categoryExpandedState: number;
 @@ -136,6 +137,7 @@ export type GlobalPrefs = Partial<{
- 
+
  // GlobalPrefsJson represents what's saved in the global-store.json file
  export type GlobalPrefsJson = Partial<{
 +  'font-size'?: GlobalPrefs['fontSize'];
@@ -522,7 +523,7 @@ index 73724dd76..bfb6cdb56 100644
 @@ -65,6 +65,11 @@ export const loadPrefs = createAppAsyncThunk(
      // We need to load translations before the app renders
      setI18NextLanguage(globalPrefs.language ?? '');
- 
+
 +
 +    document.documentElement.style.setProperty(
 +      '--base-font-size',
@@ -586,7 +587,7 @@ index 1a4afbd46..e4140e382 100644
 +  if (prefs.fontSize !== undefined) {
 +    await asyncStorage.setItem('font-size', prefs.fontSize);
 +  }
- 
+
    if (prefs.maxMonths !== undefined) {
      await asyncStorage.setItem('max-months', '' + prefs.maxMonths);
 @@ -145,6 +148,7 @@ async function saveGlobalPrefs(prefs: GlobalPrefs) {
@@ -618,7 +619,7 @@ index 4c22befc6..531987fb8 100644
 --- a/packages/loot-core/src/types/prefs.ts
 +++ b/packages/loot-core/src/types/prefs.ts
 @@ -103,6 +103,7 @@ export type DarkTheme = 'dark' | 'midnight';
- 
+
  // GlobalPrefs are the parsed global-store.json values
  export type GlobalPrefs = Partial<{
 +  fontSize: string;
@@ -626,7 +627,7 @@ index 4c22befc6..531987fb8 100644
    maxMonths: number;
    categoryExpandedState: number;
 @@ -136,6 +137,7 @@ export type GlobalPrefs = Partial<{
- 
+
  // GlobalPrefsJson represents what's saved in the global-store.json file
  export type GlobalPrefsJson = Partial<{
 +  'font-size'?: GlobalPrefs['fontSize'];
@@ -634,6 +635,7 @@ index 4c22befc6..531987fb8 100644
    'user-key'?: string;
    'encrypt-keys'?: string;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:50:05Z)**_
@@ -681,6 +683,7 @@ sprint4
 ./.git/refs/remotes/origin/docs/sprint1-ai-log-rescope-issues-12-14
 --- release notes
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:50:11Z)**_
@@ -720,6 +723,7 @@ ai-logs/sprint0/jamesleonard3rd/2026-09-14_22-51-39-0400-currency-formatting-doe
           <CellValueText<'account', SheetFieldName>
 sarag sgstrick@wm.edu
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:50:46Z)**_
@@ -744,6 +748,7 @@ packages/desktop-client/src/style/index.ts (6ms)
 Format issues found in above 5 files. Run without `--check` to fix.
 Finished in 270ms on 9 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:50:50Z)**_
@@ -778,6 +783,7 @@ ai-logs/sprint0/jamesleonard3rd/2026-09-14_22-51-39-0400-currency-formatting-doe
 ai-logs/sprint0/jamesleonard3rd/2026-09-15_14-06-32-0400-look-at-the-current.md
 ai-logs/sprint0/RaccoonSwarm/2026-09-10_claude-code_issue-22-description.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:50:52Z)**_
@@ -795,6 +801,7 @@ Look up PR for this branch
 ```text
 [{"body":"## Description\r\n\r\nThis PR added the option to change the font size within the desktop app. It is needed for accessibility purposes. People may want the text to be smaller to better fit their window size, or they may want it to be bigger to be able to read it easier.\r\n\r\nAI backlogs will be posted in a separate PR.\r\n\r\n## Related issue(s)\r\n\r\nFixes #52\r\nRelated to #53 because of parent issue #22\r\n\r\n## Testing\r\n\r\nUsing the yarn test suite, I passed all of the usual tests (minus the one that we've all been having issues with). I also tested the feature manually, by changing the font size and ensuring the font size stayed that size between different tabs and sessions.\r\n\r\n## Checklist\r\n\r\n- [ X] Release notes added (see link above)\r\n- [X ] No obvious regressions in affected areas\r\n- [X ] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed","number":80,"title":"[AI] feat: add font size settings (#52)"}]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:51:16Z)**_
@@ -803,14 +810,14 @@ I reviewed PR #80 ([AI] feat: add font size settings (#52)) against issue #52. I
 
 ## Code Review
 
-| Criterion | Score (1–10) | Notes |
-|---|---|---|
-| Correctness — does the change do what the issue asked? | **6** | Good design: the shared text sizes in `styles.ts` become CSS variables, and one multiplier scales them all. The setting is saved, reloads correctly, and updates immediately. The gap is that "all pages" isn't met: about 300 hard-coded `fontSize: N` values in `desktop-client` and `component-library` still ignore the setting, and `altMenuHeaderText` ([styles.ts:34](packages/component-library/src/styles.ts#L34)) was missed. There's also leftover code from an earlier approach (see below). |
-| Test coverage — are tests present and meaningful? | **3** | No automated tests. The PR describes reasonable manual testing (switching tabs, restarting sessions). One easy test to add: the `font-size` save/load round-trip in `preferences/app.ts`. |
-| Code quality — consistent style, clear naming, no unnecessary duplication | **6** | Clean and easy to follow, and the variable names are clear. But `yarn lint` fails with 2 errors: an unused `useEffect` import in [fontSize.tsx:1](packages/desktop-client/src/style/fontSize.tsx#L1), and import order in [App.tsx:34](packages/desktop-client/src/components/App.tsx#L34). Formatting fails on 5 files (missing trailing commas, missing newline at the end of files, a stray blank line in `prefsSlice.ts`). Running `yarn lint:fix` would fix almost all of it. |
-| Documentation — inline comments and PR description are clear | **6** | The PR description is clear and links the issue. The help text says "The default size is 16px", but the options are multipliers, so that reads oddly. The release-notes box is checked, but there's no file in `upcoming-release-notes/`. |
-| AI transparency — if AI was used, is there evidence of human verification? | **5** | The PR title has `[AI]`, and the description says AI logs will follow in a separate PR. There's no log for #52 in `ai-logs/` yet, and the commit message lacks the `[AI]` prefix. The dead `--base-font-size` code (below) suggests the AI's earlier attempt wasn't fully cleaned up, despite the "read every line" box being checked. |
-| **Overall — would you merge this as-is?** | **6** | **Not as-is, but close.** Fix lint/format, delete the dead code, add the release note, and it's mergeable. Covering the rest of the hard-coded sizes could be a follow-up issue. |
+| Criterion                                                                  | Score (1–10) | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Correctness — does the change do what the issue asked?                     | **6**        | Good design: the shared text sizes in `styles.ts` become CSS variables, and one multiplier scales them all. The setting is saved, reloads correctly, and updates immediately. The gap is that "all pages" isn't met: about 300 hard-coded `fontSize: N` values in `desktop-client` and `component-library` still ignore the setting, and `altMenuHeaderText` ([styles.ts:34](packages/component-library/src/styles.ts#L34)) was missed. There's also leftover code from an earlier approach (see below). |
+| Test coverage — are tests present and meaningful?                          | **3**        | No automated tests. The PR describes reasonable manual testing (switching tabs, restarting sessions). One easy test to add: the `font-size` save/load round-trip in `preferences/app.ts`.                                                                                                                                                                                                                                                                                                                |
+| Code quality — consistent style, clear naming, no unnecessary duplication  | **6**        | Clean and easy to follow, and the variable names are clear. But `yarn lint` fails with 2 errors: an unused `useEffect` import in [fontSize.tsx:1](packages/desktop-client/src/style/fontSize.tsx#L1), and import order in [App.tsx:34](packages/desktop-client/src/components/App.tsx#L34). Formatting fails on 5 files (missing trailing commas, missing newline at the end of files, a stray blank line in `prefsSlice.ts`). Running `yarn lint:fix` would fix almost all of it.                       |
+| Documentation — inline comments and PR description are clear               | **6**        | The PR description is clear and links the issue. The help text says "The default size is 16px", but the options are multipliers, so that reads oddly. The release-notes box is checked, but there's no file in `upcoming-release-notes/`.                                                                                                                                                                                                                                                                |
+| AI transparency — if AI was used, is there evidence of human verification? | **5**        | The PR title has `[AI]`, and the description says AI logs will follow in a separate PR. There's no log for #52 in `ai-logs/` yet, and the commit message lacks the `[AI]` prefix. The dead `--base-font-size` code (below) suggests the AI's earlier attempt wasn't fully cleaned up, despite the "read every line" box being checked.                                                                                                                                                                   |
+| **Overall — would you merge this as-is?**                                  | **6**        | **Not as-is, but close.** Fix lint/format, delete the dead code, add the release note, and it's mergeable. Covering the rest of the hard-coded sizes could be a follow-up issue.                                                                                                                                                                                                                                                                                                                         |
 
 ## Specific things to fix
 
@@ -837,7 +844,6 @@ src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find 
 src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding type declarations.
 src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its corresponding type declarations.
 
-
 ---
 
 _**Agent (claude-opus-5-5 2026-10-06 19:52:11Z)**_
@@ -855,6 +861,7 @@ ls: cannot access 'node_modules/jspdf': No such file or directory
 ls: cannot access 'packages/desktop-client/node_modules/jspdf': No such file or directory
 1735229fe [AI] PDF export: add PDF option to budget Export menu (issue #61)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:52:15Z)**_
@@ -880,14 +887,14 @@ Written for: the PR authors, pasted as a GitHub comment or into your course subm
 ```markdown
 ## Code Review
 
-| Criterion | Score (1–10) | Notes |
-|---|---|---|
-| Correctness — does the change do what the issue asked? | 6 | Good design: the shared text sizes in `styles.ts` become CSS variables, and one multiplier scales them all. The setting is saved, reloads correctly, and updates immediately. However, "all pages" isn't fully met: about 300 hard-coded `fontSize: N` values in `desktop-client` and `component-library` still ignore the setting, and `altMenuHeaderText` in `styles.ts` was missed. Leftover `--base-font-size` code from an earlier approach is still present (see fixes below). |
-| Test coverage — are tests present and meaningful? | 3 | No automated tests. The manual testing described in the PR (switching tabs, restarting sessions) is reasonable. An easy test to add: a save/load round-trip for the `font-size` pref in `loot-core/src/server/preferences/app.ts`. |
-| Code quality — consistent style, clear naming, no unnecessary duplication | 6 | Clean, easy to follow, clear variable names. But `yarn lint` fails with 2 errors (unused `useEffect` import in `style/fontSize.tsx`, import order in `App.tsx`), and formatting fails on 5 files (missing trailing commas, missing newline at end of file, stray blank line in `prefsSlice.ts`). `yarn lint:fix` fixes almost all of it. |
-| Documentation — inline comments and PR description are clear | 6 | The PR description is clear and links the issue. The settings help text says "The default size is 16px", but the options are multipliers, so it reads oddly. The release-notes box is checked, but no file was added to `upcoming-release-notes/`. |
-| AI transparency — if AI was used, is there evidence of human verification? | 5 | The PR title has the `[AI]` prefix, and the description says AI logs will follow in a separate PR. There's no log for #52 in `ai-logs/` yet, and the commit message lacks the `[AI]` prefix. The unused `--base-font-size` code suggests an earlier AI attempt wasn't fully cleaned up, even though the "read every line" box is checked. |
-| Overall — would you merge this as-is? | 6 | Not as-is, but close. Fix lint/format, remove the dead code, add the release note, and it's mergeable. Covering the remaining hard-coded font sizes could be a follow-up issue. |
+| Criterion                                                                  | Score (1–10) | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| -------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Correctness — does the change do what the issue asked?                     | 6            | Good design: the shared text sizes in `styles.ts` become CSS variables, and one multiplier scales them all. The setting is saved, reloads correctly, and updates immediately. However, "all pages" isn't fully met: about 300 hard-coded `fontSize: N` values in `desktop-client` and `component-library` still ignore the setting, and `altMenuHeaderText` in `styles.ts` was missed. Leftover `--base-font-size` code from an earlier approach is still present (see fixes below). |
+| Test coverage — are tests present and meaningful?                          | 3            | No automated tests. The manual testing described in the PR (switching tabs, restarting sessions) is reasonable. An easy test to add: a save/load round-trip for the `font-size` pref in `loot-core/src/server/preferences/app.ts`.                                                                                                                                                                                                                                                   |
+| Code quality — consistent style, clear naming, no unnecessary duplication  | 6            | Clean, easy to follow, clear variable names. But `yarn lint` fails with 2 errors (unused `useEffect` import in `style/fontSize.tsx`, import order in `App.tsx`), and formatting fails on 5 files (missing trailing commas, missing newline at end of file, stray blank line in `prefsSlice.ts`). `yarn lint:fix` fixes almost all of it.                                                                                                                                             |
+| Documentation — inline comments and PR description are clear               | 6            | The PR description is clear and links the issue. The settings help text says "The default size is 16px", but the options are multipliers, so it reads oddly. The release-notes box is checked, but no file was added to `upcoming-release-notes/`.                                                                                                                                                                                                                                   |
+| AI transparency — if AI was used, is there evidence of human verification? | 5            | The PR title has the `[AI]` prefix, and the description says AI logs will follow in a separate PR. There's no log for #52 in `ai-logs/` yet, and the commit message lacks the `[AI]` prefix. The unused `--base-font-size` code suggests an earlier AI attempt wasn't fully cleaned up, even though the "read every line" box is checked.                                                                                                                                            |
+| Overall — would you merge this as-is?                                      | 6            | Not as-is, but close. Fix lint/format, remove the dead code, add the release note, and it's mergeable. Covering the remaining hard-coded font sizes could be a follow-up issue.                                                                                                                                                                                                                                                                                                      |
 
 ### Suggested fixes
 
@@ -940,6 +947,7 @@ Check for new commits on the branch
 e63159208 feat: add font size settings (#52)
 ---
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:06:38Z)**_
@@ -1032,6 +1040,7 @@ Show files changed in new commit
  .../feat-issue-63-wire-spending-to-goalcard.md     |    6 +
  176 files changed, 4770 insertions(+), 365 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:06:41Z)**_
@@ -1069,6 +1078,7 @@ ad09f7d543f8f534ec5b026af9e72f446c8702fc
  .../resize-content-with-floating-sidebar.md        |     6 -
  171 files changed, 518 insertions(+), 48174 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:06:52Z)**_
@@ -1245,6 +1255,7 @@ differ from master:
   packages/loot-core/src/server/preferences/app.ts +8 -2
   upcoming-release-notes/feat-issue-52-font-size.md +6 -0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:07:29Z)**_
@@ -1274,7 +1285,7 @@ index 5d7d31b1b..8ef2bbd00 100644
    monthRightPadding: 5,
    menuBorderRadius: 4,
    mobileMinHeight: MOBILE_MIN_HEIGHT,
-+  
++
 +  //--font-size* variables are defined by FontSizeStyle in desktop-client
 +
    mobileMenuItem: {
@@ -1371,9 +1382,9 @@ index 779053c32..7d89608c9 100644
 --- a/packages/desktop-client/src/components/settings/FontSizeSettings.tsx
 +++ b/packages/desktop-client/src/components/settings/FontSizeSettings.tsx
 @@ -9,31 +9,27 @@ import { useGlobalPref } from '#hooks/useGlobalPref';
- 
+
  import { Setting } from './UI';
- 
+
 -const fontSizeOptions: SelectOption[] = [
 -  ['0.85', 'Small'],
 -  ['1', 'Medium (Default)'],
@@ -1384,7 +1395,7 @@ index 779053c32..7d89608c9 100644
  export function FontSizeSettings() {
    const { t } = useTranslation();
    const [fontSize, setFontSize] = useGlobalPref('fontSize');
- 
+
 +const fontSizeOptions: SelectOption[] = [
 +  ['0.85', t('Small')],
 +  ['1', t('Medium (Default)')],
@@ -1418,7 +1429,7 @@ index bfb6cdb56..73724dd76 100644
 @@ -65,11 +65,6 @@ export const loadPrefs = createAppAsyncThunk(
      // We need to load translations before the app renders
      setI18NextLanguage(globalPrefs.language ?? '');
- 
+
 -
 -    document.documentElement.style.setProperty(
 -      '--base-font-size',
@@ -1434,7 +1445,7 @@ index 7b0089dcd..ee5e6e913 100644
 @@ -1,17 +1,20 @@
 -import { useEffect } from 'react';
  import { useGlobalPref } from '#hooks/useGlobalPref';
- 
+
 -// Base values matching styles.ts exactly
  const baseScale = {
 -  '--font-size-tiny': 10,
@@ -1461,7 +1472,7 @@ index 7b0089dcd..ee5e6e913 100644
 +  '--font-size-30': 30,   // veryLargeText
 +  '--font-size-40': 40,
  };
- 
+
  export function FontSizeStyle() {
 diff --git a/packages/loot-core/src/server/preferences/app.ts b/packages/loot-core/src/server/preferences/app.ts
 index e4140e382..2618830eb 100644
@@ -1470,7 +1481,7 @@ index e4140e382..2618830eb 100644
 @@ -76,7 +76,7 @@ async function getSyncedPrefs(): Promise<SyncedPrefs> {
    }, {});
  }
- 
+
 -async function saveGlobalPrefs(prefs: GlobalPrefs) {
 +export async function saveGlobalPrefs(prefs: GlobalPrefs) {
    if (!prefs) {
@@ -1479,7 +1490,7 @@ index e4140e382..2618830eb 100644
 @@ -145,7 +145,7 @@ async function saveGlobalPrefs(prefs: GlobalPrefs) {
    return 'ok';
  }
- 
+
 -async function loadGlobalPrefs(): Promise<GlobalPrefs> {
 +export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
    const {
@@ -1562,6 +1573,7 @@ describe('global preferences', () => {
   });
 });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:07:43Z)**_
@@ -1603,6 +1615,7 @@ Check CSS vars used vs defined, leftovers
 packages/desktop-client/src/components/mobile/accounts/AccountsPage.tsx:104:          width={styles.text.fontSize}
 packages/desktop-client/src/components/mobile/accounts/AccountsPage.tsx:105:          height={styles.text.fontSize}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:07:56Z)**_
@@ -1655,6 +1668,7 @@ packages/loot-core/src/server/preferences/app.test.ts (0ms)
 Format issues found in above 43 files. Run without `--check` to fix.
 Finished in 352ms on 171 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:08:47Z)**_
@@ -1668,6 +1682,7 @@ Run the new preferences tests
 ```text
 ERROR: Task not found: "src/server/preferences/app.test.ts"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:09:09Z)**_
@@ -1692,6 +1707,7 @@ Run the new preferences tests via vitest
    Start at  21:08:58
    Duration  10.60s (transform 1.19s, setup 9.36s, import 30ms, tests 465ms, environment 0ms)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:09:12Z)**_
@@ -1712,6 +1728,7 @@ packages/desktop-client/package.json:129:    "typecheck": "tsgo -b && tsc-strict
 packages/component-library/package.json:50:    "typecheck": "tsgo -b"
 packages/loot-core/package.json:188:    "typecheck": "tsgo -b && tsc-strict",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:09:37Z)**_
@@ -1727,6 +1744,7 @@ EXIT 0
 === loot-core
 EXIT 0
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:09:41Z)**_
@@ -1769,6 +1787,7 @@ Using the yarn test suite, I passed all of the usual tests (minus the one that w
 - [X ] No obvious regressions in affected areas
 - [X ] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:09:55Z)**_
@@ -1805,6 +1824,7 @@ export function FontSizeStyle() {
   return <style id="font-size-scale">{css}</style>;
 }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-08 01:10:14Z)**_
@@ -1816,14 +1836,14 @@ This version is clearly better. Every hard-coded numeric `fontSize` in the app n
 ```markdown
 ## Code Review (re-review after "Made fixes…" commit)
 
-| Criterion | Score (1–10) | Notes |
-|---|---|---|
-| Correctness — does the change do what the issue asked? | 8 | Big improvement. Every hard-coded numeric `fontSize` in `desktop-client` and `component-library` now uses a scaled `var(--font-size-N)`, so the setting reaches every page. The dead `--base-font-size` code is gone and the `'1'` fallback is fixed. Remaining gaps: `Text.stories.tsx` uses `--font-size-24` and `--font-size-32`, which aren't defined in `baseScale`, and the mobile chevron in `AccountsPage.tsx` still gets `width={styles.text.fontSize}`, now a CSS-variable string. |
-| Test coverage — are tests present and meaningful? | 6 | New `preferences/app.test.ts` has 4 tests (save, load, default fallback) and they all pass. Good start. The "round-trip" test mocks the load result, so it doesn't really prove save→load. `FontSizeStyle`'s multiplier math would also be easy to unit-test. The new test file starts with `// @ts-strict-ignore`, which the repo rules say new files shouldn't have. |
-| Code quality — consistent style, clear naming, no unnecessary duplication | 7 | Numbered variables (`--font-size-13`) are a simple, readable scheme, and the comments mapping them to `styles.ts` names help. Typecheck passes. But `yarn lint` reports 3 `import/first` errors in the new test file (`vi.mock` is hoisted automatically, so the imports can go at the top), and 43 files fail formatting. `yarn lint:fix` handles both. `saveGlobalPrefs`/`loadGlobalPrefs` were exported but the tests use `app.handlers`, so the exports can be reverted. |
-| Documentation — inline comments and PR description are clear | 7 | Release note added, and the `baseScale` comments are helpful. The settings help text still says "The default size is 16px", which doesn't match the Small/Medium/Large options. The PR description hasn't been updated to mention the app-wide conversion or the new tests. An unrelated existing `// TODO` comment in `styles.ts` was deleted. |
-| AI transparency — if AI was used, is there evidence of human verification? | 5 | Unchanged. `[AI]` is on the PR title, but there's still no AI log for #52 in `ai-logs/` (even after the Sprint 1 logs PR was merged), and neither commit message has the `[AI]` prefix. |
-| Overall — would you merge this as-is? | 7 | Close. Run `yarn lint:fix`, define or remove the two missing variables, and fix how master was brought in (below). Then this is ready. |
+| Criterion                                                                  | Score (1–10) | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| -------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Correctness — does the change do what the issue asked?                     | 8            | Big improvement. Every hard-coded numeric `fontSize` in `desktop-client` and `component-library` now uses a scaled `var(--font-size-N)`, so the setting reaches every page. The dead `--base-font-size` code is gone and the `'1'` fallback is fixed. Remaining gaps: `Text.stories.tsx` uses `--font-size-24` and `--font-size-32`, which aren't defined in `baseScale`, and the mobile chevron in `AccountsPage.tsx` still gets `width={styles.text.fontSize}`, now a CSS-variable string. |
+| Test coverage — are tests present and meaningful?                          | 6            | New `preferences/app.test.ts` has 4 tests (save, load, default fallback) and they all pass. Good start. The "round-trip" test mocks the load result, so it doesn't really prove save→load. `FontSizeStyle`'s multiplier math would also be easy to unit-test. The new test file starts with `// @ts-strict-ignore`, which the repo rules say new files shouldn't have.                                                                                                                       |
+| Code quality — consistent style, clear naming, no unnecessary duplication  | 7            | Numbered variables (`--font-size-13`) are a simple, readable scheme, and the comments mapping them to `styles.ts` names help. Typecheck passes. But `yarn lint` reports 3 `import/first` errors in the new test file (`vi.mock` is hoisted automatically, so the imports can go at the top), and 43 files fail formatting. `yarn lint:fix` handles both. `saveGlobalPrefs`/`loadGlobalPrefs` were exported but the tests use `app.handlers`, so the exports can be reverted.                 |
+| Documentation — inline comments and PR description are clear               | 7            | Release note added, and the `baseScale` comments are helpful. The settings help text still says "The default size is 16px", which doesn't match the Small/Medium/Large options. The PR description hasn't been updated to mention the app-wide conversion or the new tests. An unrelated existing `// TODO` comment in `styles.ts` was deleted.                                                                                                                                              |
+| AI transparency — if AI was used, is there evidence of human verification? | 5            | Unchanged. `[AI]` is on the PR title, but there's still no AI log for #52 in `ai-logs/` (even after the Sprint 1 logs PR was merged), and neither commit message has the `[AI]` prefix.                                                                                                                                                                                                                                                                                                      |
+| Overall — would you merge this as-is?                                      | 7            | Close. Run `yarn lint:fix`, define or remove the two missing variables, and fix how master was brought in (below). Then this is ready.                                                                                                                                                                                                                                                                                                                                                       |
 
 ### Remaining fixes
 
@@ -1843,6 +1863,7 @@ This version is clearly better. Every hard-coded numeric `fontSize` in the app n
 ```
 
 How I checked:
+
 - **Lint:** the a11y lint warnings in the touched files appear to come from code that was already there, not from this PR, so I left them out.
 - **Tests and typecheck:** I ran `vitest` on the new test file and `tsgo -b` for `@actual-app/web` and `@actual-app/core`.
 - **Not done:** I didn't open the app in a browser, so the chevron sizing (fix 4) is still unconfirmed.

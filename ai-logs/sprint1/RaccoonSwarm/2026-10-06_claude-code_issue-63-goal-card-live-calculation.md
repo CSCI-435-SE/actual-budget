@@ -8,7 +8,7 @@ _**User (2026-10-06 18:49:29Z)**_
 
 <ide_opened_file>The user opened the file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx in the IDE. This may or may not be related to the current task.</ide_opened_file>
 
-I want to connect GoalCard.tsx to the existing spreadsheet-style summary calculation. The progress bar should reflect transaction totals against the widget's stored conditions and time frame. 
+I want to connect GoalCard.tsx to the existing spreadsheet-style summary calculation. The progress bar should reflect transaction totals against the widget's stored conditions and time frame.
 
 First, I want GoalCard.tsx to compute the current toal using the existing logic, such as that from summarySpreadsheet in packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts, passing widget.meta.conditions, conditionsOp, and timeFrame — no new calculation engine. The transactions it calculates from should be those tagged with the goal's tag.
 
@@ -23,14 +23,14 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 ```text
 1	import React, { useRef, useState } from 'react';
 2	import { Trans, useTranslation } from 'react-i18next';
-3	
+3
 4	import { Block } from '@actual-app/components/block';
 5	import { styles } from '@actual-app/components/styles';
 6	import { theme } from '@actual-app/components/theme';
 7	import { View } from '@actual-app/components/view';
 8	import type { GoalCardWidget } from '@actual-app/core/types/models';
 9	import type { TransObjectLiteral } from '@actual-app/core/types/util';
-10	
+10
 11	import { FinancialText } from '#components/FinancialText';
 12	import { PrivacyFilter } from '#components/PrivacyFilter';
 13	import { GoalSettingsEditor } from '#components/reports/GoalSettingsEditor';
@@ -39,14 +39,14 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 16	import { useContextMenu } from '#hooks/useContextMenu';
 17	import { useFormat } from '#hooks/useFormat';
 18	import { useTagCSS } from '#hooks/useTagCSS';
-19	
+19
 20	type GoalCardProps = {
 21	  widgetId: string;
 22	  isEditing?: boolean;
 23	  meta?: GoalCardWidget['meta'];
 24	  onMetaChange: (newMeta: GoalCardWidget['meta']) => void;
 25	};
-26	
+26
 27	export function GoalCard({
 28	  widgetId,
 29	  isEditing,
@@ -56,11 +56,11 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 33	  const { t } = useTranslation();
 34	  const format = useFormat();
 35	  const getTagCSS = useTagCSS();
-36	
+36
 37	  const [nameMenuOpen, setNameMenuOpen] = useState(false);
 38	  const [isCardHovered, setIsCardHovered] = useState(false);
 39	  const [isSettingGoal, setIsSettingGoal] = useState(false);
-40	
+40
 41	  const contextMenuTriggerRef = useRef(null);
 42	  useContextMenu({
 43	    triggerRef: contextMenuTriggerRef,
@@ -73,7 +73,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 50	      },
 51	    ],
 52	  });
-53	
+53
 54	  const currentAmount = meta?.currentAmount ?? 0;
 55	  const targetAmount = meta?.targetAmount ?? 0;
 56	  const linkedTag = meta?.linkedTag;
@@ -82,7 +82,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 59	      ? Math.min(Math.max(currentAmount / targetAmount, 0), 1)
 60	      : 0;
 61	  const progressPercent = Math.round(progress * 100);
-62	
+62
 63	  return (
 64	    <ReportCard
 65	      widgetId={widgetId}
@@ -147,7 +147,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 124	            </Block>
 125	          </View>
 126	        </View>
-127	
+127
 128	        <View
 129	          style={{
 130	            flex: 1,
@@ -212,6 +212,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 189	}
 190
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
@@ -230,10 +231,10 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 7	} from '@actual-app/core/types/models';
 8	import * as d from 'date-fns';
 9	import type { Locale } from 'date-fns';
-10	
+10
 11	import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 12	import { aqlQuery } from '#queries/aqlQuery';
-13	
+13
 14	export function summarySpreadsheet(
 15	  start: string,
 16	  end: string,
@@ -262,7 +263,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 39	      console.error('Error fetching filters:', error);
 40	    }
 41	    const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
-42	
+42
 43	    let startDay: Date;
 44	    let endDay: Date;
 45	    try {
@@ -271,7 +272,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 48	        'yyyy-MM-dd',
 49	        new Date(),
 50	      );
-51	
+51
 52	      endDay = d.parse(
 53	        monthUtils.getMonth(end) ===
 54	          monthUtils.getMonth(monthUtils.currentDay())
@@ -284,28 +285,28 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 61	      console.error('Error parsing dates:', error);
 62	      throw new Error('Invalid date format provided');
 63	    }
-64	
+64
 65	    if (!d.isValid(startDay) || !d.isValid(endDay)) {
 66	      throw new Error('Invalid date values provided');
 67	    }
-68	
+68
 69	    if (d.isAfter(startDay, endDay)) {
 70	      throw new Error('Start date must be before or equal to end date.');
 71	    }
-72	
+72
 73	    const getOneDatePerMonth = (start: Date, end: Date) => {
 74	      const months = [];
 75	      let currentDate = d.startOfMonth(start);
-76	
+76
 77	      while (!d.isSameMonth(currentDate, end)) {
 78	        months.push(currentDate);
 79	        currentDate = d.addMonths(currentDate, 1);
 80	      }
 81	      months.push(end);
-82	
+82
 83	      return months;
 84	    };
-85	
+85
 86	    const makeRootQuery = () =>
 87	      q('transactions')
 88	        .filter({
@@ -330,16 +331,16 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 107	          { amount: { $sum: '$amount' } },
 108	          { count: { $count: '*' } },
 109	        ]);
-110	
+110
 111	    let query = makeRootQuery();
-112	
+112
 113	    if (
 114	      summaryContent.type === 'avgPerMonth' ||
 115	      summaryContent.type === 'avgPerYear'
 116	    ) {
 117	      query = query.groupBy(['date']);
 118	    }
-119	
+119
 120	    let data;
 121	    try {
 122	      data = await aqlQuery(query);
@@ -347,12 +348,12 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 124	      console.error('Error executing query:', error);
 125	      return;
 126	    }
-127	
+127
 128	    const dateRanges = {
 129	      fromRange: d.format(startDay, 'MMM yy', { locale }),
 130	      toRange: d.format(endDay, 'MMM yy', { locale }),
 131	    };
-132	
+132
 133	    switch (summaryContent.type) {
 134	      case 'sum':
 135	        setData({
@@ -362,7 +363,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 139	          divisor: 0,
 140	        });
 141	        break;
-142	
+142
 143	      case 'avgPerTransact':
 144	        setData({
 145	          ...dateRanges,
@@ -374,13 +375,13 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 151	          divisor: data.data[0].count,
 152	        });
 153	        break;
-154	
+154
 155	      case 'avgPerMonth': {
 156	        const months = getOneDatePerMonth(startDay, endDay);
 157	        setData({ ...dateRanges, ...calculatePerMonth(data.data, months) });
 158	        break;
 159	      }
-160	
+160
 161	      case 'avgPerYear': {
 162	        setData({
 163	          ...dateRanges,
@@ -388,7 +389,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 165	        });
 166	        break;
 167	      }
-168	
+168
 169	      case 'percentage':
 170	        setData({
 171	          ...dateRanges,
@@ -400,13 +401,13 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 177	          )),
 178	        });
 179	        break;
-180	
+180
 181	      default:
 182	        throw new Error(`Unsupported summary type`);
 183	    }
 184	  };
 185	}
-186	
+186
 187	function calculatePerMonth(
 188	  data: Array<{
 189	    date: string;
@@ -418,7 +419,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 195	  if (!data.length || !months.length) {
 196	    return { total: 0, dividend: 0, divisor: 0 };
 197	  }
-198	
+198
 199	  const monthlyData = data.reduce(
 200	    (acc, day) => {
 201	      const monthKey = d.format(
@@ -430,26 +431,26 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 207	    },
 208	    {} as Record<string, number>,
 209	  );
-210	
+210
 211	  const monthsSum = months.map(m => ({
 212	    amount: monthlyData[d.format(m, 'yyyy-MM')] || 0,
 213	  }));
-214	
+214
 215	  const lastMonth = months.at(-1)!;
 216	  const dayOfMonth = lastMonth.getDate();
 217	  const daysInMonth = monthUtils.getDay(monthUtils.lastDayOfMonth(lastMonth));
 218	  const numMonths = months.length - 1 + dayOfMonth / daysInMonth;
-219	
+219
 220	  const totalAmount = monthsSum.reduce((sum, month) => sum + month.amount, 0);
 221	  const averageAmountPerMonth = totalAmount / numMonths;
-222	
+222
 223	  return {
 224	    total: averageAmountPerMonth,
 225	    dividend: totalAmount,
 226	    divisor: numMonths,
 227	  };
 228	}
-229	
+229
 230	function calculatePerYear(
 231	  data: Array<{
 232	    date: string;
@@ -462,20 +463,20 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 239	  if (!data.length) {
 240	    return { total: 0, dividend: 0, divisor: 0 };
 241	  }
-242	
+242
 243	  const totalAmount = data.reduce((sum, day) => sum + day.amount, 0);
 244	  const totalDays = d.differenceInDays(endDate, startDate) + 1;
 245	  const numYears = totalDays / 365.25;
-246	
+246
 247	  const averageAmountPerYear = totalAmount / numYears;
-248	
+248
 249	  return {
 250	    total: averageAmountPerYear,
 251	    dividend: totalAmount,
 252	    divisor: numYears,
 253	  };
 254	}
-255	
+255
 256	async function calculatePercentage(
 257	  data: Array<{
 258	    amount: number;
@@ -491,7 +492,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 268	      divisor: 0,
 269	    };
 270	  }
-271	
+271
 272	  const conditionsOpKey =
 273	    summaryContent.divisorConditionsOp === 'or' ? '$or' : '$and';
 274	  let filters = [];
@@ -510,16 +511,16 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 287	      divisor: 0,
 288	    };
 289	  }
-290	
+290
 291	  const makeDivisorQuery = () =>
 292	    q('transactions')
 293	      .filter({
 294	        [conditionsOpKey]: filters,
 295	      })
 296	      .select([{ amount: { $sum: '$amount' } }]);
-297	
+297
 298	  let query = makeDivisorQuery();
-299	
+299
 300	  if (!(summaryContent.divisorAllTimeDateRange ?? false)) {
 301	    query = query.filter({
 302	      $and: [
@@ -536,7 +537,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 313	      ],
 314	    });
 315	  }
-316	
+316
 317	  let divisorData;
 318	  try {
 319	    divisorData = (await aqlQuery(query)) as { data: { amount: number }[] };
@@ -548,9 +549,9 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 325	      divisor: 0,
 326	    };
 327	  }
-328	
+328
 329	  const divisorValue = divisorData?.data?.[0]?.amount ?? 0;
-330	
+330
 331	  const dividend = data.reduce((prev, ac) => prev + (ac?.amount ?? 0), 0);
 332	  return {
 333	    total: Math.round(((dividend ?? 0) / (divisorValue ?? 1)) * 10000) / 100,
@@ -560,6 +561,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:33Z)**_
 337	}
 338
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:49:34Z)**_
@@ -577,6 +579,7 @@ Read SummaryCard, GoalCard type, tag condition support
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
@@ -588,7 +591,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 ```text
 1	import React, { useEffect, useMemo, useState } from 'react';
 2	import { useTranslation } from 'react-i18next';
-3	
+3
 4	import { View } from '@actual-app/components/view';
 5	import { send } from '@actual-app/core/platform/client/connection';
 6	import * as monthUtils from '@actual-app/core/shared/months';
@@ -596,7 +599,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 8	  SummaryContent,
 9	  SummaryWidget,
 10	} from '@actual-app/core/types/models';
-11	
+11
 12	import { DateRange } from '#components/reports/DateRange';
 13	import { ReportCard } from '#components/reports/ReportCard';
 14	import { ReportCardName } from '#components/reports/ReportCardName';
@@ -606,14 +609,14 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 18	import { SummaryNumber } from '#components/reports/SummaryNumber';
 19	import { useReport } from '#components/reports/useReport';
 20	import { useLocale } from '#hooks/useLocale';
-21	
+21
 22	type SummaryCardProps = {
 23	  widgetId: string;
 24	  isEditing?: boolean;
 25	  meta?: SummaryWidget['meta'];
 26	  onMetaChange: (newMeta: SummaryWidget['meta']) => void;
 27	};
-28	
+28
 29	export function SummaryCard({
 30	  widgetId,
 31	  isEditing,
@@ -624,7 +627,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 36	  const { t } = useTranslation();
 37	  const [latestTransaction, setLatestTransaction] = useState<string>('');
 38	  const [nameMenuOpen, setNameMenuOpen] = useState(false);
-39	
+39
 40	  useEffect(() => {
 41	    async function fetchLatestTransaction() {
 42	      const latestTrans = await send('get-latest-transaction');
@@ -634,7 +637,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 46	    }
 47	    void fetchLatestTransaction();
 48	  }, []);
-49	
+49
 50	  const [start, end] = calculateTimeRange(
 51	    meta?.timeFrame,
 52	    {
@@ -644,7 +647,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 56	    },
 57	    latestTransaction,
 58	  );
-59	
+59
 60	  const content = useMemo(
 61	    () =>
 62	      (meta?.content
@@ -659,7 +662,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 71	        : { type: 'sum' }) as SummaryContent,
 72	    [meta],
 73	  );
-74	
+74
 75	  const params = useMemo(
 76	    () =>
 77	      summarySpreadsheet(
@@ -672,9 +675,9 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 84	      ),
 85	    [start, end, meta?.conditions, meta?.conditionsOp, content, locale],
 86	  );
-87	
+87
 88	  const data = useReport('summary', params);
-89	
+89
 90	  return (
 91	    <ReportCard
 92	      widgetId={widgetId}
@@ -717,6 +720,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:38Z)**_
 129	              initialFontSize={content.fontSize}
 130	              animate={isEditing ?? false}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:49:49Z)**_
@@ -779,6 +783,7 @@ packages\desktop-client\src\components\reports\Overview.tsx:863:                
 packages\loot-core\src\server\dashboard\app.ts:38:    'goal-card',
 packages\loot-core\src\server\dashboard\app.test.ts:18:  'goal-card',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:49:41Z)**_
@@ -821,6 +826,7 @@ packages\desktop-client\src\components\filters\updateFilterReducer.ts:22:       
 
 [Showing results with pagination = limit: 30]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:49:51Z)**_
@@ -831,7 +837,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:51Z)**_
 
 ```text
 60	>;
-61	
+61
 62	export type SpendingAverageRange =
 63	  | {
 64	      mode: 'last-n-months';
@@ -843,7 +849,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:51Z)**_
 70	  | {
 71	      mode: 'all-time';
 72	    };
-73	
+73
 74	export type SpendingWidget = AbstractWidget<
 75	  'spending-card',
 76	  {
@@ -857,7 +863,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:51Z)**_
 84	    averageRange?: SpendingAverageRange;
 85	  } | null
 86	>;
-87	
+87
 88	export type GoalCardWidget = AbstractWidget<
 89	  'goal-card',
 90	  {
@@ -881,6 +887,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:51Z)**_
 108	    graphType?: 'Line' | 'Bar';
 109	    showBalance?: boolean;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
@@ -891,11 +898,11 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 
 ```text
 55	    const { mutate: unhideTags } = useUnhideTagsMutation();
-56	
+56
 57	    const onUpdate = (description: string) => {
 58	      updateTag({ tag: { ...tag, description } });
 59	    };
-60	
+60
 61	    const onShowActivity = () => {
 62	      const filterConditions = [
 63	        {
@@ -911,6 +918,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 73	          filterConditions,
 74	        },
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
@@ -923,7 +931,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 1	import { useEffect, useState } from 'react';
 2	import { Trans, useTranslation } from 'react-i18next';
 3	import { useParams } from 'react-router';
-4	
+4
 5	import { Block } from '@actual-app/components/block';
 6	import { Button } from '@actual-app/components/button';
 7	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
@@ -934,7 +942,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 12	import * as monthUtils from '@actual-app/core/shared/months';
 13	import type { GoalCardWidget, TimeFrame } from '@actual-app/core/types/models';
 14	import type { TransObjectLiteral } from '@actual-app/core/types/util';
-15	
+15
 16	import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 17	import { FinancialText } from '#components/FinancialText';
 18	import { MobileBackButton } from '#components/mobile/MobileBackButton';
@@ -955,25 +963,25 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 33	import { addNotification } from '#notifications/notificationsSlice';
 34	import { useDispatch } from '#redux';
 35	import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
-36	
+36
 37	export function GoalReport() {
 38	  const params = useParams();
 39	  const { data: widget, isLoading } = useDashboardWidget<GoalCardWidget>({
 40	    id: params.id,
 41	    type: 'goal-card',
 42	  });
-43	
+43
 44	  if (isLoading) {
 45	    return <LoadingIndicator />;
 46	  }
-47	
+47
 48	  return <GoalReportInner widget={widget} />;
 49	}
-50	
+50
 51	type GoalReportInnerProps = {
 52	  widget?: GoalCardWidget;
 53	};
-54	
+54
 55	function GoalReportInner({ widget }: GoalReportInnerProps) {
 56	  const { t } = useTranslation();
 57	  const locale = useLocale();
@@ -981,7 +989,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 59	  const navigate = useNavigate();
 60	  const format = useFormat();
 61	  const { isNarrowWidth } = useResponsive();
-62	
+62
 63	  const [start, setStart] = useState(
 64	    monthUtils.dayFromDate(monthUtils.currentMonth()),
 65	  );
@@ -996,10 +1004,10 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 74	  const [allMonths, setAllMonths] = useState<
 75	    Array<{ name: string; pretty: string }>
 76	  >([]);
-77	
+77
 78	  const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
 79	  const firstDayOfWeekIdx = _firstDayOfWeekIdx || '0';
-80	
+80
 81	  const {
 82	    conditions,
 83	    conditionsOp,
@@ -1011,7 +1019,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 89	    widget?.meta?.conditions,
 90	    widget?.meta?.conditionsOp,
 91	  );
-92	
+92
 93	  // The date picker needs the range of months that have transactions.
 94	  useEffect(() => {
 95	    async function run() {
@@ -1021,7 +1029,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 99	      const latestDay = latest ? latest.date : monthUtils.currentDay();
 100	      setEarliestTransaction(earliestDay);
 101	      setLatestTransaction(latestDay);
-102	
+102
 103	      const currentMonth = monthUtils.currentMonth();
 104	      const latestTransactionMonth = monthUtils.monthFromDate(latestDay);
 105	      const latestMonth =
@@ -1031,7 +1039,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 109	      // Show at least a year's worth of months in the selects.
 110	      const yearAgo = monthUtils.subMonths(latestMonth, 12);
 111	      const earliestMonth = monthUtils.monthFromDate(earliestDay);
-112	
+112
 113	      setAllMonths(
 114	        monthUtils
 115	          .rangeInclusive(
@@ -1047,7 +1055,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 125	    }
 126	    void run();
 127	  }, [locale]);
-128	
+128
 129	  useEffect(() => {
 130	    if (latestTransaction) {
 131	      const [initialStart, initialEnd, initialMode] = calculateTimeRange(
@@ -1064,9 +1072,9 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 142	      setMode(initialMode);
 143	    }
 144	  }, [latestTransaction, widget?.meta?.timeFrame]);
-145	
+145
 146	  const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
-147	
+147
 148	  const title = widget?.meta?.name || t('Personal goal');
 149	  const currentAmount = widget?.meta?.currentAmount ?? 0;
 150	  const progress =
@@ -1074,7 +1082,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 152	      ? Math.min(Math.max(currentAmount / targetAmount, 0), 1)
 153	      : 0;
 154	  const progressPercent = Math.round(progress * 100);
-155	
+155
 156	  function notifyMissingWidget() {
 157	    dispatch(
 158	      addNotification({
@@ -1085,13 +1093,13 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 163	      }),
 164	    );
 165	  }
-166	
+166
 167	  const onSaveWidgetName = async (newName: string) => {
 168	    if (!widget) {
 169	      notifyMissingWidget();
 170	      return;
 171	    }
-172	
+172
 173	    const name = newName || t('Personal goal');
 174	    updateDashboardWidgetMutation.mutate({
 175	      widget: {
@@ -1103,13 +1111,13 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 181	      },
 182	    });
 183	  };
-184	
+184
 185	  function onSaveWidget() {
 186	    if (!widget) {
 187	      notifyMissingWidget();
 188	      return;
 189	    }
-190	
+190
 191	    const { linkedTag: _previousTag, ...previousMeta } = widget.meta ?? {};
 192	    updateDashboardWidgetMutation.mutate(
 193	      {
@@ -1139,7 +1147,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 217	      },
 218	    );
 219	  }
-220	
+220
 221	  function onChangeDates(
 222	    newStart: string,
 223	    newEnd: string,
@@ -1149,7 +1157,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 227	    setEnd(newEnd);
 228	    setMode(newMode);
 229	  }
-230	
+230
 231	  return (
 232	    <Page
 233	      header={
@@ -1200,7 +1208,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 278	          </Button>
 279	        )}
 280	      </Header>
-281	
+281
 282	      <View
 283	        style={{
 284	          flex: 1,
@@ -1280,7 +1288,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 358	            />
 359	          </View>
 360	        </View>
-361	
+361
 362	        <View>
 363	          <View
 364	            aria-hidden
@@ -1310,7 +1318,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 388	            {progressPercent}%
 389	          </Block>
 390	        </View>
-391	
+391
 392	        {/* Placeholder: will list the transactions matching `conditions`
 393	            over the selected time frame. */}
 394	        <View
@@ -1348,6 +1356,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:49:52Z)**_
 426	}
 427
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:50:00Z)**_
@@ -1361,6 +1370,7 @@ Read useReport hook and GoalCard test setup
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:50:17Z)**_
@@ -1372,6 +1382,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:17Z)**_
 ```text
 packages\desktop-client\src\components\reports\useReport.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:50:02Z)**_
@@ -1382,11 +1393,11 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:02Z)**_
 
 ```text
 1	import React from 'react';
-2	
+2
 3	import type { GoalCardWidget, TagEntity } from '@actual-app/core/types/models';
 4	import { act, fireEvent, render, screen, within } from '@testing-library/react';
 5	import userEvent from '@testing-library/user-event';
-6	
+6
 7	import type { ContextMenuItem } from '#contextmenu/types';
 8	import { useNavigate } from '#hooks/useNavigate';
 9	import {
@@ -1395,31 +1406,31 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:02Z)**_
 12	  TestProviders,
 13	} from '#mocks';
 14	import { tagQueries } from '#tags/queries';
-15	
+15
 16	import { GoalCard } from './GoalCard';
-17	
+17
 18	vi.mock('#hooks/useNavigate');
 19	// jsdom has no IntersectionObserver; treat the card as always on screen so
 20	// ReportCard renders its children.
 21	vi.mock('#hooks/useIsInViewport', () => ({
 22	  useIsInViewport: () => true,
 23	}));
-24	
+24
 25	const WIDGET_ID = 'goal-widget-1';
 26	const TAGS: TagEntity[] = [
 27	  { id: 'tag-1', tag: 'vacation' },
 28	  { id: 'tag-2', tag: 'emergency' },
 29	];
-30	
+30
 31	type Meta = GoalCardWidget['meta'];
 32	type TestStore = ReturnType<typeof configureTestAppStore>;
-33	
+33
 34	function createTestEnvironment() {
 35	  const queryClient = createTestQueryClient();
 36	  queryClient.setQueryData(tagQueries.list().queryKey, TAGS);
 37	  return { queryClient, store: configureTestAppStore({ queryClient }) };
 38	}
-39	
+39
 40	function renderGoalCard({
 41	  meta,
 42	  isEditing = false,
@@ -1444,7 +1455,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:02Z)**_
 61	  );
 62	  return { ...result, onMetaChange, store };
 63	}
-64	
+64
 65	function getProgressFill(container: HTMLElement) {
 66	  const track = container.querySelector('[aria-hidden="true"]');
 67	  const fill = track?.firstElementChild;
@@ -1453,15 +1464,16 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:02Z)**_
 70	  }
 71	  return fill;
 72	}
-73	
+73
 74	describe('GoalCard', () => {
 75	  const mockNavigate = vi.fn();
-76	
+76
 77	  beforeEach(() => {
 78	    vi.clearAllMocks();
 79	    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 80	  });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:50:18Z)**_
@@ -1472,9 +1484,9 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:18Z)**_
 
 ```text
 1	import { useEffect, useState } from 'react';
-2	
+2
 3	import { useSpreadsheet } from '#hooks/useSpreadsheet';
-4	
+4
 5	export function useReport<T>(
 6	  sheetName: string,
 7	  getData: (
@@ -1484,20 +1496,20 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:18Z)**_
 11	): T | null {
 12	  const spreadsheet = useSpreadsheet();
 13	  const [results, setResults] = useState<T | null>(null);
-14	
+14
 15	  useEffect(() => {
 16	    let didCancel = false;
-17	
+17
 18	    // Reset results whenever a new data function is provided so callers
 19	    // can reliably show a loading state instead of stale/partial data.
 20	    setResults(null);
-21	
+21
 22	    void getData(spreadsheet, results => {
 23	      if (!didCancel) {
 24	        setResults(results);
 25	      }
 26	    });
-27	
+27
 28	    return () => {
 29	      didCancel = true;
 30	    };
@@ -1506,6 +1518,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:18Z)**_
 33	}
 34
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:50:19Z)**_
@@ -1529,14 +1542,14 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:19Z)**_
 171	        const { container } = renderGoalCard({
 172	          meta: { currentAmount, targetAmount },
 173	        });
-174	
+174
 175	        expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
 176	        expect(getComputedStyle(getProgressFill(container)).width).toBe(
 177	          `${expected}%`,
 178	        );
 179	      },
 180	    );
-181	
+181
 182	    it('updates when the goal amounts change', () => {
 183	      const environment = createTestEnvironment();
 184	      const { rerender, container } = renderGoalCard({
@@ -1544,7 +1557,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:19Z)**_
 186	        environment,
 187	      });
 188	      expect(screen.getByText('10%')).toBeInTheDocument();
-189	
+189
 190	      rerender(
 191	        <TestProviders
 192	          queryClient={environment.queryClient}
@@ -1557,15 +1570,16 @@ _**Agent (claude-opus-5-5 2026-10-06 18:50:19Z)**_
 199	          />
 200	        </TestProviders>,
 201	      );
-202	
+202
 203	      expect(screen.getByText('60%')).toBeInTheDocument();
 204	      expect(getComputedStyle(getProgressFill(container)).width).toBe('60%');
 205	    });
 206	  });
-207	
+207
 208	  describe('navigation', () => {
 209	    it('opens the goal report for this widget when clicked', async () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:50:21Z)**_
@@ -1579,6 +1593,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:54:40Z)**_
 **summarySpreadsheet takes one flat condition list joined by conditionsOp. If the goal's conditionsOp is 'or', adding the tag as just another condition would count untagged transactions too. How should the tag be combined with the widget's conditions?**
 
 Options:
+
 - **Add optional param (Recommended)** - Add an optional extra-conditions argument to summarySpreadsheet that is always ANDed onto the query. The tag is always required, and the stored conditions still use conditionsOp. Existing callers don't change.
 - **Append; force 'and'** - Don't touch summarySpreadsheet. Append the tag condition and always pass 'and', ignoring a stored 'or'.
 - **Append; keep op as-is** - Don't touch summarySpreadsheet. Append the tag condition and pass the stored op. With 'or', untagged transactions that match other conditions also count.
@@ -1586,9 +1601,9 @@ Options:
 **Spending transactions are negative in Actual. How should the summed total turn into goal progress?**
 
 Options:
+
 - **Absolute value (Recommended)** - Progress = |total| / target. Works for both savings goals (positive deposits) and spending goals (negative outflows).
 - **Raw signed total** - Use the total as-is. A negative total clamps to 0% progress.
-
 
 **Answer:** Add optional param (Recommended), Raw signed total
 </details></tool-use>
@@ -1602,6 +1617,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:54:50Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:54:50Z)**_
@@ -1615,6 +1631,7 @@ packages\desktop-client\src\components\reports\reports\Summary.tsx:119:      sum
 packages\desktop-client\src\components\reports\reports\SummaryCard.tsx:77:      summarySpreadsheet(
 packages\desktop-client\src\components\reports\spreadsheets\summary-spreadsheet.ts:14:export function summarySpreadsheet(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:54:53Z)**_
@@ -1631,6 +1648,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:54:53Z)**_
 57:vi.mock('#components/reports/Header', () => ({
 192:    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:54:55Z)**_
@@ -1642,9 +1660,9 @@ _**Agent (claude-opus-5-5 2026-10-06 18:54:55Z)**_
 ```text
 25	  TestProviders,
 26	} from '#mocks';
-27	
+27
 28	import { GoalReport } from './GoalReport';
-29	
+29
 30	vi.mock(
 31	  '@actual-app/core/platform/client/connection',
 32	  () => import('#mocks/connection'),
@@ -1653,6 +1671,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:54:55Z)**_
 35	vi.mock('#hooks/useSyncedPref', () => ({
 36	  useSyncedPref: () => [undefined, vi.fn()],
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:54:56Z)**_
@@ -1668,21 +1687,26 @@ _**Agent (claude-opus-5-5 2026-10-06 18:55:14Z)**_
 # Plan: Drive GoalCard progress from summarySpreadsheet
 
 ## Context
+
 `GoalCard.tsx` currently reads its progress from `meta.currentAmount`, a static stored number. The goal should instead show the real total of transactions tagged with the goal's `linkedTag`, filtered by the widget's stored `conditions` / `conditionsOp` and limited to its `timeFrame`. To get there we reuse the existing `summarySpreadsheet` (`sum` mode) the same way `SummaryCard.tsx` does. We are not adding a new calculation engine.
 
 Decisions (confirmed with user):
+
 - The tag filter must **always be ANDed** with the stored conditions, even when `conditionsOp === 'or'`. This is done with a new optional argument on `summarySpreadsheet`.
 - Progress uses the **raw signed total**: `total / targetAmount`, clamped to 0–1 as it is today. A negative total therefore shows 0%.
 
 ## Changes
 
 ### 1. `packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts`
+
 - Add a trailing optional parameter `requiredConditions: RuleConditionEntity[] = []` after `locale`, so existing callers in `Summary.tsx` and `SummaryCard.tsx` don't change.
 - Inside the returned async fn, when `requiredConditions.length > 0`, call `send('make-filters-from-conditions', { conditions: requiredConditions })` in the same try/catch style as the existing call.
 - In `makeRootQuery`, add one more `.filter({ $and: requiredFilters })`, applied only when that list is non-empty. The existing `[conditionsOpKey]: filters` filter stays as it is. The result is `date range AND (conditions via op) AND (required)`.
 
 ### 2. `packages/desktop-client/src/components/reports/reports/GoalCard.tsx`
+
 Mirror `SummaryCard.tsx` (lines 40–88):
+
 - `useLocale()`, plus a `latestTransaction` state filled by a `useEffect` that calls `send('get-latest-transaction')`. This copies SummaryCard.
 - `const [start, end] = calculateTimeRange(meta?.timeFrame, { start: monthUtils.dayFromDate(monthUtils.currentMonth()), end: monthUtils.currentDay(), mode: 'full' }, latestTransaction)` (from `#components/reports/reportRanges`).
 - Tag condition, built the same way as `TagRow.tsx:62`: `{ field: 'notes', op: 'hasTags', value: `#${linkedTag}`, type: 'string' }`.
@@ -1695,7 +1719,9 @@ Mirror `SummaryCard.tsx` (lines 40–88):
 - Leave the `GoalCardWidget.meta.currentAmount` type and `GoalReport.tsx` untouched, because the user asked only for GoalCard in this step.
 
 ### 3. `packages/desktop-client/src/components/reports/reports/GoalCard.test.tsx`
+
 The progress tests currently seed `meta.currentAmount`, so they need updating:
+
 - Add `vi.mock('@actual-app/core/platform/client/connection', () => import('#mocks/connection'))`, as in `GoalReport.test.tsx:30`.
 - Mock `#components/reports/useReport` so `useReport` returns `{ total }`, controlled per test. Rewrite the progress `it.each` and the "updates when amounts change" tests to set the total through this mock (with a `linkedTag`), not through `currentAmount`.
 - Add tests:
@@ -1705,19 +1731,21 @@ The progress tests currently seed `meta.currentAmount`, so they need updating:
 - Optional: a unit test for `summarySpreadsheet` with `requiredConditions` is out of scope unless a spreadsheet test file already exists.
 
 ### 4. Release note
+
 Add `upcoming-release-notes/goal-card-live-progress.md` (use the writing-release-notes skill) if this project's sprint workflow wants one per PR.
 
 ## Verification
+
 - `yarn typecheck`
 - `yarn lint:fix`
 - `yarn workspace @actual-app/web run test GoalCard` (plus the Summary/SummaryCard tests, if any, to confirm nothing regressed)
 - Manual: `yarn start` → View demo → add a note tag (e.g. `#vacation`) to a few transactions → add a Goal card → set target + linked tag → the card's amount equals the sum of the tagged transactions in the current month. Change the time frame / conditions in the Goal report, save, and the card updates. Set conditionsOp to "or" with an unrelated condition, and untagged transactions are still excluded.
-
 ```
 
 ```text
 File created successfully at: C:\Users\reese\.claude\plans\i-want-to-connect-valiant-mochi.md (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:55:16Z)**_
@@ -1735,6 +1763,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:55:16Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:57:43Z)**_
@@ -1797,6 +1826,7 @@ Add `upcoming-release-notes/goal-card-live-progress.md` (use the writing-release
 - `yarn workspace @actual-app/web run test GoalCard` (plus the Summary/SummaryCard tests, if any, to confirm nothing regressed)
 - Manual: `yarn start` → View demo → add a note tag (e.g. `#vacation`) to a few transactions → add a Goal card → set target + linked tag → the card's amount equals the sum of the tagged transactions in the current month. Change the time frame / conditions in the Goal report, save, and the card updates. Set conditionsOp to "or" with an unrelated condition, and untagged transactions are still excluded.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:57:44Z)**_
@@ -1811,6 +1841,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:58:02Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\summary-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:58:20Z)**_
@@ -1821,6 +1852,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:58:20Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\summary-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:59:06Z)**_
@@ -1831,6 +1863,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:59:06Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\summary-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:59:44Z)**_
@@ -1841,6 +1874,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:59:44Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\summary-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:59:46Z)**_
@@ -1851,7 +1885,7 @@ _**Agent (claude-opus-5-5 2026-10-06 18:59:46Z)**_
 
 ```text
 98	    };
-99	
+99
 100	    const makeRootQuery = () => {
 101	      let rootQuery = q('transactions');
 102	      if (requiredFilters.length > 0) {
@@ -1881,11 +1915,12 @@ _**Agent (claude-opus-5-5 2026-10-06 18:59:46Z)**_
 126	          { count: { $count: '*' } },
 127	        ]);
 128	    };
-129	
+129
 130	    let query = makeRootQuery();
-131	
+131
 132	    if (
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 18:59:48Z)**_
@@ -1900,6 +1935,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:09Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:00:15Z)**_
@@ -1910,6 +1946,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:15Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:00:24Z)**_
@@ -1920,6 +1957,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:24Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:00:29Z)**_
@@ -1930,6 +1968,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:29Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
@@ -1944,43 +1983,43 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 
 ```text
 80	  });
-81	
+81
 82	  describe('name', () => {
 83	    it('shows the goal name from meta', () => {
 84	      renderGoalCard({ meta: { name: 'Emergency fund' } });
-85	
+85
 86	      expect(
 87	        screen.getByRole('heading', { name: 'Emergency fund' }),
 88	      ).toBeInTheDocument();
 89	    });
-90	
+90
 91	    it('falls back to a default name when none is set', () => {
 92	      renderGoalCard({ meta: {} });
-93	
+93
 94	      expect(
 95	        screen.getByRole('heading', { name: 'Personal goal' }),
 96	      ).toBeInTheDocument();
 97	    });
 98	  });
-99	
+99
 100	  describe('amounts', () => {
 101	    it('shows the current and target amounts', () => {
 102	      renderGoalCard({
 103	        meta: { currentAmount: 250000, targetAmount: 1000000 },
 104	      });
-105	
+105
 106	      expect(screen.getByText('2,500.00')).toBeInTheDocument();
 107	      expect(screen.getByText(/10,000\.00/)).toBeInTheDocument();
 108	    });
-109	
+109
 110	    it('shows zero amounts when meta is missing', () => {
 111	      renderGoalCard({ meta: null });
-112	
+112
 113	      expect(screen.getAllByText(/0\.00/)).toHaveLength(2);
 114	      expect(screen.getByText('0%')).toBeInTheDocument();
 115	    });
 116	  });
-117	
+117
 118	  describe('progress', () => {
 119	    it.each([
 120	      {
@@ -2037,14 +2076,14 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 171	        const { container } = renderGoalCard({
 172	          meta: { currentAmount, targetAmount },
 173	        });
-174	
+174
 175	        expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
 176	        expect(getComputedStyle(getProgressFill(container)).width).toBe(
 177	          `${expected}%`,
 178	        );
 179	      },
 180	    );
-181	
+181
 182	    it('updates when the goal amounts change', () => {
 183	      const environment = createTestEnvironment();
 184	      const { rerender, container } = renderGoalCard({
@@ -2052,7 +2091,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 186	        environment,
 187	      });
 188	      expect(screen.getByText('10%')).toBeInTheDocument();
-189	
+189
 190	      rerender(
 191	        <TestProviders
 192	          queryClient={environment.queryClient}
@@ -2065,34 +2104,34 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 199	          />
 200	        </TestProviders>,
 201	      );
-202	
+202
 203	      expect(screen.getByText('60%')).toBeInTheDocument();
 204	      expect(getComputedStyle(getProgressFill(container)).width).toBe('60%');
 205	    });
 206	  });
-207	
+207
 208	  describe('navigation', () => {
 209	    it('opens the goal report for this widget when clicked', async () => {
 210	      const user = userEvent.setup();
 211	      renderGoalCard({ meta: { name: 'Vacation' } });
-212	
+212
 213	      await user.click(screen.getByRole('button'));
-214	
+214
 215	      expect(mockNavigate).toHaveBeenCalledWith(`/reports/goal/${WIDGET_ID}`, {
 216	        state: { goBack: true },
 217	      });
 218	    });
-219	
+219
 220	    it('does not navigate while the dashboard is being edited', async () => {
 221	      const user = userEvent.setup();
 222	      renderGoalCard({ meta: { name: 'Vacation' }, isEditing: true });
-223	
+223
 224	      await user.click(screen.getByRole('heading', { name: 'Vacation' }));
-225	
+225
 226	      expect(mockNavigate).not.toHaveBeenCalled();
 227	    });
 228	  });
-229	
+229
 230	  describe('renaming', () => {
 231	    it('saves the new name and keeps the goal amounts', async () => {
 232	      const user = userEvent.setup();
@@ -2102,13 +2141,13 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 236	        targetAmount: 1000000,
 237	      };
 238	      const { onMetaChange, store } = renderGoalCard({ meta });
-239	
+239
 240	      chooseContextMenuItem(store, 'Vacation', 'rename');
-241	
+241
 242	      const input = screen.getByRole('textbox');
 243	      await user.clear(input);
 244	      await user.type(input, 'Trip to Japan{Enter}');
-245	
+245
 246	      expect(onMetaChange).toHaveBeenCalledWith({
 247	        name: 'Trip to Japan',
 248	        currentAmount: 250000,
@@ -2116,7 +2155,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 250	      });
 251	    });
 252	  });
-253	
+253
 254	  describe('setting a goal', () => {
 255	    it('saves the entered amount as the target and keeps the rest of the goal', async () => {
 256	      const user = userEvent.setup();
@@ -2126,13 +2165,13 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 260	        targetAmount: 1000000,
 261	      };
 262	      const { onMetaChange, store } = renderGoalCard({ meta });
-263	
+263
 264	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
-265	
+265
 266	      const input = screen.getByLabelText('Goal amount');
 267	      await user.clear(input);
 268	      await user.type(input, '7,500{Enter}');
-269	
+269
 270	      expect(onMetaChange).toHaveBeenCalledWith({
 271	        name: 'Vacation',
 272	        currentAmount: 250000,
@@ -2140,70 +2179,70 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 274	      });
 275	      expect(screen.queryByLabelText('Goal amount')).not.toBeInTheDocument();
 276	    });
-277	
+277
 278	    it('sets a goal on a new card that has no target yet', async () => {
 279	      const user = userEvent.setup();
 280	      const { onMetaChange, store } = renderGoalCard({ meta: {} });
-281	
+281
 282	      chooseContextMenuItem(store, 'Personal goal', 'set-goal');
-283	
+283
 284	      const input = screen.getByLabelText('Goal amount');
 285	      await user.clear(input);
 286	      await user.type(input, '1000{Enter}');
-287	
+287
 288	      expect(onMetaChange).toHaveBeenCalledWith({ targetAmount: 100000 });
 289	    });
-290	
+290
 291	    it('does not open the report while the goal is being edited', async () => {
 292	      const user = userEvent.setup();
 293	      const { store } = renderGoalCard({ meta: { name: 'Vacation' } });
-294	
+294
 295	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 296	      await user.click(screen.getByLabelText('Goal amount'));
-297	
+297
 298	      expect(mockNavigate).not.toHaveBeenCalled();
 299	    });
-300	
+300
 301	    it('does not save anything when cancelled', async () => {
 302	      const user = userEvent.setup();
 303	      const { onMetaChange, store } = renderGoalCard({
 304	        meta: { name: 'Vacation', targetAmount: 1000000 },
 305	      });
-306	
+306
 307	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 308	      await user.click(screen.getByRole('button', { name: 'Cancel' }));
-309	
+309
 310	      expect(onMetaChange).not.toHaveBeenCalled();
 311	      expect(screen.queryByLabelText('Goal amount')).not.toBeInTheDocument();
 312	    });
 313	  });
-314	
+314
 315	  describe('linked tag', () => {
 316	    it('shows the linked tag on the card', () => {
 317	      renderGoalCard({ meta: { name: 'Vacation', linkedTag: 'vacation' } });
-318	
+318
 319	      expect(screen.getByText('#vacation')).toBeInTheDocument();
 320	    });
-321	
+321
 322	    it('shows no tag when none is linked', () => {
 323	      renderGoalCard({ meta: { name: 'Vacation' } });
-324	
+324
 325	      expect(screen.queryByText(/^#/)).not.toBeInTheDocument();
 326	    });
-327	
+327
 328	    it('links the chosen tag together with the goal amount', async () => {
 329	      const user = userEvent.setup();
 330	      const { onMetaChange, store } = renderGoalCard({
 331	        meta: { name: 'Vacation', currentAmount: 0, targetAmount: 1000000 },
 332	      });
-333	
+333
 334	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 335	      const input = screen.getByLabelText('Goal amount');
 336	      await user.clear(input);
 337	      await user.type(input, '2,000');
 338	      await chooseTag(user, '#vacation');
 339	      await user.click(screen.getByRole('button', { name: 'Save' }));
-340	
+340
 341	      expect(onMetaChange).toHaveBeenCalledTimes(1);
 342	      expect(onMetaChange).toHaveBeenCalledWith({
 343	        name: 'Vacation',
@@ -2212,7 +2251,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 346	        linkedTag: 'vacation',
 347	      });
 348	    });
-349	
+349
 350	    it('unlinks the tag when "No tag" is chosen', async () => {
 351	      const user = userEvent.setup();
 352	      const { onMetaChange, store } = renderGoalCard({
@@ -2222,18 +2261,18 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 356	          linkedTag: 'vacation',
 357	        },
 358	      });
-359	
+359
 360	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 361	      await chooseTag(user, 'No tag');
 362	      await user.click(screen.getByRole('button', { name: 'Save' }));
-363	
+363
 364	      const savedMeta = vi.mocked(onMetaChange).mock.calls[0][0];
 365	      expect(savedMeta).toEqual({ name: 'Vacation', targetAmount: 1000000 });
 366	      expect(savedMeta).not.toHaveProperty('linkedTag');
 367	    });
 368	  });
 369	});
-370	
+370
 371	/**
 372	 * Opens the "Linked tag" dropdown and picks the option with the given label.
 373	 */
@@ -2245,7 +2284,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 379	  const menu = await screen.findByRole('menu');
 380	  await user.click(within(menu).getByText(label));
 381	}
-382	
+382
 383	/**
 384	 * Opens the card's context menu and runs the item with the given name.
 385	 */
@@ -2266,6 +2305,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:31Z)**_
 400	}
 401
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:00:37Z)**_
@@ -2277,6 +2317,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:37Z)**_
 ```text
 packages\desktop-client\src\mocks\connection.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:00:38Z)**_
@@ -2291,41 +2332,41 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:38Z)**_
 3	// This mirrors `@actual-app/core`'s test-only mock implementation so that
 4	// `useSpreadsheet()` and other code paths can call `send()` and receive a
 5	// promise with a stable shape.
-6	
+6
 7	type Listener = (args: unknown) => void;
 8	type Handler = (args: unknown) => unknown | Promise<unknown>;
-9	
+9
 10	let listeners = new Map<string, Array<Listener>>();
 11	let serverHandler:
 12	  | null
 13	  | ((msg: { name: string; args: unknown; catchErrors: boolean }) => unknown) =
 14	  null;
-15	
+15
 16	export const initServer = (handlers: Record<string, Handler>) => {
 17	  serverHandler = msg => {
 18	    const { name, args, catchErrors } = msg;
 19	    if (handlers[name]) {
 20	      return Promise.resolve().then(() => {
 21	        const promise = Promise.resolve(handlers[name](args));
-22	
+22
 23	        if (catchErrors) {
 24	          return promise.then(
 25	            data => ({ data }),
 26	            error => ({ error }),
 27	          );
 28	        }
-29	
+29
 30	        return promise;
 31	      });
 32	    }
 33	  };
 34	};
-35	
+35
 36	export const clearServer = async () => {
 37	  serverHandler = null;
 38	  listeners = new Map();
 39	};
-40	
+40
 41	export const serverPush = (name: string, args: unknown) => {
 42	  void Promise.resolve().then(() => {
 43	    const listens = listeners.get(name);
@@ -2336,7 +2377,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:38Z)**_
 48	    }
 49	  });
 50	};
-51	
+51
 52	export const send = async (
 53	  name: string,
 54	  args: unknown,
@@ -2348,18 +2389,18 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:38Z)**_
 60	    throw new Error('`send` called with no mock server installed');
 61	  }
 62	};
-63	
+63
 64	export const sendCatch = (name: string, args: unknown) => {
 65	  return send(name, args, { catchErrors: true });
 66	};
-67	
+67
 68	export const listen = (name: string, cb: Listener) => {
 69	  if (!listeners.get(name)) {
 70	    listeners.set(name, []);
 71	  }
-72	
+72
 73	  listeners.get(name)!.push(cb);
-74	
+74
 75	  return () => {
 76	    const arr = listeners.get(name) ?? [];
 77	    listeners.set(
@@ -2370,6 +2411,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:38Z)**_
 82	};
 83
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:00:53Z)**_
@@ -2380,6 +2422,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:53Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:00:59Z)**_
@@ -2390,6 +2433,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:00:59Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:01:02Z)**_
@@ -2400,6 +2444,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:01:02Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:01:08Z)**_
@@ -2410,6 +2455,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:01:08Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:01:12Z)**_
@@ -2420,6 +2466,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:01:12Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:01:15Z)**_
@@ -2430,6 +2477,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:01:15Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:01:22Z)**_
@@ -2440,6 +2488,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:01:22Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:01:25Z)**_
@@ -2450,6 +2499,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:01:25Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:01:29Z)**_
@@ -2460,6 +2510,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:01:29Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:01:31Z)**_
@@ -2475,7 +2526,7 @@ Run GoalCard tests
 ```text
 });
 /* assert on the output */
-This ensures that you're testing the behavior the user would see in the browser. Learn more at 
+This ensures that you're testing the behavior the user would see in the browser. Learn more at
 https://react.dev/link/wrap-tests-with-act
 stderr | src/components/reports/reports/GoalCard.test.tsx > GoalCard > linked tag > shows the linked tag on the card
 An update to GoalCard inside a test was not wrapped in act(...).
@@ -2484,7 +2535,7 @@ act(() => {
   /* fire events that update state */
 });
 /* assert on the output */
-This ensures that you're testing the behavior the user would see in the browser. Learn more at 
+This ensures that you're testing the behavior the user would see in the browser. Learn more at
 https://react.dev/link/wrap-tests-with-act
 stderr | src/components/reports/reports/GoalCard.test.tsx > GoalCard > linked tag > shows no tag when none is linked
 An update to GoalCard inside a test was not wrapped in act(...).
@@ -2493,7 +2544,7 @@ act(() => {
   /* fire events that update state */
 });
 /* assert on the output */
-This ensures that you're testing the behavior the user would see in the browser. Learn more at 
+This ensures that you're testing the behavior the user would see in the browser. Learn more at
 https://react.dev/link/wrap-tests-with-act
  ✓ src/components/reports/reports/GoalCard.test.tsx (26 tests) 2959ms
        ✓ shows the goal name from meta  348ms
@@ -2506,6 +2557,7 @@ https://react.dev/link/wrap-tests-with-act
    Start at  15:02:00
    Duration  90.31s (transform 8.08s, setup 19.75s, import 32.79s, tests 2.96s, environment 33.54s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:03:34Z)**_
@@ -2545,6 +2597,7 @@ src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 42.85s to complete.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:05:10Z)**_
@@ -2564,6 +2617,7 @@ packages/desktop-client/src/components/reports/reports/GoalCard.test.tsx (16ms)
 Format issues found in above 1 files. Run without `--check` to fix.
 Finished in 227ms on 3 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:05:13Z)**_
@@ -2578,6 +2632,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:05:48Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:05:57Z)**_
@@ -2588,6 +2643,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:05:57Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:06:21Z)**_
@@ -2623,6 +2679,7 @@ warning: in the working copy of 'packages/plugins-service/vite.config.mts', CRLF
  .../reports/spreadsheets/summary-spreadsheet.ts    | 23 +++++-
  3 files changed, 163 insertions(+), 20 deletions(-)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:06:22Z)**_
@@ -2641,6 +2698,7 @@ Re-run GoalCard tests
    Start at  15:06:38
    Duration  18.39s (transform 5.61s, setup 3.20s, import 10.39s, tests 2.94s, environment 1.53s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:07:06Z)**_
@@ -2648,11 +2706,13 @@ _**Agent (claude-opus-5-5 2026-10-06 19:07:06Z)**_
 GoalCard now computes its current amount with the existing `summarySpreadsheet` instead of reading the stored `meta.currentAmount`. The 26 GoalCard tests pass and lint/format are clean, but I haven't tried it in the running app.
 
 **What changed:**
+
 - **[summary-spreadsheet.ts](packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts)**: one new optional argument, `requiredConditions`, at the end. Those conditions are always ANDed onto the query, whatever `conditionsOp` is. So with `conditionsOp: 'or'`, transactions without the goal's tag are still excluded. The Summary report and Summary card don't pass it, so they behave as before.
 - **[GoalCard.tsx](packages/desktop-client/src/components/reports/reports/GoalCard.tsx)**: works the same way as SummaryCard. It turns `meta.timeFrame` into start/end dates and calls `summarySpreadsheet` in sum mode with `meta.conditions` and `meta.conditionsOp`. The tag filter is passed as the required condition, using the same note-tag filter as the Tags page's "show activity". As you chose, progress uses the signed total, so a negative total shows 0%. If no tag is linked, it skips the query and shows 0.
 - **[GoalCard.test.tsx](packages/desktop-client/src/components/reports/reports/GoalCard.test.tsx)**: the backend calculation is now mocked so tests control the total directly; the progress tests use it instead of `currentAmount`. New tests cover no linked tag (0%, no query) and check the tag condition and stored conditions are passed in correctly.
 
 **Things to know:**
+
 - `yarn typecheck` fails, but only on `budgetMonthPdf.ts`, which can't find the `jspdf` and `jspdf-autotable` modules. That file isn't part of this change and the error looks like missing local dependencies. Nothing in the three changed files is flagged.
 - The tests log React "not wrapped in act(...)" warnings, caused by the card's startup lookup of the latest transaction finishing after a test ends. The tests still pass; I can quiet the warnings if you want.
 - [GoalReport.tsx](packages/desktop-client/src/components/reports/reports/GoalReport.tsx) still shows the stored `meta.currentAmount`, so the full report page won't match the card yet. You asked for GoalCard only in this step.
@@ -2701,6 +2761,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:09Z)**_
 493:          currentAmount: 250000,
 518:            currentAmount: 250000,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
@@ -2713,7 +2774,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 1	import React from 'react';
 2	import type { ReactNode } from 'react';
 3	import { MemoryRouter, Route, Routes } from 'react-router';
-4	
+4
 5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 6	import {
 7	  clearServer,
@@ -2729,16 +2790,16 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 17	import { render, screen, waitFor, within } from '@testing-library/react';
 18	import userEvent from '@testing-library/user-event';
 19	import type { Mock } from 'vitest';
-20	
+20
 21	import { useNavigate } from '#hooks/useNavigate';
 22	import {
 23	  configureTestAppStore,
 24	  createTestQueryClient,
 25	  TestProviders,
 26	} from '#mocks';
-27	
+27
 28	import { GoalReport } from './GoalReport';
-29	
+29
 30	vi.mock(
 31	  '@actual-app/core/platform/client/connection',
 32	  () => import('#mocks/connection'),
@@ -2750,7 +2811,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 38	vi.mock('@actual-app/components/hooks/useResponsive', () => ({
 39	  useResponsive: vi.fn(),
 40	}));
-41	
+41
 42	// The real Header pulls in the filter menus and date pickers, which are
 43	// covered elsewhere. This stub shows what GoalReport passes to it and lets
 44	// tests change the dates and filters.
@@ -2765,7 +2826,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 53	  onApply: (condition: RuleConditionEntity) => void;
 54	  children?: ReactNode;
 55	};
-56	
+56
 57	vi.mock('#components/reports/Header', () => ({
 58	  Header: ({
 59	    start,
@@ -2796,7 +2857,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 84	    </div>
 85	  ),
 86	}));
-87	
+87
 88	const WIDGET_ID = 'goal-widget-1';
 89	const TAGS: TagEntity[] = [
 90	  { id: 'tag-1', tag: 'vacation' },
@@ -2813,9 +2874,9 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 101	  end: '2024-06-30',
 102	  mode: 'static',
 103	};
-104	
+104
 105	type Meta = GoalCardWidget['meta'];
-106	
+106
 107	function makeWidget(meta: Meta): GoalCardWidget {
 108	  return {
 109	    id: WIDGET_ID,
@@ -2829,14 +2890,14 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 117	    tombstone: false,
 118	  };
 119	}
-120	
+120
 121	type ServerOptions = {
 122	  widgets?: GoalCardWidget[];
 123	  earliest?: { date: string } | null;
 124	  latest?: { date: string } | null;
 125	  isWidgetQueryPending?: boolean;
 126	};
-127	
+127
 128	function setUpServer({
 129	  widgets = [],
 130	  earliest = { date: '2024-01-05' },
@@ -2856,7 +2917,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 144	  });
 145	  return { updateWidget };
 146	}
-147	
+147
 148	function renderGoalReport({
 149	  meta,
 150	  path = `/reports/goal/${WIDGET_ID}`,
@@ -2868,7 +2929,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 156	  });
 157	  const queryClient = createTestQueryClient();
 158	  const store = configureTestAppStore({ queryClient });
-159	
+159
 160	  render(
 161	    <TestProviders queryClient={queryClient} store={store}>
 162	      <MemoryRouter initialEntries={[path]}>
@@ -2879,14 +2940,14 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 167	      </MemoryRouter>
 168	    </TestProviders>,
 169	  );
-170	
+170
 171	  return { ...server, store };
 172	}
-173	
+173
 174	async function waitForReport() {
 175	  return screen.findByText('Matching transactions');
 176	}
-177	
+177
 178	function getProgressFill() {
 179	  const track = document.querySelector('[aria-hidden="true"]');
 180	  const fill = track?.firstElementChild;
@@ -2895,10 +2956,10 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 183	  }
 184	  return fill;
 185	}
-186	
+186
 187	describe('GoalReport', () => {
 188	  const mockNavigate = vi.fn();
-189	
+189
 190	  beforeEach(() => {
 191	    vi.clearAllMocks();
 192	    vi.mocked(useNavigate).mockReturnValue(mockNavigate);
@@ -2906,50 +2967,50 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 194	      isNarrowWidth: false,
 195	    });
 196	  });
-197	
+197
 198	  afterEach(async () => {
 199	    await clearServer();
 200	  });
-201	
+201
 202	  describe('loading', () => {
 203	    it('shows a loading indicator while the widget is being fetched', () => {
 204	      renderGoalReport({ meta: {}, isWidgetQueryPending: true });
-205	
+205
 206	      expect(
 207	        screen.queryByText('Matching transactions'),
 208	      ).not.toBeInTheDocument();
 209	    });
 210	  });
-211	
+211
 212	  describe('title', () => {
 213	    it('shows the goal name from the widget', async () => {
 214	      renderGoalReport({ meta: { name: 'Emergency fund' } });
 215	      await waitForReport();
-216	
+216
 217	      expect(screen.getByText('Emergency fund')).toBeInTheDocument();
 218	    });
-219	
+219
 220	    it('falls back to a default name when none is set', async () => {
 221	      renderGoalReport({ meta: {} });
 222	      await waitForReport();
-223	
+223
 224	      expect(screen.getByText('Personal goal')).toBeInTheDocument();
 225	    });
-226	
+226
 227	    it('saves a renamed goal and keeps the rest of the widget', async () => {
 228	      const user = userEvent.setup();
 229	      const { updateWidget } = renderGoalReport({
 230	        meta: { name: 'Emergency fund', targetAmount: 1000000 },
 231	      });
 232	      await waitForReport();
-233	
+233
 234	      await user.click(
 235	        within(screen.getByText('Emergency fund')).getByRole('button'),
 236	      );
 237	      const input = screen.getByDisplayValue('Emergency fund');
 238	      await user.clear(input);
 239	      await user.type(input, 'Trip to Japan{Enter}');
-240	
+240
 241	      await waitFor(() =>
 242	        expect(updateWidget).toHaveBeenCalledWith({
 243	          id: WIDGET_ID,
@@ -2957,21 +3018,21 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 245	        }),
 246	      );
 247	    });
-248	
+248
 249	    it('saves the default name when the title is cleared', async () => {
 250	      const user = userEvent.setup();
 251	      const { updateWidget } = renderGoalReport({
 252	        meta: { name: 'Emergency fund' },
 253	      });
 254	      await waitForReport();
-255	
+255
 256	      await user.click(
 257	        within(screen.getByText('Emergency fund')).getByRole('button'),
 258	      );
 259	      const input = screen.getByDisplayValue('Emergency fund');
 260	      await user.clear(input);
 261	      await user.type(input, '{Enter}');
-262	
+262
 263	      await waitFor(() =>
 264	        expect(updateWidget).toHaveBeenCalledWith({
 265	          id: WIDGET_ID,
@@ -2980,12 +3041,12 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 268	      );
 269	    });
 270	  });
-271	
+271
 272	  describe('without a widget', () => {
 273	    it('shows a read-only title and no save button', async () => {
 274	      renderGoalReport({ path: '/reports/goal' });
 275	      await waitForReport();
-276	
+276
 277	      const title = screen.getByText('Personal goal');
 278	      expect(within(title).queryByRole('button')).not.toBeInTheDocument();
 279	      expect(
@@ -2993,43 +3054,43 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 281	      ).not.toBeInTheDocument();
 282	    });
 283	  });
-284	
+284
 285	  describe('mobile', () => {
 286	    beforeEach(() => {
 287	      (useResponsive as unknown as Mock).mockReturnValue({
 288	        isNarrowWidth: true,
 289	      });
 290	    });
-291	
+291
 292	    it('shows the goal name in the mobile header', async () => {
 293	      renderGoalReport({ meta: { name: 'Emergency fund' } });
 294	      await waitForReport();
-295	
+295
 296	      expect(screen.getByText('Emergency fund')).toBeInTheDocument();
 297	    });
-298	
+298
 299	    it('goes back to the reports page from the back button', async () => {
 300	      const user = userEvent.setup();
 301	      renderGoalReport({ meta: { name: 'Emergency fund' } });
 302	      await waitForReport();
-303	
+303
 304	      await user.click(screen.getByRole('button', { name: 'Back' }));
-305	
+305
 306	      expect(mockNavigate).toHaveBeenCalledWith('/reports');
 307	    });
 308	  });
-309	
+309
 310	  describe('amounts and progress', () => {
 311	    it('shows the current and target amounts', async () => {
 312	      renderGoalReport({
 313	        meta: { currentAmount: 250000, targetAmount: 1000000 },
 314	      });
 315	      await waitForReport();
-316	
+316
 317	      expect(screen.getByText('2,500.00')).toBeInTheDocument();
 318	      expect(screen.getByText(/10,000\.00/)).toBeInTheDocument();
 319	    });
-320	
+320
 321	    it.each([
 322	      {
 323	        label: 'partway to the goal',
@@ -3060,20 +3121,20 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 348	      async ({ currentAmount, targetAmount, expected }) => {
 349	        renderGoalReport({ meta: { currentAmount, targetAmount } });
 350	        await waitForReport();
-351	
+351
 352	        expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
 353	        expect(getComputedStyle(getProgressFill()).width).toBe(`${expected}%`);
 354	      },
 355	    );
-356	
+356
 357	    it('treats a widget with no meta as an empty goal', async () => {
 358	      renderGoalReport({ meta: null });
 359	      await waitForReport();
-360	
+360
 361	      expect(screen.getByText('Personal goal')).toBeInTheDocument();
 362	      expect(screen.getByText('0%')).toBeInTheDocument();
 363	    });
-364	
+364
 365	    it('updates the progress when the goal amount is edited', async () => {
 366	      const user = userEvent.setup();
 367	      renderGoalReport({
@@ -3081,56 +3142,57 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:10Z)**_
 369	      });
 370	      await waitForReport();
 371	      expect(screen.getByText('25%')).toBeInTheDocument();
-372	
+372
 373	      const input = screen.getByLabelText('Goal amount');
 374	      await user.clear(input);
 375	      await user.type(input, '5,000{Enter}');
-376	
+376
 377	      expect(screen.getByText('50%')).toBeInTheDocument();
 378	      expect(getComputedStyle(getProgressFill()).width).toBe('50%');
 379	    });
 380	  });
-381	
+381
 382	  describe('linked tag', () => {
 383	    it('describes the transactions for the linked tag', async () => {
 384	      renderGoalReport({ meta: { linkedTag: 'vacation' } });
 385	      await waitForReport();
-386	
+386
 387	      expect(screen.getByText(/Transactions tagged/)).toHaveTextContent(
 388	        '#vacation',
 389	      );
 390	    });
-391	
+391
 392	    it('prompts to link a tag when none is linked', async () => {
 393	      renderGoalReport({ meta: {} });
 394	      await waitForReport();
-395	
+395
 396	      expect(screen.getByText(/Link a tag to this goal/)).toBeInTheDocument();
 397	    });
-398	
+398
 399	    it('updates the description when a tag is chosen', async () => {
 400	      const user = userEvent.setup();
 401	      renderGoalReport({ meta: {} });
 402	      await waitForReport();
-403	
+403
 404	      await chooseTag(user, '#emergency');
-405	
+405
 406	      expect(screen.getByText(/Transactions tagged/)).toHaveTextContent(
 407	        '#emergency',
 408	      );
 409	    });
 410	  });
-411	
+411
 412	  describe('date range', () => {
 413	    it('loads the transaction date bounds for the header', async () => {
 414	      renderGoalReport({ meta: {} });
 415	      await waitForReport();
-416	
+416
 417	      await waitFor(() =>
 418	        expect(screen.getByTestId('header-bounds')).toHaveTextContent(
 419	          '2024-01-05 2024-06-20',
 420	        ),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:09:17Z)**_
@@ -3206,12 +3268,12 @@ export function useGoalTotal({
 }
 
 const SUM_CONTENT: SummaryContent = { type: 'sum' };
-
 ```
 
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\useGoalTotal.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
@@ -3223,7 +3285,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 ```text
 1	import React, { useEffect, useMemo, useRef, useState } from 'react';
 2	import { Trans, useTranslation } from 'react-i18next';
-3	
+3
 4	import { Block } from '@actual-app/components/block';
 5	import { styles } from '@actual-app/components/styles';
 6	import { theme } from '@actual-app/components/theme';
@@ -3236,7 +3298,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 13	  SummaryContent,
 14	} from '@actual-app/core/types/models';
 15	import type { TransObjectLiteral } from '@actual-app/core/types/util';
-16	
+16
 17	import { FinancialText } from '#components/FinancialText';
 18	import { PrivacyFilter } from '#components/PrivacyFilter';
 19	import { GoalSettingsEditor } from '#components/reports/GoalSettingsEditor';
@@ -3249,14 +3311,14 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 26	import { useFormat } from '#hooks/useFormat';
 27	import { useLocale } from '#hooks/useLocale';
 28	import { useTagCSS } from '#hooks/useTagCSS';
-29	
+29
 30	type GoalCardProps = {
 31	  widgetId: string;
 32	  isEditing?: boolean;
 33	  meta?: GoalCardWidget['meta'];
 34	  onMetaChange: (newMeta: GoalCardWidget['meta']) => void;
 35	};
-36	
+36
 37	export function GoalCard({
 38	  widgetId,
 39	  isEditing,
@@ -3268,11 +3330,11 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 45	  const locale = useLocale();
 46	  const getTagCSS = useTagCSS();
 47	  const [latestTransaction, setLatestTransaction] = useState<string>('');
-48	
+48
 49	  const [nameMenuOpen, setNameMenuOpen] = useState(false);
 50	  const [isCardHovered, setIsCardHovered] = useState(false);
 51	  const [isSettingGoal, setIsSettingGoal] = useState(false);
-52	
+52
 53	  const contextMenuTriggerRef = useRef(null);
 54	  useContextMenu({
 55	    triggerRef: contextMenuTriggerRef,
@@ -3285,7 +3347,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 62	      },
 63	    ],
 64	  });
-65	
+65
 66	  useEffect(() => {
 67	    async function fetchLatestTransaction() {
 68	      const latestTrans = await send('get-latest-transaction');
@@ -3295,7 +3357,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 72	    }
 73	    void fetchLatestTransaction();
 74	  }, []);
-75	
+75
 76	  const [start, end] = calculateTimeRange(
 77	    meta?.timeFrame,
 78	    {
@@ -3305,10 +3367,10 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 82	    },
 83	    latestTransaction,
 84	  );
-85	
+85
 86	  const targetAmount = meta?.targetAmount ?? 0;
 87	  const linkedTag = meta?.linkedTag;
-88	
+88
 89	  const params = useMemo(() => {
 90	    if (!linkedTag) {
 91	      // Without a tag nothing counts toward the goal, so skip the query.
@@ -3330,16 +3392,16 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 107	      [tagCondition],
 108	    );
 109	  }, [start, end, meta?.conditions, meta?.conditionsOp, linkedTag, locale]);
-110	
+110
 111	  const data = useReport<{ total: number }>('goal', params);
-112	
+112
 113	  const currentAmount = linkedTag ? (data?.total ?? 0) : 0;
 114	  const progress =
 115	    targetAmount > 0
 116	      ? Math.min(Math.max(currentAmount / targetAmount, 0), 1)
 117	      : 0;
 118	  const progressPercent = Math.round(progress * 100);
-119	
+119
 120	  return (
 121	    <ReportCard
 122	      widgetId={widgetId}
@@ -3347,6 +3409,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:09:49Z)**_
 124	      disableClick={nameMenuOpen || isSettingGoal}
 125	      to={`/reports/goal/${widgetId}`}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:09:50Z)**_
@@ -3361,6 +3424,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:10:08Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:10:27Z)**_
@@ -3371,6 +3435,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:10:27Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:10:39Z)**_
@@ -3381,6 +3446,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:10:39Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:10:53Z)**_
@@ -3391,6 +3457,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:10:53Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:10:57Z)**_
@@ -3401,6 +3468,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:10:57Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:01Z)**_
@@ -3411,6 +3479,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:01Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:03Z)**_
@@ -3429,6 +3498,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:04Z)**_
 80-    "#hooks/useDisplayPayee": "./src/hooks/useDisplayPayee.tsx",
 81-    "#hooks/useDragDrop": "./src/hooks/useDragDrop.tsx",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:05Z)**_
@@ -3464,6 +3534,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:05Z)**_
 83	    "#hooks/useScrollListener": "./src/hooks/useScrollListener.tsx",
 84	    "#hooks/useSelected": "./src/hooks/useSelected.tsx",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:06Z)**_
@@ -3478,6 +3549,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:20Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\package.json has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:21Z)**_
@@ -3492,6 +3564,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:36Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:42Z)**_
@@ -3502,6 +3575,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:42Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:44Z)**_
@@ -3517,6 +3591,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:48Z)**_
 ```text
 packages\desktop-client\src\hooks\useRuleConditionFilters.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:50Z)**_
@@ -3527,9 +3602,9 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:50Z)**_
 
 ```text
 1	import { useCallback, useMemo, useState } from 'react';
-2	
+2
 3	import type { RuleConditionEntity } from '@actual-app/core/types/models';
-4	
+4
 5	export function useRuleConditionFilters<T extends RuleConditionEntity>(
 6	  initialConditions: T[] = [],
 7	  initialConditionsOp: 'and' | 'or' = 'and',
@@ -3539,7 +3614,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:50Z)**_
 11	    initialConditionsOp,
 12	  );
 13	  const [saved, setSaved] = useState<T[] | null>(null);
-14	
+14
 15	  const onApply = useCallback(
 16	    (
 17	      conditionsOrSavedFilter:
@@ -3561,7 +3636,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:50Z)**_
 33	    },
 34	    [setConditions],
 35	  );
-36	
+36
 37	  const onUpdate = useCallback(
 38	    (oldFilter: T, updatedFilter: T) => {
 39	      setConditions(state =>
@@ -3571,7 +3646,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:50Z)**_
 43	    },
 44	    [setConditions],
 45	  );
-46	
+46
 47	  const onDelete = useCallback(
 48	    (deletedFilter: T) => {
 49	      setConditions(state => state.filter(f => f !== deletedFilter));
@@ -3579,7 +3654,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:50Z)**_
 51	    },
 52	    [setConditions],
 53	  );
-54	
+54
 55	  return useMemo(
 56	    () => ({
 57	      conditions,
@@ -3603,6 +3678,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:50Z)**_
 75	}
 76
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:52Z)**_
@@ -3619,11 +3695,11 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 420	        ),
 421	      );
 422	    });
-423	
+423
 424	    it('lists every month from the earliest transaction to now, newest first', async () => {
 425	      renderGoalReport({ meta: {} });
 426	      await waitForReport();
-427	
+427
 428	      const expectedMonths = monthUtils
 429	        .rangeInclusive('2024-01', monthUtils.currentMonth())
 430	        .reverse()
@@ -3634,11 +3710,11 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 435	        ),
 436	      );
 437	    });
-438	
+438
 439	    it('shows at least a year of months when there are no transactions', async () => {
 440	      renderGoalReport({ meta: {}, earliest: null, latest: null });
 441	      await waitForReport();
-442	
+442
 443	      const today = monthUtils.currentDay();
 444	      await waitFor(() =>
 445	        expect(screen.getByTestId('header-bounds')).toHaveTextContent(
@@ -3651,11 +3727,11 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 452	      expect(months).toHaveLength(13);
 453	      expect(months?.[0]).toBe(monthUtils.currentMonth());
 454	    });
-455	
+455
 456	    it('starts from the saved time frame', async () => {
 457	      renderGoalReport({ meta: { timeFrame: STATIC_TIME_FRAME } });
 458	      await waitForReport();
-459	
+459
 460	      await waitFor(() =>
 461	        expect(screen.getByTestId('header-range')).toHaveTextContent(
 462	          '2024-01-01 2024-06-30 static',
@@ -3663,7 +3739,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 464	      );
 465	      expect(screen.getByText('Jan 2024 - Jun 2024')).toBeInTheDocument();
 466	    });
-467	
+467
 468	    it('updates the range when new dates are picked', async () => {
 469	      const user = userEvent.setup();
 470	      renderGoalReport({ meta: { timeFrame: STATIC_TIME_FRAME } });
@@ -3673,16 +3749,16 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 474	          '2024-01-01',
 475	        ),
 476	      );
-477	
+477
 478	      await user.click(screen.getByRole('button', { name: 'Change dates' }));
-479	
+479
 480	      expect(screen.getByTestId('header-range')).toHaveTextContent(
 481	        '2025-01-01 2025-03-31 static',
 482	      );
 483	      expect(screen.getByText('Jan 2025 - Mar 2025')).toBeInTheDocument();
 484	    });
 485	  });
-486	
+486
 487	  describe('saving the widget', () => {
 488	    it('saves the goal amount, tag, filters and time frame', async () => {
 489	      const user = userEvent.setup();
@@ -3700,7 +3776,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 501	          '2024-01-01',
 502	        ),
 503	      );
-504	
+504
 505	      const input = screen.getByLabelText('Goal amount');
 506	      await user.clear(input);
 507	      await user.type(input, '7,500{Enter}');
@@ -3708,7 +3784,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 509	      await user.click(screen.getByRole('button', { name: 'Add filter' }));
 510	      await user.click(screen.getByRole('button', { name: 'Change dates' }));
 511	      await user.click(screen.getByRole('button', { name: 'Save widget' }));
-512	
+512
 513	      await waitFor(() =>
 514	        expect(updateWidget).toHaveBeenCalledWith({
 515	          id: WIDGET_ID,
@@ -3733,7 +3809,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 534	        ]),
 535	      );
 536	    });
-537	
+537
 538	    it('removes the linked tag when "No tag" is chosen', async () => {
 539	      const user = userEvent.setup();
 540	      const { updateWidget } = renderGoalReport({
@@ -3744,10 +3820,10 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 545	        },
 546	      });
 547	      await waitForReport();
-548	
+548
 549	      await chooseTag(user, 'No tag');
 550	      await user.click(screen.getByRole('button', { name: 'Save widget' }));
-551	
+551
 552	      await waitFor(() => expect(updateWidget).toHaveBeenCalled());
 553	      const savedWidget = updateWidget.mock.calls[0][0] as GoalCardWidget;
 554	      expect(savedWidget.meta).not.toHaveProperty('linkedTag');
@@ -3755,7 +3831,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 556	    });
 557	  });
 558	});
-559	
+559
 560	/**
 561	 * Opens the "Linked tag" dropdown and picks the option with the given label.
 562	 */
@@ -3769,6 +3845,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:11:53Z)**_
 570	}
 571
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:11:54Z)**_
@@ -3783,6 +3860,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:12:05Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:12:14Z)**_
@@ -3793,6 +3871,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:12:14Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:12:21Z)**_
@@ -3803,6 +3882,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:12:21Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:12:25Z)**_
@@ -3813,6 +3893,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:12:25Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:12:39Z)**_
@@ -3823,6 +3904,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:12:39Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:12:43Z)**_
@@ -3833,6 +3915,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:12:43Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:12:47Z)**_
@@ -3843,6 +3926,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:12:47Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:12:57Z)**_
@@ -3853,6 +3937,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:12:57Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:13:03Z)**_
@@ -3863,6 +3948,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:13:03Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:13:04Z)**_
@@ -3890,6 +3976,7 @@ Run GoalCard and GoalReport tests
       Tests  54 passed (54)
    Duration  26.73s (transform 15.32s, setup 9.09s, import 29.92s, tests 8.65s, environment 3.68s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:17:11Z)**_
@@ -3905,6 +3992,7 @@ src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find 
 src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding type declarations.
 src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its corresponding type declarations.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:17:18Z)**_
@@ -3970,6 +4058,7 @@ packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx:396:   
 packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx:409:        currentAmount: 0,
 packages\desktop-client\src\components\reports\Overview.tsx:583:                                currentAmount: 0,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:18:43Z)**_
@@ -3988,7 +4077,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:18:44Z)**_
 ```text
 576	                              return;
 577	                            }
-578	
+578
 579	                            if (item === 'goal-card') {
 580	                              // Placeholder amounts until goal progress is calculated
 581	                              onAddWidget<GoalCardWidget>(item, {
@@ -3997,10 +4086,11 @@ _**Agent (claude-opus-5-5 2026-10-06 19:18:44Z)**_
 584	                              });
 585	                              return;
 586	                            }
-587	
+587
 588	                            onAddWidget(item);
 589	                          }}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:18:48Z)**_
@@ -4011,6 +4101,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:18:48Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\loot-core\src\types\models\dashboard.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:18:57Z)**_
@@ -4021,6 +4112,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:18:57Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\Overview.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:18:58Z)**_
@@ -4035,7 +4127,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:18:59Z)**_
 
 ```text
 142	  });
-143	
+143
 144	  describe('progress', () => {
 145	    it.each([
 146	      {
@@ -4095,6 +4187,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:18:59Z)**_
 200	        });
 201
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:00Z)**_
@@ -4106,7 +4199,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:00Z)**_
 ```text
 292	    });
 293	  });
-294	
+294
 295	  describe('renaming', () => {
 296	    it('saves the new name and keeps the goal amounts', async () => {
 297	      const user = userEvent.setup();
@@ -4116,13 +4209,13 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:00Z)**_
 301	        targetAmount: 1000000,
 302	      };
 303	      const { onMetaChange, store } = renderGoalCard({ meta });
-304	
+304
 305	      chooseContextMenuItem(store, 'Vacation', 'rename');
-306	
+306
 307	      const input = screen.getByRole('textbox');
 308	      await user.clear(input);
 309	      await user.type(input, 'Trip to Japan{Enter}');
-310	
+310
 311	      expect(onMetaChange).toHaveBeenCalledWith({
 312	        name: 'Trip to Japan',
 313	        currentAmount: 250000,
@@ -4130,7 +4223,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:00Z)**_
 315	      });
 316	    });
 317	  });
-318	
+318
 319	  describe('setting a goal', () => {
 320	    it('saves the entered amount as the target and keeps the rest of the goal', async () => {
 321	      const user = userEvent.setup();
@@ -4140,13 +4233,13 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:00Z)**_
 325	        targetAmount: 1000000,
 326	      };
 327	      const { onMetaChange, store } = renderGoalCard({ meta });
-328	
+328
 329	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
-330	
+330
 331	      const input = screen.getByLabelText('Goal amount');
 332	      await user.clear(input);
 333	      await user.type(input, '7,500{Enter}');
-334	
+334
 335	      expect(onMetaChange).toHaveBeenCalledWith({
 336	        name: 'Vacation',
 337	        currentAmount: 250000,
@@ -4154,70 +4247,70 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:00Z)**_
 339	      });
 340	      expect(screen.queryByLabelText('Goal amount')).not.toBeInTheDocument();
 341	    });
-342	
+342
 343	    it('sets a goal on a new card that has no target yet', async () => {
 344	      const user = userEvent.setup();
 345	      const { onMetaChange, store } = renderGoalCard({ meta: {} });
-346	
+346
 347	      chooseContextMenuItem(store, 'Personal goal', 'set-goal');
-348	
+348
 349	      const input = screen.getByLabelText('Goal amount');
 350	      await user.clear(input);
 351	      await user.type(input, '1000{Enter}');
-352	
+352
 353	      expect(onMetaChange).toHaveBeenCalledWith({ targetAmount: 100000 });
 354	    });
-355	
+355
 356	    it('does not open the report while the goal is being edited', async () => {
 357	      const user = userEvent.setup();
 358	      const { store } = renderGoalCard({ meta: { name: 'Vacation' } });
-359	
+359
 360	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 361	      await user.click(screen.getByLabelText('Goal amount'));
-362	
+362
 363	      expect(mockNavigate).not.toHaveBeenCalled();
 364	    });
-365	
+365
 366	    it('does not save anything when cancelled', async () => {
 367	      const user = userEvent.setup();
 368	      const { onMetaChange, store } = renderGoalCard({
 369	        meta: { name: 'Vacation', targetAmount: 1000000 },
 370	      });
-371	
+371
 372	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 373	      await user.click(screen.getByRole('button', { name: 'Cancel' }));
-374	
+374
 375	      expect(onMetaChange).not.toHaveBeenCalled();
 376	      expect(screen.queryByLabelText('Goal amount')).not.toBeInTheDocument();
 377	    });
 378	  });
-379	
+379
 380	  describe('linked tag', () => {
 381	    it('shows the linked tag on the card', () => {
 382	      renderGoalCard({ meta: { name: 'Vacation', linkedTag: 'vacation' } });
-383	
+383
 384	      expect(screen.getByText('#vacation')).toBeInTheDocument();
 385	    });
-386	
+386
 387	    it('shows no tag when none is linked', () => {
 388	      renderGoalCard({ meta: { name: 'Vacation' } });
-389	
+389
 390	      expect(screen.queryByText(/^#/)).not.toBeInTheDocument();
 391	    });
-392	
+392
 393	    it('links the chosen tag together with the goal amount', async () => {
 394	      const user = userEvent.setup();
 395	      const { onMetaChange, store } = renderGoalCard({
 396	        meta: { name: 'Vacation', currentAmount: 0, targetAmount: 1000000 },
 397	      });
-398	
+398
 399	      chooseContextMenuItem(store, 'Vacation', 'set-goal');
 400	      const input = screen.getByLabelText('Goal amount');
 401	      await user.clear(input);
 402	      await user.type(input, '2,000');
 403	      await chooseTag(user, '#vacation');
 404	      await user.click(screen.getByRole('button', { name: 'Save' }));
-405	
+405
 406	      expect(onMetaChange).toHaveBeenCalledTimes(1);
 407	      expect(onMetaChange).toHaveBeenCalledWith({
 408	        name: 'Vacation',
@@ -4226,10 +4319,11 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:00Z)**_
 411	        linkedTag: 'vacation',
 412	      });
 413	    });
-414	
+414
 415	    it('unlinks the tag when "No tag" is chosen', async () => {
 416	      const user = userEvent.setup();
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:13Z)**_
@@ -4240,6 +4334,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:13Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:17Z)**_
@@ -4250,6 +4345,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:17Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:20Z)**_
@@ -4260,6 +4356,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:20Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:27Z)**_
@@ -4270,6 +4367,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:27Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:31Z)**_
@@ -4280,6 +4378,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:31Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:34Z)**_
@@ -4290,6 +4389,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:34Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:34Z)**_
@@ -4299,7 +4399,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:34Z)**_
  `./packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx`
 
 ```text
-560	
+560
 561	  describe('saving the widget', () => {
 562	    it('saves the goal amount, tag, filters and time frame', async () => {
 563	      const user = userEvent.setup();
@@ -4317,7 +4417,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:34Z)**_
 575	          '2024-01-01',
 576	        ),
 577	      );
-578	
+578
 579	      const input = screen.getByLabelText('Goal amount');
 580	      await user.clear(input);
 581	      await user.type(input, '7,500{Enter}');
@@ -4325,7 +4425,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:34Z)**_
 583	      await user.click(screen.getByRole('button', { name: 'Add filter' }));
 584	      await user.click(screen.getByRole('button', { name: 'Change dates' }));
 585	      await user.click(screen.getByRole('button', { name: 'Save widget' }));
-586	
+586
 587	      await waitFor(() =>
 588	        expect(updateWidget).toHaveBeenCalledWith({
 589	          id: WIDGET_ID,
@@ -4340,6 +4440,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:34Z)**_
 598	              start: '2025-01-01',
 599	              end: '2025-03-31',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:45Z)**_
@@ -4350,6 +4451,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:45Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:48Z)**_
@@ -4360,6 +4462,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:19:48Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:50Z)**_
@@ -4375,6 +4478,7 @@ Rename test table field and list remaining usages
 ```text
 (PowerShell completed with no output)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:58Z)**_
@@ -4391,6 +4495,7 @@ packages\desktop-client\src\components\reports\reports\GoalCard.tsx:82:  const c
 packages\desktop-client\src\components\reports\reports\GoalCard.tsx:91:      ? Math.min(Math.max(currentAmount / targetAmount, 0), 1)
 packages\desktop-client\src\components\reports\reports\GoalCard.tsx:139:                  {format(currentAmount, 'financial')}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:19:59Z)**_
@@ -4409,6 +4514,7 @@ packages\desktop-client\src\components\reports\reports\GoalReport.tsx
 packages\desktop-client\src\components\reports\reports\GoalCard.tsx
 ai-logs\sprint1\RaccoonSwarm\2026-10-03_claude-code_issue-62-goal-card-widget-scaffold.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:21:14Z)**_
@@ -4424,16 +4530,17 @@ Finished in 198ms on 4 files using 16 threads.
 @actual-app/web typecheck failed, took 11.31s, queued for 0.00s
 @actual-app/core typecheck success, took 15.87s, queued for 1.55s
 success: 2, skipped: 4, pending: 2, aborted: 0, failed: 1
-src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its 
+src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its
 corresponding type declarations.
-src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding 
+src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding
 type declarations.
-src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its 
+src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its
 corresponding type declarations.
  Test Files  2 passed (2)
       Tests  54 passed (54)
    Duration  20.10s (transform 11.53s, setup 6.65s, import 22.03s, tests 6.73s, environment 3.30s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:21:19Z)**_
@@ -4441,11 +4548,13 @@ _**Agent (claude-opus-5-5 2026-10-06 19:21:19Z)**_
 I removed `currentAmount` from the goal widget's settings; the card and report are unaffected. Tests for both pass (54) and lint is clean. `yarn typecheck` still fails, but only on the same unrelated missing `jspdf` modules in `budgetMonthPdf.ts`.
 
 **Why it's safe:**
+
 - Nothing reads the field any more; the card and report both calculate the amount from transactions.
 - Goals saved earlier may still have `currentAmount` stored. It's just an ignored extra value, so those goals load fine. The report page will keep that leftover value when you save it.
 - No data migration is needed.
 
 **What changed:**
+
 - The field is gone from the goal widget type in [dashboard.ts](packages/loot-core/src/types/models/dashboard.ts).
 - New goal widgets no longer start with `currentAmount: 0` ([Overview.tsx](packages/desktop-client/src/components/reports/Overview.tsx)). I also removed the "placeholder amounts until goal progress is calculated" comment there, since progress is now calculated.
 - Tests no longer use the field. Two "keeps the rest of the goal" tests now use `linkedTag` or `conditionsOp` as the extra field that has to survive a save. In the progress test tables, I renamed the field to `total` so it doesn't look like the removed setting.
@@ -4473,6 +4582,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:23:10Z)**_
 ```text
 packages\desktop-client\src\components\reports\ReportOptions.ts:424:      throw new Error('Error loading data into the spreadsheet.');
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:23:17Z)**_
@@ -4485,6 +4595,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:23:17Z)**_
 packages\desktop-client\src\queries\aqlQuery.test.ts
 packages\desktop-client\src\queries\aqlQuery.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:23:18Z)**_
@@ -4496,12 +4607,13 @@ _**Agent (claude-opus-5-5 2026-10-06 19:23:18Z)**_
 ```text
 1	import { send } from '@actual-app/core/platform/client/connection';
 2	import type { Query } from '@actual-app/core/shared/query';
-3	
+3
 4	export async function aqlQuery(query: Query) {
 5	  return send('query', query.serialize());
 6	}
 7
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:23:19Z)**_
@@ -4574,6 +4686,7 @@ packages\desktop-client\src\components\accounts\Balance.test.tsx:18:  useSheetVa
 
 [Showing results with pagination = limit: 60]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:23:31Z)**_
@@ -4581,10 +4694,12 @@ _**Agent (claude-opus-5-5 2026-10-06 19:23:31Z)**_
 The formula and the `useReport` pattern parts are met. "Updating reactively as transactions change" is met only in the same limited way as the other report cards: the total refreshes when the card loads or its settings change, not live while it's on screen.
 
 **What's met:**
+
 - **Formula:** the bar shows the computed total divided by the target, clamped to 0–100%. A target of 0 shows 0%, so there's no divide-by-zero. The tests cover this for both the card and the report.
 - **Same pattern as other cards:** the goal goes through `useReport` + `summarySpreadsheet`, exactly like `SummaryCard`. The total recalculates whenever the dates, filters, and/or setting, or tag change. On the report page that includes edits you haven't saved yet.
 
 **What's not met: it doesn't update live.**
+
 - [useReport.ts](packages/desktop-client/src/components/reports/useReport.ts#L15-L31) only re-runs when its query function changes. `summarySpreadsheet` fetches the total once (through [aqlQuery.ts](packages/desktop-client/src/queries/aqlQuery.ts), which just calls `send('query', …)`) and never subscribes to transaction changes.
 - No report spreadsheet listens for those changes either; only `liveQuery` and the sheet-value hooks do.
 - In practice the total refreshes whenever the card loads, so adding or editing a tagged transaction in an account and then going back to Reports shows the new total.
@@ -4615,9 +4730,9 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 1	// @ts-strict-ignore
 2	import { listen } from '@actual-app/core/platform/client/connection';
 3	import type { Query } from '@actual-app/core/shared/query';
-4	
+4
 5	import { aqlQuery } from './aqlQuery';
-6	
+6
 7	export function liveQuery<TResponse = unknown>(
 8	  query: Query,
 9	  {
@@ -4632,18 +4747,18 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 18	): LiveQuery<TResponse> {
 19	  return LiveQuery.runLiveQuery<TResponse>(query, onData, onError, options);
 20	}
-21	
+21
 22	type Data<TResponse> = TResponse[];
-23	
+23
 24	type Listener<TResponse = unknown> = (
 25	  data: Data<TResponse>,
 26	  previousData: Data<TResponse>,
 27	) => void;
-28	
+28
 29	export type LiveQueryOptions = {
 30	  onlySync?: boolean;
 31	};
-32	
+32
 33	// Subscribe and refetch
 34	export class LiveQuery<TResponse = unknown> {
 35	  private _unsubscribeSyncEvent: () => void | null;
@@ -4653,34 +4768,34 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 39	  private _supportedSyncTypes: Set<'applied' | 'success'>;
 40	  private _query: Query;
 41	  private _onError?: (error: Error) => void;
-42	
+42
 43	  get query() {
 44	    return this._query;
 45	  }
-46	
+46
 47	  get data() {
 48	    return this._data;
 49	  }
-50	
+50
 51	  private set data(data: Data<TResponse>) {
 52	    this._data = data;
 53	  }
-54	
+54
 55	  get isRunning() {
 56	    return this._unsubscribeSyncEvent != null;
 57	  }
-58	
+58
 59	  // Async coordination
 60	  private _inflightRequestId: number | null;
-61	
+61
 62	  protected get inflightRequestId() {
 63	    return this._inflightRequestId;
 64	  }
-65	
+65
 66	  private set inflightRequestId(id: number) {
 67	    this._inflightRequestId = id;
 68	  }
-69	
+69
 70	  constructor(
 71	    query: Query,
 72	    onData: Listener<TResponse>,
@@ -4692,35 +4807,35 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 78	    this._dependencies = null;
 79	    this._listeners = [];
 80	    this._onError = onError;
-81	
+81
 82	    // TODO: error types?
 83	    this._supportedSyncTypes = options.onlySync
 84	      ? new Set(['success'])
 85	      : new Set(['applied', 'success']);
-86	
+86
 87	    if (onData) {
 88	      this.addListener(onData);
 89	    }
 90	  }
-91	
+91
 92	  addListener = (func: Listener<TResponse>) => {
 93	    this._listeners.push(func);
-94	
+94
 95	    return () => {
 96	      this._listeners = this._listeners.filter(l => l !== func);
 97	    };
 98	  };
-99	
+99
 100	  protected onData = (data: Data<TResponse>, prevData: Data<TResponse>) => {
 101	    for (let i = 0; i < this._listeners.length; i++) {
 102	      this._listeners[i](data, prevData);
 103	    }
 104	  };
-105	
+105
 106	  protected onError = (error: Error) => {
 107	    this._onError?.(error);
 108	  };
-109	
+109
 110	  protected onUpdate = (tables: string[]) => {
 111	    // We might not know the dependencies if the first query result
 112	    // hasn't come back yet
@@ -4731,12 +4846,12 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 117	      void this.run();
 118	    }
 119	  };
-120	
+120
 121	  run = () => {
 122	    this.subscribe();
 123	    return this.fetchData(() => aqlQuery(this._query));
 124	  };
-125	
+125
 126	  static runLiveQuery = <TResponse>(
 127	    query: Query,
 128	    onData: Listener<TResponse>,
@@ -4747,7 +4862,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 133	    void liveQuery.run();
 134	    return liveQuery;
 135	  };
-136	
+136
 137	  protected subscribe = () => {
 138	    if (this._unsubscribeSyncEvent == null) {
 139	      this._unsubscribeSyncEvent = listen('sync-event', event => {
@@ -4766,14 +4881,14 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 152	      });
 153	    }
 154	  };
-155	
+155
 156	  unsubscribe = () => {
 157	    if (this._unsubscribeSyncEvent) {
 158	      this._unsubscribeSyncEvent();
 159	      this._unsubscribeSyncEvent = null;
 160	    }
 161	  };
-162	
+162
 163	  protected _optimisticUpdate = (
 164	    updateFn: (data: Data<TResponse>) => Data<TResponse>,
 165	  ) => {
@@ -4781,11 +4896,11 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 167	    this.updateData(updateFn);
 168	    this.onData(this.data, previousData);
 169	  };
-170	
+170
 171	  optimisticUpdate = (dataFunc: (data: Data<TResponse>) => Data<TResponse>) => {
 172	    this._optimisticUpdate(dataFunc);
 173	  };
-174	
+174
 175	  protected updateData = (
 176	    updateFn: (data: Data<TResponse>) => Data<TResponse>,
 177	  ) => {
@@ -4793,6 +4908,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:26Z)**_
 179	  };
 180
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:24:35Z)**_
@@ -4815,6 +4931,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:24:35Z)**_
 250:    mockPublishEvent('sync-event', {
 277:    mockPublishEvent('sync-event', {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:24:36Z)**_
@@ -4829,6 +4946,7 @@ packages\loot-core\src\types\server-events.ts-86-  'undo-event': UndoState;
 packages\loot-core\src\types\server-events.ts-87-  'api-fetch-redirected': ApiFetchRedirectedEvent;
 packages\loot-core\src\types\server-events.ts-88-};
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:24:42Z)**_
@@ -4937,12 +5055,12 @@ export function useGoalTotal({
 }
 
 const SUM_CONTENT: SummaryContent = { type: 'sum' };
-
 ```
 
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\useGoalTotal.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:25:16Z)**_
@@ -4979,6 +5097,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:25:16Z)**_
 44-);
 45-
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:25:22Z)**_
@@ -4993,6 +5112,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:25:42Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\useGoalTotal.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:25:51Z)**_
@@ -5005,6 +5125,7 @@ Lint the goal total hook
 Exit code 1
 packages/desktop-client/src/components/reports/useGoalTotal.ts:76:5: error react-hooks(exhaustive-deps): React Hook useMemo has unnecessary dependency: refreshCount help: Either include it or remove the dependency array.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:25:58Z)**_
@@ -5024,6 +5145,7 @@ packages\desktop-client\src\components\settings\ThemeInstaller.tsx:1
 
 Found 3 total occurrences across 3 files.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:26:04Z)**_
@@ -5041,6 +5163,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:26:04Z)**_
 22-  const query = useMemo(makeQuery, dependencies);
 23-
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:26:07Z)**_
@@ -5057,6 +5180,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:26:08Z)**_
 String:     // new function, which makes `useReport` run the query again.
   }, </tool_use_error>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:26:10Z)**_
@@ -5075,10 +5199,11 @@ _**Agent (claude-opus-5-5 2026-10-06 19:26:10Z)**_
 74	    // `refreshCount` is a dependency only so a transaction change produces a
 75	    // new function, which makes `useReport` run the query again.
 76	  },[start, end, conditions, conditionsOp, linkedTag, locale, refreshCount]);
-77	
+77
 78	  const data = useReport<{ total: number }>('goal', params);
 79
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:26:12Z)**_
@@ -5093,6 +5218,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:26:25Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\useGoalTotal.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:26:45Z)**_
@@ -5103,6 +5229,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:26:45Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\useGoalTotal.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:26:57Z)**_
@@ -5114,6 +5241,7 @@ Format and lint the hook
 ```text
 Finished in 189ms on 1 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:27:01Z)**_
@@ -5128,7 +5256,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:27:01Z)**_
 
 ```text
 1	import React from 'react';
-2	
+2
 3	import type {
 4	  GoalCardWidget,
 5	  RuleConditionEntity,
@@ -5136,7 +5264,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:27:01Z)**_
 7	} from '@actual-app/core/types/models';
 8	import { act, fireEvent, render, screen, within } from '@testing-library/react';
 9	import userEvent from '@testing-library/user-event';
-10	
+10
 11	import { summarySpreadsheet } from '#components/reports/spreadsheets/summary-spreadsheet';
 12	import { useReport } from '#components/reports/useReport';
 13	import type { ContextMenuItem } from '#contextmenu/types';
@@ -5148,9 +5276,9 @@ _**Agent (claude-opus-5-5 2026-10-06 19:27:01Z)**_
 19	} from '#mocks';
 20	import { initServer } from '#mocks/connection';
 21	import { tagQueries } from '#tags/queries';
-22	
+22
 23	import { GoalCard } from './GoalCard';
-24	
+24
 25	vi.mock(
 26	  '@actual-app/core/platform/client/connection',
 27	  () => import('#mocks/connection'),
@@ -5158,6 +5286,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:27:01Z)**_
 29	vi.mock('#hooks/useNavigate');
 30	// The summary spreadsheet queries the backend; stub it so tests can control
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:27:03Z)**_
@@ -5199,6 +5328,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:27:03Z)**_
 267-    });
 268-  });
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:27:19Z)**_
@@ -5209,6 +5339,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:27:19Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:27:29Z)**_
@@ -5219,6 +5350,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:27:29Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:28:08Z)**_
@@ -5234,6 +5366,7 @@ Finished in 209ms on 1 files using 16 threads.
       Tests  58 passed (58)
    Duration  19.59s (transform 10.76s, setup 6.38s, import 21.54s, tests 6.77s, environment 3.14s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:28:11Z)**_
@@ -5250,13 +5383,14 @@ Run repo typecheck
 Exit code 1
 @actual-app/web typecheck failed, took 12.41s, queued for 0.00s
 success: 1, skipped: 6, pending: 2, aborted: 0, failed: 1
-src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its 
+src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its
 corresponding type declarations.
-src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding 
+src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding
 type declarations.
-src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its 
+src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its
 corresponding type declarations.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:28:43Z)**_
@@ -5307,6 +5441,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:09Z)**_
 192:  reportsBlue: 'var(--color-reportsBlue)',
 193:  reportsGreen: 'var(--color-reportsGreen)',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:12Z)**_
@@ -5318,6 +5453,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:12Z)**_
 ```text
 Path does not exist: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\style\themes. Note: your current working directory is C:\Users\reese\SE\actual-budget.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:13Z)**_
@@ -5329,6 +5465,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:13Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:15Z)**_
@@ -5348,6 +5485,7 @@ packages\component-library\src\Themes\midnight.css:165:  --color-warningBackgrou
 packages\component-library\src\Themes\midnight.css:166:  --color-warningText: var(--palette-orange200);
 packages\component-library\src\Themes\midnight.css:216:  --color-reportsGreen: var(--palette-green400);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:16Z)**_
@@ -5359,6 +5497,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:16Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:18Z)**_
@@ -5374,6 +5513,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:18Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:22Z)**_
@@ -5385,6 +5525,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:22Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:24Z)**_
@@ -5396,6 +5537,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:24Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:25Z)**_
@@ -5420,6 +5562,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:25Z)**_
 81:  --palette-purple400: #9446ed;
 82:  --palette-purple500: #8719e0;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:27Z)**_
@@ -5440,6 +5583,7 @@ packages\component-library\src\Themes\midnight.css:169:  --color-warningBorder: 
 packages\component-library\src\Themes\light.css:165:  --color-warningTextLight: var(--palette-orange500);
 packages\component-library\src\Themes\light.css:167:  --color-warningBorder: var(--palette-orange500);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:41Z)**_
@@ -5460,10 +5604,10 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:41Z)**_
 75	    },
 76	    latestTransaction,
 77	  );
-78	
+78
 79	  const targetAmount = meta?.targetAmount ?? 0;
 80	  const linkedTag = meta?.linkedTag;
-81	
+81
 82	  const currentAmount = useGoalTotal({
 83	    start,
 84	    end,
@@ -5477,6 +5621,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:41Z)**_
 92	      : 0;
 93	  const progressPercent = Math.round(progress * 100);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:42Z)**_
@@ -5527,6 +5672,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:42Z)**_
 198	                  style={{
 199	                    width: `${progressPercent}%`,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:33:45Z)**_
@@ -5539,6 +5685,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:33:45Z)**_
 packages\desktop-client\src\components\reports\GoalSettingsEditor.tsx
 packages\desktop-client\src\components\reports\GoalTagSelect.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:34:39Z)**_
@@ -5649,6 +5796,7 @@ export function getGoalProgress(currentAmount: number, targetAmount: number) {
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:34:41Z)**_
@@ -5700,6 +5848,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:34:41Z)**_
 221	}
 222
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:34:55Z)**_
@@ -5710,6 +5859,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:34:55Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:36:46Z)**_
@@ -5720,6 +5870,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:36:46Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:36:56Z)**_
@@ -5730,6 +5881,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:36:56Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:36:57Z)**_
@@ -5743,7 +5895,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:36:58Z)**_
  `./packages/desktop-client/src/components/reports/reports/GoalReport.tsx`
 
 ```text
-148	
+148
 149	  const title = widget?.meta?.name || t('Personal goal');
 150	  // Uses the unsaved editor state so the report previews changes before the
 151	  // widget is saved.
@@ -5759,11 +5911,12 @@ _**Agent (claude-opus-5-5 2026-10-06 19:36:58Z)**_
 161	      ? Math.min(Math.max(currentAmount / targetAmount, 0), 1)
 162	      : 0;
 163	  const progressPercent = Math.round(progress * 100);
-164	
+164
 165	  function notifyMissingWidget() {
 166	    dispatch(
 167	      addNotification({
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:36:59Z)**_
@@ -5777,7 +5930,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:36:59Z)**_
 367	            />
 368	          </View>
 369	        </View>
-370	
+370
 371	        <View>
 372	          <View
 373	            aria-hidden
@@ -5809,6 +5962,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:36:59Z)**_
 399	        </View>
 400
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:37:11Z)**_
@@ -5819,6 +5973,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:37:11Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:37:20Z)**_
@@ -5829,6 +5984,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:37:20Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:37:24Z)**_
@@ -5839,6 +5995,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:37:24Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:37:26Z)**_
@@ -5945,6 +6102,7 @@ describe('getGoalProgress', () => {
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.test.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:38:20Z)**_
@@ -5961,6 +6119,7 @@ packages/desktop-client/src/components/reports/GoalProgress.tsx:58:11: warning j
       Tests  71 passed (71)
    Duration  23.28s (transform 11.27s, setup 8.54s, import 21.59s, tests 7.12s, environment 4.56s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:38:22Z)**_
@@ -5978,6 +6137,7 @@ packages\desktop-client\src\components\reports\GoalProgress.tsx-56-      >
 packages\desktop-client\src\components\reports\GoalProgress.tsx-57-        <Block
 packages\desktop-client\src\components\reports\GoalProgress.tsx:58:          role="status"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:38:26Z)**_
@@ -5993,6 +6153,7 @@ packages\desktop-client\src\components\reports\graphs\BarGraph.tsx:15:import { c
 
 [Showing results with pagination = limit: 3]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:38:39Z)**_
@@ -6003,6 +6164,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:38:39Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:38:44Z)**_
@@ -6013,6 +6175,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:38:44Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:39:46Z)**_
@@ -6028,13 +6191,14 @@ Finished in 182ms on 2 files using 16 threads.
  Test Files  3 passed (3)
       Tests  71 passed (71)
    Duration  23.66s (transform 11.33s, setup 8.54s, import 21.96s, tests 7.22s, environment 4.65s)
-src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its 
+src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its
 corresponding type declarations.
-src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding 
+src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding
 type declarations.
-src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its 
+src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its
 corresponding type declarations.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:39:48Z)**_
@@ -6081,6 +6245,7 @@ Check tracked i18n files and status
 ?? packages/desktop-client/src/components/reports/GoalProgress.tsx
 ?? packages/desktop-client/src/components/reports/useGoalTotal.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:40:15Z)**_
@@ -6125,7 +6290,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:41:47Z)**_
 24	}: GoalProgressProps) {
 25	  const { percent, isComplete } = getGoalProgress(currentAmount, targetAmount);
 26	  const barHeight = size === 'large' ? 16 : 12;
-27	
+27
 28	  return (
 29	    <View>
 30	      <View
@@ -6180,7 +6345,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:41:47Z)**_
 79	    </View>
 80	  );
 81	}
-82	
+82
 83	/**
 84	 * Whole-number percent toward the goal, clamped to 0–100. The goal only
 85	 * counts as complete once the target is actually reached, so an in-progress
@@ -6197,6 +6362,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:41:47Z)**_
 96	}
 97
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:02Z)**_
@@ -6207,6 +6373,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:02Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:17Z)**_
@@ -6217,6 +6384,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:17Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:21Z)**_
@@ -6227,6 +6395,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:21Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:24Z)**_
@@ -6250,6 +6419,7 @@ packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx:363: 
 packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx:369:        expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
 packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx:370:        expect(getComputedStyle(getProgressFill()).width).toBe(`${expected}%`);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:28Z)**_
@@ -6284,7 +6454,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:28Z)**_
 196	      const { container } = renderGoalCard({
 197	        meta: { linkedTag: 'vacation', targetAmount },
 198	      });
-199	
+199
 200	      expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
 201	      expect(getComputedStyle(getProgressFill(container)).width).toBe(
 202	        `${expected}%`,
@@ -6292,6 +6462,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:28Z)**_
 204	    });
 205
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:28Z)**_
@@ -6301,7 +6472,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:28Z)**_
  `./packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx`
 
 ```text
-336	
+336
 337	    it.each([
 338	      {
 339	        label: 'partway to the goal',
@@ -6333,13 +6504,14 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:28Z)**_
 365	        mockTotal(total);
 366	        renderGoalReport({ meta: { linkedTag: 'vacation', targetAmount } });
 367	        await waitForReport();
-368	
+368
 369	        expect(screen.getByText(`${expected}%`)).toBeInTheDocument();
 370	        expect(getComputedStyle(getProgressFill()).width).toBe(`${expected}%`);
 371	      },
 372	    );
 373
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:30Z)**_
@@ -6354,6 +6526,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:35Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:39Z)**_
@@ -6364,6 +6537,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:39Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalCard.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:44Z)**_
@@ -6374,6 +6548,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:44Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:47Z)**_
@@ -6384,6 +6559,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:47Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:47Z)**_
@@ -6393,7 +6569,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:47Z)**_
  `./packages/desktop-client/src/components/reports/GoalProgress.test.tsx`
 
 ```text
-44	
+44
 45	  describe('complete', () => {
 46	    it.each([
 47	      { label: 'reached exactly', currentAmount: 1000000 },
@@ -6402,7 +6578,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:47Z)**_
 50	      'shows a green bar and congratulates the user when the goal is $label',
 51	      ({ currentAmount }) => {
 52	        const { fill } = renderGoalProgress(currentAmount, 1000000);
-53	
+53
 54	        expect(getComputedStyle(fill).backgroundColor).toBe(theme.reportsGreen);
 55	        expect(getComputedStyle(fill).width).toBe('100%');
 56	        expect(screen.getByText('100%')).toBeInTheDocument();
@@ -6412,16 +6588,16 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:47Z)**_
 60	      },
 61	    );
 62	  });
-63	
+63
 64	  it('does not treat a goal with no target as complete', () => {
 65	    const { fill } = renderGoalProgress(50000, 0);
-66	
+66
 67	    expect(screen.getByText('0%')).toBeInTheDocument();
 68	    expect(getComputedStyle(fill).backgroundColor).toBe(theme.warningBorder);
 69	    expect(screen.queryByText(/Congratulations/)).not.toBeInTheDocument();
 70	  });
 71	});
-72	
+72
 73	describe('getGoalProgress', () => {
 74	  it.each([
 75	    { current: 0, target: 1000, percent: 0, isComplete: false },
@@ -6441,6 +6617,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:47Z)**_
 89	});
 90
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:42:58Z)**_
@@ -6451,6 +6628,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:42:58Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:43:02Z)**_
@@ -6461,6 +6639,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:43:02Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:43:04Z)**_
@@ -6471,6 +6650,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:43:04Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalProgress.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:44:01Z)**_
@@ -6486,13 +6666,14 @@ Finished in 195ms on 4 files using 16 threads.
  Test Files  3 passed (3)
       Tests  74 passed (74)
    Duration  24.58s (transform 11.33s, setup 9.00s, import 21.80s, tests 8.12s, environment 5.37s)
-src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its 
+src/components/budget/export/budgetMonthPdf.ts(2,42): error TS2307: Cannot find module 'jspdf-autotable' or its
 corresponding type declarations.
-src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding 
+src/components/budget/export/budgetMonthPdf.ts(52,12): error TS2307: Cannot find module 'jspdf' or its corresponding
 type declarations.
-src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its 
+src/components/budget/export/budgetMonthPdf.ts(53,12): error TS2307: Cannot find module 'jspdf-autotable' or its
 corresponding type declarations.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:44:07Z)**_
@@ -6529,6 +6710,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:50:07Z)**_
 packages\desktop-client\package.json:175:    "jspdf": "^4.2.1",
 packages\desktop-client\package.json:176:    "jspdf-autotable": "^5.0.8",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:50:17Z)**_
@@ -6547,6 +6729,7 @@ False
 False
 False
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:50:21Z)**_
@@ -6561,6 +6744,7 @@ Find the merge that brought in the PDF export
 8e17f9cef Merge pull request #76 from CSCI-435-SE/feat/issue-61-pdf-export-menu
 1735229fe Liam McLemore 2026-10-04 13:31:11 -0400
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:50:29Z)**_
@@ -6568,6 +6752,7 @@ _**Agent (claude-opus-5-5 2026-10-06 19:50:29Z)**_
 Yes, it comes from a teammate's merged PR. But nothing is broken in the code: your local install just hasn't caught up with it, and running `yarn install` from the repo root should fix it.
 
 **Where it came from:**
+
 - `budgetMonthPdf.ts` was added in commit `1735229fe` ("[AI] PDF export: add PDF option to budget Export menu (issue #61)") by Liam McLemore on 2026-10-04.
 - It was merged into `master` through PR #76 (`feat/issue-61-pdf-export-menu`). Your current branch includes it.
 - That PR correctly added `jspdf` and `jspdf-autotable` to [packages/desktop-client/package.json](packages/desktop-client/package.json#L175-L176) and to `yarn.lock`.
@@ -6619,6 +6804,7 @@ yarn.lock dirty after: 0
 True
 True
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 19:55:21Z)**_
@@ -6638,6 +6824,7 @@ desktop-electron typecheck success, took 8.64s, queued for 0.00s
 success: 3, skipped: 7, pending: 0, aborted: 0, failed: 0
 Took a total of 1m 30.03s to complete.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:04:16Z)**_
@@ -6688,6 +6875,7 @@ packages\desktop-client\src\components\mobile\accounts\AllAccountTransactions.ts
 packages\desktop-client\src\components\mobile\accounts\AccountTransactions.tsx
 packages\desktop-client\src\components\banksync\useBankSyncAccountSettings.ts
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:13:41Z)**_
@@ -6698,7 +6886,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:41Z)**_
 
 ```text
 1	import type { NavigateFunction } from 'react-router';
-2	
+2
 3	import * as monthUtils from '@actual-app/core/shared/months';
 4	import type {
 5	  AccountEntity,
@@ -6707,9 +6895,9 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:41Z)**_
 8	  CategoryGroupEntity,
 9	  RuleConditionEntity,
 10	} from '@actual-app/core/types/models';
-11	
+11
 12	import { ReportOptions } from '#components/reports/ReportOptions';
-13	
+13
 14	type showActivityProps = {
 15	  navigate: NavigateFunction;
 16	  categories: { list: CategoryEntity[]; grouped: CategoryGroupEntity[] };
@@ -6726,7 +6914,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:41Z)**_
 27	  uncategorizedId?: 'off_budget' | 'transfer' | 'other' | 'all';
 28	  interval?: string;
 29	};
-30	
+30
 31	export function showActivity({
 32	  navigate,
 33	  categories,
@@ -6776,7 +6964,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:41Z)**_
 77	            value: id,
 78	            type: 'id',
 79	          };
-80	
+80
 81	  const filterConditions = [
 82	    ...filters,
 83	    drilldownFilter,
@@ -6821,7 +7009,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:41Z)**_
 122	        type: 'id',
 123	      },
 124	  ].filter(f => f);
-125	
+125
 126	  void navigate(balanceTypeOp === 'totalBudgeted' ? '/budget' : '/accounts', {
 127	    state:
 128	      balanceTypeOp === 'totalBudgeted'
@@ -6831,6 +7019,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:41Z)**_
 132	}
 133
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:13:43Z)**_
@@ -6853,6 +7042,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:45Z)**_
 649:                  <TransactionList
 754:                      <TransactionListMobile
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
@@ -6863,20 +7053,20 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 
 ```text
 85	  }
-86	
+86
 87	  return <CalendarInner widget={widget} parameters={searchParams} />;
 88	}
-89	
+89
 90	type CalendarInnerProps = {
 91	  widget?: CalendarWidget;
 92	  parameters: URLSearchParams;
 93	};
-94	
+94
 95	function CalendarInner({ widget, parameters }: CalendarInnerProps) {
 96	  const locale = useLocale();
 97	  const { t } = useTranslation();
 98	  const format = useFormat();
-99	
+99
 100	  const [start, setStart] = useState(
 101	    monthUtils.dayFromDate(monthUtils.currentMonth()),
 102	  );
@@ -6885,22 +7075,22 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 105	  const [query, setQuery] = useState<Query | undefined>(undefined);
 106	  const [dirty, setDirty] = useState(false);
 107	  const [latestTransaction, setLatestTransaction] = useState('');
-108	
+108
 109	  const {
 110	    transactions: transactionsGrouped,
 111	    fetchNextPage: loadMoreTransactions,
 112	  } = useTransactions({ query });
-113	
+113
 114	  const allTransactions = useMemo(
 115	    () => ungroupTransactions(transactionsGrouped as TransactionEntity[]),
 116	    [transactionsGrouped],
 117	  );
-118	
+118
 119	  const { data: accounts = [] } = useAccounts();
 120	  const { data: payees = [] } = usePayees();
 121	  const { data: { grouped: categoryGroups } = { grouped: [] } } =
 122	    useCategories();
-123	
+123
 124	  const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
 125	  const firstDayOfWeekIdx = _firstDayOfWeekIdx || '0';
 126	  const {
@@ -6914,11 +7104,11 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 134	    widget?.meta?.conditions,
 135	    widget?.meta?.conditionsOp,
 136	  );
-137	
+137
 138	  useEffect(() => {
 139	    const day = parameters.get('day');
 140	    const month = parameters.get('month');
-141	
+141
 142	    if (day && onApplyFilter) {
 143	      onApplyFilter({
 144	        conditions: [
@@ -6933,7 +7123,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 153	        id: [],
 154	      });
 155	    }
-156	
+156
 157	    if (month && onApplyFilter) {
 158	      onApplyFilter({
 159	        conditions: [
@@ -6952,12 +7142,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 172	      });
 173	    }
 174	  }, [widget?.meta?.conditions, onApplyFilter, parameters]);
-175	
+175
 176	  const params = useMemo(() => {
 177	    if (dirty === true) {
 178	      setDirty(false);
 179	    }
-180	
+180
 181	    return calendarSpreadsheet(
 182	      start,
 183	      end,
@@ -6966,13 +7156,13 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 186	      firstDayOfWeekIdx,
 187	    );
 188	  }, [start, end, conditions, conditionsOp, firstDayOfWeekIdx, dirty]);
-189	
+189
 190	  const [sortField, setSortField] = useState('');
 191	  const [ascDesc, setAscDesc] = useState<'asc' | 'desc'>('desc');
-192	
+192
 193	  useEffect(() => {
 194	    const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
-195	
+195
 196	    send('make-filters-from-conditions', {
 197	      conditions: conditions.filter(cond => !cond.customName),
 198	    })
@@ -6988,20 +7178,20 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 208	            ],
 209	          })
 210	          .select('*');
-211	
+211
 212	        if (sortField) {
 213	          query = query.orderBy({
 214	            [getField(sortField)]: ascDesc,
 215	          });
 216	        }
-217	
+217
 218	        setQuery(query.options({ splits: 'grouped' }));
 219	      })
 220	      .catch((error: unknown) => {
 221	        console.error('Error generating filters:', error);
 222	      });
 223	  }, [start, end, conditions, conditionsOp, sortField, ascDesc]);
-224	
+224
 225	  const [flexAlignment, setFlexAlignment] = useState('center');
 226	  const scrollbarContainer = useRef<HTMLDivElement>(null);
 227	  const ref = useResizeObserver(() => {
@@ -7017,16 +7207,16 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 237	    ref,
 238	    scrollbarContainer,
 239	  ) as Ref<HTMLDivElement>;
-240	
+240
 241	  const data = useReport('calendar', params);
-242	
+242
 243	  const [allMonths, setAllMonths] = useState<
 244	    Array<{
 245	      name: string;
 246	      pretty: string;
 247	    }>
 248	  >([]);
-249	
+249
 250	  useEffect(() => {
 251	    async function run() {
 252	      const earliestTransaction = await send('get-earliest-transaction');
@@ -7035,12 +7225,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 255	          ? earliestTransaction.date
 256	          : monthUtils.currentDay(),
 257	      );
-258	
+258
 259	      const latestTransaction = await send('get-latest-transaction');
 260	      setLatestTransaction(
 261	        latestTransaction ? latestTransaction.date : monthUtils.currentDay(),
 262	      );
-263	
+263
 264	      const currentMonth = monthUtils.currentMonth();
 265	      let earliestMonth = earliestTransaction
 266	        ? monthUtils.monthFromDate(
@@ -7052,12 +7242,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 272	            parseISO(fromDateRepr(latestTransaction.date)),
 273	          )
 274	        : currentMonth;
-275	
+275
 276	      const latestMonth =
 277	        latestTransactionMonth > currentMonth
 278	          ? latestTransactionMonth
 279	          : currentMonth;
-280	
+280
 281	      // Make sure the month selects are at least populates with a
 282	      // year's worth of months. We can undo this when we have fancier
 283	      // date selects.
@@ -7065,7 +7255,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 285	      if (earliestMonth > yearAgo) {
 286	        earliestMonth = yearAgo;
 287	      }
-288	
+288
 289	      const allMonths = monthUtils
 290	        .rangeInclusive(earliestMonth, latestMonth)
 291	        .map(month => ({
@@ -7073,12 +7263,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 293	          pretty: monthUtils.format(month, 'MMMM yyyy', locale),
 294	        }))
 295	        .reverse();
-296	
+296
 297	      setAllMonths(allMonths);
 298	    }
 299	    void run();
 300	  }, [locale]);
-301	
+301
 302	  useEffect(() => {
 303	    if (latestTransaction) {
 304	      const [initialStart, initialEnd, initialMode] = calculateTimeRange(
@@ -7095,7 +7285,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 315	      setMode(initialMode);
 316	    }
 317	  }, [latestTransaction, widget?.meta?.timeFrame]);
-318	
+318
 319	  const dispatch = useDispatch();
 320	  const navigate = useNavigate();
 321	  const { isNarrowWidth } = useResponsive();
@@ -7103,12 +7293,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 323	  const table = useRef<TableHandleRef<TransactionEntity>>(null);
 324	  const dateFormat = useDateFormat();
 325	  const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
-326	
+326
 327	  const onSaveWidgetName = async (newName: string) => {
 328	    if (!widget) {
 329	      throw new Error('No widget that could be saved.');
 330	    }
-331	
+331
 332	    const name = newName || t('Calendar');
 333	    updateDashboardWidgetMutation.mutate({
 334	      widget: {
@@ -7120,9 +7310,10 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 340	      },
 341	    });
 342	  };
-343	
+343
 344	  function onChangeDates(start: string, end: string, mode: TimeFrame['mode']) {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
@@ -7304,7 +7495,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 769	    </Page>
 770	  );
 771	}
-772	
+772
 773	type CalendarWithHeaderProps = {
 774	  calendar: {
 775	    start: Date;
@@ -7328,11 +7519,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:47Z)**_
 793	  conditionsOp: 'and' | 'or';
 794	  format: (value: unknown, type: FormatType) => string;
 795	};
-796	
+796
 797	function CalendarWithHeader({
 798	  calendar,
 799	  onApplyFilter,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
@@ -7354,7 +7546,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 3	import { Trans, useTranslation } from 'react-i18next';
 4	import { useParams, useSearchParams } from 'react-router';
 5	import { animated, config, useSpring } from 'react-spring';
-6	
+6
 7	import { Button } from '@actual-app/components/button';
 8	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 9	import {
@@ -7380,7 +7572,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 29	import { css } from '@emotion/css';
 30	import { useDrag } from '@use-gesture/react';
 31	import { format as formatDate, parseISO } from 'date-fns';
-32	
+32
 33	import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 34	import { FinancialText } from '#components/FinancialText';
 35	import { MobileBackButton } from '#components/mobile/MobileBackButton';
@@ -7419,10 +7611,10 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 68	import { addNotification } from '#notifications/notificationsSlice';
 69	import { useDispatch } from '#redux';
 70	import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
-71	
+71
 72	const CHEVRON_HEIGHT = 42;
 73	const SUMMARY_HEIGHT = 140;
-74	
+74
 75	export function Calendar() {
 76	  const params = useParams();
 77	  const [searchParams] = useSearchParams();
@@ -7430,10 +7622,11 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 79	    id: params.id,
 80	    type: 'calendar-card',
 81	  });
-82	
+82
 83	  if (isPending) {
 84	    return <LoadingIndicator />;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
@@ -7444,7 +7637,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 
 ```text
 1	import { useEffect, useEffectEvent, useState } from 'react';
-2	
+2
 3	import { listen } from '@actual-app/core/platform/client/connection';
 4	import type { Query } from '@actual-app/core/shared/query';
 5	import type { IntegerAmount } from '@actual-app/core/shared/util';
@@ -7455,12 +7648,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 10	  InfiniteData,
 11	  UseInfiniteQueryResult,
 12	} from '@tanstack/react-query';
-13	
+13
 14	import { transactionQueries } from '#transactions';
-15	
+15
 16	// Mirrors the `splits` AQL option from the server
 17	type TransactionSplitsOption = 'all' | 'inline' | 'grouped' | 'none';
-18	
+18
 19	type CalculateRunningBalancesOption =
 20	  | ((
 21	      transactions: readonly TransactionEntity[],
@@ -7468,7 +7661,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 23	      startingBalance?: IntegerAmount,
 24	    ) => Map<TransactionEntity['id'], IntegerAmount>)
 25	  | boolean;
-26	
+26
 27	type UseTransactionsProps = {
 28	  /**
 29	   * The Query class is immutable so it is important to memoize the query object
@@ -7508,7 +7701,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 63	     * @default 0
 64	     */
 65	    startingBalance?: IntegerAmount;
-66	
+66
 67	    /**
 68	     * Whether to refetch transactions when a sync event is emitted.
 69	     * @default true
@@ -7516,7 +7709,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 71	    refetchOnSync?: boolean;
 72	  };
 73	};
-74	
+74
 75	type UseTransactionsResult = UseInfiniteQueryResult<
 76	  InfiniteData<TransactionEntity[]>,
 77	  Error
@@ -7532,7 +7725,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 87	   */
 88	  runningBalances: Map<TransactionEntity['id'], IntegerAmount>;
 89	};
-90	
+90
 91	export function useTransactions({
 92	  query,
 93	  options,
@@ -7543,15 +7736,15 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 98	    startingBalance,
 99	    refetchOnSync = true,
 100	  } = options ?? {};
-101	
+101
 102	  const [runningBalances, setRunningBalances] = useState<
 103	    Map<TransactionEntity['id'], IntegerAmount>
 104	  >(new Map());
-105	
+105
 106	  const queryResult = useInfiniteQuery(
 107	    transactionQueries.aql({ query, pageSize }),
 108	  );
-109	
+109
 110	  const onSyncEvent = useEffectEvent((event: ServerEvents['sync-event']) => {
 111	    if (event.type === 'applied') {
 112	      const tables = event.tables;
@@ -7564,6 +7757,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:13:58Z)**_
 119	      }
 120	    }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:14:02Z)**_
@@ -7638,6 +7832,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:14:02Z)**_
 1035-  }
 1036-}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:14:03Z)**_
@@ -7660,6 +7855,7 @@ packages\desktop-client\src\components\transactions\TransactionsTable.tsx:3021: 
 
 [Showing results with pagination = limit: 10]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:14:16Z)**_
@@ -7689,6 +7885,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:14:18Z)**_
 96-  transactions,
 97-  showRunningBalances,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:14:18Z)**_
@@ -7704,13 +7901,13 @@ _**Agent (claude-opus-5-5 2026-10-06 20:14:18Z)**_
 363	            />
 364	          </View>
 365	        </View>
-366	
+366
 367	        <GoalProgress
 368	          currentAmount={currentAmount}
 369	          targetAmount={targetAmount}
 370	          size="large"
 371	        />
-372	
+372
 373	        {/* Placeholder: will list the transactions matching `conditions`
 374	            over the selected time frame. */}
 375	        <View
@@ -7748,6 +7945,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:14:18Z)**_
 407	}
 408
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:14:22Z)**_
@@ -7765,6 +7963,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:09Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\summary-spreadsheet.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:15:12Z)**_
@@ -7775,6 +7974,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:12Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\spreadsheets\summary-spreadsheet.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:15:14Z)**_
@@ -7789,6 +7989,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:22Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\useGoalTotal.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:15:25Z)**_
@@ -7799,6 +8000,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:25Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\useGoalTotal.ts has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
@@ -7823,13 +8025,13 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
 6	  PayeeEntity,
 7	  RuleConditionEntity,
 8	} from '@actual-app/core/types/models';
-9	
+9
 10	import { aqlQuery } from '#queries/aqlQuery';
-11	
+11
 12	export function fromDateRepr(date: string): string {
 13	  return date.slice(0, 7);
 14	}
-15	
+15
 16	export async function runAll(
 17	  queries: Query[],
 18	  cb: (data) => void,
@@ -7841,7 +8043,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
 24	  );
 25	  cb(data);
 26	}
-27	
+27
 28	export function indexCashFlow<
 29	  T extends { date: string; isTransfer: boolean; amount: number },
 30	>(data: T[]): Record<string, Record<'true' | 'false', number>> {
@@ -7853,12 +8055,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
 36	  });
 37	  return results;
 38	}
-39	
+39
 40	/**
 41	 * Checks if the given conditions have issues
 42	 * (i.e. non-existing category/payee/account being used).
 43	 */
-44	
+44
 45	export function calculateHasWarning(
 46	  conditions: RuleConditionEntity[],
 47	  {
@@ -7874,26 +8076,26 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
 57	  const categoryIds = new Set(categories.map(({ id }) => id));
 58	  const payeeIds = new Set(payees.map(({ id }) => id));
 59	  const accountIds = new Set(accounts.map(({ id }) => id));
-60	
+60
 61	  if (!conditions) {
 62	    return false;
 63	  }
-64	
+64
 65	  for (const cond of conditions) {
 66	    const { field, value, op } = cond;
 67	    const isMultiCondition = Array.isArray(value);
 68	    const isSupportedSingleCondition = ['is', 'isNot'].includes(op);
-69	
+69
 70	    // Regex and other more complicated operations are not supported
 71	    if (!isSupportedSingleCondition && !isMultiCondition) {
 72	      continue;
 73	    }
-74	
+74
 75	    // Empty value.. we can skip
 76	    if (!isMultiCondition && !value) {
 77	      continue;
 78	    }
-79	
+79
 80	    switch (field) {
 81	      case 'account':
 82	        if (isMultiCondition) {
@@ -7902,7 +8104,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
 85	          }
 86	          break;
 87	        }
-88	
+88
 89	        if (!accountIds.has(value)) {
 90	          return true;
 91	        }
@@ -7914,7 +8116,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
 97	          }
 98	          break;
 99	        }
-100	
+100
 101	        if (!payeeIds.has(value)) {
 102	          return true;
 103	        }
@@ -7926,7 +8128,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
 109	          }
 110	          break;
 111	        }
-112	
+112
 113	        if (!categoryIds.has(value)) {
 114	          return true;
 115	        }
@@ -7939,6 +8141,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:37Z)**_
 122	}
 123
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:15:50Z)**_
@@ -7949,6 +8152,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:50Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\util.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:15:50Z)**_
@@ -7969,12 +8173,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:50Z)**_
 1013	    </View>
 1014	  );
 1015	}
-1016	
+1016
 1017	function getField(field?: string) {
 1018	  if (!field) {
 1019	    return 'date';
 1020	  }
-1021	
+1021
 1022	  switch (field) {
 1023	    case 'account':
 1024	      return 'account.name';
@@ -7992,6 +8196,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:50Z)**_
 1036	}
 1037
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:15:59Z)**_
@@ -8002,6 +8207,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:15:59Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\Calendar.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:16:03Z)**_
@@ -8012,6 +8218,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:16:03Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\Calendar.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:16:06Z)**_
@@ -8022,6 +8229,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:16:06Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\Calendar.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:16:10Z)**_
@@ -8288,6 +8496,7 @@ export async function makeGoalTransactionsQuery({
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:16:47Z)**_
@@ -8298,6 +8507,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:16:47Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:16:48Z)**_
@@ -8312,6 +8522,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:16:58Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:17:01Z)**_
@@ -8322,6 +8533,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:17:01Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:17:04Z)**_
@@ -8348,6 +8560,7 @@ packages/desktop-client/src/components/reports/GoalTransactions.tsx:190:35: erro
 packages/desktop-client/src/components/reports/GoalTransactions.tsx:191:39: error eslint(no-empty-function): Unexpected empty function help: Consider removing this function or adding logic to it.
 packages/desktop-client/src/components/reports/GoalTransactions.tsx:192:51: error eslint(no-empty-function): Unexpected empty function help: Consider removing this function or adding logic to it.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:18:18Z)**_
@@ -8363,6 +8576,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:18:24Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:18:21Z)**_
@@ -8394,6 +8608,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:18:21Z)**_
 445-    },
 446-    // TODO: drop these globs as each package becomes strict.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:18:27Z)**_
@@ -8410,6 +8625,7 @@ Replace empty no-ops, re-lint, typecheck
 replaced 11
 Finished in 210ms on 1 files using 16 threads.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:19:21Z)**_
@@ -8438,6 +8654,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:19:22Z)**_
 149:    return JSON.stringify(this.serialize());
 157:  const orderExprs = query.serialize().orderExpressions;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:19:41Z)**_
@@ -8567,12 +8784,12 @@ describe('makeGoalTransactionsQuery', () => {
     expect(query.serialize().orderExpressions).toEqual([]);
   });
 });
-
 ```
 
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.test.ts (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:19:44Z)**_
@@ -8587,6 +8804,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:19:50Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:19:50Z)**_
@@ -8596,7 +8814,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:19:50Z)**_
  `./packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx`
 
 ```text
-460	
+460
 461	      expect(summarySpreadsheet).toHaveBeenLastCalledWith(
 462	        '2025-01-01',
 463	        '2025-03-31',
@@ -8608,40 +8826,41 @@ _**Agent (claude-opus-5-5 2026-10-06 20:19:50Z)**_
 469	      );
 470	    });
 471	  });
-472	
+472
 473	  describe('linked tag', () => {
 474	    it('describes the transactions for the linked tag', async () => {
 475	      renderGoalReport({ meta: { linkedTag: 'vacation' } });
 476	      await waitForReport();
-477	
+477
 478	      expect(screen.getByText(/Transactions tagged/)).toHaveTextContent(
 479	        '#vacation',
 480	      );
 481	    });
-482	
+482
 483	    it('prompts to link a tag when none is linked', async () => {
 484	      renderGoalReport({ meta: {} });
 485	      await waitForReport();
-486	
+486
 487	      expect(screen.getByText(/Link a tag to this goal/)).toBeInTheDocument();
 488	    });
-489	
+489
 490	    it('updates the description when a tag is chosen', async () => {
 491	      const user = userEvent.setup();
 492	      renderGoalReport({ meta: {} });
 493	      await waitForReport();
-494	
+494
 495	      await chooseTag(user, '#emergency');
-496	
+496
 497	      expect(screen.getByText(/Transactions tagged/)).toHaveTextContent(
 498	        '#emergency',
 499	      );
 500	    });
 501	  });
-502	
+502
 503	  describe('date range', () => {
 504	    it('loads the transaction date bounds for the header', async () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:20:03Z)**_
@@ -8652,6 +8871,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:20:03Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\reports\GoalReport.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:21:47Z)**_
@@ -8667,6 +8887,7 @@ Finished in 193ms on 2 files using 16 threads.
       Tests  82 passed (82)
    Duration  86.83s (transform 22.12s, setup 19.65s, import 53.67s, tests 7.67s, environment 69.36s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:21:53Z)**_
@@ -8685,6 +8906,7 @@ success: 3, skipped: 7, pending: 0, aborted: 0, failed: 0
       Tests  251 passed (251)
    Duration  87.04s (transform 23.68s, setup 49.85s, import 65.65s, tests 10.23s, environment 32.38s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:25:02Z)**_
@@ -8692,17 +8914,20 @@ _**Agent (claude-opus-5-5 2026-10-06 20:25:02Z)**_
 The "Matching transactions" section of the Goal report now lists the real transactions instead of the placeholder text. Typecheck passes and all 251 reports tests pass, but I haven't looked at the page in the running app yet. Because it's the app's standard transaction table, the main thing to check is that it gets enough height to show its rows.
 
 **What you'll see**
+
 - With a tag linked, the section shows "Transactions tagged #vacation that count toward this goal." and then the app's normal transaction table.
 - On phones it uses the mobile transaction list, and tapping a transaction opens it.
 - You can sort by clicking a column header; it loads more rows as you scroll, and shows "No matching transactions" when nothing matches.
 - With no tag linked, it still shows the "Link a tag…" prompt.
 
 **It always matches the total**
+
 - The list uses the same three filters as the total: the goal's tag (always required), the stored filters with their and/or setting, and the same date range. Previously the total worked out its dates inside `summarySpreadsheet`; I moved that rule into a shared helper (`getSummaryDateBounds`) so both use it.
 - Like the progress bar, the list follows unsaved changes to the tag, filters, or dates before you click "Save widget".
 - It refreshes by itself when transactions change, because it uses `useTransactions`, which re-queries on transaction changes.
 
 **What changed**
+
 - [GoalTransactions.tsx](packages/desktop-client/src/components/reports/GoalTransactions.tsx) is the new list component, plus the function that builds its query. The table setup is copied from the Calendar report.
 - [GoalReport.tsx](packages/desktop-client/src/components/reports/reports/GoalReport.tsx) replaces the placeholder with the list.
 - [useGoalTotal.ts](packages/desktop-client/src/components/reports/useGoalTotal.ts) now exports the tag filter so the total and the list share it.
@@ -8710,11 +8935,13 @@ The "Matching transactions" section of the Goal report now lists the real transa
 - I moved Calendar's private column-sort helper into the shared [util.ts](packages/desktop-client/src/components/reports/util.ts) so both reports use it. Calendar behaves the same.
 
 **Tests**
+
 - New [GoalTransactions.test.ts](packages/desktop-client/src/components/reports/GoalTransactions.test.ts) checks the query: the tag is always required, the stored filters use and/or, the dates match the total, named custom filters are skipped, and column sorting works.
 - The GoalReport tests now check that the list gets the saved settings and your unsaved edits, and doesn't appear without a tag.
 - The real table isn't rendered in tests, because it needs the full app data setup.
 
 **Things to know**
+
 - The table looks editable, but it is set up exactly like Calendar's, where edits made in the table aren't saved. Opening a transaction on mobile works normally.
 - For split transactions, the list shows the whole split group, the same way Calendar does. The total counts only the split lines themselves. So a split whose parent carries the tag but whose lines don't could show in the list without adding to the total. This should be rare.
 
@@ -8781,14 +9008,14 @@ Pick the row closest to your project. Each example walks through
 launch + first interaction; ignore any trailing "write the skill"
 section - you're using the recipe, not authoring one.
 
-| Project type | Handle | Example |
-|---|---|---|
-| CLI tool | direct invocation, exit code, stdin/stdout | [examples/cli.md](examples/cli.md) |
-| Web server / API | background launch + `curl` smoke | [examples/server.md](examples/server.md) |
-| TUI / interactive terminal | tmux `send-keys` / `capture-pane` | [examples/tui.md](examples/tui.md) |
-| Electron / desktop GUI | Playwright `_electron` REPL under xvfb | [examples/electron.md](examples/electron.md) |
-| Browser-driven | dev server + `chromium-cli` script | [examples/playwright.md](examples/playwright.md) |
-| Library / SDK | import-and-call smoke script at the package boundary | [examples/library.md](examples/library.md) |
+| Project type               | Handle                                               | Example                                          |
+| -------------------------- | ---------------------------------------------------- | ------------------------------------------------ |
+| CLI tool                   | direct invocation, exit code, stdin/stdout           | [examples/cli.md](examples/cli.md)               |
+| Web server / API           | background launch + `curl` smoke                     | [examples/server.md](examples/server.md)         |
+| TUI / interactive terminal | tmux `send-keys` / `capture-pane`                    | [examples/tui.md](examples/tui.md)               |
+| Electron / desktop GUI     | Playwright `_electron` REPL under xvfb               | [examples/electron.md](examples/electron.md)     |
+| Browser-driven             | dev server + `chromium-cli` script                   | [examples/playwright.md](examples/playwright.md) |
+| Library / SDK              | import-and-call smoke script at the package boundary | [examples/library.md](examples/library.md)       |
 
 If nothing fits, start from the closest match and adapt. For a web
 app, [examples/playwright.md](examples/playwright.md) - drive it with
@@ -8813,7 +9040,6 @@ install packages, set env vars, patch config, or write a driver -
 recommend `/run-skill-generator` in your report so that work gets
 captured as a project skill. If it just worked, don't.
 
-
 ## User Request
 
 Start the Actual Budget web app (yarn start from repo root, port 3001), open the demo budget ("Don't use a server" → "View demo"), tag a couple of transactions with #vacation in their notes, add a Goal card on the Reports dashboard linked to the "vacation" tag with a target amount, open the Goal report, and confirm the "Matching transactions" section renders the tagged transactions in a visible table (with real height) and that the total matches. Screenshot the Goal report page.
@@ -8832,6 +9058,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:10Z)**_
 .claude\skills\writing-actual-docs\SKILL.md
 .claude\skills\review-actual-pr\SKILL.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:00Z)**_
@@ -8842,24 +9069,24 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:00Z)**_
 
 ````text
 1	# Example: Browser-driven web app
-2	
+2
 3	You have a dev server that serves HTML to a browser. An agent in a
 4	headless container can't open a browser window - so "run the app" means
 5	launching the dev server, driving a headless Chromium against it, and
 6	producing a screenshot that proves the page rendered.
-7	
+7
 8	Don't write a browser driver. Use `chromium-cli`.
-9	
+9
 10	## Dev server
-11	
+11
 12	Find the dev command (`package.json` `scripts.dev`, `Makefile`,
 13	README), start it in the background, and wait for it to actually serve:
-14	
+14
 15	```bash
 16	npm run dev &   # or yarn dev, pnpm dev, make serve, ./dev.sh
 17	timeout 30 bash -c 'until curl -sf http://localhost:3000 >/dev/null; do sleep 1; done'
 18	```
-19	
+19
 20	Don't `sleep 5` - poll the port. Stop by killing the port's listener
 21	-- `lsof -ti:3000 -sTCP:LISTEN | xargs -r kill` - before relaunching,
 22	or the next run hits `EADDRINUSE`. (`$!` after `npm run dev &` is only
@@ -8867,11 +9094,11 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:00Z)**_
 24	so the port kill is what actually frees it.) Avoid `pkill -f` with a
 25	broad pattern - it can match the agent's own command line and kill the
 26	session.
-27	
+27
 28	## Drive
-29	
+29
 30	`chromium-cli` is a headless-Chromium REPL. Pipe a script to stdin:
-31	
+31
 32	```bash
 33	chromium-cli --session app <<'EOF'
 34	nav http://localhost:3000
@@ -8885,16 +9112,16 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:00Z)**_
 42	console --errors
 43	EOF
 44	```
-45	
+45
 46	Screenshots land in `chromium_cli/sessions/app/screenshots/` (latest
 47	symlinked as `screenshot.png`). That's the whole loop: `nav` ->
 48	`wait-for` the element you need -> act (`click` / `fill` / `type` /
 49	`press`) -> `screenshot` -> `console --errors` to check nothing threw.
 50	Full command reference: `chromium-cli` skill, or `help` at the prompt.
-51	
+51
 52	For iterative debugging, run it under tmux and `send-keys` one command
 53	at a time - same commands, same session.
-54	
+54
 55	**If `chromium-cli` isn't available:** adapt
 56	[electron.md](electron.md)'s REPL driver - the structure and commands
 57	transfer, but it's `_electron`-specific:
@@ -8903,11 +9130,11 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:00Z)**_
 60	`(await app.newContext()).newPage()` then `goto()` your dev URL, and
 61	drop the Electron-only window introspection
 62	(`.windows()`/`.firstWindow()`/the `windows` command).
-63	
+63
 64	## What to put in the skill
-65	
+65
 66	The project-specific bits only. `chromium-cli` handles the mechanics.
-67	
+67
 68	- **Dev command + port + stop.** The exact start line, any env vars it
 69	  needs, and the `kill` to stop it.
 70	- **Auth.** Whatever gets a logged-in session - a `set-cookie` line, a
@@ -8916,9 +9143,9 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:00Z)**_
 73	- **One representative interaction.** Not the whole app - one path that
 74	  proves it's running, ending in a screenshot.
 75	- **App-specific gotchas.** Only the ones you actually hit.
-76	
+76
 77	## Gotchas that recur
-78	
+78
 79	- **React controlled inputs.** `eval el.value = '...'` doesn't fire
 80	  React's onChange. Use `fill` / `type` - they go through Playwright's
 81	  input pipeline.
@@ -8932,6 +9159,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:00Z)**_
 89	  render its shell while every data fetch 500s.
 90
 ````
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:12Z)**_
@@ -8954,6 +9182,7 @@ chromium-1217
 __dirlock
 port3001: True
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:25Z)**_
@@ -8971,6 +9200,7 @@ node.exe
 "C:\Program Files\nodejs\node.exe"  "C:\Users\reese\SE\actual-budget\node_modules\vite\bin\vite.js" "--mode=browser"
 200
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:37Z)**_
@@ -9007,6 +9237,7 @@ packages\desktop-client\e2e\page-models\mobile-edit-notes-modal.ts:24:    await 
 packages\desktop-client\e2e\page-models\reports-page.ts:108:      .getByRole('button', { name: 'Add new widget' })
 packages\desktop-client\e2e\page-models\reports-page.ts:115:      .getByRole('button', { name: 'Add new widget' })
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:40Z)**_
@@ -9017,21 +9248,21 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:40Z)**_
 
 ```text
 1	import type { Locator, Page } from '@playwright/test';
-2	
+2
 3	import { AccountPage } from './account-page';
 4	import { BootstrapPage } from './bootstrap-page';
 5	import { BudgetPage } from './budget-page';
-6	
+6
 7	export class ConfigurationPage {
 8	  readonly page: Page;
 9	  readonly heading: Locator;
-10	
+10
 11	  constructor(page: Page) {
 12	    this.page = page;
-13	
+13
 14	    this.heading = page.getByRole('heading');
 15	  }
-16	
+16
 17	  async createTestFile() {
 18	    await this.page
 19	      .getByRole('button', { name: 'Create test file', exact: true })
@@ -9042,36 +9273,36 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:40Z)**_
 24	    await budgetPage.waitFor();
 25	    return budgetPage;
 26	  }
-27	
+27
 28	  async createDemoFile() {
 29	    await this.page.getByRole('button', { name: 'View demo' }).click();
 30	    const budgetPage = new BudgetPage(this.page);
 31	    await budgetPage.waitFor();
 32	    return budgetPage;
 33	  }
-34	
+34
 35	  async clickOnNoServer() {
 36	    await this.page.getByRole('button', { name: "Don't use a server" }).click();
 37	  }
-38	
+38
 39	  async clickOnStartSyncServer() {
 40	    await this.page.getByRole('button', { name: 'Start' }).click();
 41	    await this.page.waitForURL('**/bootstrap');
 42	    return new BootstrapPage(this.page);
 43	  }
-44	
+44
 45	  async startFresh() {
 46	    await this.page.getByRole('button', { name: 'Start fresh' }).click();
-47	
+47
 48	    const accountPage = new AccountPage(this.page);
 49	    await accountPage.accountName.waitFor();
 50	    return accountPage;
 51	  }
-52	
+52
 53	  async importBudget(type: 'YNAB4' | 'nYNAB' | 'Actual', file: string) {
 54	    const fileChooserPromise = this.page.waitForEvent('filechooser');
 55	    await this.page.getByRole('button', { name: 'Import my budget' }).click();
-56	
+56
 57	    switch (type) {
 58	      case 'YNAB4':
 59	        await this.page
@@ -9083,14 +9314,14 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:40Z)**_
 65	          .getByRole('button', { name: 'Select zip file...' })
 66	          .click();
 67	        break;
-68	
+68
 69	      case 'nYNAB':
 70	        await this.page
 71	          .getByRole('button', { name: 'nYNAB The newer web app' })
 72	          .click();
 73	        await this.page.getByRole('button', { name: 'Select file...' }).click();
 74	        break;
-75	
+75
 76	      case 'Actual':
 77	        await this.page
 78	          .getByRole('button', {
@@ -9099,19 +9330,20 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:40Z)**_
 81	          .click();
 82	        await this.page.getByRole('button', { name: 'Select file...' }).click();
 83	        break;
-84	
+84
 85	      default:
 86	        throw new Error(`Unrecognized import type: ${String(type)}`);
 87	    }
-88	
+88
 89	    const fileChooser = await fileChooserPromise;
 90	    await fileChooser.setFiles(file);
-91	
+91
 92	    return new BudgetPage(this.page);
 93	  }
 94	}
 95
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
@@ -9131,14 +9363,14 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 102	      .getByRole('button', { name: source })
 103	      .waitFor({ state: 'visible' });
 104	  }
-105	
+105
 106	  async addWidget(widgetName: string) {
 107	    await this.pageContent
 108	      .getByRole('button', { name: 'Add new widget' })
 109	      .click();
 110	    await this.page.getByRole('button', { name: widgetName }).click();
 111	  }
-112	
+112
 113	  async goToCustomReportPage() {
 114	    await this.pageContent
 115	      .getByRole('button', { name: 'Add new widget' })
@@ -9146,14 +9378,14 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 117	    await this.page.getByRole('button', { name: 'New custom report' }).click();
 118	    return new CustomReportPage(this.page);
 119	  }
-120	
+120
 121	  async getAvailableReportList() {
 122	    return this.pageContent
 123	      .getByRole('button')
 124	      .getByRole('heading')
 125	      .allTextContents();
 126	  }
-127	
+127
 128	  async rightClickReportCard(title: string | RegExp) {
 129	    await this.pageContent
 130	      .getByRole('button', { name: title })
@@ -9162,6 +9394,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 133	}
 134
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
@@ -9177,14 +9410,14 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 143	   */
 144	  getNthTransaction(index: number) {
 145	    const row = this.transactionTableRow.nth(index);
-146	
+146
 147	    return this._getTransactionDetails(row);
 148	  }
-149	
+149
 150	  getEnteredTransaction() {
 151	    return this._getTransactionDetails(this.newTransactionRow);
 152	  }
-153	
+153
 154	  _getTransactionDetails(row: Locator) {
 155	    return {
 156	      account: row.getByTestId('account'),
@@ -9195,12 +9428,12 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 161	      credit: row.getByTestId('credit'),
 162	    };
 163	  }
-164	
+164
 165	  async clickSelectAction(action: string | RegExp) {
 166	    await this.selectButton.click();
 167	    await this.selectTooltip.getByRole('button', { name: action }).click();
 168	  }
-169	
+169
 170	  /**
 171	   * Open the modal for closing the account.
 172	   */
@@ -9209,17 +9442,17 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 175	    await this.page.getByRole('button', { name: 'Close Account' }).click();
 176	    return new CloseAccountModal(this.page.getByTestId('close-account-modal'));
 177	  }
-178	
+178
 179	  /**
 180	   * Open the filtering popover.
 181	   */
 182	  async filterBy(field: string | RegExp) {
 183	    await this.filterButton.click();
 184	    await this.filterSelectTooltip.getByRole('button', { name: field }).click();
-185	
+185
 186	    return new FilterTooltip(this.page.getByTestId('filters-menu-tooltip'));
 187	  }
-188	
+188
 189	  /**
 190	   * Filter to a specific note
 191	   */
@@ -9228,7 +9461,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 194	    await this.page.keyboard.type(note);
 195	    await filterTooltip.applyButton.click();
 196	  }
-197	
+197
 198	  /**
 199	   * Remove the nth filter
 200	   */
@@ -9238,7 +9471,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 204	      .nth(idx)
 205	      .click();
 206	  }
-207	
+207
 208	  async _fillTransactionFields(
 209	    transactionRow: Locator,
 210	    transaction: TransactionEntry,
@@ -9251,7 +9484,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 217	      await debitInput.pressSequentially(transaction.debit);
 218	      await this.page.keyboard.press('Tab');
 219	    }
-220	
+220
 221	    if (transaction.credit) {
 222	      const creditCell = transactionRow.getByTestId('credit');
 223	      await creditCell.click();
@@ -9260,7 +9493,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 226	      await creditInput.pressSequentially(transaction.credit);
 227	      await this.page.keyboard.press('Tab');
 228	    }
-229	
+229
 230	    if (transaction.account) {
 231	      const accountCell = transactionRow.getByTestId('account');
 232	      await accountCell.click();
@@ -9269,7 +9502,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 235	      await accountInput.pressSequentially(transaction.account);
 236	      await this.page.keyboard.press('Tab');
 237	    }
-238	
+238
 239	    if (transaction.payee) {
 240	      const payeeCell = transactionRow.getByTestId('payee');
 241	      await payeeCell.click();
@@ -9278,7 +9511,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 244	      await payeeInput.pressSequentially(transaction.payee);
 245	      await this.page.keyboard.press('Tab');
 246	    }
-247	
+247
 248	    if (transaction.notes) {
 249	      const notesCell = transactionRow.getByTestId('notes');
 250	      await notesCell.click();
@@ -9287,11 +9520,11 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 253	      await notesInput.pressSequentially(transaction.notes);
 254	      await this.page.keyboard.press('Tab');
 255	    }
-256	
+256
 257	    if (transaction.category) {
 258	      const categoryCell = transactionRow.getByTestId('category');
 259	      await categoryCell.click();
-260	
+260
 261	      if (transaction.category === 'split') {
 262	        await this.page.getByTestId('split-transaction-button').click();
 263	      } else {
@@ -9302,6 +9535,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:41Z)**_
 268	      }
 269	    }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
@@ -9312,9 +9546,9 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
 
 ```text
 1	import type { Locator, Page } from '@playwright/test';
-2	
+2
 3	import { CloseAccountModal } from './close-account-modal';
-4	
+4
 5	type TransactionEntry = {
 6	  debit?: string;
 7	  credit?: string;
@@ -9323,7 +9557,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
 10	  notes?: string;
 11	  category?: string;
 12	};
-13	
+13
 14	export class AccountPage {
 15	  readonly page: Page;
 16	  readonly accountName: Locator;
@@ -9342,10 +9576,10 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
 29	  readonly sidebarAllAccountsBalance: Locator;
 30	  readonly sidebarOnBudgetBalance: Locator;
 31	  readonly sidebarOffBudgetBalance: Locator;
-32	
+32
 33	  constructor(page: Page) {
 34	    this.page = page;
-35	
+35
 36	    this.accountName = this.page.getByTestId('account-name');
 37	    this.accountBalance = this.page.getByTestId('account-balance');
 38	    this.addNewTransactionButton = this.page.getByRole('button', {
@@ -9361,16 +9595,16 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
 48	    this.accountMenuButton = this.page.getByRole('button', {
 49	      name: 'Account menu',
 50	    });
-51	
+51
 52	    this.transactionTable = this.page.getByTestId('transaction-table');
 53	    this.transactionTableRow = this.transactionTable.getByTestId('row');
-54	
+54
 55	    this.filterButton = this.page.getByRole('button', { name: 'Filter' });
 56	    this.filterSelectTooltip = this.page.getByTestId('filters-select-tooltip');
-57	
+57
 58	    this.selectButton = this.page.getByTestId('transactions-select-button');
 59	    this.selectTooltip = this.page.getByTestId('transactions-select-tooltip');
-60	
+60
 61	    this.sidebarAllAccountsBalance = this.page.getByTestId(
 62	      'sidebar-all-accounts-balance',
 63	    );
@@ -9381,11 +9615,11 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
 68	      'sidebar-off-budget-balance',
 69	    );
 70	  }
-71	
+71
 72	  async waitFor(...options: Parameters<Locator['waitFor']>) {
 73	    await this.transactionTable.waitFor(...options);
 74	  }
-75	
+75
 76	  /**
 77	   * Enter details of a transaction
 78	   */
@@ -9393,7 +9627,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
 80	    await this.addNewTransactionButton.click();
 81	    await this._fillTransactionFields(this.newTransactionRow, transaction);
 82	  }
-83	
+83
 84	  /**
 85	   * Finish adding a transaction
 86	   */
@@ -9401,7 +9635,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
 88	    await this.addTransactionButton.click();
 89	    await this.cancelTransactionButton.click();
 90	  }
-91	
+91
 92	  /**
 93	   * Create a single transaction
 94	   */
@@ -9409,9 +9643,10 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:44Z)**_
 96	    await this.enterSingleTransaction(transaction);
 97	    await this.addEnteredTransaction();
 98	  }
-99	
+99
 100	  /**
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:45Z)**_
@@ -9436,6 +9671,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:45Z)**_
 
 [Showing results with pagination = limit: 12]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:48Z)**_
@@ -9470,6 +9706,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:49Z)**_
 623	                                ]
 624	                              : []),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:26:51Z)**_
@@ -9482,6 +9719,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:26:51Z)**_
 packages\desktop-client\e2e\page-models\mobile-bank-sync-page.ts:10:    this.searchBox = page.getByPlaceholder(/Filter accounts/i);
 packages\desktop-client\e2e\transactions.mobile.test.ts:82:  test('creates a transaction from `/accounts/:id` page', async () => {
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:27:02Z)**_
@@ -9509,7 +9747,9 @@ const shot = (page, name) =>
 
 (async () => {
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  const page = await browser.newPage({
+    viewport: { width: 1440, height: 1000 },
+  });
   const errors = [];
   page.on('console', msg => msg.type() === 'error' && errors.push(msg.text()));
   page.on('pageerror', err => errors.push(String(err)));
@@ -9527,7 +9767,10 @@ const shot = (page, name) =>
     console.log('demo budget loaded');
 
     // 2. Two tagged transactions dated today in the first on-budget account
-    await page.getByRole('link', { name: /Bank of America/ }).first().click();
+    await page
+      .getByRole('link', { name: /Bank of America/ })
+      .first()
+      .click();
     await page.getByTestId('transaction-table').waitFor();
     const rows = [
       { debit: '50.00', payee: 'Airline', notes: '#vacation flight' },
@@ -9591,27 +9834,39 @@ const shot = (page, name) =>
       .first()
       .evaluate(el => el.parentElement?.parentElement?.innerText ?? '');
     const percent = await page.locator('text=/^\\d+%$/').first().innerText();
-    console.log(JSON.stringify({ tableBox: box, rowCount: count, rowText, header, percent }, null, 2));
+    console.log(
+      JSON.stringify(
+        { tableBox: box, rowCount: count, rowText, header, percent },
+        null,
+        2,
+      ),
+    );
 
     // 6. Back to the dashboard to see the card
     await page.getByRole('link', { name: 'Reports' }).click();
-    await page.getByRole('heading', { name: 'Personal goal' }).first().waitFor();
+    await page
+      .getByRole('heading', { name: 'Personal goal' })
+      .first()
+      .waitFor();
     await page.waitForTimeout(1500);
     await shot(page, '3-dashboard-card');
   } catch (err) {
     console.error('FAILED:', err.message);
     await shot(page, 'failure').catch(() => undefined);
   } finally {
-    console.log('console errors:', JSON.stringify(errors.slice(0, 10), null, 2));
+    console.log(
+      'console errors:',
+      JSON.stringify(errors.slice(0, 10), null, 2),
+    );
     await browser.close();
   }
 })();
-
 ```
 
 ```text
 File created successfully at: C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\goal-report-check.cjs (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:27:32Z)**_
@@ -9628,7 +9883,7 @@ At line:1 char:302
 +                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (node:internal/process/promises:324:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
- 
+
     triggerUncaughtException(err, true /* fromPromise */);
     ^
 browserType.launch: Executable doesn't exist at C:\Users\reese\AppData\Local\ms-playwright\chromium_headless_shell-1217
@@ -9649,6 +9904,7 @@ ratchpad\goal-report-check.cjs:12:34
 }
 Node.js v26.8.1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:27:34Z)**_
@@ -9663,6 +9919,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:27:37Z)**_
 ```text
 The file C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\goal-report-check.cjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:27:58Z)**_
@@ -9679,10 +9936,10 @@ At line:1 char:302
 +                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (node:internal/process/promises:324:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
- 
+
     triggerUncaughtException(err, true /* fromPromise */);
     ^
-browserType.launch: Executable doesn't exist at 
+browserType.launch: Executable doesn't exist at
 C:\Users\reese\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe
 ╔════════════════════════════════════════════════════════════╗
 ║ Looks like Playwright was just installed or updated.       ║
@@ -9700,6 +9957,7 @@ ratchpad\goal-report-check.cjs:14:34
 }
 Node.js v26.8.1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:28:01Z)**_
@@ -9717,6 +9975,7 @@ chrome-win64
 edge: True
 chrome: True
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:28:09Z)**_
@@ -9731,6 +9990,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:28:12Z)**_
 ```text
 The file C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\goal-report-check.cjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:29:54Z)**_
@@ -9748,7 +10008,7 @@ At line:1 char:302
 +                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (FAILED: locator...000ms exceeded.:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
- 
+
 Call log:
   - waiting for getByRole('heading', { name: 'Personal goal' }).first() to be visible**
 console errors: [
@@ -9757,6 +10017,7 @@ console errors: [
   "<%s> cannot contain a nested %s.\nSee this log for the ancestor stack trace. button <button>"
 ]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:29:58Z)**_
@@ -9785,6 +10046,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:30:05Z)**_
 ```text
 The file C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\goal-report-check.cjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:30:08Z)**_
@@ -9795,6 +10057,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:30:08Z)**_
 ```text
 The file C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\goal-report-check.cjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:30:10Z)**_
@@ -9805,6 +10068,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:30:10Z)**_
 ```text
 The file C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\goal-report-check.cjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:30:12Z)**_
@@ -9819,6 +10083,7 @@ _**Agent (claude-opus-5-5 2026-10-06 20:30:15Z)**_
 ```text
 The file C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\goal-report-check.cjs has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:31:57Z)**_
@@ -9837,7 +10102,7 @@ At line:1 char:302
 +                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (FAILED: locator...000ms exceeded.:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
- 
+
 Call log:
   - waiting for getByRole('menu').getByText('#vacation')**
 console errors: [
@@ -9846,6 +10111,7 @@ console errors: [
   "<%s> cannot contain a nested %s. See this log for the ancestor stack trace. button <button>"
 ]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:31:59Z)**_
@@ -9914,6 +10180,7 @@ console errors: [
   "<%s> cannot contain a nested %s. See this log for the ancestor stack trace. button <button>"
 ]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 20:32:37Z)**_
@@ -9951,6 +10218,7 @@ The "Matching transactions" list shows up properly in the running app and agrees
 ![Goal report](C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\2-goal-report.png)
 
 **What I checked** (demo budget, goal linked to `#entertainment`, target 100.00, October 2026):
+
 - **The table is visible:** it renders full width and about 570 px tall, with 11 rows and the usual columns (Date, Account, Payee, Notes, Category, Payment, Deposit).
 - **The total matches the list:** the counted rows add up to 92.59 + 4.61 + 1.53 + 0.24 + 2.48 = 101.45, and the header shows **−101.45 of 100.00**.
 - **Split transactions behave as I described earlier:** the list shows the whole split, and lines without the tag appear greyed out and aren't added to the total.
@@ -9958,6 +10226,7 @@ The "Matching transactions" list shows up properly in the running app and agrees
 - **No new errors:** the only console errors are existing React development warnings from the Calendar card.
 
 **Two things you might not expect**
+
 - **Spending goals show 0%.** Spending is negative, so this goal sits at 0% (yellow) even though 101.45 of a 100.00 target has been spent. That follows from the earlier choice to use the signed total. If spending goals should count up, the progress needs to use the absolute value.
 - **A brand-new tag can't be linked right away.** I put `#vacation` in a transaction's notes, but it didn't appear in the "Linked tag" dropdown, which only lists tags already saved in the budget. That dropdown belongs to the existing tag-select work, not this change.
 
@@ -9990,6 +10259,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:13Z)**_
 659:      // Build a reorderable list that excludes child and preview/scheduled transactions
 661:        t => !t.is_child && !isPreviewId(t.id),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:14Z)**_
@@ -10003,6 +10273,7 @@ packages\desktop-client\src\components\transactions\TransactionsTable.tsx:79
 
 Found 79 total occurrences across 1 file.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:16Z)**_
@@ -10046,6 +10317,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:16Z)**_
 3453:            newNavigator.onEdit(null);
 3455:            tableNavigator.onEdit(null);
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:23Z)**_
@@ -10095,6 +10367,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:24Z)**_
 1238:export type TableNavigator<T extends TableItem> = {
 1245:export function useTableNavigator<T extends TableItem>(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
@@ -10132,9 +10405,9 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 185	}: CellProps) {
 186	  const mouseCoords = useRef(null);
 187	  const viewRef = useRef(null);
-188	
+188
 189	  useProperFocus(viewRef, focused !== undefined ? focused : exposed);
-190	
+190
 191	  const widthStyle: CSSProperties =
 192	    width === 'flex' ? { flex: 1, flexBasis: 0 } : { width };
 193	  const cellStyle: CSSProperties = {
@@ -10146,7 +10419,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 199	    borderColor: theme.tableBorder,
 200	    alignItems,
 201	  };
-202	
+202
 203	  const conditionalPrivacyFilter = useMemo(
 204	    () => (
 205	      <ConditionalPrivacyFilter
@@ -10214,9 +10487,9 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 267	      formatter,
 268	    ],
 269	  );
-270	
+270
 271	  const mergedRef = useMergedRefs(viewRef, viewProps.ref, viewProps.innerRef);
-272	
+272
 273	  return (
 274	    <View
 275	      style={{ ...widthStyle, ...cellStyle, ...style }}
@@ -10228,7 +10501,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 281	    </View>
 282	  );
 283	}
-284	
+284
 285	type RowProps = ComponentProps<typeof View> & {
 286	  inset?: number;
 287	  collapsed?: boolean;
@@ -10240,6 +10513,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 293	  return (
 294	    <View
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
@@ -10252,7 +10526,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 785	    </Cell>
 786	  );
 787	}
-788	
+788
 789	type TableHeaderProps = Omit<ComponentProps<typeof Row>, 'headers'> & {
 790	  headers?: Array<ComponentProps<typeof Cell>>;
 791	};
@@ -10296,14 +10570,14 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 829	    </View>
 830	  );
 831	}
-832	
+832
 833	type SelectedItemsButtonProps<Name extends string> = {
 834	  id: string;
 835	  name: ((count: number) => string) | string;
 836	  items: MenuItem<Name>[];
 837	  onSelect: (name: Name, items: string[]) => void;
 838	};
-839	
+839
 840	export function SelectedItemsButton<Name extends string>({
 841	  id,
 842	  name,
@@ -10313,14 +10587,14 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 846	  const selectedItems = useSelectedItems();
 847	  const [menuOpen, setMenuOpen] = useState(false);
 848	  const triggerRef = useRef(null);
-849	
+849
 850	  if (selectedItems.size === 0) {
 851	    return null;
 852	  }
-853	
+853
 854	  const buttonLabel =
 855	    typeof name === 'function' ? name(selectedItems.size) : name;
-856	
+856
 857	  return (
 858	    <View style={{ flexShrink: 0 }}>
 859	      <Button
@@ -10337,7 +10611,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 870	        />
 871	        {buttonLabel}
 872	      </Button>
-873	
+873
 874	      <Popover
 875	        triggerRef={triggerRef}
 876	        style={{
@@ -10360,13 +10634,13 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 893	    </View>
 894	  );
 895	}
-896	
+896
 897	const rowStyle: CSSProperties = {
 898	  position: 'absolute',
 899	  willChange: 'transform',
 900	  width: '100%',
 901	};
-902	
+902
 903	export type TableHandleRef<T extends TableItem = TableItem> = {
 904	  scrollTo: (id: T['id'], alignment?: string) => void;
 905	  scrollToTop: () => void;
@@ -10377,12 +10651,12 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 910	  unanchor(): void;
 911	  isAnchored(): boolean;
 912	};
-913	
+913
 914	type TableWithNavigatorProps<T extends TableItem = TableItem> =
 915	  TableProps<T> & {
 916	    fields: string[] | ((item?: T) => string[]);
 917	  };
-918	
+918
 919	export function TableWithNavigator<T extends TableItem = TableItem>({
 920	  fields,
 921	  ...props
@@ -10390,9 +10664,9 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 923	  const navigator = useTableNavigator(props.items, fields);
 924	  return <Table {...props} navigator={navigator} />;
 925	}
-926	
+926
 927	type TableItem = { id: number | string };
-928	
+928
 929	export type TableProps<T extends TableItem = TableItem> = {
 930	  items: T[];
 931	  count?: number;
@@ -10420,7 +10694,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 953	  isSelected?: (id: T['id']) => boolean;
 954	  saveScrollWidth?: (parent, child) => void;
 955	};
-956	
+956
 957	export const Table = forwardRef(
 958	  (
 959	    {
@@ -10430,6 +10704,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:26Z)**_
 963	      contentHeader,
 964	      loading,
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:37Z)**_
@@ -10459,6 +10734,7 @@ packages\desktop-client\src\components\transactions\TransactionsTable.tsx:2017: 
 packages\desktop-client\src\components\modals\NotesModal.tsx:16:export function NotesModal({ id, name, onSave }: NotesModalProps) {
 packages\desktop-client\src\components\modals\UnmigrateBudgetAutomationsModal.tsx:25:function sanitizePercentageCategoriesForNotes(
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:40Z)**_
@@ -10501,6 +10777,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:40Z)**_
 
 [Showing results with pagination = limit: 30]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:46Z)**_
@@ -10519,6 +10796,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:53Z)**_
 ```text
 packages\desktop-client\src\notes\NotesTagFormatter.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:46Z)**_
@@ -10542,7 +10820,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:46Z)**_
 1995	  useEffect(() => {
 1996	    setInputValue(note);
 1997	  }, [note, setInputValue]);
-1998	
+1998
 1999	  function onKeyDown(e: KeyboardEvent) {
 2000	    if (e.key === 'Enter' || e.key === 'Tab') {
 2001	      onUpdate(inputValue);
@@ -10550,9 +10828,9 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:46Z)**_
 2003	      setInputValue(note);
 2004	    }
 2005	  }
-2006	
+2006
 2007	  const displayedNote = note || scheduleNote || '';
-2008	
+2008
 2009	  return (
 2010	    <CustomCell
 2011	      innerRef={cellRef}
@@ -10574,6 +10852,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:46Z)**_
 2027	        <TagAutocomplete
 2028	          inputValue={inputValue}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:54Z)**_
@@ -10584,28 +10863,28 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:54Z)**_
 
 ```text
 1	import React, { Fragment } from 'react';
-2	
+2
 3	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-4	
+4
 5	import { DesktopLinkedNotes } from './DesktopLinkedNotes';
 6	import { DesktopTaggedNotes } from './DesktopTaggedNotes';
 7	import { parseNotes } from './linkParser';
 8	import { MobileLinkedNotes } from './MobileLinkedNotes';
 9	import { MobileTaggedNotes } from './MobileTaggedNotes';
-10	
+10
 11	type NotesTagFormatterProps = {
 12	  notes: string;
 13	  onNotesTagClick?: (tag: string) => void;
 14	};
-15	
+15
 16	export function NotesTagFormatter({
 17	  notes,
 18	  onNotesTagClick,
 19	}: NotesTagFormatterProps) {
 20	  const { isNarrowWidth } = useResponsive();
-21	
+21
 22	  const segments = parseNotes(notes);
-23	
+23
 24	  return (
 25	    <>
 26	      {segments.map((segment, index) => {
@@ -10617,11 +10896,11 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:54Z)**_
 32	          (nextSegment?.type === 'text' && /^\s/.test(nextSegment.content))
 33	            ? ''
 34	            : ' ';
-35	
+35
 36	        switch (segment.type) {
 37	          case 'text':
 38	            return <Fragment key={index}>{segment.content}</Fragment>;
-39	
+39
 40	          case 'tag':
 41	            if (isNarrowWidth) {
 42	              return (
@@ -10642,7 +10921,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:54Z)**_
 57	                separator={separator}
 58	              />
 59	            );
-60	
+60
 61	          case 'link':
 62	            if (isNarrowWidth) {
 63	              return (
@@ -10664,7 +10943,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:54Z)**_
 79	                isFilePath={segment.isFilePath}
 80	              />
 81	            );
-82	
+82
 83	          default:
 84	            return null;
 85	        }
@@ -10674,6 +10953,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:28:54Z)**_
 89	}
 90
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:28:57Z)**_
@@ -10689,6 +10969,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:02Z)**_
 ```text
 packages\desktop-client\src\notes\DesktopTaggedNotes.tsx
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:03Z)**_
@@ -10699,19 +10980,19 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:03Z)**_
 
 ```text
 1	import React from 'react';
-2	
+2
 3	import { Button } from '@actual-app/components/button';
 4	import { View } from '@actual-app/components/view';
-5	
+5
 6	import { useTagCSS } from '#hooks/useTagCSS';
-7	
+7
 8	type DesktopTaggedNotesProps = {
 9	  content: string;
 10	  onPress?: (content: string) => void;
 11	  tag: string;
 12	  separator: string;
 13	};
-14	
+14
 15	export function DesktopTaggedNotes({
 16	  content,
 17	  onPress,
@@ -10736,6 +11017,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:03Z)**_
 36	}
 37
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:08Z)**_
@@ -10821,6 +11103,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:09Z)**_
 227-  }
 228-
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:10Z)**_
@@ -10832,6 +11115,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:10Z)**_
 ```text
 97:    "#notes/*": "./src/notes/*.tsx",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:15Z)**_
@@ -10843,6 +11127,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:15Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:22Z)**_
@@ -10888,7 +11173,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:23Z)**_
 986	        getNavigatorProps: props => props,
 987	      };
 988	    }
-989	
+989
 990	    const { onEdit, editingId, focusedField, getNavigatorProps } = navigator;
 991	    const list = useRef(null);
 992	    const listContainerInnerRef = useRef<HTMLDivElement>(null);
@@ -10896,7 +11181,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:23Z)**_
 994	    const scrollContainer = useRef(null);
 995	    const initialScrollTo = useRef(null);
 996	    const listInitialized = useRef(false);
-997	
+997
 998	    useImperativeHandle(ref, () => ({
 999	      scrollTo: (id, alignment = 'smart') => {
 1000	        const index = items.findIndex(item => item.id === id);
@@ -10910,11 +11195,11 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:23Z)**_
 1008	          }
 1009	        }
 1010	      },
-1011	
+1011
 1012	      scrollToTop: () => {
 1013	        list.current?.scrollTo(0);
 1014	      },
-1015	
+1015
 1016	      getScrolledItem: () => {
 1017	        if (scrollContainer.current) {
 1018	          const offset = scrollContainer.current.scrollTop;
@@ -10923,33 +11208,33 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:23Z)**_
 1021	        }
 1022	        return 0;
 1023	      },
-1024	
+1024
 1025	      setRowAnimation: flag => {
 1026	        list.current?.setRowAnimation(flag);
 1027	      },
-1028	
+1028
 1029	      edit(id, field, shouldScroll) {
 1030	        onEdit(id, field);
-1031	
+1031
 1032	        if (id && shouldScroll) {
 1033	          // @ts-expect-error this should not be possible
 1034	          ref.scrollTo(id);
 1035	        }
 1036	      },
-1037	
+1037
 1038	      anchor() {
 1039	        list.current?.anchor();
 1040	      },
-1041	
+1041
 1042	      unanchor() {
 1043	        list.current?.unanchor();
 1044	      },
-1045	
+1045
 1046	      isAnchored() {
 1047	        return list.current && list.current.isAnchored();
 1048	      },
 1049	    }));
-1050	
+1050
 1051	    useLayoutEffect(() => {
 1052	      // We wait for the list to mount because AutoSizer needs to run
 1053	      // before it's mounted
@@ -10958,12 +11243,12 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:23Z)**_
 1056	        list.current?.setRowAnimation(true);
 1057	        listInitialized.current = true;
 1058	      }
-1059	
+1059
 1060	      if (scrollContainer.current && saveScrollWidth) {
 1061	        setTimeout(saveScrollDelayed, 200);
 1062	      }
 1063	    });
-1064	
+1064
 1065	    function saveScrollDelayed() {
 1066	      saveScrollWidth(
 1067	        scrollContainer.current?.offsetParent
@@ -10972,12 +11257,12 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:23Z)**_
 1070	        scrollContainer.current ? scrollContainer.current.clientWidth : 0,
 1071	      );
 1072	    }
-1073	
+1073
 1074	    function renderRow({ index, style, key }) {
 1075	      const item = items[index];
 1076	      const editing = editingId === item.id;
 1077	      const selected = isSelected && isSelected(item.id);
-1078	
+1078
 1079	      const row = renderItem({
 1080	        item,
 1081	        editing,
@@ -10986,7 +11271,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:23Z)**_
 1084	        index,
 1085	        position: style.top,
 1086	      });
-1087	
+1087
 1088	      // TODO: Need to also apply zIndex if item is selected
 1089	      // * Port over ListAnimation to Table
 1090	      // * Move highlighted functionality into here
@@ -11007,6 +11292,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:23Z)**_
 1105	      );
 1106	    }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:25Z)**_
@@ -11017,7 +11303,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:25Z)**_
 
 ```text
 1106	    }
-1107	
+1107
 1108	    function getScrollOffset(height, index) {
 1109	      return (
 1110	        index * (rowHeight - 1) +
@@ -11026,20 +11312,20 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:25Z)**_
 1113	        (rowHeight - 1) * 2
 1114	      );
 1115	    }
-1116	
+1116
 1117	    function onItemsRendered({ overscanStopIndex }) {
 1118	      if (loadMore && overscanStopIndex > items.length - 100) {
 1119	        loadMore();
 1120	      }
 1121	    }
-1122	
+1122
 1123	    function getEmptyContent(empty) {
 1124	      if (empty == null) {
 1125	        return null;
 1126	      } else if (typeof empty === 'function') {
 1127	        return empty();
 1128	      }
-1129	
+1129
 1130	      return (
 1131	        <View
 1132	          style={{
@@ -11054,7 +11340,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:25Z)**_
 1141	        </View>
 1142	      );
 1143	    }
-1144	
+1144
 1145	    if (loading) {
 1146	      return (
 1147	        <View
@@ -11069,9 +11355,9 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:25Z)**_
 1156	        </View>
 1157	      );
 1158	    }
-1159	
+1159
 1160	    const isEmpty = (count || items.length) === 0;
-1161	
+1161
 1162	    return (
 1163	      <View
 1164	        style={{
@@ -11104,7 +11390,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:25Z)**_
 1191	                if (width === 0 || height === 0) {
 1192	                  return null;
 1193	                }
-1194	
+1194
 1195	                return (
 1196	                  <AvoidRefocusScrollProvider>
 1197	                    <FixedSizeList
@@ -11144,9 +11430,10 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:25Z)**_
 1231	) as <T extends TableItem>(
 1232	  props: TableProps<T> & { ref?: Ref<TableHandleRef<T>> },
 1233	) => ReactElement;
-1234	
+1234
 1235	// @ts-expect-error fix me
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:40Z)**_
@@ -11165,6 +11452,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:41Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:42Z)**_
@@ -11176,6 +11464,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:42Z)**_
 ```text
 No matches found
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:45Z)**_
@@ -11203,6 +11492,7 @@ packages\desktop-client\src\setupTests.ts:23:    AutoSizer,
 
 [Showing results with pagination = limit: 15]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:46Z)**_
@@ -11215,6 +11505,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:29:46Z)**_
 packages\desktop-client\vite.config.mts:401:      environment: 'jsdom',
 packages\desktop-client\vite.config.mts:403:      setupFiles: './src/setupTests.ts',
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:29:48Z)**_
@@ -11509,6 +11800,7 @@ export async function makeGoalTransactionsQuery({
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:31:03Z)**_
@@ -11524,6 +11816,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:31:03Z)**_
 98	    "#accounts/*": "./src/accounts/*.ts",
 99	    "#app/*": "./src/app/*.ts",
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:31:20Z)**_
@@ -11534,6 +11827,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:31:20Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\package.json has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:23Z)**_
@@ -11546,12 +11840,13 @@ Format, lint, and typecheck the new list
 Exit code 1
 Finished in 344ms on 1 files using 16 threads.
 
-src/components/reports/GoalTransactions.test.ts(103,7): error TS2353: Object literal may only specify known 
+src/components/reports/GoalTransactions.test.ts(103,7): error TS2353: Object literal may only specify known
 properties, and 'sortField' does not exist in type 'GoalTransactionsProps'.
 src/components/reports/GoalTransactions.tsx(92,5): error TS2769: No overload matches this call.
-src/components/reports/GoalTransactions.tsx(135,11): error TS2322: Type 'unknown' is not assignable to type 
+src/components/reports/GoalTransactions.tsx(135,11): error TS2322: Type 'unknown' is not assignable to type
 'CategoryEntity'.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:25Z)**_
@@ -11572,6 +11867,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:32:27Z)**_
 15:        list: groupById(data.list),
 16:        grouped: groupById(data.grouped),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:29Z)**_
@@ -11604,6 +11900,7 @@ packages\desktop-client\src\hooks\usePayees.ts-12-    select: payees => getPayee
 packages\desktop-client\src\hooks\usePayees.ts-13-  });
 packages\desktop-client\src\hooks\usePayees.ts-14-}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:32Z)**_
@@ -11617,6 +11914,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:32:32Z)**_
 6-  return useQuery(accountQueries.list());
 7-}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:34Z)**_
@@ -11631,6 +11929,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:32:46Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:53Z)**_
@@ -11641,6 +11940,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:32:53Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:53Z)**_
@@ -11672,10 +11972,11 @@ _**Agent (claude-opus-5-5 2026-10-06 22:32:53Z)**_
 137	    />
 138	  );
 139	}
-140	
+140
 141	type GoalTransactionRowProps = {
 142	  transaction: TransactionEntity;
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:54Z)**_
@@ -11690,6 +11991,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:32:57Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:32:59Z)**_
@@ -11700,6 +12002,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:32:59Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:33:00Z)**_
@@ -11710,6 +12013,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:33:00Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:33:16Z)**_
@@ -11722,9 +12026,10 @@ Format, lint, and typecheck
 Exit code 1
 Finished in 242ms on 1 files using 16 threads.
 
-src/components/reports/GoalTransactions.test.ts(103,7): error TS2353: Object literal may only specify known 
+src/components/reports/GoalTransactions.test.ts(103,7): error TS2353: Object literal may only specify known
 properties, and 'sortField' does not exist in type 'GoalTransactionsProps'.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:33:25Z)**_
@@ -12006,6 +12311,7 @@ describe('makeGoalTransactionsQuery', () => {
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.test.tsx (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:35:46Z)**_
@@ -12032,10 +12338,10 @@ Finished in 259ms on 1 files using 16 threads.
 Error: expect(element).toHaveTextContent()
 Expected element to have text content:
 Received:
- FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > is display only: clicking cells opens no 
+ FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > is display only: clicking cells opens no
 editors or menus
 TestingLibraryElementError: Unable to find an element by: [data-testid="date"]
- FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > hides the account and category columns on 
+ FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > hides the account and category columns on
 narrow screens
 Error: expect(element).toHaveTextContent()
 Expected element to have text content:
@@ -12044,6 +12350,7 @@ Received:
       Tests  3 failed | 5 passed (8)
    Duration  76.68s (transform 11.83s, setup 11.72s, import 23.07s, tests 387ms, environment 40.46s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:35:49Z)**_
@@ -12058,6 +12365,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:35:52Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.test.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:36:28Z)**_
@@ -12075,6 +12383,7 @@ Finished in 242ms on 1 files using 16 threads.
       Tests  8 passed (8)
    Duration  21.33s (transform 8.59s, setup 3.77s, import 14.50s, tests 764ms, environment 1.91s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:36:31Z)**_
@@ -12092,12 +12401,13 @@ packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx:197:19: 
 packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx:205:21: warning jsx-a11y(control-has-associated-label): A control must be associated with a text label. help: Add a text label to the control element. This can be done by adding text content, an `aria-label` attribute, or an `aria-labelledby` attribute.
 
 success: 0, skipped: 7, pending: 2, aborted: 0, failed: 1
-src/components/reports/GoalTransactions.tsx(131,37): error TS7053: Element implicitly has an 'any' type because 
+src/components/reports/GoalTransactions.tsx(131,37): error TS7053: Element implicitly has an 'any' type because
 expression of type 'string' can't be used to index type '{}'.
  Test Files  21 passed (21)
       Tests  254 passed (254)
    Duration  104.10s (transform 19.42s, setup 66.73s, import 72.37s, tests 13.60s, environment 42.39s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:39:55Z)**_
@@ -12117,6 +12427,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:39:55Z)**_
 String:   const { data: { list: categoriesById } = { list: {} } } =
     useCategoriesById();</tool_use_error>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:39:57Z)**_
@@ -12127,6 +12438,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:39:57Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:41:16Z)**_
@@ -12146,15 +12458,16 @@ src/components/reports/GoalTransactions.tsx(131,37): error TS2304: Cannot find n
  ❯ src/components/reports/GoalTransactions.test.tsx (8 tests | 3 failed) 3186ms
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
  FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > lists each transaction with its details
- FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > is display only: clicking cells opens no 
+ FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > is display only: clicking cells opens no
 editors or menus
- FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > hides the account and category columns on 
+ FAIL  src/components/reports/GoalTransactions.test.tsx > GoalTransactions > hides the account and category columns on
 narrow screens
 This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
  Test Files  1 failed (1)
       Tests  3 failed | 5 passed (8)
    Duration  23.45s (transform 8.22s, setup 3.96s, import 14.08s, tests 3.19s, environment 1.82s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:41:17Z)**_
@@ -12173,10 +12486,11 @@ _**Agent (claude-opus-5-5 2026-10-06 22:41:18Z)**_
 58	  const { data: accounts = [] } = useAccounts();
 59	  const { data: payeesById = {} } = usePayeesById();
 60	  const { data: { list: categoriesById } = { list: {} } } = useCategoriesById();
-61	
+61
 62	  const [query, setQuery] = useState<Query | undefined>(undefined);
 63
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:41:22Z)**_
@@ -12187,6 +12501,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:41:22Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\GoalTransactions.tsx has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:46:14Z)**_
@@ -12203,6 +12518,7 @@ success: 3, skipped: 7, pending: 0, aborted: 0, failed: 0
       Tests  254 passed (254)
    Duration  87.68s (transform 16.16s, setup 59.87s, import 50.10s, tests 12.58s, environment 40.23s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:46:18Z)**_
@@ -12221,7 +12537,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:46:19Z)**_
 ```text
 50	    await page.getByText('Matching transactions').waitFor();
 51	    console.log('goal report opened:', page.url());
-52	
+52
 53	    // 4. Target + tag on the report page (unsaved edits drive the preview)
 54	    const amount = page.getByLabel('Goal amount');
 55	    await amount.click();
@@ -12234,7 +12550,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:46:19Z)**_
 62	    await page.getByTestId('transaction-table').waitFor();
 63	    await page.waitForTimeout(1500);
 64	    await shot(page, '2-goal-report');
-65	
+65
 66	    // 5. Measure what rendered
 67	    const table = page.getByTestId('transaction-table');
 68	    const box = await table.boundingBox();
@@ -12250,7 +12566,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:46:19Z)**_
 78	      .evaluate(el => el.parentElement?.parentElement?.innerText ?? '');
 79	    const percent = await page.locator('text=/^\\d+%$/').first().innerText();
 80	    console.log(JSON.stringify({ tableBox: box, rowCount: count, rowText, header, percent }, null, 2));
-81	
+81
 82	    // 6. Back to the dashboard to see the card
 83	    await page.getByRole('link', { name: 'Reports' }).click();
 84	    await page.getByRole('button', { name: 'Add new widget' }).waitFor();
@@ -12270,6 +12586,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:46:19Z)**_
 98	    await browser.close();
 99	  }
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:46:31Z)**_
@@ -12280,6 +12597,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:46:31Z)**_
 ```text
 The file C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\5ee80ad3-ce8a-4476-806e-0e8fd8f33667\scratchpad\goal-report-check.cjs has been updated successfully.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:47:10Z)**_
@@ -12316,6 +12634,7 @@ console errors: [
   "<%s> cannot contain a nested %s. See this log for the ancestor stack trace. button <button>"
 ]
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:47:14Z)**_
@@ -12347,6 +12666,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:47:21Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\reports\util.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:47:30Z)**_
@@ -12362,6 +12682,7 @@ Restore Calendar and confirm util is unchanged
  1 file changed, 1 deletion(-)
 calendar/util diff lines above (empty = restored)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:47:33Z)**_
@@ -12394,6 +12715,7 @@ success: 3, skipped: 7, pending: 0, aborted: 0, failed: 0
       Tests  254 passed (254)
    Duration  94.83s (transform 20.11s, setup 63.93s, import 56.61s, tests 13.64s, environment 42.88s)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:51:46Z)**_
@@ -12405,6 +12727,7 @@ The "Matching transactions" list on the Goal report is now display only. Clickin
 **Why it happened:** the list was the same editable table the account pages use. That table has no read-only mode, so its editors came along even though nothing on this page could save an edit. The mobile list had the same problem: long-pressing a row opened a select-and-edit menu.
 
 **What I changed:**
+
 - [GoalTransactions.tsx](packages/desktop-client/src/components/reports/GoalTransactions.tsx) now draws its own plain table from the app's generic table components. It's the same table on every screen size; narrow screens drop the Account and Category columns.
 - The columns are Date, Account, Payee, Notes, Category and Amount. The amount is signed, like the goal total, and is hidden in privacy mode.
 - Tags show as plain coloured labels, not clickable pills.
@@ -12415,6 +12738,7 @@ The "Matching transactions" list on the Goal report is now display only. Clickin
 **Checked in the running app** (demo budget, `#entertainment`): I clicked every cell of a row. Nothing opened: no text fields, dropdowns, buttons, pop-ups or "Split transaction". The 8 rows add up to 138.39, matching the total shown, −138.39.
 
 **Tests:** [GoalTransactions.test.tsx](packages/desktop-client/src/components/reports/GoalTransactions.test.tsx) replaces the old `.ts` test file. It checks:
+
 - each row shows the right details
 - clicking cells opens nothing, and rows contain no buttons
 - the narrow-screen columns
@@ -12424,6 +12748,7 @@ The "Matching transactions" list on the Goal report is now display only. Clickin
 **Also cleaned up:** I put back Calendar's column-sort helper, which I'd moved into `util.ts` for the old list. Calendar and `util.ts` are now unchanged from what's committed.
 
 **Two trade-offs of being display only:**
+
 - Column-header sorting is gone; the list is always newest first.
 - On mobile, tapping a transaction no longer opens it for editing.
 
@@ -12446,6 +12771,7 @@ Show what is listening on port 3001
 ```text
 Exit code 1
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:56:15Z)**_
@@ -12457,6 +12783,7 @@ Check port 3001 and running Vite processes
 ```text
 PID 50408  "C:\Program Files\nodejs\node.exe"  "C:\Users\reese\SE\actual-budget\node_modules\vite\bin\vite.js" "--mode=browser"
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:56:17Z)**_
@@ -12474,6 +12801,7 @@ Find the Vite process's ports and parent
   TCP    [::]:3002              [::]:0                 LISTENING       50408
 parent:
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:56:35Z)**_
@@ -12481,6 +12809,7 @@ _**Agent (claude-opus-5-5 2026-10-06 22:56:35Z)**_
 Nothing is on port 3001 anymore; the server that was there has already exited. One Vite dev server for this repo is still running, but on **port 3002**: process ID 50408, `vite --mode=browser`. Vite moves to the next free port when 3001 is taken, so this is probably a second `yarn start` launched while the first one was still running. Its parent process is gone, which is why closing the terminal didn't stop it.
 
 **How to shut it down:**
+
 - **If you can find its terminal window**, press `Ctrl+C` there. That's the cleanest way.
 - **If it's orphaned, as this one seems to be**, end the process by ID in PowerShell:
   ```powershell
@@ -12518,6 +12847,7 @@ stopped 50408
 listeners on 3001/3002:
 vite processes:
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 22:56:56Z)**_
@@ -12591,6 +12921,7 @@ packages\desktop-client\src\components\reports\reports\GoalReport.tsx-319-      
 packages\desktop-client\src\components\reports\reports\GoalReport.tsx-320-                      {
 packages\desktop-client\src\components\reports\reports\GoalReport.tsx:321:                        targetAmount: format(targetAmount, 'financial'),
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 23:59:16Z)**_
@@ -12609,6 +12940,7 @@ _**Agent (claude-opus-5-5 2026-10-06 23:59:17Z)**_
 ```text
 206:        style={{ ...inputStyle, ...styles.tnum }}
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 23:59:18Z)**_
@@ -12623,19 +12955,20 @@ packages\desktop-client\src\components\reports\GoalProgress.tsx:79:          {pe
 packages\desktop-client\src\components\reports\GoalTransactions.tsx:20:import { FinancialText } from '#components/FinancialText';
 packages\desktop-client\src\components\reports\GoalTransactions.tsx:194:            <FinancialText>{formatAmount(transaction.amount)}</FinancialText>
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-06 23:59:24Z)**_
 
 Yes, it's met. Every currency value the goal feature shows uses `FinancialText`, and the percentage uses `styles.tnum`.
 
-| Where | Value | How |
-|---|---|---|
-| [GoalCard.tsx:134-146](packages/desktop-client/src/components/reports/reports/GoalCard.tsx#L134-L146) | Current total, and target ("of …") | `FinancialText` |
-| [GoalReport.tsx:309-321](packages/desktop-client/src/components/reports/reports/GoalReport.tsx#L309-L321) | Current total, and target | `FinancialText` |
-| [GoalTransactions.tsx:194](packages/desktop-client/src/components/reports/GoalTransactions.tsx#L194) | Amount column in Matching transactions | `FinancialText` |
-| [GoalProgress.tsx:74-79](packages/desktop-client/src/components/reports/GoalProgress.tsx#L74-L79) | Progress percentage | `styles.tnum` |
-| Goal amount inputs (report page and card's "Set goal" editor) | Target being typed | Already handled: `AmountInput` applies `styles.tnum` itself ([AmountInput.tsx:206](packages/desktop-client/src/components/util/AmountInput.tsx#L206)) |
+| Where                                                                                                     | Value                                  | How                                                                                                                                                   |
+| --------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [GoalCard.tsx:134-146](packages/desktop-client/src/components/reports/reports/GoalCard.tsx#L134-L146)     | Current total, and target ("of …")     | `FinancialText`                                                                                                                                       |
+| [GoalReport.tsx:309-321](packages/desktop-client/src/components/reports/reports/GoalReport.tsx#L309-L321) | Current total, and target              | `FinancialText`                                                                                                                                       |
+| [GoalTransactions.tsx:194](packages/desktop-client/src/components/reports/GoalTransactions.tsx#L194)      | Amount column in Matching transactions | `FinancialText`                                                                                                                                       |
+| [GoalProgress.tsx:74-79](packages/desktop-client/src/components/reports/GoalProgress.tsx#L74-L79)         | Progress percentage                    | `styles.tnum`                                                                                                                                         |
+| Goal amount inputs (report page and card's "Set goal" editor)                                             | Target being typed                     | Already handled: `AmountInput` applies `styles.tnum` itself ([AmountInput.tsx:206](packages/desktop-client/src/components/util/AmountInput.tsx#L206)) |
 
 There are no other places in the goal feature that display a formatted amount.
 
@@ -12645,7 +12978,7 @@ The dates in the transaction list are plain text without tabular figures. They a
 
 _**User (2026-10-07 00:04:01Z)**_
 
-Draft me a PR description for this PR that follows this formatting: 
+Draft me a PR description for this PR that follows this formatting:
 
 <pasted_content id="4b87">
 Description
@@ -12661,12 +12994,11 @@ Passes automated yarn tests and was added to and passes app.test.ts file. Also a
 Additionally, the PR passes all of Issue #62's acceptance criteria and enacts additional changes requested in a review.
 
 Checklist
- Release notes added (see link above)
- No obvious regressions in affected areas
- Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
+Release notes added (see link above)
+No obvious regressions in affected areas
+Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
 Used Claude Code to aid with changes, git commands, and description generation, though everything was manually reviewed and edited as needed.
 </pasted_content id="4b87">
-
 
 ---
 
@@ -12697,6 +13029,7 @@ feat/issue-63-wire-spending-to-goalcard
 ?? packages/desktop-client/src/components/reports/useGoalTotal.ts
 feat-issue-62-goal-card-scaffold.md
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 00:04:19Z)**_
@@ -12719,14 +13052,14 @@ author:	TigerK9 (Liam McLemore)
 labels:	scope: medium
 comments:	0
 assignees:	RaccoonSwarm
-projects:	
+projects:
 milestone:	Sprint 1
 issue-type:	Task
 parent:	CSCI-435-SE/actual-budget#14
-sub-issues:	
-sub-issues-completed:	
+sub-issues:
+sub-issues-completed:
 blocked-by:	CSCI-435-SE/actual-budget#62
-blocking:	
+blocking:
 number:	63
 --
 ## Summary
@@ -12768,6 +13101,7 @@ Blocked by the widget-scaffold issue (needs the `goal-card` type + `GoalCard.tsx
 
 Split from #14.
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 00:04:27Z)**_
@@ -12784,10 +13118,10 @@ _**Agent (claude-opus-5-5 2026-10-07 00:04:57Z)**_
 **The repo's AI rules say a PR template filled in by an agent must be written in Chinese (Simplified). Which language should the PR description draft use?**
 
 Options:
+
 - **English** - Match your example and your class team's previous PRs. This departs from the rule in .github/agents/pr-and-commit-rules.md.
 - **Chinese (Simplified)** - Follow the repo's AI PR rule exactly. Same structure and content, written in Simplified Chinese.
 - **Both** - Give the English draft plus a Simplified Chinese version, and you choose which to post.
-
 
 **Answer:** English
 </details></tool-use>
@@ -12811,15 +13145,18 @@ Suggested title: `[AI] Wire live spending calculation into goal-card`
 ---
 
 ## Description
+
 Connects the Personal goal widget (goal-card) to real transaction data. The card's progress bar now shows the actual total of transactions with the goal's linked tag, filtered by the widget's saved conditions and time frame, instead of a stored placeholder amount. It also adds in-progress and complete visual states. This change is in response to issue #63 and builds on the scaffold from #62.
 
 Main changes:
+
 - **Live total.** A new `useGoalTotal` hook works out the goal's current total using the existing `summarySpreadsheet` calculation, passing `meta.conditions`, `conditionsOp` and `timeFrame`; there is no new calculation engine. `summarySpreadsheet` gained an optional `requiredConditions` argument so the goal's tag is always ANDed with the saved conditions, even when `conditionsOp` is `'or'`. The total re-runs through `useReport` whenever transactions change, so the card updates live.
 - **Progress states.** A shared `GoalProgress` component is used by both the card and the report page. The bar is yellow while the goal is in progress. Once the total reaches the target, the bar turns green and full, and a "Congratulations! You reached your goal." message appears. The percentage keeps counting past 100% (e.g. 150%) while the bar stays full. An in-progress goal never rounds up to 100%.
 - **Goal report page.** The report shows the same live total and progress bar, previewing unsaved edits to the tag, filters and dates. The "Matching transactions" placeholder is replaced with a read-only list of the transactions that count toward the goal (same tag, filters and dates as the total). The list has no editors or pop-ups, since it only displays transactions.
 - **Cleanup.** Removed the unused `currentAmount` field from `GoalCardWidget` in `packages/loot-core/src/types/models/dashboard.ts`, and from the default meta for new widgets in `Overview.tsx`. All currency values use `FinancialText`; the percentage uses `styles.tnum`.
 
 Answers to the issue's open questions, as implemented:
+
 1. `conditionsOp` defaults to `'and'` when unset, matching `summarySpreadsheet` and the other widgets.
 2. Progress uses two states (in progress / complete); an overshot goal shows its real percentage instead of having a separate state.
 3. The total respects the widget's selectable time frame, like other report widgets.
@@ -12827,9 +13164,11 @@ Answers to the issue's open questions, as implemented:
 Known limitation: the total is the signed sum, so a goal tracking spending (negative amounts) shows 0% progress.
 
 ## Related issue(s)
+
 Closes Issue #63
 
 ## Testing
+
 Passes `yarn typecheck`, lint, and all 254 tests in `src/components/reports`. Added new test files for `GoalProgress` (colors, message, 99% cap, percentages past 100%) and `GoalTransactions` (row contents, display-only behavior, narrow-screen columns, and the query: tag always required, conditions and dates matching the total). Updated the `GoalCard` and `GoalReport` tests to cover the live total, the live updates, and unsaved report edits. These tests set the widget meta directly, as acceptance criterion 4 asks.
 
 I also verified it manually on the demo budget locally. Link a goal to `#entertainment` and set a target. The total matches the sum of the listed transactions (e.g. −138.39 for 8 rows), and clicking any cell in the list opens nothing. To try it, pull the branch and run `yarn start`. Choose "Don't use a server", then "View demo". Add a "Personal goal" widget on the Reports page, open it, pick a tag and a goal amount, and save.
@@ -12837,6 +13176,7 @@ I also verified it manually on the demo budget locally. Link a goal to `#enterta
 Additionally, the PR meets all five of issue #63's acceptance criteria.
 
 ## Checklist
+
 - [ ] Release notes added (see link above)
 - [ ] No obvious regressions in affected areas
 - [ ] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
@@ -12846,15 +13186,16 @@ Used Claude Code to aid with changes, git commands, and description generation, 
 ---
 
 ## Notes for the user (not part of the PR body)
+
 - **No release note exists yet for #63** (only `feat-issue-62-goal-card-scaffold.md`). Add one before checking that box; the `writing-release-notes` skill can draft it.
 - **Nothing is committed on this branch yet.** The 13 goal-related files (8 modified, 5 new) are uncommitted. Leave out the unrelated line-ending changes in `packages/ci-actions`, `component-library`, `crdt` and `plugins-service`.
 - The "Known limitation" line is optional; keep it if reviewers should know about spending goals showing 0%.
-
 ```
 
 ```text
 The file C:\Users\reese\.claude\plans\i-want-to-connect-valiant-mochi.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 00:05:21Z)**_
@@ -12872,6 +13213,7 @@ _**Agent (claude-opus-5-5 2026-10-07 00:05:21Z)**_
 ```
 
 ```
+
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-07 00:23:04Z)**_
@@ -12882,6 +13224,7 @@ _**Agent (claude-opus-5-5 2026-10-07 00:23:04Z)**_
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.
 ```
+
 </details></tool-use>
 
 ---
@@ -12906,28 +13249,29 @@ We changed or added 13 files for issue #63 (8 modified, 5 new). None of them are
 
 **Modified (8)**
 
-| File | Change |
-|---|---|
-| [packages/loot-core/src/types/models/dashboard.ts](packages/loot-core/src/types/models/dashboard.ts) | Removed the unused `currentAmount` field from `GoalCardWidget` |
-| [packages/desktop-client/package.json](packages/desktop-client/package.json) | Two import-map entries, for `#components/reports/useGoalTotal` and `#notes/linkParser` |
-| [packages/desktop-client/src/components/reports/Overview.tsx](packages/desktop-client/src/components/reports/Overview.tsx) | New goal widgets no longer start with `currentAmount: 0` |
-| [packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts](packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts) | Optional `requiredConditions` argument, and a shared `getSummaryDateBounds` helper |
-| [packages/desktop-client/src/components/reports/reports/GoalCard.tsx](packages/desktop-client/src/components/reports/reports/GoalCard.tsx) | Live total via `useGoalTotal`; progress drawn with `GoalProgress` |
-| [packages/desktop-client/src/components/reports/reports/GoalReport.tsx](packages/desktop-client/src/components/reports/reports/GoalReport.tsx) | Live total and progress that preview unsaved edits; the "Matching transactions" list |
-| [packages/desktop-client/src/components/reports/reports/GoalCard.test.tsx](packages/desktop-client/src/components/reports/reports/GoalCard.test.tsx) | Tests for the computed total, live updates, and progress |
-| [packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx](packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx) | Tests for the computed total, unsaved edits, and the list's inputs |
+| File                                                                                                                                                                     | Change                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| [packages/loot-core/src/types/models/dashboard.ts](packages/loot-core/src/types/models/dashboard.ts)                                                                     | Removed the unused `currentAmount` field from `GoalCardWidget`                         |
+| [packages/desktop-client/package.json](packages/desktop-client/package.json)                                                                                             | Two import-map entries, for `#components/reports/useGoalTotal` and `#notes/linkParser` |
+| [packages/desktop-client/src/components/reports/Overview.tsx](packages/desktop-client/src/components/reports/Overview.tsx)                                               | New goal widgets no longer start with `currentAmount: 0`                               |
+| [packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts](packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts) | Optional `requiredConditions` argument, and a shared `getSummaryDateBounds` helper     |
+| [packages/desktop-client/src/components/reports/reports/GoalCard.tsx](packages/desktop-client/src/components/reports/reports/GoalCard.tsx)                               | Live total via `useGoalTotal`; progress drawn with `GoalProgress`                      |
+| [packages/desktop-client/src/components/reports/reports/GoalReport.tsx](packages/desktop-client/src/components/reports/reports/GoalReport.tsx)                           | Live total and progress that preview unsaved edits; the "Matching transactions" list   |
+| [packages/desktop-client/src/components/reports/reports/GoalCard.test.tsx](packages/desktop-client/src/components/reports/reports/GoalCard.test.tsx)                     | Tests for the computed total, live updates, and progress                               |
+| [packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx](packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx)                 | Tests for the computed total, unsaved edits, and the list's inputs                     |
 
 **New (5)**
 
-| File | Purpose |
-|---|---|
-| [packages/desktop-client/src/components/reports/useGoalTotal.ts](packages/desktop-client/src/components/reports/useGoalTotal.ts) | Hook that computes the live goal total through `summarySpreadsheet`, plus the shared tag condition |
-| [packages/desktop-client/src/components/reports/GoalProgress.tsx](packages/desktop-client/src/components/reports/GoalProgress.tsx) | Progress bar: yellow in progress, green when complete, congratulations message, percentage past 100% |
-| [packages/desktop-client/src/components/reports/GoalProgress.test.tsx](packages/desktop-client/src/components/reports/GoalProgress.test.tsx) | Tests for the progress states and percentages |
-| [packages/desktop-client/src/components/reports/GoalTransactions.tsx](packages/desktop-client/src/components/reports/GoalTransactions.tsx) | Read-only list of matching transactions, and its query |
-| [packages/desktop-client/src/components/reports/GoalTransactions.test.tsx](packages/desktop-client/src/components/reports/GoalTransactions.test.tsx) | Tests for the list's rows, display-only behaviour, and query |
+| File                                                                                                                                                 | Purpose                                                                                              |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| [packages/desktop-client/src/components/reports/useGoalTotal.ts](packages/desktop-client/src/components/reports/useGoalTotal.ts)                     | Hook that computes the live goal total through `summarySpreadsheet`, plus the shared tag condition   |
+| [packages/desktop-client/src/components/reports/GoalProgress.tsx](packages/desktop-client/src/components/reports/GoalProgress.tsx)                   | Progress bar: yellow in progress, green when complete, congratulations message, percentage past 100% |
+| [packages/desktop-client/src/components/reports/GoalProgress.test.tsx](packages/desktop-client/src/components/reports/GoalProgress.test.tsx)         | Tests for the progress states and percentages                                                        |
+| [packages/desktop-client/src/components/reports/GoalTransactions.tsx](packages/desktop-client/src/components/reports/GoalTransactions.tsx)           | Read-only list of matching transactions, and its query                                               |
+| [packages/desktop-client/src/components/reports/GoalTransactions.test.tsx](packages/desktop-client/src/components/reports/GoalTransactions.test.tsx) | Tests for the list's rows, display-only behaviour, and query                                         |
 
 **Not part of this issue:**
+
 - **Leave out of the commit:** `git status` also shows modified files in `packages/ci-actions`, `component-library`, `crdt` and `plugins-service`. Those appear to be line-ending changes that were already in your working copy.
 - **Not code:** the untracked `ai-logs/sprint1/RaccoonSwarm/` folder is your AI logs, not code; commit it only if your class workflow wants it with this PR.
 - **Temporary edits since reverted:** `Calendar.tsx`, `util.ts` and `GoalTransactions.test.ts` were changed or created temporarily during the work, then reverted or deleted, so they're unchanged and not in this list.

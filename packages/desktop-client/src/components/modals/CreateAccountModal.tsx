@@ -72,7 +72,10 @@ export function CreateAccountModal({
             {upgradingAccountId != null ? (
               <>
                 <Paragraph
-                  style={{ fontSize: 'var(--font-size-15)', color: theme.pageTextSubdued }}
+                  style={{
+                    fontSize: 'var(--font-size-15)',
+                    color: theme.pageTextSubdued,
+                  }}
                 >
                   <Trans>
                     Choose a bank sync provider to connect this account.
@@ -100,7 +103,12 @@ export function CreateAccountModal({
                       <Trans>Create a local account</Trans>
                     </Button>
                   </InitialFocus>
-                  <View style={{ lineHeight: '1.4em', fontSize: 'var(--font-size-15)' }}>
+                  <View
+                    style={{
+                      lineHeight: '1.4em',
+                      fontSize: 'var(--font-size-15)',
+                    }}
+                  >
                     <Text>
                       <Trans>
                         <strong>Create a local account</strong> if you want to
@@ -133,7 +141,10 @@ export function CreateAccountModal({
                     <Trans>Set up bank sync</Trans>
                   </Button>
                   <Paragraph
-                    style={{ fontSize: 'var(--font-size-15)', color: theme.pageTextSubdued }}
+                    style={{
+                      fontSize: 'var(--font-size-15)',
+                      color: theme.pageTextSubdued,
+                    }}
                   >
                     <Trans>
                       Configure providers and link accounts from the Bank Sync
