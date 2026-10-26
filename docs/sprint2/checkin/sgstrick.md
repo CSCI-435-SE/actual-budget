@@ -2,9 +2,11 @@
 
 What I have worked on so far in the Sprint is Issue #53, adding the ability to increase icon sizes. This is an issue that I had started during Sprint 1, but turned out to be larger in scale than anticipated and had a lot of bugs with the pushed version. I am testing out an agentic AI tool rather than the browser version in hopes that this makes reviewing the code a lot of more efficient before implementing changes. When I initially implemented the icon size changes, it was incredibly tedious (and somewhat difficult) finding and replacing each icon's individual size. In the code, there are over 700 widths and heights that relate to different UI elements, though it is not entirely clear what they are, so I would have had to manually review each and every one. I attempted several helper functions that Claude suggested, but it did not work out well. What remains to be worked on is Issue #96, which will add a warning to detailed report view when changes have not been saved. This issue is of a larger scale, so hopefully it will balance out with the work I have left to do on my issue.
 
+
 ## What is one thing you learned about the codebase or about software engineering practice?
 
 One this I have learned about the code base is how it is organized. In Sprint 0, I was mainly focused on understanding the app and using Agent AI tools to help code. I didn't put very much effort into understanding the code base because the issues I worked on spanned only a few files, and only changed a few lines of code. The issues I worked on in Sprint 1 and continue to work on in Sprint 2, however, span many files and affect hundreds of lines of code. I have had to remember which files are nested in which folders and how those folders relate to one another. When searching through them to change the hard-coded icon sizes, I had to understand which parts of the UI the folders affected, and which ones were relevant to the issue at hand.
+
 
 ## What is one thing you would do differently?
 

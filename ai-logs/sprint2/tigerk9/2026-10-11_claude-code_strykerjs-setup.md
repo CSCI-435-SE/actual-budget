@@ -27,7 +27,6 @@ Show PR 91 details
 ```text
 {"additions":1381,"author":{"id":"U_kgDOCc9c7w","is_bot":false,"login":"bennettmatuszewski","name":"Bennett Matuszewski"},"baseRefName":"master","body":"Add and configure StrykerJS ","deletions":26,"files":[{"path":".gitignore","additions":4,"deletions":0,"changeType":"MODIFIED"},{"path":"ai-logs/sprint2/bennettmatuszewski/2026-10-09_code-code_install-striker.md","additions":160,"deletions":0,"changeType":"ADDED"},{"path":"packages/loot-core/package.json","additions":3,"deletions":0,"changeType":"MODIFIED"},{"path":"packages/loot-core/stryker.config.json","additions":17,"deletions":0,"changeType":"ADDED"},{"path":"packages/loot-core/vitest.stryker.config.ts","additions":15,"deletions":0,"changeType":"ADDED"},{"path":"yarn.lock","additions":1182,"deletions":26,"changeType":"MODIFIED"}],"headRefName":"feat/add-strykerjs","state":"OPEN","title":"[AI] Add StrykerJS mutation testing setup","url":"https://github.com/CSCI-435-SE/actual-budget/pull/91"}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 18:37:20-0400)**_
@@ -38,7 +37,7 @@ Show PR 91 diff excluding yarn.lock
 
 `gh pr diff 91 -- ':!yarn.lock' 2>/dev/null || gh pr diff 91 | awk '/^diff --git a\/yarn.lock/{skip=1;next} /^diff --git/{skip=0} !skip'`
 
-````text
+```text
 diff --git a/.gitignore b/.gitignore
 index a5834d090..eb6e236c7 100644
 --- a/.gitignore
@@ -282,8 +281,7 @@ index 000000000..ea6a7f229
 +    },
 +  }),
 +);
-````
-
+```
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 18:37:23-0400)**_
@@ -350,7 +348,6 @@ packages/loot-core/src/server/budget/sort-categories.test.ts
 packages/loot-core/src/server/budget/subcategories.test.ts
 packages/loot-core/src/server/budget/template-notes.test.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 18:37:54-0400)**_
@@ -359,16 +356,15 @@ _**Agent (claude-opus-5-5 2026-10-11 18:37:54-0400)**_
 
 This is Bennett's PR (`feat/add-strykerjs` → `master`). It adds Stryker mutation testing to **loot-core** only, and only for `src/server/budget/`. Besides `yarn.lock`, it changes five files:
 
-| File                                          | What it does                                                                                                                                                                                                                                                                                                                       |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages/loot-core/stryker.config.json`      | The main config. It uses the Vitest runner, mutates `src/server/budget/**/*.ts` (skipping test files), writes html, clear-text and progress reports, and sets `coverageAnalysis: "perTest"`, so each mutant only runs the tests that cover it. `ignorePatterns` stops Stryker from copying the mock budget files into its sandbox. |
-| `packages/loot-core/vitest.stryker.config.ts` | Extends the normal `vitest.config.ts` but limits `include` to `src/server/budget/**/*.test.ts`. The comment explains why: Stryker forces Vitest's `threads` pool, and on Windows the full loot-core suite crashes there because of native SQLite. Even on macOS this keeps the first test run much shorter.                        |
-| `packages/loot-core/package.json`             | Adds the `mutation-test` script (`stryker run`) and devDeps `@stryker-mutator/core` and `@stryker-mutator/vitest-runner` (^10.0.0).                                                                                                                                                                                                |
-| `.gitignore`                                  | Ignores `.stryker-tmp` (the sandbox) and `reports/mutation/`.                                                                                                                                                                                                                                                                      |
-| `ai-logs/sprint2/.../install-striker.md`      | Bennett's AI log of the `stryker init` session, which records why each init answer was chosen.                                                                                                                                                                                                                                     |
+| File | What it does |
+|---|---|
+| `packages/loot-core/stryker.config.json` | The main config. It uses the Vitest runner, mutates `src/server/budget/**/*.ts` (skipping test files), writes html, clear-text and progress reports, and sets `coverageAnalysis: "perTest"`, so each mutant only runs the tests that cover it. `ignorePatterns` stops Stryker from copying the mock budget files into its sandbox. |
+| `packages/loot-core/vitest.stryker.config.ts` | Extends the normal `vitest.config.ts` but limits `include` to `src/server/budget/**/*.test.ts`. The comment explains why: Stryker forces Vitest's `threads` pool, and on Windows the full loot-core suite crashes there because of native SQLite. Even on macOS this keeps the first test run much shorter. |
+| `packages/loot-core/package.json` | Adds the `mutation-test` script (`stryker run`) and devDeps `@stryker-mutator/core` and `@stryker-mutator/vitest-runner` (^10.0.0). |
+| `.gitignore` | Ignores `.stryker-tmp` (the sandbox) and `reports/mutation/`. |
+| `ai-logs/sprint2/.../install-striker.md` | Bennett's AI log of the `stryker init` session, which records why each init answer was chosen. |
 
 A few things to know before approving:
-
 - **CI tells you nothing.** Every check was cancelled or skipped, and there are no reviews yet. You'd have to run it locally to know it works.
 - **The setup is sound.** `mergeConfig` keeps the base setup file (`src/mocks/setup.ts`), the excludes and the peggy plugin, so the budget tests run in the same environment as `yarn test`.
 - **The scope is narrow on purpose.** Only budget code gets mutated. Testing other areas means changing both `mutate` in the Stryker config and `include` in the Vitest config.
@@ -396,7 +392,6 @@ open packages/loot-core/reports/mutation/mutation.html
 ```
 
 Tips:
-
 - **Start with step 3.** A full run makes thousands of mutants across files like `goal-template.ts`, so it can take a long time. Stryker starts with a clean run of the budget tests; if any of them fail, it stops right away.
 - **Reading the report:** survived mutants are the weak spots. The code changed and no test caught it. Killed mutants mean a test failed on the change, which is what you want. The mutation score shown at the end is killed ÷ (killed + survived) and doesn't count mutants with no test coverage.
 - **When finished,** `git checkout docs/sprint1-report` takes you back. `.stryker-tmp/` and `reports/` are gitignored, so you won't leave stray files behind.
@@ -448,7 +443,6 @@ git switch -c chore/stryker-setup
 ```
 
 **What you should see:**
-
 - `node -v` prints something like `v22.x.x`. If it's lower, run `nvm use`, because the repo has an `.nvmrc` that picks the right version.
 - `yarn -v` prints `4.x.x`. If it shows `1.x`, run `corepack enable`. This repo sets its Yarn version in `package.json`, and Corepack is what makes the `yarn` command use that version.
 - The last command prints `Switched to a new branch 'chore/stryker-setup'`.
@@ -472,7 +466,6 @@ _**Agent (claude-opus-5-5 2026-10-11 18:49:24-0400)**_
 For changing branches they do the same thing. `git switch -c foo` is the same as `git checkout -b foo`.
 
 The difference is that `checkout` does two unrelated jobs:
-
 - **switching branches:** `git checkout master`
 - **overwriting files:** `git checkout -- file.ts` throws away your uncommitted edits to that file
 
@@ -483,8 +476,7 @@ Because one command does both, a typo or a file named like a branch can wipe out
 ## Step 2: Install the Stryker packages into loot-core
 
 **What you're installing:**
-
-- **`@stryker-mutator/core`** is the engine and the `stryker` command. It copies the project into a sandbox, creates _mutants_ (small deliberate bugs, like changing `>` to `>=` or `+` to `-`), runs your tests against each one, and writes the reports.
+- **`@stryker-mutator/core`** is the engine and the `stryker` command. It copies the project into a sandbox, creates *mutants* (small deliberate bugs, like changing `>` to `>=` or `+` to `-`), runs your tests against each one, and writes the reports.
 - **`@stryker-mutator/vitest-runner`** is a plugin that lets Stryker run tests with **Vitest**, which is what this repo uses. It also tracks which tests cover which lines, so each mutant only runs the tests that matter.
 
 **Why loot-core, and why a dev dependency:** This repo is a Yarn monorepo with many packages. Stryker goes in `packages/loot-core` because that's where the budget logic and its tests live. It's a dev dependency (`-D`) because it's a testing tool and never ships to users.
@@ -507,12 +499,10 @@ yarn workspace @actual-app/core run stryker --version
 ```
 
 **What you should see:**
-
 - `git diff --stat` shows `packages/loot-core/package.json` with about 2 added lines and `yarn.lock` with roughly a thousand. Stryker brings in a lot of dependencies.
 - The second command prints a version number, probably `10.x`. That means the `stryker` command is installed and runs from loot-core.
 
 **If something goes wrong:**
-
 - **Peer dependency warnings** (codes like `YN0060` or `YN0002`) are usually fine. They're warnings, not errors.
 - **The two Stryker packages must be the same major version.** Installing them together in one command makes sure of that. If a friend adds them one at a time later, the versions can drift apart, and Stryker will refuse to load the plugin.
 
@@ -543,7 +533,6 @@ Verify loot-core's workspace name and docs mentions
 ➤ YN0000: packages/loot-core
 packages/docs/docs/contributing/project-details/index.md:9:### 1. loot-core (`packages/loot-core/`)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 18:53:58-0400)**_
@@ -582,7 +571,6 @@ _**Agent (claude-opus-5-5 2026-10-11 18:58:28-0400)**_
 Yes, it's Stryker's own name. It has nothing to do with `@actual-app/core`, and the matching `/core` is a coincidence.
 
 npm package names can have two parts: **`@scope/package`**.
-
 - The **scope** (`@stryker-mutator`) is like an organization. It groups every package that team publishes.
 - The **package** (`core`) is one specific package within that group.
 
@@ -594,12 +582,12 @@ There's no package called just `stryker-mutator`. Very old versions of Stryker w
 
 Stryker is built from plugins. The core knows how to create mutants, but not how to run any particular test framework. Each framework has its own runner plugin:
 
-| Your tests use…        | Install                          |
-| ---------------------- | -------------------------------- |
+| Your tests use… | Install |
+|---|---|
 | **Vitest** (this repo) | `@stryker-mutator/vitest-runner` |
-| Jest                   | `@stryker-mutator/jest-runner`   |
-| Mocha                  | `@stryker-mutator/mocha-runner`  |
-| Karma, Jasmine, …      | their own `-runner` packages     |
+| Jest | `@stryker-mutator/jest-runner` |
+| Mocha | `@stryker-mutator/mocha-runner` |
+| Karma, Jasmine, … | their own `-runner` packages |
 
 This way someone using Jest doesn't download Vitest support, and the reverse.
 
@@ -636,14 +624,14 @@ npm init stryker@latest
 
 Despite the `npm`, this doesn't install anything with npm. `npm init stryker` downloads and runs Stryker's setup wizard, which asks a few questions, writes a config file, and installs the packages **with whichever package manager you choose**. Bennett used this path in PR 91. His AI log has the answers:
 
-| Prompt           | Answer                                                     |
-| ---------------- | ---------------------------------------------------------- |
-| Framework?       | **None/other** (this repo uses Vite, not create-react-app) |
-| Test runner?     | **vitest**, which installs the `vitest-runner` for you     |
-| Build command?   | **leave empty** (Vitest compiles TypeScript on the fly)    |
-| Reporters?       | **html, clear-text, progress** (the defaults)              |
-| Package manager? | **yarn** ← the important one                               |
-| Config format?   | **JSON**                                                   |
+| Prompt | Answer |
+|---|---|
+| Framework? | **None/other** (this repo uses Vite, not create-react-app) |
+| Test runner? | **vitest**, which installs the `vitest-runner` for you |
+| Build command? | **leave empty** (Vitest compiles TypeScript on the fly) |
+| Reporters? | **html, clear-text, progress** (the defaults) |
+| Package manager? | **yarn** ← the important one |
+| Config format? | **JSON** |
 
 You have to `cd` into `packages/loot-core` first. The wizard installs into whatever folder you're in, and if you run it from the repo root, the packages land in the root `package.json`.
 
@@ -655,7 +643,6 @@ You have to `cd` into `packages/loot-core` first. The wizard installs into whate
 Either way, you'll make the same edits to the generated config afterward: which files to mutate, and which Vitest config to use. That's Step 3.
 
 **Where you are now:**
-
 - **If you already ran the `yarn workspace … add` command,** Step 2 is done and you don't need the wizard. We'll write the config by hand in Step 3.
 - **If you haven't,** run the wizard instead, then paste me the `stryker.config.json` it creates and we'll adjust it together.
 
@@ -702,7 +689,6 @@ It's good for a quick check without leaving the terminal. On a big run, the list
 ## html: when you dig in
 
 This writes an interactive web page to `packages/loot-core/reports/mutation/mutation.html`. You open the file directly in a browser, no server needed. It shows:
-
 - a folder tree with a score for each file, so you can spot weak files quickly
 - your source code with each mutant marked inline: green for killed, red for survived
 - what each mutant changed, and which tests ran against it
@@ -758,9 +744,7 @@ The JavaScript option is `stryker.config.mjs`, a file that exports the settings.
 export default {
   testRunner: 'vitest',
   // run fewer mutants on CI, more locally
-  mutate: process.env.CI
-    ? ['src/server/budget/goal-template.ts']
-    : ['src/server/budget/**/*.ts'],
+  mutate: process.env.CI ? ['src/server/budget/goal-template.ts'] : ['src/server/budget/**/*.ts'],
 };
 ```
 
@@ -819,7 +803,6 @@ index e6c581b48..573b614d8 100644
      "@types/prompts": "^2.4.9",
      "@typescript/native-preview": "beta",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:09:56-0400)**_
@@ -865,7 +848,6 @@ index a5834d090..7b75c9f08 100644
  yarn.lock    | 1199 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
  3 files changed, 1186 insertions(+), 18 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:10:12-0400)**_
@@ -876,10 +858,10 @@ You picked the right answers. The config has yarn, vitest, the three reporters a
 
 There's one problem: it ran from the **repo root**, so everything went to the wrong place.
 
-|                                       | Where it went       | Where it belongs                  |
-| ------------------------------------- | ------------------- | --------------------------------- |
+| | Where it went | Where it belongs |
+|---|---|---|
 | The two `@stryker-mutator/*` packages | root `package.json` | `packages/loot-core/package.json` |
-| `stryker.config.json`                 | repo root           | `packages/loot-core/`             |
+| `stryker.config.json` | repo root | `packages/loot-core/` |
 
 **Why it matters:** Stryker treats the folder its config is in as the project. At the root, it would try to mutate and test the whole monorepo and couldn't find loot-core's Vitest setup. The packages also belong with the code they test, so anyone reading loot-core's `package.json` can see it uses Stryker.
 
@@ -920,7 +902,6 @@ yarn workspace @actual-app/core run stryker --version
 ```
 
 You should see:
-
 - `M packages/loot-core/package.json` and `?? packages/loot-core/stryker.config.json`
 - **no** `M package.json` (the root). If it's still listed, step 1 didn't work.
 - `M .gitignore` and `M yarn.lock` (both expected)
@@ -932,13 +913,16 @@ Tell me when that looks right and we'll start Step 3: telling Stryker which file
 
 _**User (2026-10-11 19:11:08-0400)**_
 
+
+
 <pasted_content id="9cfd">
 liammclemore@Liams-MacBook-Pro actual-budget % git status --short
-M .gitignore
-M package.json
-M yarn.lock
+ M .gitignore
+ M package.json
+ M yarn.lock
 ?? stryker.config.json
 </pasted_content id="9cfd">
+
 
 ---
 
@@ -961,13 +945,11 @@ Exit code 1
 ls: packages/loot-core/stryker.config.json: No such file or directory
 stryker.config.json
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:11:15-0400)**_
 
 Nothing has moved yet:
-
 - The two Stryker packages are still in the **root** `package.json`.
 - `stryker.config.json` is still at the repo root, not in `packages/loot-core/`.
 
@@ -1018,7 +1000,6 @@ Count commits on branch beyond master
 ```text
        0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:18:19-0400)**_
@@ -1121,7 +1102,6 @@ template-notes.ts
 tracking.ts
 util.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:33:31-0400)**_
@@ -1158,7 +1138,6 @@ Step 2 is confirmed: both packages are in `packages/loot-core/package.json`, the
 **`vitest.configFile`** names the Vitest config Stryker should use. loot-core has two Vitest configs (`vitest.config.ts` for Node and `vitest.web.config.ts` for the browser build), so we have to pick one. We point to **`vitest.stryker.config.ts`, which doesn't exist yet.** We'll create it in Step 4, and that step explains why we need a third config. Until then Stryker won't run, which is expected.
 
 **`mutate`** lists the files Stryker puts bugs into. It's the most important setting:
-
 - `src/server/budget/**/*.ts` means every `.ts` file under `src/server/budget`, including subfolders (that's the `**`). This is the budget logic, like `goal-template.ts`, `actions.ts` and `sort-categories.ts`.
 - `!src/**/*.test.ts` excludes test files. The `!` means "except". Mutating your tests makes no sense: you want to check whether the tests catch bugs in the code, not put bugs in the tests.
 - The `.pegjs` grammar files in that folder are skipped automatically, because they don't end in `.ts`. Stryker can't mutate them anyway.
@@ -1166,7 +1145,6 @@ Step 2 is confirmed: both packages are in `packages/loot-core/package.json`, the
 We start with one folder because every mutant means running tests again. Mutating all of loot-core would create tens of thousands of mutants and take hours. Your friend can point `mutate` at whatever area they're responsible for.
 
 **`coverageAnalysis: "perTest"`** makes Stryker first record which tests run which lines. Then, for each mutant, it runs only the tests that touch that line. There are three options:
-
 - `"off"`: run every test for every mutant. Correct, but very slow.
 - `"all"`: skip mutants that no test touches at all.
 - `"perTest"`: skip those, and also run only the relevant tests. This is the fastest, and the vitest-runner supports it.
@@ -1174,14 +1152,12 @@ We start with one folder because every mutant means running tests again. Mutatin
 **`reporters`** are the three we covered earlier: progress while it runs, clear-text when it finishes, html for digging in.
 
 **What we left out of the wizard's version:**
-
 - `_comment` and `testRunner_comment` were just notes, so we don't need them.
 - `packageManager` only matters to the wizard itself.
 
 ### Check that it worked
 
 Open the file in VS Code:
-
 - **There should be no red or yellow underlines.** If there are, the `$schema` path is probably wrong, or there's a trailing comma.
 - Hover over `"coverageAnalysis"`. A description from Stryker's schema should pop up, which tells you `$schema` is working.
 
@@ -1232,9 +1208,8 @@ EOF
 ```
 
 **How it works:**
-
 - `cat > file` writes whatever comes after it into `file`, creating the file or **overwriting it if it exists**.
-- `<<'EOF'` … `EOF` is a _heredoc_. Everything between the two `EOF` lines becomes the input to `cat`.
+- `<<'EOF'` … `EOF` is a *heredoc*. Everything between the two `EOF` lines becomes the input to `cat`.
 - **The quotes around `'EOF'` matter.** Without them, the shell treats `$schema` as a variable. Since it's not set, it becomes an empty string, and your file silently ends up with `"": "../../node_modules/..."`. The quotes tell the shell to copy the text exactly as written. This is a good gotcha to warn your friend about.
 
 **Check that it's valid JSON from the command line:**
@@ -1261,14 +1236,14 @@ _**Agent (claude-opus-5-5 2026-10-11 19:36:11-0400)**_
 
 Partly. It's the same wizard you ran with `npm init stryker`, just started a different way. Based on the file it created at the root earlier, here's what you'd get:
 
-| Setting                       | Does `stryker init` handle it?                                                                                                   |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `testRunner: "vitest"`        | ✅                                                                                                                               |
-| `coverageAnalysis: "perTest"` | ✅ (it picks this when you choose vitest)                                                                                        |
-| `reporters`                   | ✅                                                                                                                               |
-| `$schema`                     | ⚠️ It writes `./node_modules/...`, but the package is in the root `node_modules`, so you'd change it to `../../node_modules/...` |
-| `vitest.configFile`           | ❌ It doesn't ask. You add it by hand.                                                                                           |
-| `mutate`                      | ❌ It doesn't ask. You add it by hand. Without it, Stryker mutates the default set, which is most of `src/`.                     |
+| Setting | Does `stryker init` handle it? |
+|---|---|
+| `testRunner: "vitest"` | ✅ |
+| `coverageAnalysis: "perTest"` | ✅ (it picks this when you choose vitest) |
+| `reporters` | ✅ |
+| `$schema` | ⚠️ It writes `./node_modules/...`, but the package is in the root `node_modules`, so you'd change it to `../../node_modules/...` |
+| `vitest.configFile` | ❌ It doesn't ask. You add it by hand. |
+| `mutate` | ❌ It doesn't ask. You add it by hand. Without it, Stryker mutates the default set, which is most of `src/`. |
 
 So you'd still make three edits afterward, and those three lines are the ones specific to this repo. Writing the file yourself, with the heredoc or in VS Code, is about the same amount of work and has no leftover `_comment` lines.
 
@@ -1283,7 +1258,6 @@ yarn workspace @actual-app/core run stryker init
 `yarn workspace` runs it **inside** `packages/loot-core`, so the config lands in the right place this time.
 
 Things to know:
-
 - **It reinstalls the two packages.** The wizard always ends with an install step. They're already installed, so this does nothing harmful, but expect a short Yarn install.
 - **It writes `stryker.config.json`.** If you already created one, it may be replaced. Pick one way to make the file, not both.
 
@@ -1305,17 +1279,14 @@ _**Agent (claude-opus-5-5 2026-10-11 19:36:51-0400)**_
 You can, but you don't need both. There are two separate ways to set this up, and you only need one:
 
 **Path A: by hand**, the one we're on
-
 1. `yarn workspace @actual-app/core add -D @stryker-mutator/core @stryker-mutator/vitest-runner` ✅ done
 2. Write `stryker.config.json` yourself, with the heredoc or in VS Code
 
 **Path B: the wizard**
-
 1. `npm init stryker@latest`, run from inside `packages/loot-core`. It installs the packages **and** writes the config in one go.
 2. Fix the config: the `$schema` path, plus add `mutate` and `vitest.configFile`
 
 `stryker init` falls between the two. It's the wizard, but it comes with the `stryker` command, so it only works **after** the package is installed. If you run it now, after your `yarn add`, it will:
-
 - reinstall the packages, which does nothing since they're already there
 - write the starter config, which you then fix the same way as in Path B
 
@@ -1350,7 +1321,6 @@ Check working tree and branch commits
  M yarn.lock
        0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:37:44-0400)**_
@@ -1379,14 +1349,14 @@ Use **`npm init stryker@latest`**, not `stryker init`. Right after the restore, 
 
 **Answers to give:**
 
-| Prompt           | Answer                         | Why                                                                       |
-| ---------------- | ------------------------------ | ------------------------------------------------------------------------- |
-| Framework?       | **None/other**                 | This repo uses Vite + Vitest, not create-react-app                        |
-| Test runner?     | **vitest**                     | Installs the vitest-runner plugin                                         |
-| Build command?   | **leave empty**                | Vitest compiles TypeScript on the fly                                     |
-| Reporters?       | **html, clear-text, progress** | The defaults                                                              |
-| Package manager? | **yarn**                       | **Most important.** The repo uses Yarn 4, and npm would break the install |
-| Config format?   | **JSON**                       | Fixed settings, editor autocomplete                                       |
+| Prompt | Answer | Why |
+|---|---|---|
+| Framework? | **None/other** | This repo uses Vite + Vitest, not create-react-app |
+| Test runner? | **vitest** | Installs the vitest-runner plugin |
+| Build command? | **leave empty** | Vitest compiles TypeScript on the fly |
+| Reporters? | **html, clear-text, progress** | The defaults |
+| Package manager? | **yarn** | **Most important.** The repo uses Yarn 4, and npm would break the install |
+| Config format? | **JSON** | Fixed settings, editor autocomplete |
 
 ## Step 3: Check that everything landed in loot-core
 
@@ -1398,13 +1368,12 @@ git status --short
 ```
 
 **You should see:**
-
 - `M packages/loot-core/package.json` (the packages went to the right place)
 - `?? packages/loot-core/stryker.config.json` (the config is in the right place)
 - `M yarn.lock`
 - possibly `M .gitignore`. Keep it; it ignores `.stryker-tmp`.
 
-**You should _not_ see** `M package.json` (the root one) or `?? stryker.config.json` at the root. If you do, the wizard ran from the wrong folder again.
+**You should *not* see** `M package.json` (the root one) or `?? stryker.config.json` at the root. If you do, the wizard ran from the wrong folder again.
 
 Paste the `git status` output when you're done, and we'll make the three edits to the generated config: the `$schema` path, `mutate`, and `vitest.configFile`.
 
@@ -1418,7 +1387,7 @@ how do we run the command without doing cd? would it be npm init packages/loot-c
 
 _**Agent (claude-opus-5-5 2026-10-11 19:38:51-0400)**_
 
-No, that won't work. `npm init` takes exactly one thing to run, called the _initializer_. In your command, `packages/loot-core` would be read as the initializer. npm reads a name with a slash in it as a GitHub repo, so it would go looking for something to download at that address. The `stryker@latest` part would be passed along as an extra argument.
+No, that won't work. `npm init` takes exactly one thing to run, called the *initializer*. In your command, `packages/loot-core` would be read as the initializer. npm reads a name with a slash in it as a GitHub repo, so it would go looking for something to download at that address. The `stryker@latest` part would be passed along as an extra argument.
 
 ## Use a subshell
 
@@ -1426,7 +1395,7 @@ No, that won't work. `npm init` takes exactly one thing to run, called the _init
 (cd packages/loot-core && npm init stryker@latest)
 ```
 
-- **The parentheses** run everything inside them in a _subshell_, a temporary child copy of your terminal.
+- **The parentheses** run everything inside them in a *subshell*, a temporary child copy of your terminal.
 - **`cd packages/loot-core`** changes folders only inside that subshell.
 - **`&&`** means "run the next command only if the previous one worked." So if you mistype the path, the `cd` fails and the wizard **doesn't** run in the wrong folder. That's the mistake you hit earlier, so this protects against it.
 - When the wizard finishes, the subshell exits and your terminal is **still at the repo root**. There's no `cd ../..` to forget.
@@ -1436,7 +1405,6 @@ It still uses `cd`, but your terminal never actually leaves the root, which is t
 ## Why not an npm flag?
 
 npm has flags like `--prefix` and `-w` (workspace) that look like they should do this, but they don't fit:
-
 - **`-w`** is for npm workspaces. With `init`, it's meant to **create** a new workspace, and npm might try to edit the root `package.json` and run its own install. That's what we're avoiding.
 - **`--prefix`** changes where npm installs packages, not necessarily the folder the wizard writes its config in.
 
@@ -1492,7 +1460,6 @@ Exit code 1
   "coverageAnalysis": "perTest"
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:43:43-0400)**_
@@ -1523,20 +1490,19 @@ index 9d37d7341..777d487a7 100644
 ls: packages/loot-core/node_modules/@stryker-mutator: No such file or directory
 node_modules/@stryker-mutator/core/schema/stryker-schema.json
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:43:56-0400)**_
 
 The wizard worked this time:
 
-| Check                                              | Result                                                                                                                                                        |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Packages in `packages/loot-core/package.json`      | ✅ `@stryker-mutator/core` and `vitest-runner`, both `^10.0.0`                                                                                                |
-| Root `package.json` untouched                      | ✅                                                                                                                                                            |
-| Config at `packages/loot-core/stryker.config.json` | ✅                                                                                                                                                            |
-| No `package-lock.json`                             | ✅ (yarn was used)                                                                                                                                            |
-| `packages/loot-core/.gitignore`                    | ✅ It adds `.stryker-tmp`, the sandbox folder. Because you ran the wizard inside loot-core, it edited loot-core's own `.gitignore`, which is the right place. |
+| Check | Result |
+|---|---|
+| Packages in `packages/loot-core/package.json` | ✅ `@stryker-mutator/core` and `vitest-runner`, both `^10.0.0` |
+| Root `package.json` untouched | ✅ |
+| Config at `packages/loot-core/stryker.config.json` | ✅ |
+| No `package-lock.json` | ✅ (yarn was used) |
+| `packages/loot-core/.gitignore` | ✅ It adds `.stryker-tmp`, the sandbox folder. Because you ran the wizard inside loot-core, it edited loot-core's own `.gitignore`, which is the right place. |
 
 ---
 
@@ -1564,7 +1530,6 @@ The wizard got the general settings right. We need to add the parts specific to 
 **2. Added `vitest.configFile`.** loot-core has two Vitest configs: `vitest.config.ts` for Node and `vitest.web.config.ts` for the browser build. We point Stryker at a **third** config, `vitest.stryker.config.ts`, which we'll create in Step 4. That step explains why. Until then, Stryker won't run.
 
 **3. Added `mutate`.** This is the list of files Stryker puts bugs into:
-
 - `src/server/budget/**/*.ts` means every `.ts` file under the budget folder (`**` includes subfolders): `goal-template.ts`, `actions.ts`, `sort-categories.ts` and the rest.
 - `!src/**/*.test.ts` excludes test files. The `!` means "except." You're testing whether the tests catch bugs, so the tests themselves must stay intact.
 - Without `mutate`, Stryker defaults to most of `src/`, which in loot-core means tens of thousands of mutants and hours of running. Starting with one folder keeps runs short. Your friend can point it at whatever area they work on.
@@ -1616,7 +1581,6 @@ _**Agent (claude-opus-5-5 2026-10-11 19:46:38-0400)**_
 ```
 
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:46:46-0400)**_
@@ -1651,7 +1615,6 @@ For more specific details about StrykerJS's particular per-package configuration
 
 REMINDER: You MUST include the sources above in your response to the user using markdown hyperlinks.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:46:48-0400)**_
@@ -1684,7 +1647,6 @@ To find the exact fileMatch patterns for stryker.config.json, you would need to 
 
 REMINDER: You MUST include the sources above in your response to the user using markdown hyperlinks.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:46:49-0400)**_
@@ -1713,10 +1675,9 @@ Check SchemaStore and Stryker docs for schema info
 ...  Config file | Stryker Mutator {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":"https://stryker-mutator.io/docs/stryker-js/config-file","name":"Config file","position":1}]} function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-JN49KF9BV1",{anonymize_ip:!0}) window.__COPY_PAGE_BUTTON_OPTIONS__={customStyles:{},generateMarkdownRoutes
 ... s StrykerJS Config file On this page Config file Although a config file is not mandatory, it is recommended. You can define your Stryker configuration in either a JavaScript or JSON file. If you use a JavaScript file, it should export the configuration object. Autocompletion is supported using JSON schema or using @type JS docs . Configuration options ​ See configuration for a list of available options. Setup ​ With a stryker.config.json : { "$schema" : "./node_modules/@stryker-mutator/core/schema/stryker-schema.json" , "_comment" : "Comments can be put inside `xxx_comment` properties." } Or as stryker.config.js : // @ts-check /** * @type { import ( '@stryker-mutator/api/core' ) . PartialStr
 ... on in either a JavaScript or JSON file. If you use a JavaScript file, it should export the configuration object. Autocompletion is supported using JSON schema or using @type JS docs . Configuration options ​ See configuration for a list of available options. Setup ​ With a stryker.config.json : { "$schema" : "./node_modules/@stryker-mutator/core/schema/stryker-schema.json" , "_comment" : "Comments can be put inside `xxx_comment` properties." } Or as stryker.config.js : // @ts-check /** * @type { import ( '@stryker-mutator/api/core' ) . PartialStrykerOptions } */ module . exports = { // Your config here } ; Since Stryker version 6 you can define your config in a native ECMAScript module . Eit
-... se a JavaScript file, it should export the configuration object. Autocompletion is supported using JSON schema or using @type JS docs . Configuration options ​ See configuration for a list of available options. Setup ​ With a stryker.config.json : { "$schema" : "./node_modules/@stryker-mutator/core/schema/stryker-schema.json" , "_comment" : "Comments can be put inside `xxx_comment` properties." } Or as stryker.config.js : // @ts-check /** * @type { import ( '@stryker-mutator/api/core' ) . PartialStrykerOptions } */ module . exports = { // Your config here } ; Since Stryker version 6 you can define your config in a native ECMAScript module . Either using the .mjs extension, or .js if you use
+... se a JavaScript file, it should export the configuration object. Autocompletion is supported using JSON schema or using @type JS docs . Configuration options ​ See configuration for a list of available options. Setup ​ With a stryker.config.json : { "$schema" : "./node_modules/@stryker-mutator/core/schema/stryker-schema.json" , "_comment" : "Comments can be put inside `xxx_comment` properties." } Or as stryker.config.js : // @ts-check /** * @type { import ( '@stryker-mutator/api/core' ) . PartialStrykerOptions } */ module . exports = { // Your config here } ; Since Stryker version 6 you can define your config in a native ECMAScript module . Either using the .mjs extension, or .js if you use 
 ...  file, it should export the configuration object. Autocompletion is supported using JSON schema or using @type JS docs . Configuration options ​ See configuration for a list of available options. Setup ​ With a stryker.config.json : { "$schema" : "./node_modules/@stryker-mutator/core/schema/stryker-schema.json" , "_comment" : "Comments can be put inside `xxx_comment` properties." } Or as stryker.config.js
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:46:57-0400)**_
@@ -1743,7 +1704,6 @@ Check SchemaStore's Stryker schema URL resolves
       "title": "CommandRunnerOptions",
       "type": "object",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:47:16-0400)**_
@@ -1760,12 +1720,12 @@ The other two edits aren't about the monorepo. **`mutate`** and **`vitest.config
 
 ## Your options for `$schema`
 
-| Option                                                             | How                                                                                                                   | Trade-off                                                                                                                                                                                                                                                                                                                  |
-| ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1. Keep `../../`** (recommended)                                 | What you have now                                                                                                     | Matches the Stryker version you installed. Same as PR 91.                                                                                                                                                                                                                                                                  |
-| **2. Rename the file to `stryker.conf.json` and delete `$schema`** | VS Code finds the schema by itself                                                                                    | [SchemaStore](https://www.schemastore.org/api/json/catalog.json), the catalog VS Code uses to find schemas, recognizes `stryker.conf.json` but **not** `stryker.config.json`. Its schema comes from Stryker's latest code on GitHub, so it may not match your installed version. It also wouldn't match PR 91's file name. |
-| **3. Use the web URL**                                             | `"$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker/master/packages/api/schema/stryker-core.json"` | Works from any folder depth, but has the same version mismatch as option 2.                                                                                                                                                                                                                                                |
-| **4. Delete `$schema`**                                            | Remove the line                                                                                                       | Stryker runs the same. You only lose autocomplete and typo warnings.                                                                                                                                                                                                                                                       |
+| Option | How | Trade-off |
+|---|---|---|
+| **1. Keep `../../`** (recommended) | What you have now | Matches the Stryker version you installed. Same as PR 91. |
+| **2. Rename the file to `stryker.conf.json` and delete `$schema`** | VS Code finds the schema by itself | [SchemaStore](https://www.schemastore.org/api/json/catalog.json), the catalog VS Code uses to find schemas, recognizes `stryker.conf.json` but **not** `stryker.config.json`. Its schema comes from Stryker's latest code on GitHub, so it may not match your installed version. It also wouldn't match PR 91's file name. |
+| **3. Use the web URL** | `"$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker/master/packages/api/schema/stryker-core.json"` | Works from any folder depth, but has the same version mismatch as option 2. |
+| **4. Delete `$schema`** | Remove the line | Stryker runs the same. You only lose autocomplete and typo warnings. |
 
 I checked that the URL in options 2 and 3 still works.
 
@@ -1774,7 +1734,6 @@ I checked that the URL in options 2 and 3 still works.
 When the config is in place and `valid JSON` prints, tell me and we'll do Step 4: the Stryker-specific Vitest config.
 
 Sources:
-
 - [Stryker Mutator: Config file](https://stryker-mutator.io/docs/stryker-js/config-file/)
 - [SchemaStore catalog](https://www.schemastore.org/api/json/catalog.json)
 - [stryker-js (GitHub fork)](https://github.com/zeyangxu/stryker-js)
@@ -1865,11 +1824,9 @@ Written for: your friend. This continues your guide in your voice and picks up w
 ## Fixes for the earlier part of your draft
 
 1. **Add a check right after the wizard.** Your friend made the same mistake you did, running it from the wrong folder, and this catches it right away:
-
    > Go back to the root (`cd ../..`) and run `git status --short`. You should see `packages/loot-core/package.json`, `packages/loot-core/stryker.config.json`, `packages/loot-core/.gitignore` and `yarn.lock`. If you see the **root** `package.json` or a `stryker.config.json` at the root, the wizard ran in the wrong folder.
 
    This also fixes a quieter problem: your draft `cd`s into loot-core and never comes back, but every command after that (including the `node -e` check above) assumes you're at the root. Alternatively, swap your `cd` lines for `(cd packages/loot-core && npm init stryker@latest)`.
-
 2. **Say why yarn matters.** "Our repo uses yarn" is true, but the real reason is that picking npm creates a `package-lock.json` that conflicts with `yarn.lock` and can break the install. That's what makes your friend take it seriously.
 3. **Typos:** "withing" → "within", "strykerk.config.json" → "stryker.config.json", and "Then select" in the first prompt is part of Stryker's question, so it's fine as is.
 
@@ -1898,7 +1855,6 @@ Read Stryker vitest-runner docs and find mutations test
 ```text
 ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:55:22-0400)**_
@@ -1910,10 +1866,9 @@ Extract vitest-runner docs text and locate mutations test
 `curl -sL https://stryker-mutator.io/docs/stryker-js/vitest-runner/ | python3 -c "import sys,re,html; t=re.sub(r'<script.*?</script>|<style.*?</style>','',sys.stdin.read(),flags=re.S); t=re.sub(r'<[^>]+>',' ',t); t=html.unescape(re.sub(r'\s+',' ',t)); i=t.find('Install'); print(t[i:i+5000])"; echo ---; grep -rln "mutations" --include='*.test.ts' packages/loot-core/src | head`
 
 ```text
-Install ​ Install @stryker-mutator/vitest-runner locally within your project folder, like so: npm i --save-dev @stryker-mutator/vitest-runner Bring your own test runner ​ This plugin does not come packaged with it's own version of vitest , instead install your own version of vitest in your project. See @stryker-mutator/vitest-runner 's package.json file to discover the minimal required version of vitest . Configuring ​ You can configure the @stryker-mutator/vitest-runner using the stryker.config.json (or stryker.config.js ) config file. { "testRunner" : "vitest" , "vitest" : { "configFile" : "vitest.config.js" , "dir" : "packages" , "related" : true } } vitest.configFile [ string | undefined ] ​ Default: undefined Specify a 'vitest.config.js' file to be loaded. By default vitest will look for a vitest.config.js (or .ts ) file in the root of your project. vitest.dir [ string | undefined ] ​ Since v7.1 Default: undefined Configure the --dir <path> command line option. See https://vitest.dev/guide/cli.html#options . vitest.related [ boolean ] ​ Default: true If set to true , Vitest will only run tests that are related to the mutated files. It uses the related under the hood. Disable this if your test files don't import your source files directly, for example when using API calls to call your server code in integration tests. Non overridable options ​ The following options will be set by Stryker and cannot be overridden: { threads : true , coverage : { enabled : false } , includeTaskLocation : true , singleThread : true , watch : false , bail : options . disableBail ? 0 : 1 , onConsoleLog : ( ) => false , } As you can see, the vitest runner: Will run your tests in a single thread This is done because StrykerJS uses it's own parallel workers . Will bail on the first test failure (unless you set disableBail to true ). This is done to boost performance. Will disable code coverage reporting This is done because StrykerJS uses it's own coverage analysis , which is supported. Will report the location of each test This is done so incremental mode can tell which tests changed. In-source testing ​ Vitest's in-source testing is supported. However, since your tests are in the same file as your code-under-test, you will need to make sure to exclude your tests from being mutated. For example, you can add the Stryker disable comment ( // Stryker disable all ) right before if (import.meta.vitest) like so: export function add(...args: number[]) { return args.reduce((a, b) => a + b, 0) } // in-source test suites + // Stryker disable all: Unit tests start here if (import.meta.vitest) { const { it, expect } = import.meta.vitest it('add', () => { expect(add(1, 2, 3)).toBe(6) }) } Limitations ​ The vitest runner has the following limitations: Currently, only threads: true is supported. If you need it if off, please let us know by opening a feature request . Currently, Browser Mode is not supported. If you're using browser mode and want support for it in StrykerJS, please open a feature request Your coverageAnalysis property is ignored. The vitest runner plugin will always use "perTest" coverage analysis (which yields the best performance anyway). Edit this page Previous Tap Runner Next TypeScript Checker Install Bring your own test runner Configuring vitest.configFile [ string | undefined ] vitest.dir [ string | undefined ] vitest.related [ boolean ] Non overridable options In-source testing Limitations Docs FAQ Community Slack Twitter More Blog GitHub Powered by Info Support . Stryker is released under the Apache 2.0 license. Site by the Stryker team . Logo by Selina van den Top.
+Install ​ Install @stryker-mutator/vitest-runner locally within your project folder, like so: npm i --save-dev @stryker-mutator/vitest-runner Bring your own test runner ​ This plugin does not come packaged with it's own version of vitest , instead install your own version of vitest in your project. See @stryker-mutator/vitest-runner 's package.json file to discover the minimal required version of vitest . Configuring ​ You can configure the @stryker-mutator/vitest-runner using the stryker.config.json (or stryker.config.js ) config file. { "testRunner" : "vitest" , "vitest" : { "configFile" : "vitest.config.js" , "dir" : "packages" , "related" : true } } vitest.configFile [ string | undefined ] ​ Default: undefined Specify a 'vitest.config.js' file to be loaded. By default vitest will look for a vitest.config.js (or .ts ) file in the root of your project. vitest.dir [ string | undefined ] ​ Since v7.1 Default: undefined Configure the --dir <path> command line option. See https://vitest.dev/guide/cli.html#options . vitest.related [ boolean ] ​ Default: true If set to true , Vitest will only run tests that are related to the mutated files. It uses the related under the hood. Disable this if your test files don't import your source files directly, for example when using API calls to call your server code in integration tests. Non overridable options ​ The following options will be set by Stryker and cannot be overridden: { threads : true , coverage : { enabled : false } , includeTaskLocation : true , singleThread : true , watch : false , bail : options . disableBail ? 0 : 1 , onConsoleLog : ( ) => false , } As you can see, the vitest runner: Will run your tests in a single thread This is done because StrykerJS uses it's own parallel workers . Will bail on the first test failure (unless you set disableBail to true ). This is done to boost performance. Will disable code coverage reporting This is done because StrykerJS uses it's own coverage analysis , which is supported. Will report the location of each test This is done so incremental mode can tell which tests changed. In-source testing ​ Vitest's in-source testing is supported. However, since your tests are in the same file as your code-under-test, you will need to make sure to exclude your tests from being mutated. For example, you can add the Stryker disable comment ( // Stryker disable all ) right before if (import.meta.vitest) like so: export function add(...args: number[]) { return args.reduce((a, b) => a + b, 0) } // in-source test suites + // Stryker disable all: Unit tests start here if (import.meta.vitest) { const { it, expect } = import.meta.vitest it('add', () => { expect(add(1, 2, 3)).toBe(6) }) } Limitations ​ The vitest runner has the following limitations: Currently, only threads: true is supported. If you need it if off, please let us know by opening a feature request . Currently, Browser Mode is not supported. If you're using browser mode and want support for it in StrykerJS, please open a feature request Your coverageAnalysis property is ignored. The vitest runner plugin will always use "perTest" coverage analysis (which yields the best performance anyway). Edit this page Previous Tap Runner Next TypeScript Checker Install Bring your own test runner Configuring vitest.configFile [ string | undefined ] vitest.dir [ string | undefined ] vitest.related [ boolean ] Non overridable options In-source testing Limitations Docs FAQ Community Slack Twitter More Blog GitHub Powered by Info Support . Stryker is released under the Apache 2.0 license. Site by the Stryker team . Logo by Selina van den Top. 
 ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:55:49-0400)**_
@@ -1924,11 +1879,11 @@ Short answer: Stryker changes how Vitest runs, and loot-core's full test suite d
 
 According to the [vitest-runner docs](https://stryker-mutator.io/docs/stryker-js/vitest-runner/), Stryker forces these settings, and **you can't override them**:
 
-| Stryker forces                     | What it means for loot-core                                                                                                                                                                                                          |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`threads: true`**                | Tests run in worker threads instead of Vitest's usual separate processes. loot-core's tests use **native SQLite** (`better-sqlite3`), and native modules can crash in worker threads. That's the Windows crash Bennett hit in PR 91. |
-| **`bail: 1`**                      | Stops at the **first** failing test.                                                                                                                                                                                                 |
-| An initial test run that must pass | Before creating any mutants, Stryker runs your tests once without changes. If anything fails, it stops.                                                                                                                              |
+| Stryker forces | What it means for loot-core |
+|---|---|
+| **`threads: true`** | Tests run in worker threads instead of Vitest's usual separate processes. loot-core's tests use **native SQLite** (`better-sqlite3`), and native modules can crash in worker threads. That's the Windows crash Bennett hit in PR 91. |
+| **`bail: 1`** | Stops at the **first** failing test. |
+| An initial test run that must pass | Before creating any mutants, Stryker runs your tests once without changes. If anything fails, it stops. |
 
 Taken together: if Stryker loads the full loot-core suite, **any** test anywhere in loot-core that crashes in threads mode, or fails for unrelated reasons, stops your mutation run, even though you're only mutating budget code.
 
@@ -1976,7 +1931,6 @@ Earlier I said `coverageAnalysis: "perTest"` is what turns on per-test coverage.
 Ready for Step 4? Creating this file is the step.
 
 Sources:
-
 - [Stryker Mutator: Vitest runner](https://stryker-mutator.io/docs/stryker-js/vitest-runner/)
 
 ---
@@ -2002,7 +1956,6 @@ Show current config and list tests Vitest finds with dir
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: run yarn from the repo root, not a child workspace (AGENTS.md). Use 'yarn workspace <name> <cmd>' from the root instead.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:56:51-0400)**_
@@ -2038,7 +1991,6 @@ src/server/budget/sort-categories.test.ts
 src/server/budget/subcategories.test.ts
 src/server/budget/template-notes.test.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:57:03-0400)**_
@@ -2067,7 +2019,6 @@ Replace the contents of `packages/loot-core/stryker.config.json` with:
 ```
 
 **What's different from the version I gave you before:**
-
 - **`vitest.configFile` is now the normal `vitest.config.ts`.** loot-core has two Vitest configs, so naming one avoids guessing. The budget tests get the same setup they always use.
 - **`vitest.dir` is new.** It tells Vitest to look for test files only in `src/server/budget`. The initial test run and every mutant then use just those 9 budget test files. A crash or failure elsewhere in loot-core can't stop your run.
 - **`coverageAnalysis` is gone,** because the vitest-runner ignores it and always uses perTest.
@@ -2085,7 +2036,6 @@ Then hover over `"testRunner"` in VS Code to confirm the `$schema` path works.
 ---
 
 **The updated plan:**
-
 1. ✅ Branch
 2. ✅ Install with the wizard
 3. **Edit the config** ← you are here
@@ -2171,7 +2121,6 @@ src/server/api.test.ts
 src/server/main.test.ts
 src/server/forecast/app.test.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:58:23-0400)**_
@@ -2188,17 +2137,16 @@ packages/loot-core/src/server/forecast/app.test.ts:4:import { createAllBudgets }
 packages/loot-core/src/server/main.test.ts:10:import * as budgetActions from './budget/actions';
 packages/loot-core/src/server/main.test.ts:11:import * as budget from './budget/base';
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 19:58:40-0400)**_
 
 Yes. loot-core has **71 test files**, and `dir` loads only the 9 in the budget folder. I checked which of the other 62 use budget code directly. There are three:
 
-| Test file                         | What it imports from budget           |
-| --------------------------------- | ------------------------------------- |
-| `src/server/main.test.ts`         | `budget/actions` and `budget/base`    |
-| `src/server/api.test.ts`          | `createBudget` from `budget/base`     |
+| Test file | What it imports from budget |
+|---|---|
+| `src/server/main.test.ts` | `budget/actions` and `budget/base` |
+| `src/server/api.test.ts` | `createBudget` from `budget/base` |
 | `src/server/forecast/app.test.ts` | `createAllBudgets` from `budget/base` |
 
 Some tests could also reach budget code **indirectly**, by calling something that calls budget code. A search of imports can't see that.
@@ -2229,30 +2177,33 @@ _**User (2026-10-11 20:00:42-0400)**_
 
 <ide_opened_file>The user opened the file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/loot-core/stryker.config.json in the IDE. This may or may not be related to the current task.</ide_opened_file>
 
+
+
 <pasted_content id="9cfd">
 liammclemore@Liams-MacBook-Pro loot-core % node -e "JSON.parse(require('fs').readFileSync('packages/loot-core/stryker.config.json','utf8')); console.log('valid JSON')"
 node:fs:440
-return binding.readFileUtf8(path, stringToFlags(options.flag));
-^
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
 
 Error: ENOENT: no such file or directory, open 'packages/loot-core/stryker.config.json'
-at Object.readFileSync (node:fs:440:20)
-at [eval]:1:26
-at runScriptInThisContext (node:internal/vm:219:10)
-at node:internal/process/execution:451:12
-at [eval]-wrapper:6:24
-at runScriptInContext (node:internal/process/execution:449:60)
-at evalFunction (node:internal/process/execution:283:30)
-at evalTypeScript (node:internal/process/execution:295:3)
-at node:internal/main/eval_string:71:3 {
-errno: -2,
-code: 'ENOENT',
-syscall: 'open',
-path: 'packages/loot-core/stryker.config.json'
+    at Object.readFileSync (node:fs:440:20)
+    at [eval]:1:26
+    at runScriptInThisContext (node:internal/vm:219:10)
+    at node:internal/process/execution:451:12
+    at [eval]-wrapper:6:24
+    at runScriptInContext (node:internal/process/execution:449:60)
+    at evalFunction (node:internal/process/execution:283:30)
+    at evalTypeScript (node:internal/process/execution:295:3)
+    at node:internal/main/eval_string:71:3 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'packages/loot-core/stryker.config.json'
 }
 
 Node.js v24.10.0
 </pasted_content id="9cfd">
+
 
 ---
 
@@ -2323,7 +2274,6 @@ lib-dist
 186:    "test:node": "ENV=node vitest --run",
 187:    "test:web": "ENV=web vitest --run -c vitest.web.config.ts",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 20:02:39-0400)**_
@@ -2379,7 +2329,6 @@ git check-ignore -v packages/loot-core/reports/mutation/mutation.html
 ```
 
 **What you should see:**
-
 - The first command prints usage text that starts with something like `Usage: stryker run [options]`. If it says `Couldn't find a script named "mutation-test"`, check the spelling and the comma at the end of the line before it.
 - The second prints the `.gitignore` line that matched, like `packages/loot-core/.gitignore:7:reports/mutation`. If it prints **nothing**, the file isn't ignored. Check the spelling.
 
@@ -2500,7 +2449,6 @@ Run full loot-core suite in threads pool
 yarn workspace @actual-app/core exec vitest --run --pool=threads 2>&1  111.83s user 8.19s system 215% cpu 55.680 total
 tail -25  0.00s user 0.00s system 0% cpu 55.679 total
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:07:15-0400)**_
@@ -2517,10 +2465,10 @@ Everything passed and nothing crashed. The SQLite crash that made Bennett limit 
 
 ## Two separate settings
 
-| Setting          | Controls                                       | Use the whole package?                                                                            |
-| ---------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **`vitest.dir`** | Which **tests** are available to catch mutants | ✅ Yes, on your Mac. Remove `dir`.                                                                |
-| **`mutate`**     | Which **code** gets bugs put into it           | ❌ Keep it narrow. All of loot-core would mean tens of thousands of mutants and hours of running. |
+| Setting | Controls | Use the whole package? |
+|---|---|---|
+| **`vitest.dir`** | Which **tests** are available to catch mutants | ✅ Yes, on your Mac. Remove `dir`. |
+| **`mutate`** | Which **code** gets bugs put into it | ❌ Keep it narrow. All of loot-core would mean tens of thousands of mutants and hours of running. |
 
 Using every test is good: tests like `main.test.ts` and `api.test.ts` can now catch budget mutants, which fixes the blind spot I described earlier. Each mutant still runs only the **related** tests (the vitest-runner's default), not all 1,029, so mutants don't get much slower.
 
@@ -2606,6 +2554,7 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
+
 ---
 
 _**Agent (claude-opus-5-5 2026-10-11 21:11:17-0400)**_
@@ -2645,7 +2594,6 @@ origin	https://github.com/CSCI-435-SE/actual-budget.git (fetch)
 origin	https://github.com/CSCI-435-SE/actual-budget.git (push)
 .github/PULL_REQUEST_TEMPLATE.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:11:25-0400)**_
@@ -2668,7 +2616,6 @@ _**Agent (claude-opus-5-5 2026-10-11 21:11:25-0400)**_
 7	reports/mutation
 8
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:11:30-0400)**_
@@ -2690,7 +2637,6 @@ reports/mutation
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/loot-core/.gitignore has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:11:32-0400)**_
@@ -2740,7 +2686,6 @@ yarn workspace @actual-app/core run stryker run --mutate  2>&1  69.37s user 14.8
 grep -vE '^\s*$'  0.01s user 0.02s system 0% cpu 16.116 total
 tail -30  0.00s user 0.00s system 0% cpu 16.115 total
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:11:54-0400)**_
@@ -2763,7 +2708,6 @@ Confirm reports and sandbox are ignored
 packages/loot-core/.gitignore:7:reports/mutation	packages/loot-core/reports/mutation/mutation.html
 packages/loot-core/.gitignore:6:.stryker-tmp	packages/loot-core/.stryker-tmp
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:13:09-0400)**_
@@ -2797,7 +2741,6 @@ Date	YYYY-MM-DD — the date the session started	2026-09-10
 Tool	lowercase, hyphenated (see table below)	claude-code
 Slug	brief description, lowercase, hyphens, no spaces	issue-42-auth-fix
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:13:12-0400)**_
@@ -2836,37 +2779,36 @@ ai-logs/README.md
 ╰─────────────────────────────────────────────────────────────╯
 
 
-  Create or update markdown files for the agent sessions in the current working directory.
-
-  By default, syncs all registered providers that have activity.
-  Provide a specific agent ID to sync a specific provider.
-
-  Available provider IDs: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code
-  Copilot IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini
-  (Gemini CLI), muse (Muse Code).
-
-  USAGE
-
-    specstory sync [provider-id] [--flags]
-
-  EXAMPLES
-
-    # Sync all agents with activity
-    specstory sync
-
-    # Sync specific agent
-    specstory sync antigravity
-    specstory sync claude
-    specstory sync codex
-    specstory sync copilotide
-    specstory sync cursor
-    specstory sync cursoride
-    specstory sync deepseek
-    specstory sync droid
-    specstory sync gemini
+  Create or update markdown files for the agent sessions in the current working directory.                              
+                                                                                                                        
+  By default, syncs all registered providers that have activity.                                                        
+  Provide a specific agent ID to sync a specific provider.                                                              
+                                                                                                                        
+  Available provider IDs: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code   
+  Copilot IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini 
+  (Gemini CLI), muse (Muse Code).                                                                                       
+         
+  USAGE  
+         
+    specstory sync [provider-id] [--flags]                                
+            
+  EXAMPLES  
+            
+    # Sync all agents with activity                                       
+    specstory sync                                                        
+                                                                          
+    # Sync specific agent                                                 
+    specstory sync antigravity                                            
+    specstory sync claude                                                 
+    specstory sync codex                                                  
+    specstory sync copilotide                                             
+    specstory sync cursor                                                 
+    specstory sync cursoride                                              
+    specstory sync deepseek                                               
+    specstory sync droid                                                  
+    specstory sync gemini                                                 
     specstory sync muse
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:13:23-0400)**_
@@ -2885,15 +2827,13 @@ This folder contains AI interaction logs for each sprint.
 ## Structure
 
 ```
-
 ai-logs/
-sprint0/
-<your-github-username>/
-YYYY-MM-DD_<tool>_<short-description>.md
-YYYY-MM-DD_<tool>_<short-description>/ ← attachments (images, etc.)
-sprint1/
-...
-
+  sprint0/
+    <your-github-username>/
+      YYYY-MM-DD_<tool>_<short-description>.md
+      YYYY-MM-DD_<tool>_<short-description>/    ← attachments (images, etc.)
+  sprint1/
+    ...
 ```
 
 ## Instructions
@@ -2902,28 +2842,28 @@ See the [Sprint 0 deliverables](../../docs/sprints.md#d4--ai-tooling-setup) for 
 
 Tool identifiers for filenames: `claude-code`, `claude-web`, `claude-desktop`, `cursor`, `gemini-cli`, `codex-cli`, `copilot`, `chatgpt`, `gemini-web`, `other-<name>`.
 ---
-    specstory sync muse
-
-    # Sync a specific session by UUID
-    specstory sync -s <session-id>
-
-    # Sync multiple sessions
-    specstory sync -s <session-id-1> -s <session-id-2> -s <session-id-3>
-
-    # Output session markdown to stdout without saving
-    specstory sync -s <session-id> --print
-
-    # Output multiple sessions to stdout
-    specstory sync -s <session-id-1> -s <session-id-2> --print
-
-    # Sync all sessions for the current directory, with console output
-    specstory sync --console
-
-    # Sync all sessions for the current directory, with a log file
-    specstory sync --log
-
-  FLAGS
-
+    specstory sync muse                                                   
+                                                                          
+    # Sync a specific session by UUID                                     
+    specstory sync -s <session-id>                                        
+                                                                          
+    # Sync multiple sessions                                              
+    specstory sync -s <session-id-1> -s <session-id-2> -s <session-id-3>  
+                                                                          
+    # Output session markdown to stdout without saving                    
+    specstory sync -s <session-id> --print                                
+                                                                          
+    # Output multiple sessions to stdout                                  
+    specstory sync -s <session-id-1> -s <session-id-2> --print            
+                                                                          
+    # Sync all sessions for the current directory, with console output    
+    specstory sync --console                                              
+                                                                          
+    # Sync all sessions for the current directory, with a log file        
+    specstory sync --log                                                  
+         
+  FLAGS  
+         
     --config-dir              Custom directory for the project-level config.toml (default: ./.specstory/cli)
     --console                 Enable error/warn/info output to stdout
     --debug                   Enable debug-level output (requires --console or --log)
@@ -2944,7 +2884,6 @@ Tool identifiers for filenames: `claude-code`, `claude-web`, `claude-desktop`, `
     -s --session              Optional session IDs to sync (can be specified multiple times, provider-specific format)
     --silent                  Suppress all non-error output
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:13:28-0400)**_
@@ -2972,7 +2911,6 @@ ai-logs/sprint1/bennettmatuszewski/:
 2026-09-30_claude-code_issue-56-export-budget-to-csv.md
 2026-10-05_claude-code_review-issue-68.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5-5 2026-10-11 21:13:33-0400)**_

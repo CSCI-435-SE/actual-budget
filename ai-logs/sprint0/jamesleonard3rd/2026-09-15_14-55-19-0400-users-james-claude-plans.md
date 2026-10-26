@@ -22,30 +22,30 @@ _**Agent (claude-opus-5 2026-09-15 14:55:30-0400)**_
 
 ```text
 1	# Finish the experimental currency migration: remaining hardcoded sites
-2
+2	
 3	## Context
-4
+4	
 5	Actual has an experimental `currency` feature flag that introduces a `defaultCurrencyCode` synced pref plus `currencySymbolPosition` and `currencySpaceBetweenAmountAndSymbol`. The single reactive abstraction for rendering and parsing money is `useFormat()` at [useFormat.ts](packages/desktop-client/src/hooks/useFormat.ts) — a callable `format(value, 'financial' | 'financial-with-sign' | 'financial-no-decimals' | 'number' | …)` plus `.forEdit(integer)`, `.fromEdit(string)`, `.currency`.
-6
+6	
 7	**The flag stays in place.** `useFormat` never consults `useFeatureFlag`; when the flag is off, [settings/index.tsx:189-192](packages/desktop-client/src/components/settings/index.tsx#L189-L192) forces `defaultCurrencyCode` to `''`, `getCurrency('')` returns the no-symbol sentinel, and `applyCurrencyStyling` short-circuits. So `format(x, 'financial')` is byte-identical to legacy `integerToCurrency(x)` with the flag off. Migrating a call site is a no-op today and a fix once the flag is on.
-8
+8	
 9	Commit `59b092269` migrated 13 display sites (transactions, mobile transactions, accounts, modals). Reports were already ~95% migrated on `master` — 31 files under `components/reports/` call `useFormat`, including the non-hook spreadsheets, which take `format` as a parameter.
-10
+10	
 11	**What remains is two distinct classes of problem**, and the second is bigger than a grep for the legacy display helpers suggests:
-12
+12	
 13	1. **Legacy display/parse helpers** — 12 desktop-client files still import the currency-unaware globals (`integerToCurrency`, `amountToCurrency`, `currencyToAmount`, `appendDecimals`, …). These read a mutable module global and emit no symbol.
 14	2. **Hardcoded 2-decimal arithmetic** — `amountToInteger(x)` / `integerToAmount(x)` default to `decimalPlaces = 2` ([util.ts:541,549](packages/loot-core/src/shared/util.ts#L541)), and several sites do raw `/100` or `*100`. These are _silently wrong today_ for JPY/KRW/IRR (0 decimals), independent of any symbol rendering.
-15
+15	
 16	Scope for this pass: **desktop-client display and input/parse paths.** The `loot-core` server, public `api`, and `sync-server` surfaces are catalogued at the end as a separate follow-up — they have no hook access and touch a public API contract and ~20 bank integrations.
-17
+17	
 18	All claims below were verified directly against the source, not taken from the audit summaries.
-19
+19	
 20	## Phase 0 — Groundwork (do first; the rest depends on it)
-21
+21	
 22	**0a. Export `fromAmount` / `toAmount` from `useFormat`.** They already exist as internal `useCallback`s at [useFormat.ts:220-228](packages/desktop-client/src/hooks/useFormat.ts#L220-L228) but the `Object.assign` return at line 282 exposes only `forEdit`, `fromEdit`, `currency`. Several remaining sites hold decimal `Amount`s, not `IntegerAmount`s. Add both to `UseFormatResult` and the return.
-23
+23	
 24	**0b. Add `packages/desktop-client/src/hooks/useFormat.test.ts`.** There is no coverage today for the hook that owns symbol placement, the bidi control characters, and the `fromEdit` parse fallback. Cover:
-25
+25	
 26	- symbol before/after, with and without the ` ` separator
 27	- the `‪`/`‬` isolates and negative-sign hoisting (`-$5.00`, not `$-5.00`)
 28	- `'financial-with-sign'` `+` prefix for `>= 0`
@@ -53,109 +53,109 @@ _**Agent (claude-opus-5 2026-09-15 14:55:30-0400)**_
 30	- a zero-decimal currency (JPY) end-to-end, incl. `forEdit` → `fromEdit` round-trip
 31	- `fromEdit` stripping directional chars/letters, and falling back from `evalArithmetic` to `currencyToAmount`
 32	- **flag-off parity**: with `defaultCurrencyCode: ''`, output equals `integerToCurrency`
-33
+33	
 34	Follow [currencies.test.ts](packages/loot-core/src/shared/currencies.test.ts); render the hook with real synced-pref providers rather than mocking `useSyncedPref` (AGENTS.md: minimize mocks).
-35
+35	
 36	## Phase 1 — Actually broken today for non-2-decimal currencies
-37
+37	
 38	Two sites are wrong right now, flag or no flag. Do these first.
-39
+39	
 40	**[reports/Crossover.tsx:994-1016](packages/desktop-client/src/components/reports/reports/Crossover.tsx#L994-L1016)** — a monetary `Input` hardcoding the cents scale: `value={expectedContribution / 100}`, `onChange={… valueAsNumber * 100}`, and `step={100}`. `format` is already in scope at line 83. Move to `format.forEdit` / `format.fromEdit`, or at minimum `format.currency.decimalPlaces`, and make `step` currency-aware. (Verified — distinct from the percentage `toFixed` inputs elsewhere in the same file, which are not monetary and need no change.)
-41
+41	
 42	**[reports/spreadsheets/budget-analysis-export.ts:29-33](packages/desktop-client/src/components/reports/spreadsheets/budget-analysis-export.ts#L29-L33)** — the CSV export calls `integerToAmount(row.budgeted)` etc. with no `decimalPlaces`, so every exported figure is divided by 100 regardless of currency. A plain `.ts` with no hook access, but its **only caller** is [BudgetAnalysis.tsx:334](packages/desktop-client/src/components/reports/reports/BudgetAnalysis.tsx#L334), which has `format` in scope at line 146. Add a `decimalPlaces` parameter to `buildBudgetAnalysisCsv` and pass `format.currency.decimalPlaces`. Update `budget-analysis-export.test.ts`.
-43
+43	
 44	## Phase 2 — Pure deletions (zero risk, shrinks the surface)
-45
+45	
 46	**Delete [reports/numberFormatter.ts](packages/desktop-client/src/components/reports/numberFormatter.ts) and its 6 dead call sites.** `numberFormatterTooltip` just returns `Math.round(value)` with no currency formatting at all — but it is **unreachable**: recharts only applies `formatter` via `DefaultTooltipContent`, and all six `<Tooltip>` elements supply their own `content`. Verified at [BarGraph.tsx:281-287](packages/desktop-client/src/components/reports/graphs/BarGraph.tsx#L281-L287), `LineGraph.tsx:234-240`, `StackedBarGraph.tsx:250-256`, `NetWorthGraph.tsx:397-399`, `SpendingGraph.tsx:275-281`, `BarLineGraph.tsx:117-119`. Remove each `formatter={numberFormatterTooltip}` prop and its import, then delete the file.
-47
+47	
 48	**Delete the dead `premadeLabel` in [cash-flow-spreadsheet.tsx](packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx).** It builds a full tooltip in JSX using a threaded `format` (lines 213-272) and stores it as `premadeLabel` — declared at 188, assigned at 272, and **consumed nowhere** (verified: a repo-wide grep finds only those two lines). `CashFlowGraph.tsx` has its own `CustomTooltip` with `useFormat()` at line 147. Delete the JSX and the field, drop the now-unused `format` param from `cashFlowByDate`, drop the React/JSX/`AlignedText`/`FinancialText`/`t` imports, rename the file to `.ts`, and drop the `format` argument at the only call site [CashFlow.tsx:111-118](packages/desktop-client/src/components/reports/reports/CashFlow.tsx#L111-L118). `simpleCashFlow` already returns raw numbers and needs nothing.
-49
+49	
 50	## Phase 3 — Display-only migrations
-51
+51	
 52	Pattern from `59b092269`: drop the legacy import, add `const format = useFormat()`, call `format(integerValue, 'financial')`. Wrap standalone numbers in [FinancialText](packages/desktop-client/src/components/FinancialText.tsx) where not already (AGENTS.md).
-53
+53	
 54	**[ImportTransactionsModal/Transaction.tsx](packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx)** — 6 `amountToCurrency` calls (lines 258, 261, 275, 278, 294, 297), covering both cell text and `title=` tooltips. These hold **decimal `Amount`s** from `parseAmountFields`, so they need `format.fromAmount` first.
-55
+55	
 56	Also fix the unit mismatch in the `useMemo` at lines 64-79: the `isMatchedTransaction` branch takes `amount` straight from `entry.existing` — a DB row from the import-preview server call at [ImportTransactionsModal.tsx:837](packages/desktop-client/src/components/modals/ImportTransactionsModal/ImportTransactionsModal.tsx#L837), i.e. an `IntegerAmount` — while the other branch returns decimal amounts from `looselyParseAmount`. Both currently flow into `amountToCurrency`. Normalize both branches to `IntegerAmount` at the `useMemo` boundary, then the display calls become plain `format(x, 'financial')`. **Confirm the direction of the mismatch against a real import preview before changing it** — it may be normalized on a path not yet traced.
-57
+57	
 58	**[CalculatorAmountInput.tsx:277](packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx#L277)** — `formatAmount` is a module-level helper called during render. Lift it into the component or pass `format` in.
-59
+59	
 60	**[FocusableAmountInput.tsx:164, 311](packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx#L164)** — display only, as step 1 of the two-step split in Phase 4. Line 164's `editing` branch must keep showing the raw in-progress `text`.
-61
+61	
 62	**[NetWorthGraph.tsx:74, 78, 83-85, 90](packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx#L74)** and **[BarLineGraph.tsx:61-71](packages/desktop-client/src/components/reports/graphs/BarLineGraph.tsx#L61-L71)** — both tooltips render pre-formatted strings baked by [net-worth-spreadsheet.ts:300-304](packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts#L300-L304) at query time. Output is currency-correct today (`format` is threaded in from `NetWorth.tsx:138/149` and `NetWorthCard.tsx:85/96`), but the strings are **stale across a pref change** until the query re-runs, and `BarLineGraph` omits `FinancialText` entirely.
-63
+63	
 64	Fix by de-threading: have the spreadsheet return raw integers for `assets`/`debt`/`change`/`networth`, drop the `format` params from both `createSpreadsheet` and `recalculate`, and format in the two tooltip components via `useFormat()`. While there, simplify line 301's `` debt: `-${format(debt, 'financial')}` `` to pass `-debt` through `format`. _(Note: this is cleanup, not a bug — `applyCurrencyStyling` already hoists the sign outside the symbol, so the manual prefix currently produces byte-identical output in both symbol positions. Verified.)_
-65
+65	
 66	## Phase 4 — Input / parse paths
-67
+67	
 68	**[budget/envelope/CoverMenu.tsx](packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx)** — highest value, and a net deletion. Replace the hand-rolled `Input` + `integerToCurrency` default + `evalArithmetic` + `amountToInteger` block (lines 56-65, 79-82) with [FinancialInput](packages/desktop-client/src/components/util/FinancialInput.tsx), exactly as siblings [TransferMenu.tsx:75](packages/desktop-client/src/components/budget/envelope/TransferMenu.tsx#L75) and [HoldMenu.tsx:43](packages/desktop-client/src/components/budget/envelope/HoldMenu.tsx#L43) already do.
-69
+69	
 70	**Transaction table debit/credit round-trip** — two halves that must move together or the round-trip corrupts zero-decimal currencies:
-71
+71	
 72	- [table/utils.ts:64-65, 84](packages/desktop-client/src/components/transactions/table/utils.ts#L64-L65) — `serializeTransaction` calls `integerToCurrencyWithDecimal(debit)` with no currency code (always 2 decimals); `deserializeTransaction` parses back with `amountToInteger(amount)` at the same default. Plain helpers, so thread the `UseFormatResult` in as a parameter — the pattern already used by [net-worth-spreadsheet.ts:31](packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts#L31). Callers: [TransactionsTable.tsx:982, 991, 1135, 1141](packages/desktop-client/src/components/transactions/TransactionsTable.tsx#L982).
 73	- [TransactionsTable.tsx:1784, 1787, 1799, 1818](packages/desktop-client/src/components/transactions/TransactionsTable.tsx#L1784) — the `InputCell` debit/credit `value` / `formatter` / `inputProps.value`, built from `amountToCurrency(currencyToAmount(value))`. `format` is already in scope (added at line 971 last commit). Move to `format.forEdit` / `format.fromEdit` and drop the imports at lines 63-64.
-74
+74	
 75	**[FocusableAmountInput.tsx](packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx) parse chain** — the delicate one; do it last and keep it a separate commit. It is a hand-rolled currency input using four legacy globals (lines 88, 120-121, 210) and implements its own keypad decimal-shifting, so it can't be swapped for `FinancialInput` wholesale. Move line 88 and 210 to `format.fromEdit`; `onChangeText` (119-125) keeps its `appendDecimals` keypad semantics but must use `format.currency.decimalPlaces` instead of the 2 hardcoded in [appendDecimals](packages/loot-core/src/shared/util.ts#L246) (`padStart(3,'0')` / `slice(-2)`), and should read `hideFraction` through `format` rather than its own pref read.
-76
+76	
 77	**Remaining `integerToAmount`/`amountToInteger` at the default 2dp**, all React components with `format` reachable:
-78
+78	
 79	- [EnvelopeBudgetMenuModal.tsx:72, 119](packages/desktop-client/src/components/modals/EnvelopeBudgetMenuModal.tsx#L119) and [TrackingBudgetMenuModal.tsx:72, 119](packages/desktop-client/src/components/modals/TrackingBudgetMenuModal.tsx#L119)
 80	- [SplitAmountInput.tsx:88, 94](packages/desktop-client/src/components/mobile/transactions/SplitAmountInput.tsx#L88)
 81	- [mobile/TransactionEdit.tsx:1317, 1789](packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx#L1317) (in-component); lines 128/169 are its module-level `serializeTransaction`/`deserializeTransaction` and need the same threading as `table/utils.ts`
 82	- [EditFieldModal.tsx:68, 75](packages/desktop-client/src/components/modals/EditFieldModal.tsx#L68) — `currencyToInteger(value)` → `format.fromEdit(value)`; keep the invalid-parse alert path working
 83	- [CreateLocalAccountModal.tsx:71](packages/desktop-client/src/components/modals/CreateLocalAccountModal.tsx#L71) — `toRelaxedNumber(balance)`, itself a 2dp round-trip. **Client-only fix is insufficient**: the server re-multiplies at 2dp in [accounts/app.ts:573](packages/loot-core/src/server/accounts/app.ts#L573). Migrate the client here and note the server half for the follow-up.
-84
+84	
 85	The correct reference for this pattern is [budget/goals/editor/](packages/desktop-client/src/components/budget/goals/editor/) — 11 files already pass `format.currency.decimalPlaces` into the raw utils (e.g. [FixedAutomation.tsx:89](packages/desktop-client/src/components/budget/goals/editor/FixedAutomation.tsx#L89)). They are currency-correct but bypass `.forEdit`/`.fromEdit`; converting them is optional polish, not a fix.
-86
+86	
 87	## Phase 5 — Thread `decimalPlaces` through plain helpers
-88
+88	
 89	**[budget/util.ts:76-81](packages/desktop-client/src/components/budget/util.ts#L76-L81)** — `makeBalanceAmountStyle` round-trips `currencyToAmount(integerToCurrency(val))` purely to round to displayed precision before choosing a colour (so a value that _displays_ as zero is greyed, not coloured). Its only caller is [BalanceWithCarryover.tsx:122](packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx#L122), a React component — add a `decimalPlaces` parameter, pass `format.currency.decimalPlaces`, and replace the string round-trip with direct integer rounding. Rewrite the stale comment on lines 76-78. (`makeAmountGrey`, the other export, needs nothing.)
-90
+90	
 91	**[queries/index.ts:88, 111, ~117](packages/desktop-client/src/queries/index.ts#L88)** — `transactionsSearch` does `currencyToAmount(search)` then `amountToInteger(amount)` at 2dp, **and** carries a literal AQL transform `$transform: { $abs: { $idiv: ['$', 100] } }` (verified). Already takes `dateFormat` as a parameter, so add `decimalPlaces` and derive the divisor from it.
-92
+92	
 93	**[useFormulaExecution.ts:244, 582, 586, 590, 649, 651](packages/desktop-client/src/hooks/useFormulaExecution.ts#L244)** — six hardcoded `integerToAmount(x, 2)` literals. It is a hook file so `useFormat()` is reachable, but the call sites sit in module-level async helpers; thread `format.currency.decimalPlaces` down.
-94
+94	
 95	## Phase 6 — Reports consistency cleanups (cosmetic, low risk)
-96
+96	
 97	- **[ReportTableRow.tsx:334](packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTableRow.tsx#L334)** — `Math.abs(average / 100) > 100000` while the four sibling `title` guards (157, 190, 238, 288) all use `Math.abs(x) > 100000`. Verified: the Average column's tooltip threshold is 100× off relative to the others, _and_ hardcodes 2dp. Make it consistent.
 98	- **[BarLineGraph.tsx:94-96](packages/desktop-client/src/components/reports/graphs/BarLineGraph.tsx#L94-L96)** — Y-axis `tickFormatter` uses `'financial'`; every other graph uses `'financial-no-decimals'` (`AreaGraph:220`, `BarGraph:305`, `CrossoverGraph:169`, `LineGraph:256`, `NetWorthGraph:267`, `SpendingGraph:194`, `StackedBarGraph:271`, `BudgetAnalysisGraph:272`). This one emits decimals on axis labels.
 99	- **[AreaGraph.tsx:205-216](packages/desktop-client/src/components/reports/graphs/AreaGraph.tsx#L205-L216)** — Y-domain rounding uses `/ 100 * 100` ("nearest whole currency unit"), true only at 2dp. Use `Math.pow(10, format.currency.decimalPlaces)`; `format` is in scope at 194.
 100	- **Manual `+` sign** duplicating `'financial-with-sign'`: [Change.tsx:34-35](packages/desktop-client/src/components/reports/Change.tsx#L34-L35) and [SpendingCard.tsx:143-145](packages/desktop-client/src/components/reports/reports/SpendingCard.tsx#L143-L145). Note they disagree on zero (`Change` treats `0` as `+`, `SpendingCard` doesn't) — switching both to the format type resolves that.
-101
+101	
 102	## Out of scope for this pass
-103
+103	
 104	**Intentionally format-agnostic** — leave alone: `looselyParseAmount` in [ImportTransactionsModal/utils.ts:197](packages/desktop-client/src/components/modals/ImportTransactionsModal/utils.ts#L197) and [parse-file.ts:189](packages/loot-core/src/server/transactions/import/parse-file.ts#L189). File imports deliberately don't assume the user's format. (The _downstream_ scaling at `ImportTransactionsModal.tsx:365, 705` is a real question — whether import should use the account's currency — but it's a product decision, not a mechanical migration.)
-105
+105	
 106	**The global-format sync hack**: `setNumberFormat` at [useFormat.ts:136](packages/desktop-client/src/hooks/useFormat.ts#L136) and [prefsSlice.ts:58](packages/desktop-client/src/prefs/prefsSlice.ts#L58). The hook's own comment flags it for removal, but it's what keeps [shared/arithmetic.ts:71](packages/loot-core/src/shared/arithmetic.ts#L71) working. Separate refactor.
-107
+107	
 108	**The feature flag.** No changes to [Experimental.tsx:199-204](packages/desktop-client/src/components/settings/Experimental.tsx#L199-L204), [settings/index.tsx:173, 189-192, 240](packages/desktop-client/src/components/settings/index.tsx#L173), or `useFeatureFlag`.
-109
+109	
 110	### Follow-up PR: server / API / sync-server
-111
+111	
 112	No hook access, and it touches a public contract — deliberately deferred, but catalogued so it isn't lost:
-113
+113	
 114	- **loot-core server, 2dp defaults**: [export-to-csv.ts:60, 130-131](packages/loot-core/src/server/transactions/export/export-to-csv.ts#L60), [accounts/sync.ts:555, 674, 1088, 1095](packages/loot-core/src/server/accounts/sync.ts#L555), [accounts/app.ts:573](packages/loot-core/src/server/accounts/app.ts#L573), [importers/ynab4.ts:216, 235, 303](packages/loot-core/src/server/importers/ynab4.ts#L216), [rules/action.ts:360](packages/loot-core/src/server/rules/action.ts#L360).
 115	- **Public API surface** (breaking-change decision needed): [api.ts:610](packages/loot-core/src/server/api.ts#L610) `getAccountBalance` returns a 2dp decimal; [main.ts:339-340](packages/loot-core/src/server/main.ts#L339-L340) and [api/utils.ts:1](packages/api/utils.ts#L1) re-export raw `amountToInteger`/`integerToAmount` as the documented `utils` namespace.
 116	- **sync-server has its own helper**: `export const amountToInteger = n => Math.round(Number(n) * 100)` at [app-gocardless/utils.ts:46-47](packages/sync-server/src/app-gocardless/utils.ts#L46-L47), consumed by ~17 bank handlers, plus the same inline scaling in `app-akahu/app-akahu.ts:320, 364` and `app-enablebanking/services/enablebanking-service.ts:290`.
 117	- [server/budget/actions.ts:741](packages/loot-core/src/server/budget/actions.ts#L741) already passes `currency.decimalPlaces`; whether that budget-movement _note_ should carry a symbol is a product call.
 118	- Already correct, no action: [category-template-context.ts](packages/loot-core/src/server/budget/category-template-context.ts) (passes `currency.decimalPlaces` at all 12 sites), `schedule-template.ts`, and `server/formulas/*`.
-119
+119	
 120	### Structural issues worth separate issues
-121
+121	
 122	1. **Three disagreeing symbol-placement implementations**: `useFormat.applyCurrencyStyling` (bidi isolates); [customFunctions.ts:122](packages/loot-core/src/shared/formulas/customFunctions.ts#L122) `formatCurrencyValue` (no isolates, regex thousands grouping so it can't produce `comma-dot-in` Indian grouping, defaults to USD not the `''` sentinel); and the user-facing `FORMATCURRENCY` sheet function. They will visibly disagree for INR and in RTL.
 123	2. **`CurrencySymbolPosition` declared twice** — [customFunctions.ts:18](packages/loot-core/src/shared/formulas/customFunctions.ts#L18) and [customFunctionsPreferences.ts:15](packages/loot-core/src/server/formulas/customFunctionsPreferences.ts#L15) — and `SyncedPrefs` types it as bare `string`.
 124	3. **The 47-currency name list is duplicated** between [currencies.ts](packages/loot-core/src/shared/currencies.ts) and the `t()` map in [settings/Currency.tsx](packages/desktop-client/src/components/settings/Currency.tsx), held together only by a comment.
 125	4. **`useFormat`'s string-input branch** ([lines 72-88](packages/desktop-client/src/hooks/useFormat.ts#L72-L88)) is documented in-code as "generally flawed" and _throws_ on unparseable input rather than degrading.
-126
+126	
 127	## Verification
-128
+128	
 129	Per phase:
-130
+130	
 131	- `yarn typecheck` and `yarn lint:fix` from the repo root. New files must be type-strict — no `// @ts-strict-ignore`. (`CellValue.tsx` and `AmountInput.tsx` carry it as grandfathered; don't add it anywhere new.)
 132	- `yarn test`, including the new `useFormat.test.ts`. `rm -rf .lage` if results look stale.
-133
+133	
 134	End to end (`yarn start` → "Don't use a server" → **View demo** for populated data):
-135
+135	
 136	1. **Flag-off parity first**, and this is the regression that matters most since it's what every current user sees. With `currency` off, walk the transaction table (incl. split errors and running balance), mobile transaction edit, the import-transactions preview, envelope/tracking budget menus, Cover/Transfer/Hold menus, balance carryover colouring, and the net-worth / cash-flow / budget-analysis reports. Output must be unchanged from `master`.
 137	2. **Then flag-on**: Settings → Experimental → "Currency support", then Settings → Currency:
 138	   - **JPY** (0 decimals) — the case that is broken today. Exercises the `decimalPlaces` threading in `serializeTransaction`, the budget menu modals, the `FocusableAmountInput` keypad, the Crossover contribution input, and the budget-analysis CSV export.
@@ -163,25 +163,24 @@ _**Agent (claude-opus-5 2026-09-15 14:55:30-0400)**_
 140	   - **INR** (`comma-dot-in`) — Indian grouping.
 141	     Enter and re-edit an amount at every migrated input to confirm the display → edit → parse round-trip is lossless. Download the budget-analysis CSV under JPY.
 142	3. **Pref reactivity** (Phase 3's de-threading): with a report open, change the currency in Settings and confirm the net-worth and bar-line tooltips update without re-running the query.
-143
+143	
 144	E2E — these are the tripwires, and a failure is a real signal, not a test to loosen:
-145
+145	
 146	- `yarn workspace @actual-app/web e2e` for transactions and budget suites.
 147	- [budget.mobile.test.ts:361, 411, 441](packages/desktop-client/e2e/budget.mobile.test.ts#L361) imports `amountToCurrency`/`currencyToAmount` to build expected text.
 148	- Bare-number assertions with no symbol in `rules.test.ts:69,127,132,137`, `schedules.test.ts:45,58,109,116,135,142`, `accounts.test.ts:41,187,193`, `onboarding.test.ts:47,50,63,66,105,108,118`, `transactions.test.ts:203,228,235,242`.
 149	- [TransactionsTable.test.tsx:523, 531](packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx#L523) asserts via `integerToCurrency` — valid as a flag-off parity check; keep it passing.
 150	- `yarn vrt:docker` if any snapshot covers a migrated surface.
-151
+151	
 152	## Release note
-153
+153	
 154	[upcoming-release-notes/currency-display-transactions.md](upcoming-release-notes/currency-display-transactions.md) still has `authors: [REPLACE_WITH_GITHUB_USERNAME]` — fill it in. Add a note for this batch per the `writing-release-notes` skill: short, plain language, no implementation detail. Phase 1 is a user-visible bug fix and deserves its own line separate from the display migration.
-155
+155	
 156	## Suggested commit sequence
-157
+157	
 158	Phase 0 → Phase 2 (deletions, easiest review) → Phase 1 (the two real bugs) → Phase 3 → Phase 4, with `FocusableAmountInput`'s parse chain as its own commit → Phase 5 → Phase 6. Per repo rules every commit message and the PR title need the `[AI]` prefix, and the PR template is left blank.
 159
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:32-0400)**_
@@ -199,7 +198,6 @@ Find numberFormatter usages
 ```text
 (eval):1: no matches found: --include=*.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:34-0400)**_
@@ -213,7 +211,6 @@ Find cash flow spreadsheet usages
 ```text
 (eval):1: no matches found: --include=*.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:37-0400)**_
@@ -239,7 +236,6 @@ packages/desktop-client/src/components/reports/graphs/LineGraph.tsx:240:        
 packages/desktop-client/src/components/reports/graphs/SpendingGraph.tsx:22:import { numberFormatterTooltip } from '#components/reports/numberFormatter';
 packages/desktop-client/src/components/reports/graphs/SpendingGraph.tsx:281:                formatter={numberFormatterTooltip}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:38-0400)**_
@@ -260,7 +256,6 @@ packages/desktop-client/src/components/reports/reports/CashFlowCard.tsx:129:    
 packages/desktop-client/src/components/reports/reports/CashFlow.tsx:32:import { cashFlowByDate } from '#components/reports/spreadsheets/cash-flow-spreadsheet';
 packages/desktop-client/src/components/reports/reports/CashFlow.tsx:111:      cashFlowByDate(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:39-0400)**_
@@ -280,7 +275,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:39-0400)**_
 4	  | undefined
 5	  | null
 6	  | readonly (number | string)[];
-7
+7	
 8	export const numberFormatterTooltip = (
 9	  value: PotentialNumber,
 10	): number | null => {
@@ -291,7 +286,6 @@ _**Agent (claude-opus-5 2026-09-15 14:55:39-0400)**_
 15	};
 16
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
@@ -303,7 +297,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 ```text
 1	import React from 'react';
 2	import type { JSX } from 'react';
-3
+3	
 4	import { AlignedText } from '@actual-app/components/aligned-text';
 5	import { send } from '@actual-app/core/platform/client/connection';
 6	import * as monthUtils from '@actual-app/core/shared/months';
@@ -312,12 +306,12 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 9	import type { Locale } from 'date-fns';
 10	import * as d from 'date-fns';
 11	import { t } from 'i18next';
-12
+12	
 13	import { FinancialText } from '#components/FinancialText';
 14	import { indexCashFlow, runAll } from '#components/reports/util';
 15	import type { FormatType } from '#hooks/useFormat';
 16	import type { useSpreadsheet } from '#hooks/useSpreadsheet';
-17
+17	
 18	export function simpleCashFlow(
 19	  startMonth: string,
 20	  endMonth: string,
@@ -326,7 +320,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 23	) {
 24	  const start = monthUtils.firstDayOfMonth(startMonth);
 25	  const end = monthUtils.lastDayOfMonth(endMonth);
-26
+26	
 27	  return async (
 28	    spreadsheet: ReturnType<typeof useSpreadsheet>,
 29	    setData: (data: { graphData: { income: number; expense: number } }) => void,
@@ -335,7 +329,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 32	      conditions: conditions.filter(cond => !cond.customName),
 33	    });
 34	    const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
-35
+35	
 36	    function makeQuery() {
 37	      return q('transactions')
 38	        .filter({
@@ -356,7 +350,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 53	        })
 54	        .calculate({ $sum: '$amount' });
 55	    }
-56
+56	
 57	    return runAll(
 58	      [
 59	        makeQuery().filter({ amount: { $gt: 0 } }),
@@ -373,7 +367,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 70	    );
 71	  };
 72	}
-73
+73	
 74	export function cashFlowByDate(
 75	  startMonth: string,
 76	  endMonth: string,
@@ -387,7 +381,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 84	  const end = monthUtils.lastDayOfMonth(endMonth);
 85	  const fixedEnd =
 86	    end > monthUtils.currentDay() ? monthUtils.currentDay() : end;
-87
+87	
 88	  return async (
 89	    spreadsheet: ReturnType<typeof useSpreadsheet>,
 90	    setData: (data: ReturnType<typeof recalculate>) => void,
@@ -396,7 +390,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 93	      conditions: conditions.filter(cond => !cond.customName),
 94	    });
 95	    const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
-96
+96	
 97	    function makeQuery() {
 98	      const query = q('transactions')
 99	        .filter({
@@ -409,7 +403,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 106	          ],
 107	          'account.offbudget': false,
 108	        });
-109
+109	
 110	      if (isConcise) {
 111	        return query
 112	          .groupBy([{ $month: '$date' }, 'payee.transfer_acct'])
@@ -419,7 +413,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 116	            { amount: { $sum: '$amount' } },
 117	          ]);
 118	      }
-119
+119	
 120	      return query
 121	        .groupBy(['date', 'payee.transfer_acct'])
 122	        .select([
@@ -428,7 +422,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 125	          { amount: { $sum: '$amount' } },
 126	        ]);
 127	    }
-128
+128	
 129	    return runAll(
 130	      [
 131	        q('transactions')
@@ -447,7 +441,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 144	    );
 145	  };
 146	}
-147
+147	
 148	function recalculate(
 149	  data: [
 150	    number,
@@ -475,12 +469,12 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 172	    : monthUtils.dayRangeInclusive(start, end);
 173	  const incomes = indexCashFlow(convIncome);
 174	  const expenses = indexCashFlow(convExpense);
-175
+175	
 176	  let balance = startingBalance;
 177	  let totalExpenses = 0;
 178	  let totalIncome = 0;
 179	  let totalTransfers = 0;
-180
+180	
 181	  const graphData = dates.reduce<{
 182	    expenses: Array<{ x: Date; y: number }>;
 183	    income: Array<{ x: Date; y: number }>;
@@ -497,7 +491,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 194	      let expense = 0;
 195	      let creditTransfers = 0;
 196	      let debitTransfers = 0;
-197
+197	
 198	      if (incomes[date]) {
 199	        income = !incomes[date].false ? 0 : incomes[date].false;
 200	        creditTransfers = !incomes[date].true ? 0 : incomes[date].true;
@@ -506,13 +500,13 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 203	        expense = !expenses[date].false ? 0 : expenses[date].false;
 204	        debitTransfers = !expenses[date].true ? 0 : expenses[date].true;
 205	      }
-206
+206	
 207	      totalExpenses += expense;
 208	      totalIncome += income;
 209	      balance += income + expense + creditTransfers + debitTransfers;
 210	      totalTransfers += creditTransfers + debitTransfers;
 211	      const x = d.parseISO(date);
-212
+212	
 213	      const label = (
 214	        <div>
 215	          <div style={{ marginBottom: 10 }}>
@@ -562,7 +556,7 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 259	          </div>
 260	        </div>
 261	      );
-262
+262	
 263	      res.income.push({ x, y: income });
 264	      res.expenses.push({ x, y: expense });
 265	      res.transfers.push({
@@ -579,9 +573,9 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 276	    },
 277	    { expenses: [], income: [], transfers: [], balances: [] },
 278	  );
-279
+279	
 280	  const { balances } = graphData;
-281
+281	
 282	  return {
 283	    graphData,
 284	    balance: balances[balances.length - 1].amount,
@@ -593,7 +587,6 @@ _**Agent (claude-opus-5 2026-09-15 14:55:40-0400)**_
 290	}
 291
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:43-0400)**_
@@ -647,7 +640,6 @@ Read CashFlow call site
       setLatestTransaction(
         latestTransaction ? latestTransaction.date : monthUtils.currentDay(),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:44-0400)**_
@@ -662,7 +654,6 @@ Check CashFlowGraph balances usage
 packages/desktop-client/src/components/reports/graphs/CashFlowGraph.tsx:131:    balances: { x: Date; y: number }[];
 packages/desktop-client/src/components/reports/graphs/CashFlowGraph.tsx:156:    balance: graphData.balances[idx].y,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:51-0400)**_
@@ -708,7 +699,6 @@ Verify each Tooltip supplies content
 6:274-                  <CustomTooltip
 13:281:                formatter={numberFormatterTooltip}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:51-0400)**_
@@ -728,7 +718,6 @@ Check format usage in CashFlow.tsx
 350:                  {format(totalExpenses, 'financial')}
 366:                  {format(totalTransfers, 'financial')}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:55:54-0400)**_
@@ -775,7 +764,6 @@ Inspect lines after each formatter prop
 283-              />
 284-              <defs>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:02-0400)**_
@@ -796,7 +784,6 @@ grep -rn "numberFormatter" packages/ --include="*.ts" --include="*.tsx" || echo 
 ```text
 CLEAN
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:04-0400)**_
@@ -831,7 +818,7 @@ index 79de224c8..4c1d2331b 100644
  import { Container } from '#components/reports/Container';
 -import { numberFormatterTooltip } from '#components/reports/numberFormatter';
  import { useFormat } from '#hooks/useFormat';
-
+ 
  type PayloadItem = {
 @@ -116,7 +115,6 @@ export function BarLineGraph({
                {showTooltip && (
@@ -862,7 +849,6 @@ index 479a83778..daec7bad0 100644
                />
                <defs>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:19-0400)**_
@@ -885,7 +871,6 @@ Check locale and date-fns usage
 217:              {d.format(x, isConcise ? 'MMMM yyyy' : 'MMMM d, yyyy', {
 218:                locale,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:22-0400)**_
@@ -903,7 +888,6 @@ Rename cash-flow-spreadsheet to .ts
 ```text
 cash-flow-spreadsheet.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:35-0400)**_
@@ -914,7 +898,6 @@ _**Agent (claude-opus-5 2026-09-15 14:56:35-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:39-0400)**_
@@ -925,7 +908,6 @@ _**Agent (claude-opus-5 2026-09-15 14:56:39-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:42-0400)**_
@@ -936,7 +918,6 @@ _**Agent (claude-opus-5 2026-09-15 14:56:42-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:45-0400)**_
@@ -947,7 +928,6 @@ _**Agent (claude-opus-5 2026-09-15 14:56:45-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:46-0400)**_
@@ -962,7 +942,6 @@ _**Agent (claude-opus-5 2026-09-15 14:56:49-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:56:56-0400)**_
@@ -973,7 +952,6 @@ _**Agent (claude-opus-5 2026-09-15 14:56:56-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:00-0400)**_
@@ -984,7 +962,6 @@ _**Agent (claude-opus-5 2026-09-15 14:57:00-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:01-0400)**_
@@ -998,7 +975,7 @@ _**Agent (claude-opus-5 2026-09-15 14:57:01-0400)**_
  `./packages/desktop-client/src/components/reports/reports/CashFlow.tsx`
 
 ```text
-108
+108	
 109	  const params = useMemo(
 110	    () =>
 111	      cashFlowByDate(
@@ -1013,7 +990,6 @@ _**Agent (claude-opus-5 2026-09-15 14:57:01-0400)**_
 120	    [start, end, isConcise, conditions, conditionsOp, locale, format],
 121	  );
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:05-0400)**_
@@ -1024,7 +1000,6 @@ _**Agent (claude-opus-5 2026-09-15 14:57:05-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/reports/CashFlow.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:07-0400)**_
@@ -1081,7 +1056,6 @@ src/components/reports/reports/CashFlowCard.tsx(138,11): error TS2339: Property 
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 16.46s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:29-0400)**_
@@ -1119,7 +1093,6 @@ Inspect imports mapping
 32-    "#i18n": "./src/i18n.ts",
 33-    "#mocks": "./src/mocks.tsx",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:33-0400)**_
@@ -1160,7 +1133,6 @@ See rest of imports mapping
     "#components/reports/disabledList": "./src/components/reports/disabledList.ts",
     "#components/reports/getCustomTick": "./src/components/reports/getCustomTick.ts",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:35-0400)**_
@@ -1181,7 +1153,6 @@ packages/desktop-client/package.json:69:    "#components/reports/spreadsheets/ca
 --- other configs ---
 packages/desktop-client/package.json
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:40-0400)**_
@@ -1192,7 +1163,6 @@ _**Agent (claude-opus-5 2026-09-15 14:57:40-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/package.json has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:57:43-0400)**_
@@ -1203,7 +1173,6 @@ _**Agent (claude-opus-5 2026-09-15 14:57:43-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/package.json has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:59:22-0400)**_
@@ -1241,7 +1210,6 @@ worker restarts: 0, max worker memory usage: 47.92 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 29.43s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:59:23-0400)**_
@@ -1259,7 +1227,6 @@ Run lint with autofix
 ```text
 Finished in 6381ms on 2311 files using 8 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:59:53-0400)**_
@@ -1323,7 +1290,6 @@ RM packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreads
  packages/desktop-client/src/hooks/useFormat.ts     |    8 +-
  24 files changed, 3279 insertions(+), 2027 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 14:59:55-0400)**_
@@ -1356,7 +1322,6 @@ RM packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreads
  M packages/desktop-client/src/hooks/useFormat.ts
 ?? packages/desktop-client/src/hooks/useFormat.test.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:02:09-0400)**_
@@ -1394,7 +1359,6 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 2m 3.20s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:02:12-0400)**_
@@ -1436,7 +1400,6 @@ A  packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreads
  M packages/desktop-client/src/hooks/useFormat.ts
 ?? packages/desktop-client/src/hooks/useFormat.test.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:02:28-0400)**_
@@ -1457,7 +1420,7 @@ _**Agent (claude-opus-5 2026-09-15 15:02:29-0400)**_
 134	    );
 135	  };
 136	}
-137
+137	
 138	function recalculate(
 139	  data: [
 140	    number,
@@ -1483,12 +1446,12 @@ _**Agent (claude-opus-5 2026-09-15 15:02:29-0400)**_
 160	    : monthUtils.dayRangeInclusive(start, end);
 161	  const incomes = indexCashFlow(convIncome);
 162	  const expenses = indexCashFlow(convExpense);
-163
+163	
 164	  let balance = startingBalance;
 165	  let totalExpenses = 0;
 166	  let totalIncome = 0;
 167	  let totalTransfers = 0;
-168
+168	
 169	  const graphData = dates.reduce<{
 170	    expenses: Array<{ x: Date; y: number }>;
 171	    income: Array<{ x: Date; y: number }>;
@@ -1504,7 +1467,7 @@ _**Agent (claude-opus-5 2026-09-15 15:02:29-0400)**_
 181	      let expense = 0;
 182	      let creditTransfers = 0;
 183	      let debitTransfers = 0;
-184
+184	
 185	      if (incomes[date]) {
 186	        income = !incomes[date].false ? 0 : incomes[date].false;
 187	        creditTransfers = !incomes[date].true ? 0 : incomes[date].true;
@@ -1513,7 +1476,7 @@ _**Agent (claude-opus-5 2026-09-15 15:02:29-0400)**_
 190	        expense = !expenses[date].false ? 0 : expenses[date].false;
 191	        debitTransfers = !expenses[date].true ? 0 : expenses[date].true;
 192	      }
-193
+193	
 194	      totalExpenses += expense;
 195	      totalIncome += income;
 196	      balance += income + expense + creditTransfers + debitTransfers;
@@ -1521,7 +1484,6 @@ _**Agent (claude-opus-5 2026-09-15 15:02:29-0400)**_
 198	      const x = d.parseISO(date);
 199
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:02:37-0400)**_
@@ -1557,7 +1519,7 @@ index cadf3dbc1..da5de89d6 100644
 +++ b/packages/desktop-client/src/components/reports/reports/CashFlow.tsx
 @@ -107,17 +107,8 @@ function CashFlowInner({ widget }: CashFlowInnerProps) {
    }, [start, end]);
-
+ 
    const params = useMemo(
 -    () =>
 -      cashFlowByDate(
@@ -1575,7 +1537,6 @@ index cadf3dbc1..da5de89d6 100644
    );
    const data = useReport('cash_flow', params);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:02:41-0400)**_
@@ -1590,7 +1551,6 @@ _**Agent (claude-opus-5 2026-09-15 15:02:44-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/package.json has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:03:58-0400)**_
@@ -1604,7 +1564,6 @@ Re-verify typecheck after redundant entry removal
 ```text
 success: 3, skipped: 7, pending: 0, aborted: 0, failed: 0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:04:24-0400)**_
@@ -1628,7 +1587,6 @@ Run reports tests
    Start at  15:04:03
    Duration  20.80s (transform 2.36s, setup 22.69s, import 4.42s, tests 1.19s, environment 10.78s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:04:38-0400)**_
@@ -1641,7 +1599,7 @@ Phase 2 is complete. Both deletions done and verified.
 
 Two things the plan didn't anticipate:
 
-- **`locale` also became dead.** It was consumed _only_ inside the deleted label (the `d.format` date header). I dropped it from both functions and from the `CashFlow.tsx` call and its `useMemo` deps. `locale` is still used elsewhere in `CashFlow.tsx` (line 155), so that stays.
+- **`locale` also became dead.** It was consumed *only* inside the deleted label (the `d.format` date header). I dropped it from both functions and from the `CashFlow.tsx` call and its `useMemo` deps. `locale` is still used elsewhere in `CashFlow.tsx` (line 155), so that stays.
 - **`package.json` carries an explicit `imports` map.** Every module is mapped by hand, so the rename broke resolution until I updated it. I removed the `numberFormatter` entry, and dropped the `cash-flow-spreadsheet` entry entirely — a `spreadsheets/*` → `*.ts` wildcard sits right below it and now covers the file.
 
 Verification: `yarn typecheck` passes, `yarn lint:fix` clean, reports suite 162/162. `yarn test` shows 4 failures in [budget/mutations.test.tsx](packages/desktop-client/src/budget/mutations.test.tsx) — I stashed and re-ran to confirm these are pre-existing on a clean tree, unrelated to Phase 2. `lint:fix` also reformatted `STUDENTS.md` and 8 files under `ai-logs/`; I reverted that as unrelated noise, but you may want it in a separate commit.

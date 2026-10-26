@@ -3,7 +3,7 @@ Questions:
 
 What did you implement so far in the sprint, and what remains?
 
-- So far, all I have done is choose the issues I plan to tackle this sprint and add them to the milestone. I am in tech week for a theatrical production I am in, so I have scheduled time to complete tasks this sprint after that closes on Sunday. It may cause a bit of a crunch time, but I have not had enough time this week to manage implementing my issues, preparing the lightning talks, and work on midterms and projects for other classes. What remains for me to do is implement the two medium issues I selected in our backlog. The first issue I will work on is issue \#11: Add percentage of YTD change in net worth under "reports." The second issue is issue \#15: Add Personal Rate of Inflation tracking.
+- So far, all I have done is choose the issues I plan to tackle this sprint and add them to the milestone. I am in tech week for a theatrical production I am in, so I have scheduled time to complete tasks this sprint after that closes on Sunday. It may cause a bit of a crunch time, but I have not had enough time this week to manage implementing my issues, preparing the lightning talks, and work on midterms and projects for other classes. What remains for me to do is implement the two medium issues I selected in our backlog. The first issue I will work on is issue \#11: Add percentage of YTD change in net worth under "reports." The second issue is issue \#15: Add Personal Rate of Inflation tracking. 
 
 What is one thing you learned about the codebase or about software engineering practice?
 

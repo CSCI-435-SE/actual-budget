@@ -25,7 +25,6 @@ List PRs for the currency branch
 ```text
 (eval):1: command not found: gh
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:03-0400)**_
@@ -48,7 +47,6 @@ aebc32bb3 Phases 0, 1, 2
 064f99514 Merge pull request #37 from CSCI-435-SE/feat/issue-21-budget-month-scroll
 fatal: no upstream configured for branch 'currency'
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:06-0400)**_
@@ -78,7 +76,6 @@ origin	git@github.com:CSCI-435-SE/actual-budget.git (push)
   origin/master
   origin/sgstrick-patch-1
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:08-0400)**_
@@ -96,7 +93,6 @@ gh not found
 ---
 pr-and-commit-rules.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:15-0400)**_
@@ -111,7 +107,6 @@ Fetch and compare local vs remote currency
 --- local vs remote ---
 0	0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:16-0400)**_
@@ -126,7 +121,6 @@ Check GitHub API access for the repo
 200
 token set:
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:18-0400)**_
@@ -153,7 +147,6 @@ for p in d:
 46 | open | feat: currency formatting
   base: master  head: currency  url: https://github.com/CSCI-435-SE/actual-budget/pull/46
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:27-0400)**_
@@ -177,7 +170,6 @@ for r in json.load(sys.stdin):
 REVIEW 5224352970 | CHANGES_REQUESTED | by sgstrick | 2026-09-16T14:55:36Z
 I think this looks good! It was implemented well on my tests of the feature, but the currency does not show up on the payment or deposit columns on any of the account pages.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:28-0400)**_
@@ -201,7 +193,6 @@ for c in d:
 ```text
 inline comments: 0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:34-0400)**_
@@ -223,7 +214,6 @@ for c in d:
 ```text
 issue comments: 0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:34-0400)**_
@@ -276,7 +266,6 @@ Show diff stat vs master
  .../currency-settings-no-longer-experimental.md    |     6 +
  63 files changed, 53585 insertions(+), 456 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:38-0400)**_
@@ -323,7 +312,7 @@ index 635053162..21d6e7aec 100644
  }: TransactionProps) {
    const { t } = useTranslation();
 +  const format = useFormat();
-
+ 
    const dispatch = useDispatch();
    const dispatchSelected = useSelectedDispatch();
 @@ -978,7 +975,7 @@ const Transaction = memo(function Transaction({
@@ -334,7 +323,7 @@ index 635053162..21d6e7aec 100644
 +    serializeTransaction(originalTransaction, format, showZeroInDeposit),
    );
    const isPreview = isPreviewId(transaction.id);
-
+ 
 @@ -987,7 +984,7 @@ const Transaction = memo(function Transaction({
      showZeroInDeposit !== prevShowZero
    ) {
@@ -356,7 +345,7 @@ index 635053162..21d6e7aec 100644
 +      setTransaction(
 +        serializeTransaction(deserialized, format, showZeroInDeposit),
 +      );
-
+ 
        const deserializedName = ['credit', 'debit'].includes(name)
          ? 'amount'
 @@ -1780,10 +1780,10 @@ const Transaction = memo(function Transaction({
@@ -449,7 +438,7 @@ index e6ab84526..efc0cf45d 100644
 @@ -12,6 +10,8 @@ import type {
  } from '@actual-app/core/types/models';
  import { isValid as isDateValid, parseISO } from 'date-fns';
-
+ 
 +import type { UseFormatResult } from '#hooks/useFormat';
 +
  export type SerializedTransaction = Omit<TransactionEntity, 'date'> & {
@@ -458,7 +447,7 @@ index e6ab84526..efc0cf45d 100644
 @@ -28,8 +28,22 @@ export type TransactionUpdateFunction = <T extends keyof SerializedTransaction>(
    value: SerializedTransaction[T],
  ) => void;
-
+ 
 +// Keep the currency's decimals when the value actually has a fractional part,
 +// so that hiding fractions in the read-only display doesn't truncate the
 +// amount when the cell round-trips back through `deserializeTransaction`.
@@ -488,14 +477,14 @@ index e6ab84526..efc0cf45d 100644
 +    credit: credit != null ? serializeAmount(credit, format) : '',
    };
  }
-
+ 
  export function deserializeTransaction(
    transaction: SerializedTransaction,
    originalTransaction: TransactionEntity,
 +  format: UseFormatResult,
  ) {
    const { debit, credit, date: originalDate, ...realTransaction } = transaction;
-
+ 
 -  let amount: number | null;
 +  let amount: IntegerAmount | null;
    if (debit !== '') {
@@ -506,7 +495,7 @@ index e6ab84526..efc0cf45d 100644
 -    amount = evalArithmetic(credit, null);
 +    amount = format.fromEdit(credit);
    }
-
+ 
 -  amount =
 -    amount != null ? amountToInteger(amount) : originalTransaction.amount;
 +  amount = amount != null ? amount : originalTransaction.amount;
@@ -514,7 +503,6 @@ index e6ab84526..efc0cf45d 100644
    if (date == null) {
      date = originalTransaction.date || currentDay();
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
@@ -525,7 +513,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 
 ```text
 1	import { useCallback, useEffect, useMemo } from 'react';
-2
+2	
 3	import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 4	import { getCurrency } from '@actual-app/core/shared/currencies';
 5	import type { Currency } from '@actual-app/core/shared/currencies';
@@ -539,9 +527,9 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 13	  setNumberFormat,
 14	} from '@actual-app/core/shared/util';
 15	import type { Amount, IntegerAmount } from '@actual-app/core/shared/util';
-16
+16	
 17	import { useSyncedPref } from './useSyncedPref';
-18
+18	
 19	export type FormatType =
 20	  | 'string'
 21	  | 'number'
@@ -549,7 +537,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 23	  | 'financial'
 24	  | 'financial-with-sign'
 25	  | 'financial-no-decimals';
-26
+26	
 27	export type ForEditOptions = {
 28	  /**
 29	   * Format with the currency's full precision even when the `hideFraction`
@@ -558,7 +546,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 32	   */
 33	  keepFraction?: boolean;
 34	};
-35
+35	
 36	export type UseFormatResult = {
 37	  (value: unknown, type?: FormatType): string;
 38	  forEdit: (value: IntegerAmount, options?: ForEditOptions) => string;
@@ -574,12 +562,12 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 48	  /** Whether the `hideFraction` pref is on, so callers don't re-read it. */
 49	  hideFraction: boolean;
 50	};
-51
+51	
 52	export type FormatResult = {
 53	  numericValue?: number;
 54	  formattedString: string;
 55	};
-56
+56	
 57	function format(
 58	  value: unknown,
 59	  type: FormatType,
@@ -589,7 +577,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 63	  switch (type) {
 64	    case 'string': {
 65	      const val = JSON.stringify(value);
-66
+66	
 67	      if (val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
 68	        return { formattedString: val.slice(1, -1) };
 69	      }
@@ -627,13 +615,13 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 101	        }
 102	        localValue = parsed;
 103	      }
-104
+104	
 105	      if (typeof localValue !== 'number') {
 106	        throw new Error(
 107	          'Value is not a number (' + typeof localValue + '): ' + localValue,
 108	        );
 109	      }
-110
+110	
 111	      return {
 112	        numericValue: localValue,
 113	        formattedString: integerToCurrency(
@@ -647,7 +635,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 121	      throw new Error('Unknown format type: ' + type);
 122	  }
 123	}
-124
+124	
 125	export function useFormat(): UseFormatResult {
 126	  const [numberFormatPref] = useSyncedPref('numberFormat');
 127	  const [hideFractionPref] = useSyncedPref('hideFraction');
@@ -656,11 +644,11 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 130	  const [spaceEnabledPref] = useSyncedPref(
 131	    'currencySpaceBetweenAmountAndSymbol',
 132	  );
-133
+133	
 134	  const activeCurrency = useMemo(() => {
 135	    return getCurrency(defaultCurrencyCodePref || '');
 136	  }, [defaultCurrencyCodePref]);
-137
+137	
 138	  const numberFormatConfig = useMemo(
 139	    () =>
 140	      parseNumberFormat({
@@ -669,7 +657,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 143	      }),
 144	    [numberFormatPref, hideFractionPref],
 145	  );
-146
+146	
 147	  // Hack: keep the global number format in sync - update the settings when
 148	  // the underlying configuration changes.
 149	  // This should be patched by moving all number-formatting utilities away from
@@ -677,42 +665,42 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 151	  useEffect(() => {
 152	    setNumberFormat(numberFormatConfig);
 153	  }, [numberFormatConfig]);
-154
+154	
 155	  const applyCurrencyStyling = useCallback(
 156	    (formattedNumericValue: string, currencySymbol: string): string => {
 157	      if (!currencySymbol) {
 158	        return formattedNumericValue;
 159	      }
-160
+160	
 161	      let sign = '';
 162	      let valueWithoutSign = formattedNumericValue;
 163	      if (formattedNumericValue.startsWith('-')) {
 164	        sign = '-';
 165	        valueWithoutSign = formattedNumericValue.slice(1);
 166	      }
-167
+167	
 168	      const space = spaceEnabledPref === 'true' ? '\u202F' : '';
 169	      const position = symbolPositionPref || 'before';
-170
+170	
 171	      const styledAmount =
 172	        position === 'after'
 173	          ? `${valueWithoutSign}${space}${currencySymbol}`
 174	          : `\u202A${currencySymbol}\u202C${space}${valueWithoutSign}`;
-175
+175	
 176	      return sign + styledAmount;
 177	    },
 178	    [symbolPositionPref, spaceEnabledPref],
 179	  );
-180
+180	
 181	  const formatDisplay = useCallback(
 182	    (value: unknown, type: FormatType = 'string'): string => {
 183	      const isFinancialType =
 184	        type === 'financial' ||
 185	        type === 'financial-with-sign' ||
 186	        type === 'financial-no-decimals';
-187
+187	
 188	      let displayDecimalPlaces: number | undefined;
-189
+189	
 190	      if (isFinancialType) {
 191	        if (type === 'financial-no-decimals' || hideFractionPref === 'true') {
 192	          displayDecimalPlaces = 0;
@@ -720,19 +708,19 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 194	          displayDecimalPlaces = activeCurrency.decimalPlaces;
 195	        }
 196	      }
-197
+197	
 198	      const intlFormatter = getNumberFormat({
 199	        format: numberFormatConfig.format,
 200	        decimalPlaces: displayDecimalPlaces,
 201	      }).formatter;
-202
+202	
 203	      const { numericValue, formattedString } = format(
 204	        value,
 205	        type,
 206	        intlFormatter,
 207	        activeCurrency.decimalPlaces,
 208	      );
-209
+209	
 210	      let styledValue = formattedString;
 211	      if (isFinancialType && activeCurrency && activeCurrency.code !== '') {
 212	        styledValue = applyCurrencyStyling(
@@ -740,7 +728,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 214	          activeCurrency.symbol,
 215	        );
 216	      }
-217
+217	
 218	      if (
 219	        type === 'financial-with-sign' &&
 220	        numericValue != null &&
@@ -757,17 +745,17 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 231	      hideFractionPref,
 232	    ],
 233	  );
-234
+234	
 235	  const toAmount = useCallback(
 236	    (value: number) => integerToAmount(value, activeCurrency.decimalPlaces),
 237	    [activeCurrency.decimalPlaces],
 238	  );
-239
+239	
 240	  const fromAmount = useCallback(
 241	    (value: number) => amountToInteger(value, activeCurrency.decimalPlaces),
 242	    [activeCurrency.decimalPlaces],
 243	  );
-244
+244	
 245	  const forEdit = useCallback(
 246	    (value: IntegerAmount, options?: ForEditOptions) => {
 247	      const amount = toAmount(value);
@@ -788,7 +776,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 262	      numberFormatConfig.format,
 263	    ],
 264	  );
-265
+265	
 266	  const fromEdit = useCallback(
 267	    (
 268	      value: string,
@@ -797,31 +785,31 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 271	      if (value == null) {
 272	        return defaultValue;
 273	      }
-274
+274	
 275	      const trimmed = value.trim();
 276	      if (trimmed === '') {
 277	        return defaultValue;
 278	      }
-279
+279	
 280	      // strip directional formatting characters and letters
 281	      const normalized = trimmed
 282	        .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '')
 283	        .replace(/\p{L}+/gu, '');
 284	      let numericValue: number | null = evalArithmetic(normalized, null);
-285
+285	
 286	      if (numericValue === null || isNaN(numericValue)) {
 287	        numericValue = currencyToAmount(normalized);
 288	      }
-289
+289	
 290	      if (numericValue !== null && !isNaN(numericValue)) {
 291	        return fromAmount(numericValue);
 292	      }
-293
+293	
 294	      return defaultValue;
 295	    },
 296	    [fromAmount],
 297	  );
-298
+298	
 299	  return Object.assign(formatDisplay, {
 300	    forEdit,
 301	    fromEdit,
@@ -833,7 +821,6 @@ _**Agent (claude-opus-5 2026-09-16 17:37:42-0400)**_
 307	}
 308
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:50-0400)**_
@@ -848,7 +835,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:50-0400)**_
 1772	            )}
 1773	          </CustomCell>
 1774	        )}
-1775
+1775	
 1776	        <InputCell
 1777	          /* Debit field for all transactions */
 1778	          type="input"
@@ -879,7 +866,7 @@ _**Agent (claude-opus-5 2026-09-16 17:37:50-0400)**_
 1803	            activationFilters: [!isTemporaryId(transaction.id)],
 1804	          }}
 1805	        />
-1806
+1806	
 1807	        <InputCell
 1808	          /* Credit field for all transactions */
 1809	          type="input"
@@ -910,11 +897,10 @@ _**Agent (claude-opus-5 2026-09-16 17:37:50-0400)**_
 1834	            activationFilters: [!isTemporaryId(transaction.id)],
 1835	          }}
 1836	        />
-1837
+1837	
 1838	        {showBalance && (
 1839	          <Cell
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:52-0400)**_
@@ -929,7 +915,6 @@ Locate CustomCell definition
 packages/desktop-client/src/components/table.tsx:455:export function CustomCell({
 packages/desktop-client/src/components/table.tsx:455:export function CustomCell({
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:54-0400)**_
@@ -952,7 +937,6 @@ Find formatter usage in table.tsx
 761:      formatter={value =>
 762:        props.formatter ? props.formatter(value, type) : format(value, type)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:37:56-0400)**_
@@ -1003,7 +987,6 @@ _**Agent (claude-opus-5 2026-09-16 17:37:56-0400)**_
 263	      onExpose,
 264	      name,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:38:19-0400)**_
@@ -1021,7 +1004,6 @@ Find all forEdit usages
 ```text
 (eval):1: no matches found: --include=*.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:38:22-0400)**_
@@ -1045,7 +1027,6 @@ packages/desktop-client/src/components/transactions/TransactionsTable.tsx:978:  
 packages/desktop-client/src/components/transactions/TransactionsTable.tsx:984:    showZeroInDeposit !== prevShowZero
 packages/desktop-client/src/components/transactions/TransactionsTable.tsx:987:      serializeTransaction(originalTransaction, format, showZeroInDeposit),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:38:24-0400)**_
@@ -1071,7 +1052,6 @@ packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput
 packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx:417:            formatExpr: format.forEdit,
 packages/desktop-client/src/components/budget/tracking/TrackingBudgetComponents.tsx:382:            formatExpr: format.forEdit,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:38:30-0400)**_
@@ -1117,7 +1097,6 @@ packages/desktop-client/src/components/table.tsx:739:    unformatExpr,
 packages/desktop-client/src/components/table.tsx:776:            value={formatExpr ? formatExpr(sheetValue) : sheetValue.toString()}
 packages/desktop-client/src/components/table.tsx:778:              onSave(unformatExpr ? unformatExpr(value) : value);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:38:34-0400)**_
@@ -1164,7 +1143,6 @@ _**Agent (claude-opus-5 2026-09-16 17:38:34-0400)**_
 786	  );
 787	}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:38:38-0400)**_
@@ -1179,7 +1157,6 @@ _**Agent (claude-opus-5 2026-09-16 17:38:43-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:38:48-0400)**_
@@ -1190,7 +1167,6 @@ _**Agent (claude-opus-5 2026-09-16 17:38:48-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:38:49-0400)**_
@@ -1227,7 +1203,6 @@ worker restarts: 0, max worker memory usage: 47.79 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 44.77s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:39:44-0400)**_
@@ -1255,7 +1230,6 @@ Error: Expected a single value for option "--run", received [true, true]
 
 Node.js v22.21.0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:40:08-0400)**_
@@ -1292,7 +1266,6 @@ This ensures that you're testing the behavior the user would see in the browser.
    Start at  17:39:49
    Duration  18.76s (transform 5.71s, setup 1.71s, import 7.41s, tests 8.75s, environment 740ms)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:40:29-0400)**_
@@ -1309,7 +1282,7 @@ No inline comments, no other conversation. That one item is the whole ask.
 
 ## Root cause
 
-It was a real bug, and a narrow one. In [TransactionsTable.tsx](packages/desktop-client/src/components/transactions/TransactionsTable.tsx), the Payment/Deposit cells used `format.forEdit()` in their `formatter` prop. `forEdit` deliberately omits the currency symbol — it's the _editing_ representation. But in [table.tsx:250](packages/desktop-client/src/components/table.tsx#L250), `formatter` is only ever applied to the **read-only** branch; the editor reads `inputProps.value` instead. So the symbol was stripped from exactly the state that should have had it.
+It was a real bug, and a narrow one. In [TransactionsTable.tsx](packages/desktop-client/src/components/transactions/TransactionsTable.tsx), the Payment/Deposit cells used `format.forEdit()` in their `formatter` prop. `forEdit` deliberately omits the currency symbol — it's the *editing* representation. But in [table.tsx:250](packages/desktop-client/src/components/table.tsx#L250), `formatter` is only ever applied to the **read-only** branch; the editor reads `inputProps.value` instead. So the symbol was stripped from exactly the state that should have had it.
 
 The budget cells in the same PR already do this correctly — read-only through `format(value, 'financial')`, editing through `formatExpr: format.forEdit` ([table.tsx:761-776](packages/desktop-client/src/components/table.tsx#L761-L776)). The Payment/Deposit cells were the one place that deviated.
 
@@ -1327,7 +1300,7 @@ I checked every other `forEdit` call site: `AmountInput`, `FinancialInput`, `Cal
 2. **Reply to sgstrick and re-request review** on the PR.
 3. Optional: your PR title is `feat: currency formatting`, but [AGENTS.md](AGENTS.md) requires an `[AI]` prefix on titles for agent-assisted work. Worth renaming to `[AI] feat: currency formatting` if that rule is being enforced in your class repo.
 
-One thing I did _not_ do: verify in a running browser. The reviewer found this by hand-testing, so if you want the same confidence before pushing, I can start the app and check the columns against a demo budget.
+One thing I did *not* do: verify in a running browser. The reviewer found this by hand-testing, so if you want the same confidence before pushing, I can start the app and check the columns against a demo budget.
 
 ---
 
@@ -1336,30 +1309,32 @@ _**User (2026-09-16 17:43:44-0400)**_
 Stop hook feedback:
 ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/check-on-stop.sh"]: Stop check found failures in touched workspaces:
 [tests failed: @actual-app/web]
-129|
-130| await result.current.mutateAsync({ category: newCategory(tooLongNa…
-| ^
-131|
-132| expect(createCategoryHandler).not.toHaveBeenCalled();
+    129|
+    130|     await result.current.mutateAsync({ category: newCategory(tooLongNa…
+       |                          ^
+    131|
+    132|     expect(createCategoryHandler).not.toHaveBeenCalled();
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
 
-FAIL src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
 TypeError: Cannot read properties of null (reading 'mutateAsync')
-❯ src/budget/mutations.test.tsx:150:26
-148| });
-149|
-150| await result.current.mutateAsync({ category: newCategory(maxLength…
-| ^
-151|
-152| await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
+ ❯ src/budget/mutations.test.tsx:150:26
+    148|     });
+    149|
+    150|     await result.current.mutateAsync({ category: newCategory(maxLength…
+       |                          ^
+    151|
+    152|     await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
 
-Test Files 1 failed | 60 passed (61)
-Tests 4 failed | 831 passed | 1 skipped (836)
-Start at 17:40:49
-Duration 77.80s (transform 9.06s, setup 68.01s, import 24.10s, tests 21.74s, environment 32.66s)
+
+ Test Files  1 failed | 60 passed (61)
+      Tests  4 failed | 831 passed | 1 skipped (836)
+   Start at  17:40:49
+   Duration  77.80s (transform 9.06s, setup 68.01s, import 24.10s, tests 21.74s, environment 32.66s)
+
 
 ---
 
@@ -1378,7 +1353,6 @@ Run failing test on clean branch
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.
 ```
-
 </details></tool-use>
 
 ---
@@ -1439,6 +1413,7 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
+
 ---
 
 _**Agent (claude-opus-5 2026-09-16 17:44:57-0400)**_
@@ -1457,7 +1432,6 @@ Check working tree and whether branch touches failing test
 === does master have the file? ===
 87937c19b [AI] test: add coverage for the 50-character category name limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:45:05-0400)**_
@@ -1480,7 +1454,6 @@ authors: [REPLACE_WITH_GITHUB_USERNAME]
 
 Add currency display to transaction tables, transaction lists and account modals
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:46:07-0400)**_
@@ -1506,7 +1479,6 @@ title: feat: currency formatting
 head sha: b6c15aacef851aa5d421c1b1ec7ecd1d428651c2
 mergeable_state: dirty
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:46:10-0400)**_
@@ -1532,7 +1504,6 @@ upcoming-release-notes/currency-settings-no-longer-experimental.md
   base   100644 e99423daf7b01a6069fbf67c54c44e629b88cab1 packages/desktop-client/src/components/modals/CreateLocalAccountModal.tsx
   base   100644 635053162c509e3dc74fb6e8b0b201e1a5bf210d packages/desktop-client/src/components/transactions/TransactionsTable.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:46:21-0400)**_
@@ -1560,7 +1531,6 @@ category: Features
 authors: [jamesleonard3rd]
 ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-16 17:46:49-0400)**_

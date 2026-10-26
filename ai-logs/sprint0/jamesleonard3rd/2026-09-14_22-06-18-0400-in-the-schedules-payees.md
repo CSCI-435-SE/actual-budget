@@ -150,7 +150,6 @@ export function Search({
 ---USAGES---
 (eval):1: no matches found: --include=*.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:06:24-0400)**_
@@ -176,7 +175,6 @@ packages/desktop-client/src/components/mobile/schedules/MobileSchedulesPage.tsx:
 packages/desktop-client/src/components/mobile/transactions/TransactionListWithBalances.tsx:12:import { Search } from '#components/common/Search';
 packages/desktop-client/src/components/mobile/rules/MobileRulesPage.tsx:13:import { Search } from '#components/common/Search';
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:06:26-0400)**_
@@ -190,7 +188,6 @@ Check rules page search usage
 ```text
 ugrep: warning: packages/desktop-client/src/components/rules/ManageRules.tsx: No such file or directory
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:06:29-0400)**_
@@ -212,7 +209,6 @@ RulesList.tsx
 ScheduleValue.tsx
 Value.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:06:31-0400)**_
@@ -229,7 +225,6 @@ packages/desktop-client/src/components/mobile/rules/MobileRulesPage.tsx
 packages/desktop-client/src/components/ManageRules.tsx:328:            placeholder={t('Filter rules...')}
 packages/desktop-client/src/components/mobile/rules/MobileRulesPage.tsx:188:          placeholder={t('Filter rules…')}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:06:33-0400)**_
@@ -262,12 +257,11 @@ Check ManageRules search markup
 327:          <Search
 330:            onChange={onSearchChange}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:06:41-0400)**_
 
-Not quite — [ManagePayees.tsx:283-287](packages/desktop-client/src/components/payees/ManagePayees.tsx#L283-L287) only _uses_ the search bar. The component itself is shared:
+Not quite — [ManagePayees.tsx:283-287](packages/desktop-client/src/components/payees/ManagePayees.tsx#L283-L287) only *uses* the search bar. The component itself is shared:
 
 **[packages/desktop-client/src/components/common/Search.tsx](packages/desktop-client/src/components/common/Search.tsx)** — the magnifying-glass icon, the input, the focus styling, the ✕ clear button, and escape-to-clear all live there.
 
@@ -280,7 +274,7 @@ All four tabs you mentioned render that same component, each passing its own `pl
 
 Mobile has its own pages (`mobile/payees/MobilePayeesPage.tsx`, `mobile/rules/MobileRulesPage.tsx`, etc.) that also import the same `Search`.
 
-So: if you want to change the search bar's _appearance or behavior_ everywhere, edit `common/Search.tsx`. If you want to change how payees are _filtered_, that's the `filteredPayees` memo at [ManagePayees.tsx:85-98](packages/desktop-client/src/components/payees/ManagePayees.tsx#L85-L98).
+So: if you want to change the search bar's *appearance or behavior* everywhere, edit `common/Search.tsx`. If you want to change how payees are *filtered*, that's the `filteredPayees` memo at [ManagePayees.tsx:85-98](packages/desktop-client/src/components/payees/ManagePayees.tsx#L85-L98).
 
 ---
 
@@ -288,76 +282,76 @@ _**User (2026-09-14 22:09:38-0400)**_
 
 <ide_selection>The user selected the lines 73 to 106 from /Users/james/actual-budget/packages/desktop-client/src/components/common/Search.tsx:
 <Input
-ref={ref}
-value={value}
-placeholder={placeholder}
-onEscape={() => onChange('')}
-onChangeValue={onChange}
-className={css({
-width: '100%',
-'::placeholder': {
-color: theme.formInputTextPlaceholder,
-transition: 'color .25s',
-},
-'&[data-focused]': isInModal
-? {}
-: {
-'::placeholder': {
-color: theme.formInputTextPlaceholderSelected,
-},
-},
-flex: 1,
-'&, &[data-focused], &[data-hovered]': {
-border: 0,
-backgroundColor: 'transparent',
-boxShadow: 'none',
-color: 'inherit',
-},
-})}
-onFocus={() => {
-setFocused(true);
-}}
-onBlur={() => {
-setFocused(false);
-}}
-/>
+        ref={ref}
+        value={value}
+        placeholder={placeholder}
+        onEscape={() => onChange('')}
+        onChangeValue={onChange}
+        className={css({
+          width: '100%',
+          '::placeholder': {
+            color: theme.formInputTextPlaceholder,
+            transition: 'color .25s',
+          },
+          '&[data-focused]': isInModal
+            ? {}
+            : {
+                '::placeholder': {
+                  color: theme.formInputTextPlaceholderSelected,
+                },
+              },
+          flex: 1,
+          '&, &[data-focused], &[data-hovered]': {
+            border: 0,
+            backgroundColor: 'transparent',
+            boxShadow: 'none',
+            color: 'inherit',
+          },
+        })}
+        onFocus={() => {
+          setFocused(true);
+        }}
+        onBlur={() => {
+          setFocused(false);
+        }}
+      />
 
 This may or may not be related to the current task.</ide_selection>
 
 Explain these lines <Input
-ref={ref}
-value={value}
-placeholder={placeholder}
-onEscape={() => onChange('')}
-onChangeValue={onChange}
-className={css({
-width: '100%',
-'::placeholder': {
-color: theme.formInputTextPlaceholder,
-transition: 'color .25s',
-},
-'&[data-focused]': isInModal
-? {}
-: {
-'::placeholder': {
-color: theme.formInputTextPlaceholderSelected,
-},
-},
-flex: 1,
-'&, &[data-focused], &[data-hovered]': {
-border: 0,
-backgroundColor: 'transparent',
-boxShadow: 'none',
-color: 'inherit',
-},
-})}
-onFocus={() => {
-setFocused(true);
-}}
-onBlur={() => {
-setFocused(false);
-}}
-/>
+        ref={ref}
+        value={value}
+        placeholder={placeholder}
+        onEscape={() => onChange('')}
+        onChangeValue={onChange}
+        className={css({
+          width: '100%',
+          '::placeholder': {
+            color: theme.formInputTextPlaceholder,
+            transition: 'color .25s',
+          },
+          '&[data-focused]': isInModal
+            ? {}
+            : {
+                '::placeholder': {
+                  color: theme.formInputTextPlaceholderSelected,
+                },
+              },
+          flex: 1,
+          '&, &[data-focused], &[data-hovered]': {
+            border: 0,
+            backgroundColor: 'transparent',
+            boxShadow: 'none',
+            color: 'inherit',
+          },
+        })}
+        onFocus={() => {
+          setFocused(true);
+        }}
+        onBlur={() => {
+          setFocused(false);
+        }}
+      />
 
 ---
 
@@ -490,50 +484,44 @@ export function ResponsiveInput(props: InputProps) {
   return isNarrowWidth ? <BigInput {...props} /> : <Input {...props} />;
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:09:58-0400)**_
 
-This is the actual text field inside the search bar. It's Actual's shared [`Input`](packages/component-library/src/Input.tsx) (a thin wrapper around react-aria-components' `Input`), styled so it visually _disappears_ into the bordered `View` around it.
+This is the actual text field inside the search bar. It's Actual's shared [`Input`](packages/component-library/src/Input.tsx) (a thin wrapper around react-aria-components' `Input`), styled so it visually *disappears* into the bordered `View` around it.
 
 ## The props
 
 ```tsx
-ref = { ref };
+ref={ref}
 ```
-
 Forwards the `ref` that `Search` received from its parent down to the real DOM `<input>`. That's how callers like the transactions header can programmatically focus the search box.
 
 ```tsx
-value = { value };
-onChangeValue = { onChange };
+value={value}
+onChangeValue={onChange}
 ```
-
 A controlled input: the parent owns the text (`ManagePayees`'s `filter` state) and gets every keystroke back. `onChangeValue` is a convenience prop that `Input` adds — it hands you the string directly ([Input.tsx:85-89](packages/component-library/src/Input.tsx#L85-L89)) instead of a `ChangeEvent` you'd have to dig `e.currentTarget.value` out of.
 
 ```tsx
 onEscape={() => onChange('')}
 ```
-
 Another `Input` convenience prop — it watches `onKeyUp` for the Escape key ([Input.tsx:78-80](packages/component-library/src/Input.tsx#L78-L80)). Here, pressing Escape clears the query, same as clicking the ✕ button below it.
 
 ```tsx
 onFocus / onBlur → setFocused(...)
 ```
-
 Mirrors focus into React state. The input itself doesn't need this — CSS could handle it — but the **parent `View`** needs to know, so it can draw the focus ring and swap its background ([Search.tsx:54-60](packages/desktop-client/src/components/common/Search.tsx#L54-L60)). CSS on a child can't style its parent, so the state hop is the workaround.
 
 ## The `className` / emotion styles
 
-`css({...})` from `@emotion/css` generates a class name at runtime. Note that `Input` _merges_ this with its own `defaultInputClassName` via `cx` ([Input.tsx:64-69](packages/component-library/src/Input.tsx#L64-L69)) — so these rules are overriding defaults, not starting from scratch.
+`css({...})` from `@emotion/css` generates a class name at runtime. Note that `Input` *merges* this with its own `defaultInputClassName` via `cx` ([Input.tsx:64-69](packages/component-library/src/Input.tsx#L64-L69)) — so these rules are overriding defaults, not starting from scratch.
 
 ```tsx
 '&, &[data-focused], &[data-hovered]': {
   border: 0, backgroundColor: 'transparent', boxShadow: 'none', color: 'inherit',
 }
 ```
-
 The important part. `data-focused` and `data-hovered` are attributes react-aria stamps onto the element (its alternative to `:focus`/`:hover`, so the styling is consistent across mouse/keyboard/touch). By zeroing border, background, and shadow in **all three** states, the input renders as bare text — all of the visible chrome comes from the wrapping `View`, which holds the icon, the input, and the clear button as one unit. `color: 'inherit'` lets the text pick up the wrapper's color.
 
 ```tsx
@@ -545,14 +533,12 @@ The important part. `data-focused` and `data-hovered` are attributes react-aria 
   '::placeholder': { color: theme.formInputTextPlaceholderSelected },
 },
 ```
-
 The placeholder ("Filter payees...") fades between two theme colors over 250ms when you focus the field. The `isInModal` check skips that brightening inside modals, where the background is already a different color and the selected variant would read wrong.
 
 ```tsx
 width: '100%',
 flex: 1,
 ```
-
 Makes the input eat the leftover horizontal space in the wrapper's flex row, so the magnifier stays pinned left and the ✕ stays pinned right.
 
 ---
@@ -575,10 +561,7 @@ Two pieces there:
 export type InputProps = ComponentPropsWithRef<typeof ReactAriaInput> & {
   onEnter?: (value: string, event: KeyboardEvent<HTMLInputElement>) => void;
   onEscape?: (value: string, event: KeyboardEvent<HTMLInputElement>) => void;
-  onChangeValue?: (
-    newValue: string,
-    event: ChangeEvent<HTMLInputElement>,
-  ) => void;
+  onChangeValue?: (newValue: string, event: ChangeEvent<HTMLInputElement>) => void;
   onUpdate?: (newValue: string, event: FocusEvent<HTMLInputElement>) => void;
 };
 ```
@@ -603,7 +586,7 @@ So the chain is: you press Escape → the browser fires `keyup` on the `<input>`
 
 The sibling props work the same way — `onChangeValue` and `onUpdate` are derived from `onChange` and `onBlur` respectively, at [Input.tsx:82-89](packages/component-library/src/Input.tsx#L82-L89). All four exist for the same reason: they hand you the string directly instead of making every caller write `e.currentTarget.value`.
 
-One consequence worth knowing: because it's `onKeyUp` rather than `onKeyDown`, the callback fires on key _release_, and it doesn't call `stopPropagation` — so an Escape in a search box inside a modal will also bubble up to whatever closes the modal, unless something upstream intercepts it.
+One consequence worth knowing: because it's `onKeyUp` rather than `onKeyDown`, the callback fires on key *release*, and it doesn't call `stopPropagation` — so an Escape in a search box inside a modal will also bubble up to whatever closes the modal, unless something upstream intercepts it.
 
 ---
 
@@ -611,7 +594,7 @@ _**User (2026-09-14 22:15:18-0400)**_
 
 <ide_selection>The user selected the lines 71 to 81 from /Users/james/actual-budget/packages/component-library/src/Input.tsx:
 onKeyUp={e => {
-props.onKeyUp?.(e);
+        props.onKeyUp?.(e);
 
         if (e.key === 'Enter' && onEnter) {
           onEnter(e.currentTarget.value, e);
@@ -625,7 +608,7 @@ props.onKeyUp?.(e);
 This may or may not be related to the current task.</ide_selection>
 
 Could I add something to this block onKeyUp={e => {
-props.onKeyUp?.(e);
+        props.onKeyUp?.(e);
 
         if (e.key === 'Enter' && onEnter) {
           onEnter(e.currentTarget.value, e);
@@ -690,7 +673,6 @@ packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx:86:  useHot
 packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx:97:  useHotkeys(
 packages/desktop-client/src/components/budget/DynamicBudgetTable.tsx:108:  useHotkeys(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:15:27-0400)**_
@@ -778,7 +760,6 @@ Inspect accounts header hotkeys and search ref
 384:            onChange={onSearch}
 385:            ref={searchInput}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:15:41-0400)**_
@@ -833,7 +814,6 @@ Check modal hotkey scopes and shortcut modal
 167:            shortcut: '?',
 172:            shortcut: 'K',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:15:57-0400)**_
@@ -842,9 +822,9 @@ No — that block is the wrong place, for two independent reasons.
 
 ## Why `onKeyUp` in `Input` can't work
 
-That handler only fires **when the input already has focus**. But the point of a `/` shortcut is to focus the search box _from anywhere on the page_. By the time `Input`'s `onKeyUp` runs, you've already got focus and the shortcut is pointless.
+That handler only fires **when the input already has focus**. But the point of a `/` shortcut is to focus the search box *from anywhere on the page*. By the time `Input`'s `onKeyUp` runs, you've already got focus and the shortcut is pointless.
 
-Worse, `/` is a legitimate character someone may want to _type_ into a search query — a payee named `AT&T / Verizon`, a rule matching a URL. Intercepting it there would break typing slashes in every field.
+Worse, `/` is a legitimate character someone may want to *type* into a search query — a payee named `AT&T / Verizon`, a rule matching a URL. Intercepting it there would break typing slashes in every field.
 
 ## Why the scope is wrong
 
@@ -874,7 +854,7 @@ useHotkeys(
 
 Three details that matter here:
 
-- **`enableOnFormTags` defaults to `false`** in react-hotkeys-hook, which is exactly what you want — `/` won't fire while you're already typing in a field, so typing slashes still works. (Note the accounts header _opts in_ to `enableOnFormTags: true`, because `Cmd+F` is meant to also toggle _out_ of the search box. Don't copy that flag.)
+- **`enableOnFormTags` defaults to `false`** in react-hotkeys-hook, which is exactly what you want — `/` won't fire while you're already typing in a field, so typing slashes still works. (Note the accounts header *opts in* to `enableOnFormTags: true`, because `Cmd+F` is meant to also toggle *out* of the search box. Don't copy that flag.)
 - **`preventDefault`** is needed so the `/` character doesn't land in the field right after focusing, and so Firefox's quick-find doesn't open.
 - **`scopes: ['app']`** matches every other hotkey in the app. [Modal.tsx:64-70](packages/desktop-client/src/components/common/Modal.tsx#L64-L70) disables that scope while a modal is open, so your shortcut won't fire behind a dialog.
 - **`useKey: true`** — used for the `?` shortcut at [HelpMenu.tsx:102](packages/desktop-client/src/components/HelpMenu.tsx#L102). It matches on the produced character rather than physical key code, which is what you want for a punctuation key across keyboard layouts.
@@ -884,14 +864,8 @@ Since you'd be repeating this in four places, factoring it into a small hook in 
 ```tsx
 export function useSearchHotkey() {
   const ref = useRef<HTMLInputElement>(null);
-  useHotkeys(
-    '/',
-    e => {
-      e.preventDefault();
-      ref.current?.focus();
-    },
-    { useKey: true, scopes: ['app'] },
-  );
+  useHotkeys('/', e => { e.preventDefault(); ref.current?.focus(); },
+    { useKey: true, scopes: ['app'] });
   return ref;
 }
 ```
@@ -903,24 +877,25 @@ Two things worth deciding before you build it: whether the mobile pages (`Mobile
 _**User (2026-09-14 22:20:38-0400)**_
 
 <ide_selection>The user selected the lines 230 to 248 from /Users/james/actual-budget/packages/desktop-client/src/components/accounts/Header.tsx:
-useHotkeys(
-'ctrl+f, cmd+f, meta+f',
-e => {
-if (searchInput.current) {
-// Trigger browser-native find if user pressed search twice in a row
-if (document.activeElement === searchInput.current) {
-searchInput.current.blur();
-} else {
-e.preventDefault();
-searchInput.current.focus();
-}
-}
-},
-{
-enableOnFormTags: true,
-preventDefault: false,
-scopes: ['app'],
-},
+  useHotkeys(
+    'ctrl+f, cmd+f, meta+f',
+    e => {
+      if (searchInput.current) {
+        // Trigger browser-native find if user pressed search twice in a row
+        if (document.activeElement === searchInput.current) {
+          searchInput.current.blur();
+        } else {
+          e.preventDefault();
+          searchInput.current.focus();
+        }
+      }
+    },
+    {
+      enableOnFormTags: true,
+      preventDefault: false,
+      scopes: ['app'],
+    },
+
 
 This may or may not be related to the current task.</ide_selection>
 
@@ -966,19 +941,18 @@ Show Search usage in the four desktop components
 75-          />
 76-          <SelectedTagsButton />
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:20:53-0400)**_
 
 These four, one per tab:
 
-| Tab       | File                                                                                      | `<Search>` at                                                                   |
-| --------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Payees    | [payees/ManagePayees.tsx](packages/desktop-client/src/components/payees/ManagePayees.tsx) | [line 283](packages/desktop-client/src/components/payees/ManagePayees.tsx#L283) |
-| Rules     | [ManageRules.tsx](packages/desktop-client/src/components/ManageRules.tsx)                 | [line 327](packages/desktop-client/src/components/ManageRules.tsx#L327)         |
-| Schedules | [schedules/index.tsx](packages/desktop-client/src/components/schedules/index.tsx)         | [line 106](packages/desktop-client/src/components/schedules/index.tsx#L106)     |
-| Tags      | [tags/ManageTags.tsx](packages/desktop-client/src/components/tags/ManageTags.tsx)         | [line 71](packages/desktop-client/src/components/tags/ManageTags.tsx#L71)       |
+| Tab | File | `<Search>` at |
+|---|---|---|
+| Payees | [payees/ManagePayees.tsx](packages/desktop-client/src/components/payees/ManagePayees.tsx) | [line 283](packages/desktop-client/src/components/payees/ManagePayees.tsx#L283) |
+| Rules | [ManageRules.tsx](packages/desktop-client/src/components/ManageRules.tsx) | [line 327](packages/desktop-client/src/components/ManageRules.tsx#L327) |
+| Schedules | [schedules/index.tsx](packages/desktop-client/src/components/schedules/index.tsx) | [line 106](packages/desktop-client/src/components/schedules/index.tsx#L106) |
+| Tags | [tags/ManageTags.tsx](packages/desktop-client/src/components/tags/ManageTags.tsx) | [line 71](packages/desktop-client/src/components/tags/ManageTags.tsx#L71) |
 
 Note the odd one out: **Rules is at `components/ManageRules.tsx`**, not in the `components/rules/` folder like you'd expect — that folder only holds the row/header/editor pieces.
 
@@ -1075,7 +1049,6 @@ export function useFeatureFlag(name: FeatureFlag): boolean {
     : String(value) === 'true';
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:22:11-0400)**_
@@ -1120,7 +1093,6 @@ echo done
 ```text
 done
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:22:12-0400)**_
@@ -1173,7 +1145,6 @@ PYEOF
 ```text
 patched packages/desktop-client/src/components/payees/ManagePayees.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:22:28-0400)**_
@@ -1213,7 +1184,6 @@ import { PayeeTable } from './PayeeTable';
 
 const getPayeesById = memoizeOne((payees: PayeeEntity[]) => groupById(payees));
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:22:29-0400)**_
@@ -1300,7 +1270,6 @@ Inspect imports and filter state in the remaining three
 22:import { TagsMenuButton } from './TagsMenuButton';
 26:  const [filter, setFilter] = useState('');
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:22:43-0400)**_
@@ -1365,7 +1334,6 @@ patched packages/desktop-client/src/components/ManageRules.tsx
 patched packages/desktop-client/src/components/schedules/index.tsx
 patched packages/desktop-client/src/components/tags/ManageTags.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:22:48-0400)**_
@@ -1417,7 +1385,6 @@ export function ManageTags() {
   const { schedules = [] } = useSchedules({
     query: useMemo(() => q('schedules').select('*'), []),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:22:49-0400)**_
@@ -1485,7 +1452,6 @@ patched
             meta: ctrl,
             description: t('Bank sync'),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:22:56-0400)**_
@@ -1527,7 +1493,6 @@ worker restarts: 0, max worker memory usage: 40.75 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 59.13s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:25:39-0400)**_
@@ -1552,7 +1517,6 @@ Finished in 7940ms on 2304 files using 8 threads.
 
   Stats:  1095 files were parsed
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:26:06-0400)**_
@@ -1583,7 +1547,6 @@ All matched files use the correct format.
 Finished in 7306ms on 2304 files using 8 threads.
 === new i18n keys ===
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:26:12-0400)**_
@@ -1608,9 +1571,9 @@ index c13267a5e..019accae5 100644
 --- a/STUDENTS.md
 +++ b/STUDENTS.md
 @@ -13,11 +13,11 @@ can explore and experiment with it. Everything runs locally in your browser.
-
+ 
  Install these once before you start:
-
+ 
 -| Tool | Version | Notes |
 -| --- | --- | --- |
 -| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v` |
@@ -1621,10 +1584,9 @@ index c13267a5e..019accae5 100644
 +| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v`                                                                                     |
 +| [Yarn](https://yarnpkg.com/)   | **4.9.1+**      | Comes with Node via Corepack — see below                                                                 |
 +| [Git](https://git-scm.com/)    | any recent      | On **Windows**, install "Git for Windows" — it also provides the `sh` and `bash` shells some scripts use |
-
+ 
  > 💡 **New to Yarn workspaces?** Actual Budget uses [Yarn workspaces](https://yarnpkg.com/features/workspaces) to manage multiple packages in a single repo. You mostly run commands from the root — but understanding workspaces helps when something goes wrong in a sub-package.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:26:18-0400)**_
@@ -1646,7 +1608,6 @@ Revert unrelated markdown reformatting and check i18n keys
 883:  "Focus the filter box": "Focus the filter box",
 1401:  "Payees, rules, schedules and tags pages": "Payees, rules, schedules and tags pages",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:26:23-0400)**_
@@ -1662,7 +1623,6 @@ packages/desktop-client/.gitignore:35:locale/	packages/desktop-client/locale/en.
 error: pathspec 'packages/desktop-client/locale/en.json' did not match any file(s) known to git
 Did you forget to 'git add'?
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:26:33-0400)**_
@@ -1679,7 +1639,6 @@ packages/desktop-client/src/components/App.tsx:6:import { HotkeysProvider } from
 packages/desktop-client/src/components/App.tsx:199:      <HotkeysProvider initiallyActiveScopes={['app']}>
 packages/desktop-client/src/components/App.tsx:238:      </HotkeysProvider>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:26:35-0400)**_
@@ -1709,7 +1668,7 @@ index aa3cb4f31..ab4652eb1 100644
    const [filter, setFilter] = useState('');
 +  const searchInput = useSearchHotkey();
    const dispatch = useDispatch();
-
+ 
    const { schedules = [] } = useSchedules({
 @@ -325,6 +327,7 @@ export function ManageRules({
            </View>
@@ -1746,7 +1705,7 @@ index ccdc01ea7..06ba6a5ce 100644
 --- a/packages/desktop-client/src/components/payees/ManagePayees.tsx
 +++ b/packages/desktop-client/src/components/payees/ManagePayees.tsx
 @@ -16,6 +16,7 @@ import type { PayeeEntity } from '@actual-app/core/types/models';
-
+ 
  import { Search } from '#components/common/Search';
  import { Cell, SelectCell, TableHeader } from '#components/table';
 +import { useSearchHotkey } from '#hooks/useSearchHotkey';
@@ -1780,13 +1739,13 @@ index 0b640bd32..e28e3a0ac 100644
 +import { useSearchHotkey } from '#hooks/useSearchHotkey';
  import { pushModal } from '#modals/modalsSlice';
  import { useDispatch } from '#redux';
-
+ 
 @@ -24,6 +25,7 @@ export function Schedules() {
-
+ 
    const dispatch = useDispatch();
    const [filter, setFilter] = useState('');
 +  const searchInput = useSearchHotkey();
-
+ 
    const onEdit = useCallback(
      (id: ScheduleEntity['id']) => {
 @@ -104,6 +106,7 @@ export function Schedules() {
@@ -1803,12 +1762,12 @@ index 99d81d808..0ec4810b6 100644
 +++ b/packages/desktop-client/src/components/tags/ManageTags.tsx
 @@ -12,6 +12,7 @@ import { listen } from '@actual-app/core/platform/client/connection';
  import { getNormalisedString } from '@actual-app/core/shared/normalisation';
-
+ 
  import { Search } from '#components/common/Search';
 +import { useSearchHotkey } from '#hooks/useSearchHotkey';
  import { SelectedProvider, useSelected } from '#hooks/useSelected';
  import { useTags } from '#hooks/useTags';
-
+ 
 @@ -24,6 +25,7 @@ import { TagsMenuButton } from './TagsMenuButton';
  export function ManageTags() {
    const { t } = useTranslation();
@@ -1854,7 +1813,6 @@ export function useSearchHotkey(): RefObject<HTMLInputElement | null> {
   return searchInput;
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:26:46-0400)**_
@@ -1864,7 +1822,6 @@ Done. Six files:
 **New shared hook** — [hooks/useSearchHotkey.ts](packages/desktop-client/src/hooks/useSearchHotkey.ts). Binds `/` in the `'app'` scope and returns the ref. `useKey: true` matches the produced character (matching the `?` binding in [HelpMenu.tsx:102](packages/desktop-client/src/components/HelpMenu.tsx#L102)), and `enableOnFormTags` is left at its default `false` so typing `/` inside a text field still inserts a slash.
 
 **Four call sites**, each three lines — import, `const searchInput = useSearchHotkey()`, and `ref={searchInput}` on the existing `<Search>`:
-
 - [ManagePayees.tsx:80, 286](packages/desktop-client/src/components/payees/ManagePayees.tsx#L286)
 - [ManageRules.tsx:128, 330](packages/desktop-client/src/components/ManageRules.tsx#L330)
 - [schedules/index.tsx:28, 109](packages/desktop-client/src/components/schedules/index.tsx#L109)
@@ -1921,7 +1878,6 @@ packages/component-library/src/Input.tsx:79:          onEscape(e.currentTarget.v
 packages/component-library/src/Input.stories.tsx:128:          onEscape={() => setEscaped(true)}
 packages/component-library/src/Input.stories.tsx:138:          'The onEscape callback is triggered when the user presses Escape.',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:32:15-0400)**_
@@ -1974,7 +1930,6 @@ Check table input escape behavior for contrast
       }}
     />
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-14 22:32:26-0400)**_
@@ -1991,15 +1946,15 @@ That calls the parent's setter with an empty string. Because the input is contro
 
 Worth noting the behavior isn't uniform across the app — `onEscape` is just a callback, so each caller decides:
 
-| Caller                                                                                                                                                                                                                                                                                                 | Escape does                                     |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
-| [Search.tsx:77](packages/desktop-client/src/components/common/Search.tsx#L77)                                                                                                                                                                                                                          | clears text, keeps focus                        |
-| [table.tsx:365-369](packages/desktop-client/src/components/table.tsx#L365-L369)                                                                                                                                                                                                                        | reverts to the original value (cancel the edit) |
-| [EditablePageHeaderTitle.tsx:40](packages/desktop-client/src/components/EditablePageHeaderTitle.tsx#L40), [sidebar/Account.tsx:254](packages/desktop-client/src/components/sidebar/Account.tsx#L254), [DashboardHeader.tsx:81](packages/desktop-client/src/components/reports/DashboardHeader.tsx#L81) | exits edit mode entirely                        |
+| Caller | Escape does |
+|---|---|
+| [Search.tsx:77](packages/desktop-client/src/components/common/Search.tsx#L77) | clears text, keeps focus |
+| [table.tsx:365-369](packages/desktop-client/src/components/table.tsx#L365-L369) | reverts to the original value (cancel the edit) |
+| [EditablePageHeaderTitle.tsx:40](packages/desktop-client/src/components/EditablePageHeaderTitle.tsx#L40), [sidebar/Account.tsx:254](packages/desktop-client/src/components/sidebar/Account.tsx#L254), [DashboardHeader.tsx:81](packages/desktop-client/src/components/reports/DashboardHeader.tsx#L81) | exits edit mode entirely |
 
 One caveat on the "focus stays" claim: that's true for the four pages we touched. Inside a modal — e.g. the search box in [KeyboardShortcutModal.tsx:522](packages/desktop-client/src/components/modals/KeyboardShortcutModal.tsx#L522) — Escape also reaches react-aria's dialog, which closes the modal, since `Input`'s handler doesn't call `stopPropagation`. So there you'd lose the box along with the text, but that's the dialog closing rather than the input blurring.
 
-If your `/` work makes you want Escape to _release_ focus back to the page, that'd be a one-line change to `Search`'s `onEscape` — though I'd suggest keeping clear-on-first-press and only blurring when the field is already empty, so you don't lose the ability to wipe a query without leaving the box.
+If your `/` work makes you want Escape to *release* focus back to the page, that'd be a one-line change to `Search`'s `onEscape` — though I'd suggest keeping clear-on-first-press and only blurring when the field is already empty, so you don't lose the ability to wipe a query without leaving the box.
 
 ---
 

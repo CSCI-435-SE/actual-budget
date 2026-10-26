@@ -22,30 +22,30 @@ _**Agent (claude-opus-5 2026-09-15 15:07:06-0400)**_
 
 ```text
 1	# Finish the experimental currency migration: remaining hardcoded sites
-2
+2	
 3	## Context
-4
+4	
 5	Actual has an experimental `currency` feature flag that introduces a `defaultCurrencyCode` synced pref plus `currencySymbolPosition` and `currencySpaceBetweenAmountAndSymbol`. The single reactive abstraction for rendering and parsing money is `useFormat()` at [useFormat.ts](packages/desktop-client/src/hooks/useFormat.ts) — a callable `format(value, 'financial' | 'financial-with-sign' | 'financial-no-decimals' | 'number' | …)` plus `.forEdit(integer)`, `.fromEdit(string)`, `.currency`.
-6
+6	
 7	**The flag stays in place.** `useFormat` never consults `useFeatureFlag`; when the flag is off, [settings/index.tsx:189-192](packages/desktop-client/src/components/settings/index.tsx#L189-L192) forces `defaultCurrencyCode` to `''`, `getCurrency('')` returns the no-symbol sentinel, and `applyCurrencyStyling` short-circuits. So `format(x, 'financial')` is byte-identical to legacy `integerToCurrency(x)` with the flag off. Migrating a call site is a no-op today and a fix once the flag is on.
-8
+8	
 9	Commit `59b092269` migrated 13 display sites (transactions, mobile transactions, accounts, modals). Reports were already ~95% migrated on `master` — 31 files under `components/reports/` call `useFormat`, including the non-hook spreadsheets, which take `format` as a parameter.
-10
+10	
 11	**What remains is two distinct classes of problem**, and the second is bigger than a grep for the legacy display helpers suggests:
-12
+12	
 13	1. **Legacy display/parse helpers** — 12 desktop-client files still import the currency-unaware globals (`integerToCurrency`, `amountToCurrency`, `currencyToAmount`, `appendDecimals`, …). These read a mutable module global and emit no symbol.
 14	2. **Hardcoded 2-decimal arithmetic** — `amountToInteger(x)` / `integerToAmount(x)` default to `decimalPlaces = 2` ([util.ts:541,549](packages/loot-core/src/shared/util.ts#L541)), and several sites do raw `/100` or `*100`. These are _silently wrong today_ for JPY/KRW/IRR (0 decimals), independent of any symbol rendering.
-15
+15	
 16	Scope for this pass: **desktop-client display and input/parse paths.** The `loot-core` server, public `api`, and `sync-server` surfaces are catalogued at the end as a separate follow-up — they have no hook access and touch a public API contract and ~20 bank integrations.
-17
+17	
 18	All claims below were verified directly against the source, not taken from the audit summaries.
-19
+19	
 20	## Phase 0 — Groundwork (do first; the rest depends on it)
-21
+21	
 22	**0a. Export `fromAmount` / `toAmount` from `useFormat`.** They already exist as internal `useCallback`s at [useFormat.ts:220-228](packages/desktop-client/src/hooks/useFormat.ts#L220-L228) but the `Object.assign` return at line 282 exposes only `forEdit`, `fromEdit`, `currency`. Several remaining sites hold decimal `Amount`s, not `IntegerAmount`s. Add both to `UseFormatResult` and the return.
-23
+23	
 24	**0b. Add `packages/desktop-client/src/hooks/useFormat.test.ts`.** There is no coverage today for the hook that owns symbol placement, the bidi control characters, and the `fromEdit` parse fallback. Cover:
-25
+25	
 26	- symbol before/after, with and without the ` ` separator
 27	- the `‪`/`‬` isolates and negative-sign hoisting (`-$5.00`, not `$-5.00`)
 28	- `'financial-with-sign'` `+` prefix for `>= 0`
@@ -53,109 +53,109 @@ _**Agent (claude-opus-5 2026-09-15 15:07:06-0400)**_
 30	- a zero-decimal currency (JPY) end-to-end, incl. `forEdit` → `fromEdit` round-trip
 31	- `fromEdit` stripping directional chars/letters, and falling back from `evalArithmetic` to `currencyToAmount`
 32	- **flag-off parity**: with `defaultCurrencyCode: ''`, output equals `integerToCurrency`
-33
+33	
 34	Follow [currencies.test.ts](packages/loot-core/src/shared/currencies.test.ts); render the hook with real synced-pref providers rather than mocking `useSyncedPref` (AGENTS.md: minimize mocks).
-35
+35	
 36	## Phase 1 — Actually broken today for non-2-decimal currencies
-37
+37	
 38	Two sites are wrong right now, flag or no flag. Do these first.
-39
+39	
 40	**[reports/Crossover.tsx:994-1016](packages/desktop-client/src/components/reports/reports/Crossover.tsx#L994-L1016)** — a monetary `Input` hardcoding the cents scale: `value={expectedContribution / 100}`, `onChange={… valueAsNumber * 100}`, and `step={100}`. `format` is already in scope at line 83. Move to `format.forEdit` / `format.fromEdit`, or at minimum `format.currency.decimalPlaces`, and make `step` currency-aware. (Verified — distinct from the percentage `toFixed` inputs elsewhere in the same file, which are not monetary and need no change.)
-41
+41	
 42	**[reports/spreadsheets/budget-analysis-export.ts:29-33](packages/desktop-client/src/components/reports/spreadsheets/budget-analysis-export.ts#L29-L33)** — the CSV export calls `integerToAmount(row.budgeted)` etc. with no `decimalPlaces`, so every exported figure is divided by 100 regardless of currency. A plain `.ts` with no hook access, but its **only caller** is [BudgetAnalysis.tsx:334](packages/desktop-client/src/components/reports/reports/BudgetAnalysis.tsx#L334), which has `format` in scope at line 146. Add a `decimalPlaces` parameter to `buildBudgetAnalysisCsv` and pass `format.currency.decimalPlaces`. Update `budget-analysis-export.test.ts`.
-43
+43	
 44	## Phase 2 — Pure deletions (zero risk, shrinks the surface)
-45
+45	
 46	**Delete [reports/numberFormatter.ts](packages/desktop-client/src/components/reports/numberFormatter.ts) and its 6 dead call sites.** `numberFormatterTooltip` just returns `Math.round(value)` with no currency formatting at all — but it is **unreachable**: recharts only applies `formatter` via `DefaultTooltipContent`, and all six `<Tooltip>` elements supply their own `content`. Verified at [BarGraph.tsx:281-287](packages/desktop-client/src/components/reports/graphs/BarGraph.tsx#L281-L287), `LineGraph.tsx:234-240`, `StackedBarGraph.tsx:250-256`, `NetWorthGraph.tsx:397-399`, `SpendingGraph.tsx:275-281`, `BarLineGraph.tsx:117-119`. Remove each `formatter={numberFormatterTooltip}` prop and its import, then delete the file.
-47
+47	
 48	**Delete the dead `premadeLabel` in [cash-flow-spreadsheet.tsx](packages/desktop-client/src/components/reports/spreadsheets/cash-flow-spreadsheet.tsx).** It builds a full tooltip in JSX using a threaded `format` (lines 213-272) and stores it as `premadeLabel` — declared at 188, assigned at 272, and **consumed nowhere** (verified: a repo-wide grep finds only those two lines). `CashFlowGraph.tsx` has its own `CustomTooltip` with `useFormat()` at line 147. Delete the JSX and the field, drop the now-unused `format` param from `cashFlowByDate`, drop the React/JSX/`AlignedText`/`FinancialText`/`t` imports, rename the file to `.ts`, and drop the `format` argument at the only call site [CashFlow.tsx:111-118](packages/desktop-client/src/components/reports/reports/CashFlow.tsx#L111-L118). `simpleCashFlow` already returns raw numbers and needs nothing.
-49
+49	
 50	## Phase 3 — Display-only migrations
-51
+51	
 52	Pattern from `59b092269`: drop the legacy import, add `const format = useFormat()`, call `format(integerValue, 'financial')`. Wrap standalone numbers in [FinancialText](packages/desktop-client/src/components/FinancialText.tsx) where not already (AGENTS.md).
-53
+53	
 54	**[ImportTransactionsModal/Transaction.tsx](packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx)** — 6 `amountToCurrency` calls (lines 258, 261, 275, 278, 294, 297), covering both cell text and `title=` tooltips. These hold **decimal `Amount`s** from `parseAmountFields`, so they need `format.fromAmount` first.
-55
+55	
 56	Also fix the unit mismatch in the `useMemo` at lines 64-79: the `isMatchedTransaction` branch takes `amount` straight from `entry.existing` — a DB row from the import-preview server call at [ImportTransactionsModal.tsx:837](packages/desktop-client/src/components/modals/ImportTransactionsModal/ImportTransactionsModal.tsx#L837), i.e. an `IntegerAmount` — while the other branch returns decimal amounts from `looselyParseAmount`. Both currently flow into `amountToCurrency`. Normalize both branches to `IntegerAmount` at the `useMemo` boundary, then the display calls become plain `format(x, 'financial')`. **Confirm the direction of the mismatch against a real import preview before changing it** — it may be normalized on a path not yet traced.
-57
+57	
 58	**[CalculatorAmountInput.tsx:277](packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx#L277)** — `formatAmount` is a module-level helper called during render. Lift it into the component or pass `format` in.
-59
+59	
 60	**[FocusableAmountInput.tsx:164, 311](packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx#L164)** — display only, as step 1 of the two-step split in Phase 4. Line 164's `editing` branch must keep showing the raw in-progress `text`.
-61
+61	
 62	**[NetWorthGraph.tsx:74, 78, 83-85, 90](packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx#L74)** and **[BarLineGraph.tsx:61-71](packages/desktop-client/src/components/reports/graphs/BarLineGraph.tsx#L61-L71)** — both tooltips render pre-formatted strings baked by [net-worth-spreadsheet.ts:300-304](packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts#L300-L304) at query time. Output is currency-correct today (`format` is threaded in from `NetWorth.tsx:138/149` and `NetWorthCard.tsx:85/96`), but the strings are **stale across a pref change** until the query re-runs, and `BarLineGraph` omits `FinancialText` entirely.
-63
+63	
 64	Fix by de-threading: have the spreadsheet return raw integers for `assets`/`debt`/`change`/`networth`, drop the `format` params from both `createSpreadsheet` and `recalculate`, and format in the two tooltip components via `useFormat()`. While there, simplify line 301's `` debt: `-${format(debt, 'financial')}` `` to pass `-debt` through `format`. _(Note: this is cleanup, not a bug — `applyCurrencyStyling` already hoists the sign outside the symbol, so the manual prefix currently produces byte-identical output in both symbol positions. Verified.)_
-65
+65	
 66	## Phase 4 — Input / parse paths
-67
+67	
 68	**[budget/envelope/CoverMenu.tsx](packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx)** — highest value, and a net deletion. Replace the hand-rolled `Input` + `integerToCurrency` default + `evalArithmetic` + `amountToInteger` block (lines 56-65, 79-82) with [FinancialInput](packages/desktop-client/src/components/util/FinancialInput.tsx), exactly as siblings [TransferMenu.tsx:75](packages/desktop-client/src/components/budget/envelope/TransferMenu.tsx#L75) and [HoldMenu.tsx:43](packages/desktop-client/src/components/budget/envelope/HoldMenu.tsx#L43) already do.
-69
+69	
 70	**Transaction table debit/credit round-trip** — two halves that must move together or the round-trip corrupts zero-decimal currencies:
-71
+71	
 72	- [table/utils.ts:64-65, 84](packages/desktop-client/src/components/transactions/table/utils.ts#L64-L65) — `serializeTransaction` calls `integerToCurrencyWithDecimal(debit)` with no currency code (always 2 decimals); `deserializeTransaction` parses back with `amountToInteger(amount)` at the same default. Plain helpers, so thread the `UseFormatResult` in as a parameter — the pattern already used by [net-worth-spreadsheet.ts:31](packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts#L31). Callers: [TransactionsTable.tsx:982, 991, 1135, 1141](packages/desktop-client/src/components/transactions/TransactionsTable.tsx#L982).
 73	- [TransactionsTable.tsx:1784, 1787, 1799, 1818](packages/desktop-client/src/components/transactions/TransactionsTable.tsx#L1784) — the `InputCell` debit/credit `value` / `formatter` / `inputProps.value`, built from `amountToCurrency(currencyToAmount(value))`. `format` is already in scope (added at line 971 last commit). Move to `format.forEdit` / `format.fromEdit` and drop the imports at lines 63-64.
-74
+74	
 75	**[FocusableAmountInput.tsx](packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx) parse chain** — the delicate one; do it last and keep it a separate commit. It is a hand-rolled currency input using four legacy globals (lines 88, 120-121, 210) and implements its own keypad decimal-shifting, so it can't be swapped for `FinancialInput` wholesale. Move line 88 and 210 to `format.fromEdit`; `onChangeText` (119-125) keeps its `appendDecimals` keypad semantics but must use `format.currency.decimalPlaces` instead of the 2 hardcoded in [appendDecimals](packages/loot-core/src/shared/util.ts#L246) (`padStart(3,'0')` / `slice(-2)`), and should read `hideFraction` through `format` rather than its own pref read.
-76
+76	
 77	**Remaining `integerToAmount`/`amountToInteger` at the default 2dp**, all React components with `format` reachable:
-78
+78	
 79	- [EnvelopeBudgetMenuModal.tsx:72, 119](packages/desktop-client/src/components/modals/EnvelopeBudgetMenuModal.tsx#L119) and [TrackingBudgetMenuModal.tsx:72, 119](packages/desktop-client/src/components/modals/TrackingBudgetMenuModal.tsx#L119)
 80	- [SplitAmountInput.tsx:88, 94](packages/desktop-client/src/components/mobile/transactions/SplitAmountInput.tsx#L88)
 81	- [mobile/TransactionEdit.tsx:1317, 1789](packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx#L1317) (in-component); lines 128/169 are its module-level `serializeTransaction`/`deserializeTransaction` and need the same threading as `table/utils.ts`
 82	- [EditFieldModal.tsx:68, 75](packages/desktop-client/src/components/modals/EditFieldModal.tsx#L68) — `currencyToInteger(value)` → `format.fromEdit(value)`; keep the invalid-parse alert path working
 83	- [CreateLocalAccountModal.tsx:71](packages/desktop-client/src/components/modals/CreateLocalAccountModal.tsx#L71) — `toRelaxedNumber(balance)`, itself a 2dp round-trip. **Client-only fix is insufficient**: the server re-multiplies at 2dp in [accounts/app.ts:573](packages/loot-core/src/server/accounts/app.ts#L573). Migrate the client here and note the server half for the follow-up.
-84
+84	
 85	The correct reference for this pattern is [budget/goals/editor/](packages/desktop-client/src/components/budget/goals/editor/) — 11 files already pass `format.currency.decimalPlaces` into the raw utils (e.g. [FixedAutomation.tsx:89](packages/desktop-client/src/components/budget/goals/editor/FixedAutomation.tsx#L89)). They are currency-correct but bypass `.forEdit`/`.fromEdit`; converting them is optional polish, not a fix.
-86
+86	
 87	## Phase 5 — Thread `decimalPlaces` through plain helpers
-88
+88	
 89	**[budget/util.ts:76-81](packages/desktop-client/src/components/budget/util.ts#L76-L81)** — `makeBalanceAmountStyle` round-trips `currencyToAmount(integerToCurrency(val))` purely to round to displayed precision before choosing a colour (so a value that _displays_ as zero is greyed, not coloured). Its only caller is [BalanceWithCarryover.tsx:122](packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx#L122), a React component — add a `decimalPlaces` parameter, pass `format.currency.decimalPlaces`, and replace the string round-trip with direct integer rounding. Rewrite the stale comment on lines 76-78. (`makeAmountGrey`, the other export, needs nothing.)
-90
+90	
 91	**[queries/index.ts:88, 111, ~117](packages/desktop-client/src/queries/index.ts#L88)** — `transactionsSearch` does `currencyToAmount(search)` then `amountToInteger(amount)` at 2dp, **and** carries a literal AQL transform `$transform: { $abs: { $idiv: ['$', 100] } }` (verified). Already takes `dateFormat` as a parameter, so add `decimalPlaces` and derive the divisor from it.
-92
+92	
 93	**[useFormulaExecution.ts:244, 582, 586, 590, 649, 651](packages/desktop-client/src/hooks/useFormulaExecution.ts#L244)** — six hardcoded `integerToAmount(x, 2)` literals. It is a hook file so `useFormat()` is reachable, but the call sites sit in module-level async helpers; thread `format.currency.decimalPlaces` down.
-94
+94	
 95	## Phase 6 — Reports consistency cleanups (cosmetic, low risk)
-96
+96	
 97	- **[ReportTableRow.tsx:334](packages/desktop-client/src/components/reports/graphs/tableGraph/ReportTableRow.tsx#L334)** — `Math.abs(average / 100) > 100000` while the four sibling `title` guards (157, 190, 238, 288) all use `Math.abs(x) > 100000`. Verified: the Average column's tooltip threshold is 100× off relative to the others, _and_ hardcodes 2dp. Make it consistent.
 98	- **[BarLineGraph.tsx:94-96](packages/desktop-client/src/components/reports/graphs/BarLineGraph.tsx#L94-L96)** — Y-axis `tickFormatter` uses `'financial'`; every other graph uses `'financial-no-decimals'` (`AreaGraph:220`, `BarGraph:305`, `CrossoverGraph:169`, `LineGraph:256`, `NetWorthGraph:267`, `SpendingGraph:194`, `StackedBarGraph:271`, `BudgetAnalysisGraph:272`). This one emits decimals on axis labels.
 99	- **[AreaGraph.tsx:205-216](packages/desktop-client/src/components/reports/graphs/AreaGraph.tsx#L205-L216)** — Y-domain rounding uses `/ 100 * 100` ("nearest whole currency unit"), true only at 2dp. Use `Math.pow(10, format.currency.decimalPlaces)`; `format` is in scope at 194.
 100	- **Manual `+` sign** duplicating `'financial-with-sign'`: [Change.tsx:34-35](packages/desktop-client/src/components/reports/Change.tsx#L34-L35) and [SpendingCard.tsx:143-145](packages/desktop-client/src/components/reports/reports/SpendingCard.tsx#L143-L145). Note they disagree on zero (`Change` treats `0` as `+`, `SpendingCard` doesn't) — switching both to the format type resolves that.
-101
+101	
 102	## Out of scope for this pass
-103
+103	
 104	**Intentionally format-agnostic** — leave alone: `looselyParseAmount` in [ImportTransactionsModal/utils.ts:197](packages/desktop-client/src/components/modals/ImportTransactionsModal/utils.ts#L197) and [parse-file.ts:189](packages/loot-core/src/server/transactions/import/parse-file.ts#L189). File imports deliberately don't assume the user's format. (The _downstream_ scaling at `ImportTransactionsModal.tsx:365, 705` is a real question — whether import should use the account's currency — but it's a product decision, not a mechanical migration.)
-105
+105	
 106	**The global-format sync hack**: `setNumberFormat` at [useFormat.ts:136](packages/desktop-client/src/hooks/useFormat.ts#L136) and [prefsSlice.ts:58](packages/desktop-client/src/prefs/prefsSlice.ts#L58). The hook's own comment flags it for removal, but it's what keeps [shared/arithmetic.ts:71](packages/loot-core/src/shared/arithmetic.ts#L71) working. Separate refactor.
-107
+107	
 108	**The feature flag.** No changes to [Experimental.tsx:199-204](packages/desktop-client/src/components/settings/Experimental.tsx#L199-L204), [settings/index.tsx:173, 189-192, 240](packages/desktop-client/src/components/settings/index.tsx#L173), or `useFeatureFlag`.
-109
+109	
 110	### Follow-up PR: server / API / sync-server
-111
+111	
 112	No hook access, and it touches a public contract — deliberately deferred, but catalogued so it isn't lost:
-113
+113	
 114	- **loot-core server, 2dp defaults**: [export-to-csv.ts:60, 130-131](packages/loot-core/src/server/transactions/export/export-to-csv.ts#L60), [accounts/sync.ts:555, 674, 1088, 1095](packages/loot-core/src/server/accounts/sync.ts#L555), [accounts/app.ts:573](packages/loot-core/src/server/accounts/app.ts#L573), [importers/ynab4.ts:216, 235, 303](packages/loot-core/src/server/importers/ynab4.ts#L216), [rules/action.ts:360](packages/loot-core/src/server/rules/action.ts#L360).
 115	- **Public API surface** (breaking-change decision needed): [api.ts:610](packages/loot-core/src/server/api.ts#L610) `getAccountBalance` returns a 2dp decimal; [main.ts:339-340](packages/loot-core/src/server/main.ts#L339-L340) and [api/utils.ts:1](packages/api/utils.ts#L1) re-export raw `amountToInteger`/`integerToAmount` as the documented `utils` namespace.
 116	- **sync-server has its own helper**: `export const amountToInteger = n => Math.round(Number(n) * 100)` at [app-gocardless/utils.ts:46-47](packages/sync-server/src/app-gocardless/utils.ts#L46-L47), consumed by ~17 bank handlers, plus the same inline scaling in `app-akahu/app-akahu.ts:320, 364` and `app-enablebanking/services/enablebanking-service.ts:290`.
 117	- [server/budget/actions.ts:741](packages/loot-core/src/server/budget/actions.ts#L741) already passes `currency.decimalPlaces`; whether that budget-movement _note_ should carry a symbol is a product call.
 118	- Already correct, no action: [category-template-context.ts](packages/loot-core/src/server/budget/category-template-context.ts) (passes `currency.decimalPlaces` at all 12 sites), `schedule-template.ts`, and `server/formulas/*`.
-119
+119	
 120	### Structural issues worth separate issues
-121
+121	
 122	1. **Three disagreeing symbol-placement implementations**: `useFormat.applyCurrencyStyling` (bidi isolates); [customFunctions.ts:122](packages/loot-core/src/shared/formulas/customFunctions.ts#L122) `formatCurrencyValue` (no isolates, regex thousands grouping so it can't produce `comma-dot-in` Indian grouping, defaults to USD not the `''` sentinel); and the user-facing `FORMATCURRENCY` sheet function. They will visibly disagree for INR and in RTL.
 123	2. **`CurrencySymbolPosition` declared twice** — [customFunctions.ts:18](packages/loot-core/src/shared/formulas/customFunctions.ts#L18) and [customFunctionsPreferences.ts:15](packages/loot-core/src/server/formulas/customFunctionsPreferences.ts#L15) — and `SyncedPrefs` types it as bare `string`.
 124	3. **The 47-currency name list is duplicated** between [currencies.ts](packages/loot-core/src/shared/currencies.ts) and the `t()` map in [settings/Currency.tsx](packages/desktop-client/src/components/settings/Currency.tsx), held together only by a comment.
 125	4. **`useFormat`'s string-input branch** ([lines 72-88](packages/desktop-client/src/hooks/useFormat.ts#L72-L88)) is documented in-code as "generally flawed" and _throws_ on unparseable input rather than degrading.
-126
+126	
 127	## Verification
-128
+128	
 129	Per phase:
-130
+130	
 131	- `yarn typecheck` and `yarn lint:fix` from the repo root. New files must be type-strict — no `// @ts-strict-ignore`. (`CellValue.tsx` and `AmountInput.tsx` carry it as grandfathered; don't add it anywhere new.)
 132	- `yarn test`, including the new `useFormat.test.ts`. `rm -rf .lage` if results look stale.
-133
+133	
 134	End to end (`yarn start` → "Don't use a server" → **View demo** for populated data):
-135
+135	
 136	1. **Flag-off parity first**, and this is the regression that matters most since it's what every current user sees. With `currency` off, walk the transaction table (incl. split errors and running balance), mobile transaction edit, the import-transactions preview, envelope/tracking budget menus, Cover/Transfer/Hold menus, balance carryover colouring, and the net-worth / cash-flow / budget-analysis reports. Output must be unchanged from `master`.
 137	2. **Then flag-on**: Settings → Experimental → "Currency support", then Settings → Currency:
 138	   - **JPY** (0 decimals) — the case that is broken today. Exercises the `decimalPlaces` threading in `serializeTransaction`, the budget menu modals, the `FocusableAmountInput` keypad, the Crossover contribution input, and the budget-analysis CSV export.
@@ -163,25 +163,24 @@ _**Agent (claude-opus-5 2026-09-15 15:07:06-0400)**_
 140	   - **INR** (`comma-dot-in`) — Indian grouping.
 141	     Enter and re-edit an amount at every migrated input to confirm the display → edit → parse round-trip is lossless. Download the budget-analysis CSV under JPY.
 142	3. **Pref reactivity** (Phase 3's de-threading): with a report open, change the currency in Settings and confirm the net-worth and bar-line tooltips update without re-running the query.
-143
+143	
 144	E2E — these are the tripwires, and a failure is a real signal, not a test to loosen:
-145
+145	
 146	- `yarn workspace @actual-app/web e2e` for transactions and budget suites.
 147	- [budget.mobile.test.ts:361, 411, 441](packages/desktop-client/e2e/budget.mobile.test.ts#L361) imports `amountToCurrency`/`currencyToAmount` to build expected text.
 148	- Bare-number assertions with no symbol in `rules.test.ts:69,127,132,137`, `schedules.test.ts:45,58,109,116,135,142`, `accounts.test.ts:41,187,193`, `onboarding.test.ts:47,50,63,66,105,108,118`, `transactions.test.ts:203,228,235,242`.
 149	- [TransactionsTable.test.tsx:523, 531](packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx#L523) asserts via `integerToCurrency` — valid as a flag-off parity check; keep it passing.
 150	- `yarn vrt:docker` if any snapshot covers a migrated surface.
-151
+151	
 152	## Release note
-153
+153	
 154	[upcoming-release-notes/currency-display-transactions.md](upcoming-release-notes/currency-display-transactions.md) still has `authors: [REPLACE_WITH_GITHUB_USERNAME]` — fill it in. Add a note for this batch per the `writing-release-notes` skill: short, plain language, no implementation detail. Phase 1 is a user-visible bug fix and deserves its own line separate from the display migration.
-155
+155	
 156	## Suggested commit sequence
-157
+157	
 158	Phase 0 → Phase 2 (deletions, easiest review) → Phase 1 (the two real bugs) → Phase 3 → Phase 4, with `FocusableAmountInput`'s parse chain as its own commit → Phase 5 → Phase 6. Per repo rules every commit message and the PR title need the `[AI]` prefix, and the PR template is left blank.
 159
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
@@ -194,7 +193,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 1	import React, { useMemo } from 'react';
 2	import type { ComponentProps } from 'react';
 3	import { useTranslation } from 'react-i18next';
-4
+4	
 5	import { SvgDownAndRightArrow } from '@actual-app/components/icons/v2';
 6	import { SpaceBetween } from '@actual-app/components/space-between';
 7	import { styles } from '@actual-app/components/styles';
@@ -203,14 +202,14 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 10	import { View } from '@actual-app/components/view';
 11	import { amountToCurrency } from '@actual-app/core/shared/util';
 12	import type { CategoryEntity } from '@actual-app/core/types/models';
-13
+13	
 14	import { Checkbox } from '#components/forms';
 15	import { Field, Row } from '#components/table';
-16
+16	
 17	import { ParsedDate } from './ParsedDate';
 18	import { applyFieldMappings, formatDate, parseAmountFields } from './utils';
 19	import type { FieldMapping, ImportTransaction } from './utils';
-20
+20	
 21	type TransactionProps = {
 22	  transaction: ImportTransaction;
 23	  fieldMappings: FieldMapping;
@@ -227,7 +226,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 34	  reconcile: boolean;
 35	  index: number;
 36	};
-37
+37	
 38	export function Transaction({
 39	  transaction: rawTransaction,
 40	  fieldMappings,
@@ -245,7 +244,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 52	  index,
 53	}: TransactionProps) {
 54	  const { t } = useTranslation();
-55
+55	
 56	  const categoryList = categories.map(category => category.name);
 57	  const transaction = useMemo(
 58	    () =>
@@ -254,18 +253,18 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 61	        : rawTransaction,
 62	    [rawTransaction, fieldMappings],
 63	  );
-64
+64	
 65	  const { amount, outflow, inflow } = useMemo(() => {
 66	    if (rawTransaction.isMatchedTransaction) {
 67	      const amount = rawTransaction.amount;
-68
+68	
 69	      return {
 70	        amount,
 71	        outflow: splitMode ? (amount < 0 ? -amount : 0) : null,
 72	        inflow: splitMode ? (amount > 0 ? amount : 0) : null,
 73	      };
 74	    }
-75
+75	
 76	    return parseAmountFields(
 77	      transaction,
 78	      splitMode,
@@ -283,7 +282,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 90	    flipAmount,
 91	    multiplierAmount,
 92	  ]);
-93
+93	
 94	  return (
 95	    <Row
 96	      style={{
@@ -332,7 +331,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 139	                            background:
 140	                              theme.checkboxBackgroundSelected +
 141	                              // update sign from packages/desktop-client/src/icons/v1/layer.svg
-142
+142	
 143	                              ' url(\'data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="white" d="M10 1l10 6-10 6L0 7l10-6zm6.67 10L20 13l-10 6-10-6 3.33-2L10 15l6.67-4z" /></svg>\') 9px 9px',
 144	                          },
 145	                        },
@@ -354,11 +353,11 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 161	                              background:
 162	                                theme.buttonNormalDisabledBorder +
 163	                                // minus sign adapted from packages/desktop-client/src/icons/v1/add.svg
-164
+164	
 165	                                ' url(\'data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="white" className="path" d="M23,11.5 L23,11.5 L23,11.5 C23,12.3284271 22.3284271,13 21.5,13 L1.5,13 L1.5,13 C0.671572875,13 1.01453063e-16,12.3284271 0,11.5 L0,11.5 L0,11.5 C-1.01453063e-16,10.6715729 0.671572875,10 1.5,10 L21.5,10 L21.5,10 C22.3284271,10 23,10.6715729 23,11.5 Z" /></svg>\') 9px 9px',
 166	                              width: 9,
 167	                              height: 9,
-168
+168	
 169	                              content: '" "',
 170	                            },
 171	                          },
@@ -369,7 +368,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 176	                              background:
 177	                                theme.checkboxBackgroundSelected +
 178	                                // plus sign from packages/desktop-client/src/icons/v1/add.svg
-179
+179	
 180	                                ' url(\'data:image/svg+xml; utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="white" className="path" d="M23,11.5 L23,11.5 L23,11.5 C23,12.3284271 22.3284271,13 21.5,13 L1.5,13 L1.5,13 C0.671572875,13 1.01453063e-16,12.3284271 0,11.5 L0,11.5 L0,11.5 C-1.01453063e-16,10.6715729 0.671572875,10 1.5,10 L21.5,10 L21.5,10 C22.3284271,10 23,10.6715729 23,11.5 Z" /><path fill="white" className="path" d="M11.5,23 C10.6715729,23 10,22.3284271 10,21.5 L10,1.5 C10,0.671572875 10.6715729,1.52179594e-16 11.5,0 C12.3284271,-1.52179594e-16 13,0.671572875 13,1.5 L13,21.5 C13,22.3284271 12.3284271,23 11.5,23 Z" /></svg>\') 9px 9px',
 181	                            },
 182	                          },
@@ -495,7 +494,6 @@ _**Agent (claude-opus-5 2026-09-15 15:07:10-0400)**_
 302	}
 303
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
@@ -506,7 +504,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 
 ```text
 1	import { useCallback, useEffect, useMemo } from 'react';
-2
+2	
 3	import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 4	import { getCurrency } from '@actual-app/core/shared/currencies';
 5	import type { Currency } from '@actual-app/core/shared/currencies';
@@ -520,9 +518,9 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 13	  setNumberFormat,
 14	} from '@actual-app/core/shared/util';
 15	import type { Amount, IntegerAmount } from '@actual-app/core/shared/util';
-16
+16	
 17	import { useSyncedPref } from './useSyncedPref';
-18
+18	
 19	export type FormatType =
 20	  | 'string'
 21	  | 'number'
@@ -530,7 +528,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 23	  | 'financial'
 24	  | 'financial-with-sign'
 25	  | 'financial-no-decimals';
-26
+26	
 27	export type UseFormatResult = {
 28	  (value: unknown, type?: FormatType): string;
 29	  forEdit: (value: IntegerAmount) => string;
@@ -544,12 +542,12 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 37	  fromAmount: (value: Amount) => IntegerAmount;
 38	  currency: Currency;
 39	};
-40
+40	
 41	export type FormatResult = {
 42	  numericValue?: number;
 43	  formattedString: string;
 44	};
-45
+45	
 46	function format(
 47	  value: unknown,
 48	  type: FormatType,
@@ -559,7 +557,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 52	  switch (type) {
 53	    case 'string': {
 54	      const val = JSON.stringify(value);
-55
+55	
 56	      if (val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
 57	        return { formattedString: val.slice(1, -1) };
 58	      }
@@ -597,13 +595,13 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 90	        }
 91	        localValue = parsed;
 92	      }
-93
+93	
 94	      if (typeof localValue !== 'number') {
 95	        throw new Error(
 96	          'Value is not a number (' + typeof localValue + '): ' + localValue,
 97	        );
 98	      }
-99
+99	
 100	      return {
 101	        numericValue: localValue,
 102	        formattedString: integerToCurrency(
@@ -617,7 +615,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 110	      throw new Error('Unknown format type: ' + type);
 111	  }
 112	}
-113
+113	
 114	export function useFormat(): UseFormatResult {
 115	  const [numberFormatPref] = useSyncedPref('numberFormat');
 116	  const [hideFractionPref] = useSyncedPref('hideFraction');
@@ -626,11 +624,11 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 119	  const [spaceEnabledPref] = useSyncedPref(
 120	    'currencySpaceBetweenAmountAndSymbol',
 121	  );
-122
+122	
 123	  const activeCurrency = useMemo(() => {
 124	    return getCurrency(defaultCurrencyCodePref || '');
 125	  }, [defaultCurrencyCodePref]);
-126
+126	
 127	  const numberFormatConfig = useMemo(
 128	    () =>
 129	      parseNumberFormat({
@@ -639,7 +637,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 132	      }),
 133	    [numberFormatPref, hideFractionPref],
 134	  );
-135
+135	
 136	  // Hack: keep the global number format in sync - update the settings when
 137	  // the underlying configuration changes.
 138	  // This should be patched by moving all number-formatting utilities away from
@@ -647,42 +645,42 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 140	  useEffect(() => {
 141	    setNumberFormat(numberFormatConfig);
 142	  }, [numberFormatConfig]);
-143
+143	
 144	  const applyCurrencyStyling = useCallback(
 145	    (formattedNumericValue: string, currencySymbol: string): string => {
 146	      if (!currencySymbol) {
 147	        return formattedNumericValue;
 148	      }
-149
+149	
 150	      let sign = '';
 151	      let valueWithoutSign = formattedNumericValue;
 152	      if (formattedNumericValue.startsWith('-')) {
 153	        sign = '-';
 154	        valueWithoutSign = formattedNumericValue.slice(1);
 155	      }
-156
+156	
 157	      const space = spaceEnabledPref === 'true' ? '\u202F' : '';
 158	      const position = symbolPositionPref || 'before';
-159
+159	
 160	      const styledAmount =
 161	        position === 'after'
 162	          ? `${valueWithoutSign}${space}${currencySymbol}`
 163	          : `\u202A${currencySymbol}\u202C${space}${valueWithoutSign}`;
-164
+164	
 165	      return sign + styledAmount;
 166	    },
 167	    [symbolPositionPref, spaceEnabledPref],
 168	  );
-169
+169	
 170	  const formatDisplay = useCallback(
 171	    (value: unknown, type: FormatType = 'string'): string => {
 172	      const isFinancialType =
 173	        type === 'financial' ||
 174	        type === 'financial-with-sign' ||
 175	        type === 'financial-no-decimals';
-176
+176	
 177	      let displayDecimalPlaces: number | undefined;
-178
+178	
 179	      if (isFinancialType) {
 180	        if (type === 'financial-no-decimals' || hideFractionPref === 'true') {
 181	          displayDecimalPlaces = 0;
@@ -690,19 +688,19 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 183	          displayDecimalPlaces = activeCurrency.decimalPlaces;
 184	        }
 185	      }
-186
+186	
 187	      const intlFormatter = getNumberFormat({
 188	        format: numberFormatConfig.format,
 189	        decimalPlaces: displayDecimalPlaces,
 190	      }).formatter;
-191
+191	
 192	      const { numericValue, formattedString } = format(
 193	        value,
 194	        type,
 195	        intlFormatter,
 196	        activeCurrency.decimalPlaces,
 197	      );
-198
+198	
 199	      let styledValue = formattedString;
 200	      if (isFinancialType && activeCurrency && activeCurrency.code !== '') {
 201	        styledValue = applyCurrencyStyling(
@@ -710,7 +708,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 203	          activeCurrency.symbol,
 204	        );
 205	      }
-206
+206	
 207	      if (
 208	        type === 'financial-with-sign' &&
 209	        numericValue != null &&
@@ -727,17 +725,17 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 220	      hideFractionPref,
 221	    ],
 222	  );
-223
+223	
 224	  const toAmount = useCallback(
 225	    (value: number) => integerToAmount(value, activeCurrency.decimalPlaces),
 226	    [activeCurrency.decimalPlaces],
 227	  );
-228
+228	
 229	  const fromAmount = useCallback(
 230	    (value: number) => amountToInteger(value, activeCurrency.decimalPlaces),
 231	    [activeCurrency.decimalPlaces],
 232	  );
-233
+233	
 234	  const forEdit = useCallback(
 235	    (value: IntegerAmount) => {
 236	      const amount = toAmount(value);
@@ -756,7 +754,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 249	      numberFormatConfig.format,
 250	    ],
 251	  );
-252
+252	
 253	  const fromEdit = useCallback(
 254	    (
 255	      value: string,
@@ -765,31 +763,31 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 258	      if (value == null) {
 259	        return defaultValue;
 260	      }
-261
+261	
 262	      const trimmed = value.trim();
 263	      if (trimmed === '') {
 264	        return defaultValue;
 265	      }
-266
+266	
 267	      // strip directional formatting characters and letters
 268	      const normalized = trimmed
 269	        .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '')
 270	        .replace(/\p{L}+/gu, '');
 271	      let numericValue: number | null = evalArithmetic(normalized, null);
-272
+272	
 273	      if (numericValue === null || isNaN(numericValue)) {
 274	        numericValue = currencyToAmount(normalized);
 275	      }
-276
+276	
 277	      if (numericValue !== null && !isNaN(numericValue)) {
 278	        return fromAmount(numericValue);
 279	      }
-280
+280	
 281	      return defaultValue;
 282	    },
 283	    [fromAmount],
 284	  );
-285
+285	
 286	  return Object.assign(formatDisplay, {
 287	    forEdit,
 288	    fromEdit,
@@ -800,7 +798,6 @@ _**Agent (claude-opus-5 2026-09-15 15:07:11-0400)**_
 293	}
 294
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
@@ -813,7 +810,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 1	import { format as formatDate_ } from '@actual-app/core/shared/months';
 2	import { looselyParseAmount } from '@actual-app/core/shared/util';
 3	import * as d from 'date-fns';
-4
+4	
 5	export type DateFormat =
 6	  | 'yyyy mm dd'
 7	  | 'yy mm dd'
@@ -821,7 +818,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 9	  | 'mm dd yy'
 10	  | 'dd mm yyyy'
 11	  | 'dd mm yy';
-12
+12	
 13	export const dateFormats = [
 14	  { format: 'yyyy mm dd', label: 'YYYY MM DD' },
 15	  { format: 'yy mm dd', label: 'YY MM DD' },
@@ -830,11 +827,11 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 18	  { format: 'dd mm yyyy', label: 'DD MM YYYY' },
 19	  { format: 'dd mm yy', label: 'DD MM YY' },
 20	] as const satisfies Array<{ format: DateFormat; label: string }>;
-21
+21	
 22	export function isDateFormat(format: string): format is DateFormat {
 23	  return dateFormats.some(f => f.format === format);
 24	}
-25
+25	
 26	export function parseDate(
 27	  str: string | number | null | Array<unknown> | object,
 28	  order: DateFormat,
@@ -842,11 +839,11 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 30	  if (typeof str !== 'string') {
 31	    return null;
 32	  }
-33
+33	
 34	  function pad(v: string) {
 35	    return v && v.length === 1 ? '0' + v : v;
 36	  }
-37
+37	
 38	  const dateGroups = (a: number, b: number) => (str: string) => {
 39	    const parts = str
 40	      .replace(/\bjan(\.|uary)?\b/i, '01')
@@ -867,13 +864,13 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 55	    if (parts.length >= 3) {
 56	      return parts.slice(0, 3);
 57	    }
-58
+58	
 59	    const digits = str.replace(/[^\d]/g, '');
 60	    return [digits.slice(0, a), digits.slice(a, a + b), digits.slice(a + b)];
 61	  };
 62	  const yearFirst = dateGroups(4, 2);
 63	  const twoDig = dateGroups(2, 2);
-64
+64	
 65	  let parts: string[], year: string, month: string, day: string;
 66	  switch (order) {
 67	    case 'dd mm yyyy':
@@ -913,14 +910,14 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 101	      month = parts[0];
 102	      day = parts[1];
 103	  }
-104
+104	
 105	  const parsed = `${year}-${pad(month)}-${pad(day)}`;
 106	  if (!d.isValid(d.parseISO(parsed))) {
 107	    return null;
 108	  }
 109	  return parsed;
 110	}
-111
+111	
 112	export function formatDate(
 113	  date: Parameters<typeof formatDate_>[0] | null,
 114	  format: Parameters<typeof formatDate_>[1],
@@ -933,7 +930,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 121	  } catch {}
 122	  return null;
 123	}
-124
+124	
 125	export type ImportTransaction = {
 126	  trx_id: string;
 127	  existing: boolean;
@@ -950,12 +947,12 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 138	  category?: string;
 139	  date?: string;
 140	} & Record<string, string | number | boolean>;
-141
+141	
 142	type ImportCategory = {
 143	  id: string;
 144	  name: string;
 145	};
-146
+146	
 147	export function parseCategoryFields(
 148	  trans: Pick<ImportTransaction, 'category'>,
 149	  categories: ImportCategory[],
@@ -966,7 +963,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 154	  );
 155	  return match?.id ?? null;
 156	}
-157
+157	
 158	export type FieldMapping = {
 159	  date: string | null;
 160	  amount: string | null;
@@ -977,7 +974,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 165	  outflow: string | null;
 166	  inflow: string | null;
 167	};
-168
+168	
 169	export function applyFieldMappings(
 170	  transaction: ImportTransaction,
 171	  mappings: FieldMapping,
@@ -996,7 +993,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 184	  result.tombstone = transaction.tombstone;
 185	  return result as ImportTransaction;
 186	}
-187
+187	
 188	function parseAmount(
 189	  amount: number | string | undefined | null,
 190	  mapper: (parsed: number) => number,
@@ -1004,17 +1001,17 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 192	  if (amount == null) {
 193	    return null;
 194	  }
-195
+195	
 196	  const parsed =
 197	    typeof amount === 'string' ? looselyParseAmount(amount) : amount;
-198
+198	
 199	  if (parsed === null) {
 200	    return null;
 201	  }
-202
+202	
 203	  return mapper(parsed);
 204	}
-205
+205	
 206	export function parseAmountFields(
 207	  trans: Partial<ImportTransaction>,
 208	  splitMode: boolean,
@@ -1024,7 +1021,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 212	  multiplierAmount: string,
 213	) {
 214	  const multiplier = parseFloat(multiplierAmount) || 1.0;
-215
+215	
 216	  /** Keep track of the transaction amount as inflow and outflow.
 217	   *
 218	   * Inflow/outflow is taken from a positive/negative transaction amount
@@ -1034,7 +1031,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 222	    outflow: 0,
 223	    inflow: 0,
 224	  };
-225
+225	
 226	  // Determine the base value of the transaction from the amount or inflow/outflow fields
 227	  if (splitMode && !inOutMode) {
 228	    // Split mode is a little weird; first we look for an outflow and
@@ -1049,7 +1046,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 237	    if (amount >= 0) value.inflow = amount;
 238	    else value.outflow = amount;
 239	  }
-240
+240	
 241	  // Apply in/out
 242	  if (inOutMode) {
 243	    // The 'In/Out' field of a transaction will tell us
@@ -1063,18 +1060,18 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 251	      value.outflow = 0;
 252	    }
 253	  }
-254
+254	
 255	  // Apply flip
 256	  if (flipAmount) {
 257	    const oldInflow = value.inflow;
 258	    value.inflow = Math.abs(value.outflow);
 259	    value.outflow = -Math.abs(oldInflow);
 260	  }
-261
+261	
 262	  // Apply multiplier
 263	  value.inflow *= multiplier;
 264	  value.outflow *= multiplier;
-265
+265	
 266	  if (splitMode) {
 267	    return {
 268	      amount: value.outflow || value.inflow,
@@ -1089,7 +1086,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 277	    };
 278	  }
 279	}
-280
+280	
 281	export function filterByStartDate(
 282	  transactions: ImportTransaction[],
 283	  startDate: string,
@@ -1111,7 +1108,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 299	    return date == null || date >= startDate;
 300	  });
 301	}
-302
+302	
 303	export function stripCsvImportTransaction(transaction: ImportTransaction) {
 304	  const {
 305	    existing: _existing,
@@ -1122,12 +1119,11 @@ _**Agent (claude-opus-5 2026-09-15 15:07:13-0400)**_
 310	    tombstone: _tombstone,
 311	    ...trans
 312	  } = transaction;
-313
+313	
 314	  return trans;
 315	}
 316
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:15-0400)**_
@@ -1166,7 +1162,6 @@ Find matched-transaction construction
 1254:                      <Trans>Merge with existing transactions</Trans>
 1329:                    !trans.isMatchedTransaction &&
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:18-0400)**_
@@ -1182,7 +1177,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:18-0400)**_
 813	      outValue,
 814	      multiplierAmount,
 815	    );
-816
+816	
 817	    // Retreive the transactions that would be updated (along with the existing trx)
 818	    importPreviewTransactions.mutate(
 819	      {
@@ -1197,27 +1192,27 @@ _**Agent (claude-opus-5 2026-09-15 15:07:18-0400)**_
 828	            map[entry.transaction.trx_id] = entry;
 829	            return map;
 830	          }, {});
-831
+831	
 832	          const previewTransactions = filteredTransactions
 833	            .filter(trans => !trans.isMatchedTransaction)
 834	            .reduce((previous, currentTrx) => {
 835	              let next = previous;
 836	              const entry = matchedUpdateMap[currentTrx.trx_id];
 837	              const existingTrx = entry?.existing;
-838
+838	
 839	              // if the transaction is matched with an existing one for update
 840	              currentTrx.existing = !!existingTrx;
 841	              // if the transaction is an update that will be ignored
 842	              // (reconciled transactions or no change detected)
 843	              currentTrx.ignored = entry?.ignored || false;
-844
+844	
 845	              currentTrx.tombstone = entry?.tombstone || false;
-846
+846	
 847	              currentTrx.selected = !currentTrx.ignored;
 848	              currentTrx.selected_merge = currentTrx.existing;
-849
+849	
 850	              next = next.concat({ ...currentTrx });
-851
+851	
 852	              if (existingTrx) {
 853	                // add the updated existing transaction in the list, with the
 854	                // isMatchedTransaction flag to identify it in display and not send it again
@@ -1230,24 +1225,23 @@ _**Agent (claude-opus-5 2026-09-15 15:07:18-0400)**_
 861	                existingTrx.existing = currentTrx.existing;
 862	                existingTrx.selected = currentTrx.selected;
 863	                existingTrx.selected_merge = currentTrx.selected_merge;
-864
+864	
 865	                next = next.concat({ ...existingTrx });
 866	              }
-867
+867	
 868	              return next;
 869	            }, []);
-870
+870	
 871	          setTransactions(previewTransactions);
 872	        },
 873	      },
 874	    );
 875	  });
-876
+876	
 877	  useEffect(() => {
 878	    if (parsedTransactions.length === 0 || loadingState === 'parsing') {
 879	      return;
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:19-0400)**_
@@ -1265,7 +1259,6 @@ packages/loot-core/src/server/accounts/app.ts:88:  'transactions-import': typeof
 packages/loot-core/src/server/accounts/app.ts:1631:    throw APIError('transactions-import: accountId must be an id');
 packages/loot-core/src/server/accounts/app.ts:1782:app.method('transactions-import', mutator(undoable(importTransactions)));
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:21-0400)**_
@@ -1279,7 +1272,6 @@ Find import preview handler
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:23-0400)**_
@@ -1294,7 +1286,6 @@ Find importPreviewTransactions definition
 packages/desktop-client/src/components/modals/ImportTransactionsModal/ImportTransactionsModal.tsx:791:  const importPreviewTransactions = useImportPreviewTransactionsMutation();
 packages/desktop-client/src/components/modals/ImportTransactionsModal/ImportTransactionsModal.tsx:818:    importPreviewTransactions.mutate(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:25-0400)**_
@@ -1308,7 +1299,6 @@ Locate hook definition
 ```text
 (eval):1: no matches found: --include=*.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:27-0400)**_
@@ -1324,7 +1314,6 @@ packages/desktop-client/src/components/modals/ImportTransactionsModal/ImportTran
 packages/desktop-client/src/components/modals/ImportTransactionsModal/ImportTransactionsModal.tsx:791:  const importPreviewTransactions = useImportPreviewTransactionsMutation();
 packages/desktop-client/src/accounts/mutations.ts:214:export function useImportPreviewTransactionsMutation() {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:28-0400)**_
@@ -1341,18 +1330,18 @@ _**Agent (claude-opus-5 2026-09-15 15:07:28-0400)**_
 204	    },
 205	  });
 206	}
-207
+207	
 208	type ImportPreviewTransactionsPayload = {
 209	  accountId: string;
 210	  transactions: TransactionEntity[];
 211	  reimportDeleted?: boolean;
 212	};
-213
+213	
 214	export function useImportPreviewTransactionsMutation() {
 215	  const queryClient = useQueryClient();
 216	  const dispatch = useDispatch();
 217	  const { t } = useTranslation();
-218
+218	
 219	  return useMutation({
 220	    mutationFn: async ({
 221	      accountId,
@@ -1368,7 +1357,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:28-0400)**_
 231	          opts: reimportDeleted !== undefined ? { reimportDeleted } : undefined,
 232	        },
 233	      );
-234
+234	
 235	      errors.forEach(error => {
 236	        dispatch(
 237	          addNotification({
@@ -1380,7 +1369,6 @@ _**Agent (claude-opus-5 2026-09-15 15:07:28-0400)**_
 243	        );
 244	      });
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:31-0400)**_
@@ -1402,7 +1390,6 @@ Find updatedPreview construction
 746:    updatedPreview,
 752:    updatedPreview,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
@@ -1416,7 +1403,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
 581	    }
 582	  });
 583	}
-584
+584	
 585	export type ReconcileTransactionsResult = {
 586	  added: string[];
 587	  updated: string[];
@@ -1427,7 +1414,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
 592	    tombstone?: boolean;
 593	  }>;
 594	};
-595
+595	
 596	export async function reconcileTransactions(
 597	  acctId,
 598	  transactions,
@@ -1439,12 +1426,12 @@ _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
 604	  reimportDeleted?: boolean,
 605	): Promise<ReconcileTransactionsResult> {
 606	  logger.log('Performing transaction reconciliation');
-607
+607	
 608	  const updated = [];
 609	  const added = [];
 610	  const updatedPreview = [];
 611	  const existingPayeeMap = new Map<string, string>();
-612
+612	
 613	  const {
 614	    payeesToCreate,
 615	    transactionsStep1,
@@ -1457,7 +1444,7 @@ _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
 622	    strictIdChecking,
 623	    reimportDeleted,
 624	  );
-625
+625	
 626	  // Finally, generate & commit the changes
 627	  for (const { trans, subtransactions, match } of transactionsStep3) {
 628	    if (match && !trans.forceAddTransaction) {
@@ -1466,14 +1453,14 @@ _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
 631	        updatedPreview.push({ transaction: trans, ignored: true });
 632	        continue;
 633	      }
-634
+634	
 635	      // TODO: change the above sql query to use aql
 636	      const existing = {
 637	        ...match,
 638	        cleared: match.cleared === 1,
 639	        date: db.fromDateRepr(match.date),
 640	      };
-641
+641	
 642	      // Update the transaction
 643	      const updates = {
 644	        imported_id: trans.imported_id || null,
@@ -1485,20 +1472,20 @@ _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
 650	        raw_synced_data:
 651	          existing.raw_synced_data ?? trans.raw_synced_data ?? null,
 652	      };
-653
+653	
 654	      if (updateDates && trans.date) {
 655	        updates['date'] = trans.date;
 656	      }
-657
+657	
 658	      const fieldsToMarkUpdated = Object.keys(updates).filter(k => {
 659	        // do not mark raw_synced_data if it's gone from falsy to falsy
 660	        if (!existing.raw_synced_data && !trans.raw_synced_data) {
 661	          return k !== 'raw_synced_data';
 662	        }
-663
+663	
 664	        return true;
 665	      });
-666
+666	
 667	      if (hasFieldsChanged(existing, updates, fieldsToMarkUpdated)) {
 668	        updated.push({ id: existing.id, ...updates });
 669	        if (!existingPayeeMap.has(existing.payee)) {
@@ -1511,11 +1498,11 @@ _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
 676	      } else {
 677	        updatedPreview.push({ transaction: trans, ignored: true });
 678	      }
-679
+679	
 680	      const clearedUpdated = existing.cleared !== updates.cleared;
 681	      const dateUpdated =
 682	        updateDates && trans.date && existing.date !== trans.date;
-683
+683	
 684	      if (existing.is_parent && (clearedUpdated || dateUpdated)) {
 685	        const children = await db.all<Pick<db.DbViewTransaction, 'id'>>(
 686	          'SELECT id FROM v_transactions WHERE parent_id = ?',
@@ -1523,7 +1510,6 @@ _**Agent (claude-opus-5 2026-09-15 15:07:32-0400)**_
 688	        );
 689	        const childUpdates = {};
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:42-0400)**_
@@ -1572,7 +1558,6 @@ Inspect downstream amount scaling
     if (errorMessage) {
       setLoadingState(null);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:46-0400)**_
@@ -1697,7 +1682,6 @@ export function looselyParseAmount(amount: string) {
 
   return safeNumber(parseFloat(left + '.' + right));
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:48-0400)**_
@@ -1756,7 +1740,6 @@ Read amountToCurrency
 504-
 505-  // match the last dot or comma in the string
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:07:52-0400)**_
@@ -1836,7 +1819,6 @@ export const currencies: Currency[] = [
 77-  return getCurrency(currencyCode)?.decimalPlaces ?? 2;
 78-}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:08:10-0400)**_
@@ -1864,7 +1846,6 @@ Date:   Tue Sep 15 14:05:48 2026 -0400
  upcoming-release-notes/currency-display-transactions.md     |  6 ++++++
  8 files changed, 43 insertions(+), 22 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:08:12-0400)**_
@@ -1908,7 +1889,7 @@ index ba842599a..6750a4107 100644
    const { t } = useTranslation();
 +  const format = useFormat();
    const { data: { list: categories } = { list: [] } } = useCategories();
-
+ 
    const { data: payee } = usePayee(transaction?.payee);
 @@ -290,7 +291,7 @@ export function TransactionListItem({
                  ...textStyle,
@@ -1939,7 +1920,7 @@ index 867f961b2..8d448bd22 100644
 -import { integerToCurrency } from '@actual-app/core/shared/util';
  import type { AccountEntity } from '@actual-app/core/types/models';
  import type { TransObjectLiteral } from '@actual-app/core/types/util';
-
+ 
 @@ -23,6 +22,7 @@ import { Link } from '#components/common/Link';
  import { Modal, ModalCloseButton, ModalHeader } from '#components/common/Modal';
  import { useAccounts } from '#hooks/useAccounts';
@@ -1966,7 +1947,6 @@ index 867f961b2..8d448bd22 100644
                          }
                        </strong>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:08:14-0400)**_
@@ -1981,7 +1961,6 @@ _**Agent (claude-opus-5 2026-09-15 15:08:18-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:08:41-0400)**_
@@ -1992,7 +1971,6 @@ _**Agent (claude-opus-5 2026-09-15 15:08:41-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:08:50-0400)**_
@@ -2003,7 +1981,6 @@ _**Agent (claude-opus-5 2026-09-15 15:08:50-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:08:51-0400)**_
@@ -2018,7 +1995,6 @@ _**Agent (claude-opus-5 2026-09-15 15:08:54-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:08:58-0400)**_
@@ -2029,7 +2005,6 @@ _**Agent (claude-opus-5 2026-09-15 15:08:58-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:02-0400)**_
@@ -2040,7 +2015,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:02-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/ImportTransactionsModal/Transaction.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
@@ -2062,7 +2036,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 6	  useState,
 7	} from 'react';
 8	import type { CSSProperties, FocusEvent, ReactNode, RefObject } from 'react';
-9
+9	
 10	import { defaultInputClassName } from '@actual-app/components/input';
 11	import { styles } from '@actual-app/components/styles';
 12	import { theme } from '@actual-app/components/theme';
@@ -2070,11 +2044,11 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 14	import { isIOS } from '@actual-app/core/shared/platform';
 15	import { amountToCurrency } from '@actual-app/core/shared/util';
 16	import { css, cx } from '@emotion/css';
-17
+17	
 18	import { makeAmountFullStyle } from '#components/budget/util';
-19
+19	
 20	import { CalculatorKeyboard } from './CalculatorKeyboard';
-21
+21	
 22	export const calculatorAmountLargeStyle = {
 23	  ...styles.veryLargeText,
 24	  backgroundColor: 'transparent',
@@ -2089,14 +2063,14 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 33	  padding: 0,
 34	  textAlign: 'center',
 35	};
-36
+36	
 37	export const calculatorAmountNormalStyle = {
 38	  boxShadow: 'none',
 39	  fontSize: 14,
 40	  outline: 0,
 41	  height: styles.mobileMinHeight,
 42	};
-43
+43	
 44	export type CalculatorAmountInputProps = {
 45	  value: number;
 46	  variant?: 'normal' | 'large';
@@ -2113,14 +2087,14 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 57	  autoFocusIndirect?: boolean;
 58	  disabled?: boolean;
 59	};
-60
+60	
 61	const placeholderClassName = css({
 62	  '&[data-focused]::placeholder': {
 63	    color: 'transparent',
 64	  },
 65	  '::placeholder': { color: theme.pageTextSubdued },
 66	});
-67
+67	
 68	export const CalculatorAmountInput = memo(function CalculatorAmountInput({
 69	  value,
 70	  style,
@@ -2141,13 +2115,13 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 85	  const [iosInitialInteraction, setIosInitialInteraction] = useState(
 86	    isIOS ? !(autoFocusIndirect && value === 0) : true,
 87	  );
-88
+88	
 89	  const [liveValue, setLiveValue] = useState(() => value);
 90	  const [expression, setExpression] = useState(() => formatAmount(liveValue));
 91	  const valueIsNegative = () =>
 92	    isNegativeAmount(negate && value === 0 ? -value : value);
 93	  const isNegative = useRef(valueIsNegative());
-94
+94	
 95	  const blurRef = useRef<HTMLDivElement>(null);
 96	  const [focused, setFocused] = useState(false);
 97	  const isKeepingFocusRef = useRef(false);
@@ -2170,12 +2144,12 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 114	      clearTimeout(keepFocusTimeoutRef.current);
 115	    }
 116	  }, []);
-117
+117	
 118	  const onInputFocus = useCallback(() => {
 119	    if (isKeepingFocusRef.current) {
 120	      return;
 121	    }
-122
+122	
 123	    if (negate && isNegative.current) {
 124	      setExpression(formatAmount(-value));
 125	    }
@@ -2184,16 +2158,16 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 128	      if (!input) return;
 129	      input.setSelectionRange(input.value.length, input.value.length);
 130	    }, 0);
-131
+131	
 132	    setFocused(true);
 133	  }, [inputRef, setExpression, negate, isNegative, value, setFocused]);
-134
+134	
 135	  const onInputBlur = useCallback(() => {
 136	    if (isKeepingFocusRef.current) {
 137	      inputRef.current?.focus();
 138	      return false;
 139	    }
-140
+140	
 141	    setFocused(false);
 142	    setExpression(formatAmount(liveValue));
 143	    if (value === liveValue) {
@@ -2202,7 +2176,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 146	    onChange?.(liveValue);
 147	    return true;
 148	  }, [setExpression, value, liveValue, onChange, inputRef]);
-149
+149	
 150	  const onChangeAmount = useCallback(
 151	    (amount: number) => {
 152	      setLiveValue(amount);
@@ -2210,11 +2184,11 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 154	    },
 155	    [setExpression, setLiveValue, negate],
 156	  );
-157
+157	
 158	  const onChangeExpression = useCallback(
 159	    (text: string) => {
 160	      setIosInitialInteraction(true);
-161
+161	
 162	      setExpression(text);
 163	      const amount = text.trim() === '' ? 0 : evalArithmetic(text);
 164	      if (amount === null) {
@@ -2224,7 +2198,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 168	    },
 169	    [setExpression, setLiveValue, setIosInitialInteraction, negate, isNegative],
 170	  );
-171
+171	
 172	  const valueRef = useRef(value);
 173	  if (value !== valueRef.current) {
 174	    valueRef.current = value;
@@ -2232,13 +2206,13 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 176	    setLiveValue(value);
 177	    setExpression(formatAmount(value));
 178	  }
-179
+179	
 180	  useLayoutEffect(() => {
 181	    if (autoFocus) {
 182	      inputRef.current?.focus();
 183	    }
 184	  }, [inputRef, autoFocus]);
-185
+185	
 186	  return (
 187	    <>
 188	      <div ref={blurRef} tabIndex={-1} />
@@ -2287,7 +2261,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 231	          }),
 232	        }}
 233	      />
-234
+234	
 235	      <CalculatorKeyboard
 236	        inputRef={inputRef}
 237	        header={keyboardHeader}
@@ -2328,17 +2302,16 @@ _**Agent (claude-opus-5 2026-09-15 15:09:03-0400)**_
 272	    </>
 273	  );
 274	});
-275
+275	
 276	function formatAmount(value: number) {
 277	  return value === 0 ? '' : amountToCurrency(value);
 278	}
-279
+279	
 280	function isNegativeAmount(value: number) {
 281	  return value < 0 || Object.is(value, -0);
 282	}
 283
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:12-0400)**_
@@ -2358,7 +2331,6 @@ packages/desktop-client/src/components/mobile/transactions/SplitAmountInput.tsx:
 packages/desktop-client/src/components/mobile/transactions/SplitAmountInput.tsx:48:      <CalculatorAmountInput
 packages/desktop-client/src/components/mobile/transactions/CalculatorKeyboard.tsx:12:export const CalculatorKeyboard = memo(function CalculatorAmountInput({
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:14-0400)**_
@@ -2370,16 +2342,16 @@ _**Agent (claude-opus-5 2026-09-15 15:09:14-0400)**_
 ```text
 1	import type { FocusEvent, ReactNode } from 'react';
 2	import { memo, useEffect, useState } from 'react';
-3
+3	
 4	import { styles } from '@actual-app/components/styles';
 5	import { amountToInteger, integerToAmount } from '@actual-app/core/shared/util';
-6
+6	
 7	import { AmountInput as LegacyAmountInput } from '#components/util/AmountInput';
 8	import { useFeatureFlag } from '#hooks/useFeatureFlag';
 9	import { useSyncedPref } from '#hooks/useSyncedPref';
-10
+10	
 11	import { CalculatorAmountInput } from './CalculatorAmountInput';
-12
+12	
 13	export type SplitAmountInputProps = {
 14	  value: number;
 15	  negate?: boolean;
@@ -2391,7 +2363,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:14-0400)**_
 21	  autoFocus?: boolean;
 22	  disabled?: boolean;
 23	};
-24
+24	
 25	export const SplitAmountInput = memo(function SplitAmountInput({
 26	  autoFocus = false,
 27	  disabled,
@@ -2406,13 +2378,13 @@ _**Agent (claude-opus-5 2026-09-15 15:09:14-0400)**_
 36	  const mobileCalculatorEnabled = useFeatureFlag('mobileCalculator');
 37	  const [hideFraction] = useSyncedPref('hideFraction');
 38	  const [focused, setFocused] = useState(autoFocus);
-39
+39	
 40	  useEffect(() => {
 41	    if (autoFocus) {
 42	      setFocused(true);
 43	    }
 44	  }, [autoFocus]);
-45
+45	
 46	  if (mobileCalculatorEnabled) {
 47	    return (
 48	      <CalculatorAmountInput
@@ -2434,7 +2406,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:14-0400)**_
 64	      />
 65	    );
 66	  }
-67
+67	
 68	  return (
 69	    <LegacyAmountInput
 70	      autoDecimals={String(hideFraction) !== 'true'}
@@ -2468,7 +2440,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:14-0400)**_
 98	});
 99
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:26-0400)**_
@@ -2479,7 +2450,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:26-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:32-0400)**_
@@ -2490,7 +2460,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:32-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:36-0400)**_
@@ -2501,7 +2470,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:36-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:37-0400)**_
@@ -2516,7 +2484,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:40-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:44-0400)**_
@@ -2527,7 +2494,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:44-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:47-0400)**_
@@ -2538,7 +2504,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:47-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/CalculatorAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:48-0400)**_
@@ -2560,7 +2525,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 6	  HTMLProps,
 7	  Ref,
 8	} from 'react';
-9
+9	
 10	import { Button } from '@actual-app/components/button';
 11	import type { CSSProperties as EmotionCSSProperties } from '@actual-app/components/styles';
 12	import { Text } from '@actual-app/components/text';
@@ -2573,11 +2538,11 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 19	  reapplyThousandSeparators,
 20	} from '@actual-app/core/shared/util';
 21	import { css } from '@emotion/css';
-22
+22	
 23	import { makeAmountFullStyle } from '#components/budget/util';
 24	import { useMergedRefs } from '#hooks/useMergedRefs';
 25	import { useSyncedPref } from '#hooks/useSyncedPref';
-26
+26	
 27	type AmountInputProps = {
 28	  value: number;
 29	  focused?: boolean;
@@ -2591,7 +2556,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 37	  onUpdate?: (value: string) => void;
 38	  onUpdateAmount?: (value: number) => void;
 39	};
-40
+40	
 41	const AmountInput = memo(function AmountInput({
 42	  focused,
 43	  style,
@@ -2603,26 +2568,26 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 49	  const [value, setValue] = useState(0);
 50	  const inputRef = useRef<HTMLInputElement>(null);
 51	  const [hideFraction] = useSyncedPref('hideFraction');
-52
+52	
 53	  const mergedInputRef = useMergedRefs<HTMLInputElement>(
 54	    props.inputRef,
 55	    inputRef,
 56	  );
-57
+57	
 58	  const initialValue = Math.abs(props.value);
-59
+59	
 60	  useEffect(() => {
 61	    if (focused) {
 62	      inputRef.current?.focus();
 63	    }
 64	  }, [focused]);
-65
+65	
 66	  useEffect(() => {
 67	    setEditing(false);
 68	    setText('');
 69	    setValue(initialValue);
 70	  }, [initialValue]);
-71
+71	
 72	  const onKeyUp: HTMLProps<HTMLInputElement>['onKeyUp'] = e => {
 73	    if (e.key === 'Backspace' && text === '') {
 74	      setEditing(true);
@@ -2633,7 +2598,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 79	      }
 80	    }
 81	  };
-82
+82	
 83	  // Read from the DOM, not React state: onChange state updates flush
 84	  // asynchronously, so an onBlur/onKeyUp fired by the user's next action
 85	  // can see stale `text=''` and save 0 instead of the typed amount.
@@ -2642,18 +2607,18 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 88	    const parsed = currencyToAmount(domText) || 0;
 89	    const hasPendingInput = domText !== '' || editing;
 90	    const newValue = hasPendingInput ? parsed : value;
-91
+91	
 92	    setValue(Math.abs(newValue));
 93	    setEditing(false);
 94	    setText('');
-95
+95	
 96	    return newValue;
 97	  };
-98
+98	
 99	  const onFocus: HTMLProps<HTMLInputElement>['onFocus'] = e => {
 100	    props.onFocus?.(e);
 101	  };
-102
+102	
 103	  const onUpdate = (value: string) => {
 104	    const originalAmount = Math.abs(props.value);
 105	    const amount = applyText(value);
@@ -2662,14 +2627,14 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 108	      props.onUpdateAmount?.(amount);
 109	    }
 110	  };
-111
+111	
 112	  const onBlur: HTMLProps<HTMLInputElement>['onBlur'] = e => {
 113	    props.onBlur?.(e);
 114	    if (!e.defaultPrevented) {
 115	      onUpdate(e.target.value);
 116	    }
 117	  };
-118
+118	
 119	  const onChangeText = (text: string) => {
 120	    text = reapplyThousandSeparators(text);
 121	    text = appendDecimals(text, String(hideFraction) === 'true');
@@ -2677,7 +2642,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 123	    setText(text);
 124	    props.onChangeValue?.(text);
 125	  };
-126
+126	
 127	  const input = (
 128	    <input
 129	      type="text"
@@ -2693,7 +2658,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 139	      style={{ flex: 1, textAlign: 'center', position: 'absolute' }}
 140	    />
 141	  );
-142
+142	
 143	  return (
 144	    <View
 145	      style={{
@@ -2720,7 +2685,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 166	    </View>
 167	  );
 168	});
-169
+169	
 170	export type FocusableAmountInputProps = Omit<AmountInputProps, 'onFocus'> & {
 171	  sign?: '+' | '-';
 172	  zeroSign?: '+' | '-';
@@ -2732,7 +2697,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 178	  };
 179	  onFocus?: (event?: FocusEvent<HTMLInputElement>) => void;
 180	};
-181
+181	
 182	export const FocusableAmountInput = memo(function FocusableAmountInput({
 183	  value,
 184	  sign,
@@ -2750,25 +2715,25 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 196	}: FocusableAmountInputProps) {
 197	  const [isNegative, setIsNegative] = useState(true);
 198	  const [liveValue, setLiveValue] = useState(Math.abs(value));
-199
+199	
 200	  const maybeApplyNegative = (amount: number, negative: boolean) => {
 201	    const absValue = Math.abs(amount);
 202	    return negative ? -absValue : absValue;
 203	  };
-204
+204	
 205	  const onUpdateAmount = (amount: number, negative: boolean) => {
 206	    props.onUpdateAmount?.(maybeApplyNegative(amount, negative));
 207	  };
-208
+208	
 209	  const handleChangeValue = (text: string) => {
 210	    setLiveValue(currencyToAmount(text) || 0);
 211	    onChangeValue?.(text);
 212	  };
-213
+213	
 214	  useEffect(() => {
 215	    setLiveValue(Math.abs(value));
 216	  }, [value]);
-217
+217	
 218	  useEffect(() => {
 219	    if (sign) {
 220	      setIsNegative(sign === '-');
@@ -2776,16 +2741,16 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 222	      setIsNegative(false);
 223	    }
 224	  }, [sign, value, zeroSign]);
-225
+225	
 226	  const toggleIsNegative = () => {
 227	    if (disabled) {
 228	      return;
 229	    }
-230
+230	
 231	    onUpdateAmount(value, !isNegative);
 232	    setIsNegative(!isNegative);
 233	  };
-234
+234	
 235	  return (
 236	    <View>
 237	      <AmountInput
@@ -2812,7 +2777,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 258	        }}
 259	        textStyle={{ fontSize: 15, textAlign: 'right', ...textStyle }}
 260	      />
-261
+261	
 262	      <View>
 263	        {!focused && (
 264	          <Button
@@ -2872,7 +2837,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:49-0400)**_
 318	});
 319
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:57-0400)**_
@@ -2887,7 +2851,6 @@ Find FocusableAmountInput callers
 packages/desktop-client/src/components/mobile/transactions/AmountInput.tsx:11:import { FocusableAmountInput } from './FocusableAmountInput';
 packages/desktop-client/src/components/mobile/transactions/AmountInput.tsx:63:    <FocusableAmountInput
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:09:59-0400)**_
@@ -2899,21 +2862,21 @@ _**Agent (claude-opus-5 2026-09-15 15:09:59-0400)**_
 ```text
 1	import { memo, useEffect, useState } from 'react';
 2	import type { FocusEvent } from 'react';
-3
+3	
 4	import { styles } from '@actual-app/components/styles';
 5	import * as Platform from '@actual-app/core/shared/platform';
-6
+6	
 7	import { useFeatureFlag } from '#hooks/useFeatureFlag';
-8
+8	
 9	import { CalculatorAmountInput } from './CalculatorAmountInput';
 10	import type { CalculatorAmountInputProps } from './CalculatorAmountInput';
 11	import { FocusableAmountInput } from './FocusableAmountInput';
-12
+12	
 13	export type AmountInputProps = Omit<CalculatorAmountInputProps, 'onFocus'> & {
 14	  disableNativeAutoFocusOnIOS?: boolean;
 15	  onFocus?: (event?: FocusEvent<HTMLInputElement>) => void;
 16	};
-17
+17	
 18	export const AmountInput = memo(function AmountInput({
 19	  autoFocus = false,
 20	  disableNativeAutoFocusOnIOS = false,
@@ -2932,13 +2895,13 @@ _**Agent (claude-opus-5 2026-09-15 15:09:59-0400)**_
 33	  const fallbackAutoFocus =
 34	    autoFocus && !(disableNativeAutoFocusOnIOS && Platform.isIOSAgent);
 35	  const [focused, setFocused] = useState(fallbackAutoFocus);
-36
+36	
 37	  useEffect(() => {
 38	    if (fallbackAutoFocus) {
 39	      setFocused(true);
 40	    }
 41	  }, [fallbackAutoFocus]);
-42
+42	
 43	  if (mobileCalculatorEnabled) {
 44	    return (
 45	      <CalculatorAmountInput
@@ -2957,7 +2920,7 @@ _**Agent (claude-opus-5 2026-09-15 15:09:59-0400)**_
 58	      />
 59	    );
 60	  }
-61
+61	
 62	  return (
 63	    <FocusableAmountInput
 64	      {...props}
@@ -2999,7 +2962,6 @@ _**Agent (claude-opus-5 2026-09-15 15:09:59-0400)**_
 100	});
 101
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:09-0400)**_
@@ -3010,7 +2972,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:09-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:13-0400)**_
@@ -3021,7 +2982,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:13-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:16-0400)**_
@@ -3032,7 +2992,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:16-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:20-0400)**_
@@ -3043,7 +3002,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:20-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:23-0400)**_
@@ -3054,7 +3012,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:23-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:24-0400)**_
@@ -3078,17 +3035,17 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 8	import * as d from 'date-fns';
 9	import type { Locale } from 'date-fns';
 10	import { keyBy } from 'es-toolkit';
-11
+11	
 12	import { ReportOptions } from '#components/reports/ReportOptions';
 13	import type { FormatType } from '#hooks/useFormat';
 14	import type { useSpreadsheet } from '#hooks/useSpreadsheet';
 15	import { aqlQuery } from '#queries/aqlQuery';
-16
+16	
 17	type Balance = {
 18	  date: string;
 19	  amount: number;
 20	};
-21
+21	
 22	export function createSpreadsheet(
 23	  start: string,
 24	  end: string,
@@ -3108,7 +3065,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 38	      conditions: conditions.filter(cond => !cond.customName),
 39	    });
 40	    const conditionsOpKey = conditionsOp === 'or' ? '$or' : '$and';
-41
+41	
 42	    // Go back exactly one interval before the selected range start
 43	    // to get the correct starting balance for the first period
 44	    const rangeStart = d.parseISO(monthUtils.firstDayOfMonth(start));
@@ -3124,7 +3081,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 54	      // Monthly or yearly
 55	      startDate = monthUtils.firstDayOfMonth(monthUtils.prevMonth(start));
 56	    }
-57
+57	
 58	    // If the earliest transaction is on or after the first day of the start
 59	    // month, the prior period lookback would be empty (all zeros). Skip it to
 60	    // avoid rendering an empty data point.
@@ -3145,10 +3102,10 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 75	        startDate = monthUtils.firstDayOfMonth(start);
 76	      }
 77	    }
-78
+78	
 79	    // Start with the provided end-of-month date, then adjust for current context
 80	    let endDate = monthUtils.lastDayOfMonth(end);
-81
+81	
 82	    if (interval === 'Daily') {
 83	      const today = monthUtils.currentDay();
 84	      if (monthUtils.isAfter(endDate, today)) {
@@ -3163,7 +3120,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 93	        endDate = today;
 94	      }
 95	    }
-96
+96	
 97	    const data = await Promise.all(
 98	      accounts.map(async acct => {
 99	        const [starting, balances]: [number, Balance[]] = await Promise.all([
@@ -3176,7 +3133,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 106	              })
 107	              .calculate({ $sum: '$amount' }),
 108	          ).then(({ data }) => data),
-109
+109	
 110	          aqlQuery(
 111	            q('transactions')
 112	              .filter({
@@ -3209,7 +3166,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 139	              ]),
 140	          ).then(({ data }) => data),
 141	        ]);
-142
+142	
 143	        // For weekly intervals, transform dates to week format and properly aggregate
 144	        let processedBalances: Record<string, Balance>;
 145	        if (interval === 'Weekly') {
@@ -3220,7 +3177,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 150	            weeklyBalances[weekDate] =
 151	              (weeklyBalances[weekDate] || 0) + b.amount;
 152	          });
-153
+153	
 154	          // Convert back to Balance format
 155	          processedBalances = {};
 156	          Object.entries(weeklyBalances).forEach(([date, amount]) => {
@@ -3229,7 +3186,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 159	        } else {
 160	          processedBalances = keyBy(balances, b => b.date);
 161	        }
-162
+162	
 163	        return {
 164	          id: acct.id,
 165	          name: acct.name,
@@ -3238,7 +3195,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 168	        };
 169	      }),
 170	    );
-171
+171	
 172	    setData(
 173	      recalculate(
 174	        data,
@@ -3252,7 +3209,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 182	    );
 183	  };
 184	}
-185
+185	
 186	function recalculate(
 187	  data: Array<{
 188	    id: string;
@@ -3279,7 +3236,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 209	              monthUtils.getMonth(startDate),
 210	              monthUtils.getMonth(endDate),
 211	            );
-212
+212	
 213	  const accountBalances = data.map(account => {
 214	    let balance = account.starting;
 215	    return intervals.map(intervalItem => {
@@ -3289,18 +3246,18 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 219	      return balance;
 220	    });
 221	  });
-222
+222	
 223	  const priorPeriodNetWorth = data.reduce(
 224	    (sum, account) => sum + account.starting,
 225	    0,
 226	  );
-227
+227	
 228	  let hasNegative = false;
 229	  let startNetWorth = 0;
 230	  let endNetWorth = 0;
 231	  let lowestNetWorth: number | null = null;
 232	  let highestNetWorth: number | null = null;
-233
+233	
 234	  const graphData = intervals.reduce<
 235	    Array<{
 236	      x: string;
@@ -3316,12 +3273,12 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 246	    let assets = 0;
 247	    let total = 0;
 248	    const last = arr.length === 0 ? null : arr[arr.length - 1];
-249
+249	
 250	    const balances: Record<string, number> = {};
 251	    accountBalances.forEach((acctBalances, i) => {
 252	      const balance = acctBalances[idx];
 253	      balances[data[i].id] = balance;
-254
+254	
 255	      if (balance < 0) {
 256	        debt += -balance;
 257	      } else {
@@ -3329,11 +3286,11 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 259	      }
 260	      total += balance;
 261	    });
-262
+262	
 263	    if (total < 0) {
 264	      hasNegative = true;
 265	    }
-266
+266	
 267	    // Parse dates based on interval type - following the working pattern
 268	    let x: Date;
 269	    if (interval === 'Daily' || interval === 'Weekly') {
@@ -3343,18 +3300,18 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 273	    } else {
 274	      x = d.parseISO(intervalItem + '-01');
 275	    }
-276
+276	
 277	    const change = last ? total - last.y : total - priorPeriodNetWorth;
-278
+278	
 279	    if (arr.length === 0) {
 280	      startNetWorth = total;
 281	    }
 282	    endNetWorth = total;
-283
+283	
 284	    // Use standardized format from ReportOptions
 285	    const displayFormat =
 286	      ReportOptions.intervalFormat.get(interval) ?? "MMM ''yy";
-287
+287	
 288	    const tooltipFormat =
 289	      interval === 'Daily'
 290	        ? 'MMMM d, yyyy'
@@ -3363,7 +3320,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 293	          : interval === 'Yearly'
 294	            ? 'yyyy'
 295	            : 'MMMM yyyy';
-296
+296	
 297	    const graphPoint = {
 298	      x: d.format(x, displayFormat, { locale }),
 299	      y: total,
@@ -3374,9 +3331,9 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 304	      date: d.format(x, tooltipFormat, { locale }),
 305	      ...balances,
 306	    };
-307
+307	
 308	    arr.push(graphPoint);
-309
+309	
 310	    // Track min/max for the current point only
 311	    if (lowestNetWorth === null || graphPoint.y < lowestNetWorth) {
 312	      lowestNetWorth = graphPoint.y;
@@ -3384,14 +3341,14 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 314	    if (highestNetWorth === null || graphPoint.y > highestNetWorth) {
 315	      highestNetWorth = graphPoint.y;
 316	    }
-317
+317	
 318	    return arr;
 319	  }, []);
-320
+320	
 321	  const hasBalance = accountBalances.map(balances =>
 322	    balances.some(b => b !== 0),
 323	  );
-324
+324	
 325	  return {
 326	    graphData: {
 327	      data: graphData,
@@ -3410,7 +3367,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:25-0400)**_
 340	}
 341
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:27-0400)**_
@@ -3423,7 +3379,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:27-0400)**_
 1	// @ts-strict-ignore
 2	import React, { useId, useMemo, useState } from 'react';
 3	import { Trans, useTranslation } from 'react-i18next';
-4
+4	
 5	import { AlignedText } from '@actual-app/components/aligned-text';
 6	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 7	import type { CSSProperties } from '@actual-app/components/styles';
@@ -3439,7 +3395,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:27-0400)**_
 17	  YAxis,
 18	} from 'recharts';
 19	import type { TooltipContentProps } from 'recharts';
-20
+20	
 21	import { FinancialText } from '#components/FinancialText';
 22	import {
 23	  getColorScale,
@@ -3449,9 +3405,9 @@ _**Agent (claude-opus-5 2026-09-15 15:10:27-0400)**_
 27	import { useFormat } from '#hooks/useFormat';
 28	import type { UseFormatResult } from '#hooks/useFormat';
 29	import { usePrivacyMode } from '#hooks/usePrivacyMode';
-30
+30	
 31	import { computePadding } from './util/computePadding';
-32
+32	
 33	type NetWorthDataPoint = {
 34	  x: string;
 35	  y: number;
@@ -3461,14 +3417,14 @@ _**Agent (claude-opus-5 2026-09-15 15:10:27-0400)**_
 39	  networth: string;
 40	  date: string;
 41	} & Record<string, string | number>;
-42
+42	
 43	type TrendTooltipProps = TooltipContentProps & {
 44	  style?: CSSProperties;
 45	};
-46
+46	
 47	function TrendTooltip({ active, payload, style }: TrendTooltipProps) {
 48	  const { t } = useTranslation();
-49
+49	
 50	  if (active && payload && payload.length) {
 51	    return (
 52	      <div
@@ -3517,14 +3473,14 @@ _**Agent (claude-opus-5 2026-09-15 15:10:27-0400)**_
 95	  }
 96	  return null;
 97	}
-98
+98	
 99	type StackedTooltipProps = TooltipContentProps & {
 100	  sortedAccounts: Array<{ id: string; name: string }>;
 101	  accounts: Array<{ id: string; name: string }>;
 102	  hoveredAccountId: string | null;
 103	  format: UseFormatResult;
 104	};
-105
+105	
 106	function StackedTooltip({
 107	  active,
 108	  payload,
@@ -3544,14 +3500,13 @@ _**Agent (claude-opus-5 2026-09-15 15:10:27-0400)**_
 122	      const indexB = sortedAccounts.findIndex(acc => acc.id === b.dataKey);
 123	      return indexB - indexA;
 124	    });
-125
+125	
 126	    const hasPositive = payload.some(p => (Number(p.value) || 0) > 0);
 127	    const hasNegative = payload.some(p => (Number(p.value) || 0) < 0);
 128	    const showPercentage = !(hasPositive && hasNegative);
-129
+129	
 130	    return (
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:29-0400)**_
@@ -3565,7 +3520,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:29-0400)**_
 2	import React from 'react';
 3	import type { CSSProperties } from 'react';
 4	import { useTranslation } from 'react-i18next';
-5
+5	
 6	import { AlignedText } from '@actual-app/components/aligned-text';
 7	import { theme } from '@actual-app/components/theme';
 8	import { css } from '@emotion/css';
@@ -3578,12 +3533,12 @@ _**Agent (claude-opus-5 2026-09-15 15:10:29-0400)**_
 15	  XAxis,
 16	  YAxis,
 17	} from 'recharts';
-18
+18	
 19	import { PrivacyFilter } from '#components/PrivacyFilter';
 20	import { useRechartsAnimation } from '#components/reports/chart-theme';
 21	import { Container } from '#components/reports/Container';
 22	import { useFormat } from '#hooks/useFormat';
-23
+23	
 24	type PayloadItem = {
 25	  payload: {
 26	    date: string;
@@ -3593,15 +3548,15 @@ _**Agent (claude-opus-5 2026-09-15 15:10:29-0400)**_
 30	    change: number | string;
 31	  };
 32	};
-33
+33	
 34	type CustomTooltipProps = {
 35	  active?: boolean;
 36	  payload?: PayloadItem[];
 37	};
-38
+38	
 39	const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
 40	  const { t } = useTranslation();
-41
+41	
 42	  if (active && payload && payload.length) {
 43	    return (
 44	      <div
@@ -3637,14 +3592,14 @@ _**Agent (claude-opus-5 2026-09-15 15:10:29-0400)**_
 74	    );
 75	  }
 76	};
-77
+77	
 78	type BarLineGraphProps = {
 79	  style?: CSSProperties;
 80	  data;
 81	  compact?: boolean;
 82	  showTooltip?: boolean;
 83	};
-84
+84	
 85	export function BarLineGraph({
 86	  style,
 87	  data,
@@ -3656,7 +3611,7 @@ _**Agent (claude-opus-5 2026-09-15 15:10:29-0400)**_
 93	  const tickFormatter = tick => {
 94	    return `${format(Math.round(tick), 'financial')}`; // Formats the tick values as strings with commas
 95	  };
-96
+96	
 97	  return (
 98	    <Container
 99	      style={{
@@ -3705,7 +3660,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:29-0400)**_
 142	}
 143
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:32-0400)**_
@@ -3720,7 +3674,6 @@ Find net-worth-spreadsheet callers
 packages/desktop-client/src/components/reports/reports/NetWorth.tsx:36:import { createSpreadsheet as netWorthSpreadsheet } from '#components/reports/spreadsheets/net-worth-spreadsheet';
 packages/desktop-client/src/components/reports/reports/NetWorthCard.tsx:24:import { createSpreadsheet as netWorthSpreadsheet } from '#components/reports/spreadsheets/net-worth-spreadsheet';
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:35-0400)**_
@@ -3821,7 +3774,6 @@ Read spreadsheet call sites
       <View
         style={{ flex: 1 }}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:42-0400)**_
@@ -3832,7 +3784,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:42-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:46-0400)**_
@@ -3843,7 +3794,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:46-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:49-0400)**_
@@ -3854,7 +3804,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:49-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:54-0400)**_
@@ -3865,7 +3814,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:54-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:10:58-0400)**_
@@ -3876,7 +3824,6 @@ _**Agent (claude-opus-5 2026-09-15 15:10:58-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:01-0400)**_
@@ -3887,7 +3834,6 @@ _**Agent (claude-opus-5 2026-09-15 15:11:01-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:02-0400)**_
@@ -3913,7 +3859,6 @@ packages/desktop-client/src/components/reports/reports/NetWorth.tsx:149:      fo
 packages/desktop-client/src/components/reports/reports/NetWorth.tsx:196:          pretty: monthUtils.format(month, 'MMMM yyyy', locale),
 packages/desktop-client/src/components/reports/reports/NetWorth.tsx:367:                {format(data.netWorth, 'financial')}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:08-0400)**_
@@ -3924,7 +3869,6 @@ _**Agent (claude-opus-5 2026-09-15 15:11:08-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/reports/NetWorth.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:13-0400)**_
@@ -3935,7 +3879,6 @@ _**Agent (claude-opus-5 2026-09-15 15:11:13-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/reports/NetWorthCard.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:14-0400)**_
@@ -3950,7 +3893,6 @@ _**Agent (claude-opus-5 2026-09-15 15:11:18-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:25-0400)**_
@@ -3961,7 +3903,6 @@ _**Agent (claude-opus-5 2026-09-15 15:11:25-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/graphs/NetWorthGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:26-0400)**_
@@ -3976,7 +3917,6 @@ _**Agent (claude-opus-5 2026-09-15 15:11:32-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/graphs/BarLineGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:37-0400)**_
@@ -3987,7 +3927,6 @@ _**Agent (claude-opus-5 2026-09-15 15:11:37-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/reports/graphs/BarLineGraph.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:39-0400)**_
@@ -3999,28 +3938,27 @@ _**Agent (claude-opus-5 2026-09-15 15:11:39-0400)**_
 ```text
 1	import React from 'react';
 2	import type { ComponentPropsWithoutRef, ElementType } from 'react';
-3
+3	
 4	import { styles } from '@actual-app/components/styles';
 5	import type { CSSProperties } from '@actual-app/components/styles';
 6	import { Text } from '@actual-app/components/text';
-7
+7	
 8	type FinancialTextProps<T extends ElementType = typeof Text> = {
 9	  as?: T;
 10	  style?: CSSProperties;
 11	} & Omit<ComponentPropsWithoutRef<T>, 'style' | 'as'>;
-12
+12	
 13	export function FinancialText<T extends ElementType = typeof Text>({
 14	  as,
 15	  style,
 16	  ...props
 17	}: FinancialTextProps<T>) {
 18	  const Component = as ?? Text;
-19
+19	
 20	  return <Component {...props} style={{ ...style, ...styles.tnum }} />;
 21	}
 22
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:11:40-0400)**_
@@ -4077,7 +4015,6 @@ worker restarts: 0, max worker memory usage: 53.35 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 33.04s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:13:45-0400)**_
@@ -4091,7 +4028,6 @@ Run lint with autofix
 ```text
 Finished in 6595ms on 2311 files using 8 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:13:47-0400)**_
@@ -4139,7 +4075,6 @@ Check working tree
  .../reports/spreadsheets/net-worth-spreadsheet.ts  |   20 +-
  17 files changed, 3328 insertions(+), 1959 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:13:50-0400)**_
@@ -4160,7 +4095,6 @@ Revert unrelated formatter changes
  M packages/desktop-client/src/components/reports/reports/NetWorthCard.tsx
  M packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:13:52-0400)**_
@@ -4217,7 +4151,6 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 53.43s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:15:59-0400)**_
@@ -4258,7 +4191,6 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 Dropped refs/stash@{0} (bbc09751c5c20cfaff99d3e592a06cf81734d54c)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:06-0400)**_
@@ -4272,7 +4204,6 @@ Find other consumers of net worth fields
 ```text
 packages/desktop-client/src/components/reports/graphs/BarGraph.tsx:60:    networth: number;
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:08-0400)**_
@@ -4303,7 +4234,7 @@ _**Agent (claude-opus-5 2026-09-15 15:16:08-0400)**_
 86	  const [iosInitialInteraction, setIosInitialInteraction] = useState(
 87	    isIOS ? !(autoFocusIndirect && value === 0) : true,
 88	  );
-89
+89	
 90	  // `value` is a decimal `Amount`; the input holds an arithmetic expression, so
 91	  // it is formatted without a currency symbol.
 92	  const formatAmount = useCallback(
@@ -4311,19 +4242,18 @@ _**Agent (claude-opus-5 2026-09-15 15:16:08-0400)**_
 94	      amount === 0 ? '' : format.forEdit(format.fromAmount(amount)),
 95	    [format],
 96	  );
-97
+97	
 98	  const [liveValue, setLiveValue] = useState(() => value);
 99	  const [expression, setExpression] = useState(() => formatAmount(liveValue));
 100	  const valueIsNegative = () =>
 101	    isNegativeAmount(negate && value === 0 ? -value : value);
 102	  const isNegative = useRef(valueIsNegative());
-103
+103	
 104	  const blurRef = useRef<HTMLDivElement>(null);
 105	  const [focused, setFocused] = useState(false);
 106	  const isKeepingFocusRef = useRef(false);
 107	  const keepFocusTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:13-0400)**_
@@ -4387,7 +4317,6 @@ Read getNumberFormat
 364-
 365-  const fractionDigitsOptions: {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:14-0400)**_
@@ -4436,7 +4365,6 @@ Read fraction digits logic
   };
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:23-0400)**_
@@ -4452,7 +4380,6 @@ packages/desktop-client/src/components/reports/ChooseGraph.tsx:12:import { BarLi
 packages/desktop-client/src/components/reports/ChooseGraph.tsx:130:  if (graphType === 'BarLineGraph') {
 packages/desktop-client/src/components/reports/ChooseGraph.tsx:132:      <BarLineGraph
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:25-0400)**_
@@ -4492,7 +4419,6 @@ Check BarLineGraph data source
         filters={filters}
 packages/desktop-client/src/components/reports/ChooseGraph.tsx:130:  if (graphType === 'BarLineGraph') {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:30-0400)**_
@@ -4518,18 +4444,18 @@ index 100d3fdd3..846b20630 100644
    reapplyThousandSeparators,
 @@ -21,6 +20,7 @@ import {
  import { css } from '@emotion/css';
-
+ 
  import { makeAmountFullStyle } from '#components/budget/util';
 +import { useFormat } from '#hooks/useFormat';
  import { useMergedRefs } from '#hooks/useMergedRefs';
  import { useSyncedPref } from '#hooks/useSyncedPref';
-
+ 
 @@ -49,6 +49,7 @@ const AmountInput = memo(function AmountInput({
    const [value, setValue] = useState(0);
    const inputRef = useRef<HTMLInputElement>(null);
    const [hideFraction] = useSyncedPref('hideFraction');
 +  const format = useFormat();
-
+ 
    const mergedInputRef = useMergedRefs<HTMLInputElement>(
      props.inputRef,
 @@ -161,7 +162,9 @@ const AmountInput = memo(function AmountInput({
@@ -4550,7 +4476,7 @@ index 100d3fdd3..846b20630 100644
 +  const format = useFormat();
    const [isNegative, setIsNegative] = useState(true);
    const [liveValue, setLiveValue] = useState(Math.abs(value));
-
+ 
 @@ -308,7 +312,7 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
                  ...textStyle,
                }}
@@ -4570,11 +4496,11 @@ index c41d9d867..b3ede9421 100644
  import { View } from '@actual-app/components/view';
 -import { amountToCurrency } from '@actual-app/core/shared/util';
  import type { CategoryEntity } from '@actual-app/core/types/models';
-
+ 
  import { Checkbox } from '#components/forms';
  import { Field, Row } from '#components/table';
 +import { useFormat } from '#hooks/useFormat';
-
+ 
  import { ParsedDate } from './ParsedDate';
  import { applyFieldMappings, formatDate, parseAmountFields } from './utils';
 @@ -52,6 +52,7 @@ export function Transaction({
@@ -4582,13 +4508,13 @@ index c41d9d867..b3ede9421 100644
  }: TransactionProps) {
    const { t } = useTranslation();
 +  const format = useFormat();
-
+ 
    const categoryList = categories.map(category => category.name);
    const transaction = useMemo(
 @@ -62,18 +63,25 @@ export function Transaction({
      [rawTransaction, fieldMappings],
    );
-
+ 
 +  // Both branches below produce decimal `Amount`s — `parseAmountFields` via
 +  // `looselyParseAmount`, and matched transactions via the import preview,
 +  // which scales the existing row down in `server/accounts/sync.ts`. Normalize
@@ -4599,7 +4525,7 @@ index c41d9d867..b3ede9421 100644
 +
      if (rawTransaction.isMatchedTransaction) {
        const amount = rawTransaction.amount;
-
+ 
        return {
 -        amount,
 -        outflow: splitMode ? (amount < 0 ? -amount : 0) : null,
@@ -4609,7 +4535,7 @@ index c41d9d867..b3ede9421 100644
 +        inflow: splitMode ? toInteger(amount > 0 ? amount : 0) : null,
        };
      }
-
+ 
 -    return parseAmountFields(
 +    const parsed = parseAmountFields(
        transaction,
@@ -4634,7 +4560,7 @@ index c41d9d867..b3ede9421 100644
      multiplierAmount,
 +    format,
    ]);
-
+ 
    return (
 @@ -255,10 +270,10 @@ export function Transaction({
              title={
@@ -4676,7 +4602,6 @@ index c41d9d867..b3ede9421 100644
        )}
      </Row>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:38-0400)**_
@@ -4716,7 +4641,6 @@ authors: [REPLACE_WITH_GITHUB_USERNAME]
 
 Add currency display to transaction tables, transaction lists and account modals
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:43-0400)**_
@@ -4752,7 +4676,6 @@ Date:   Tue Sep 15 15:06:52 2026 -0400
  packages/desktop-client/src/hooks/useFormat.ts     |   8 +-
  16 files changed, 301 insertions(+), 121 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:16:49-0400)**_
@@ -4771,7 +4694,7 @@ index 4c1d2331b..92d7f5379 100644
 @@ -16,6 +16,7 @@ import {
    YAxis,
  } from 'recharts';
-
+ 
 +import { FinancialText } from '#components/FinancialText';
  import { PrivacyFilter } from '#components/PrivacyFilter';
  import { useRechartsAnimation } from '#components/reports/chart-theme';
@@ -4790,13 +4713,13 @@ index 4c1d2331b..92d7f5379 100644
 +    change: number;
    };
  };
-
+ 
 @@ -38,6 +39,7 @@ type CustomTooltipProps = {
-
+ 
  const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
    const { t } = useTranslation();
 +  const format = useFormat();
-
+ 
    if (active && payload && payload.length) {
      return (
 @@ -60,12 +62,27 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
@@ -4848,13 +4771,13 @@ index 4a031d4a2..deb71f0b8 100644
 +  networth: number;
    date: string;
  } & Record<string, string | number>;
-
+ 
 @@ -46,6 +46,7 @@ type TrendTooltipProps = TooltipContentProps & {
-
+ 
  function TrendTooltip({ active, payload, style }: TrendTooltipProps) {
    const { t } = useTranslation();
 +  const format = useFormat();
-
+ 
    if (active && payload && payload.length) {
      return (
 @@ -70,23 +71,35 @@ function TrendTooltip({ active, payload, style }: TrendTooltipProps) {
@@ -4943,12 +4866,12 @@ index a0cce68f9..5bd0b58d1 100644
 +++ b/packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
 @@ -10,7 +10,6 @@ import type { Locale } from 'date-fns';
  import { keyBy } from 'es-toolkit';
-
+ 
  import { ReportOptions } from '#components/reports/ReportOptions';
 -import type { FormatType } from '#hooks/useFormat';
  import type { useSpreadsheet } from '#hooks/useSpreadsheet';
  import { aqlQuery } from '#queries/aqlQuery';
-
+ 
 @@ -28,7 +27,6 @@ export function createSpreadsheet(
    locale: Locale,
    interval: string = 'Monthly',
@@ -5004,7 +4927,6 @@ index a0cce68f9..5bd0b58d1 100644
        ...balances,
      };
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:17:15-0400)**_
@@ -5029,30 +4951,32 @@ _**User (2026-09-15 15:18:58-0400)**_
 Stop hook feedback:
 ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/check-on-stop.sh"]: Stop check found failures in touched workspaces:
 [tests failed: @actual-app/web]
-129|
-130| await result.current.mutateAsync({ category: newCategory(tooLongNa…
-| ^
-131|
-132| expect(createCategoryHandler).not.toHaveBeenCalled();
+    129|
+    130|     await result.current.mutateAsync({ category: newCategory(tooLongNa…
+       |                          ^
+    131|
+    132|     expect(createCategoryHandler).not.toHaveBeenCalled();
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
 
-FAIL src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
 TypeError: Cannot read properties of null (reading 'mutateAsync')
-❯ src/budget/mutations.test.tsx:150:26
-148| });
-149|
-150| await result.current.mutateAsync({ category: newCategory(maxLength…
-| ^
-151|
-152| await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
+ ❯ src/budget/mutations.test.tsx:150:26
+    148|     });
+    149|
+    150|     await result.current.mutateAsync({ category: newCategory(maxLength…
+       |                          ^
+    151|
+    152|     await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
 
-Test Files 1 failed | 57 passed (58)
-Tests 4 failed | 814 passed | 1 skipped (819)
-Start at 15:17:37
-Duration 80.17s (transform 9.57s, setup 68.97s, import 25.27s, tests 23.64s, environment 33.48s)
+
+ Test Files  1 failed | 57 passed (58)
+      Tests  4 failed | 814 passed | 1 skipped (819)
+   Start at  15:17:37
+   Duration  80.17s (transform 9.57s, setup 68.97s, import 25.27s, tests 23.64s, environment 33.48s)
+
 
 ---
 
@@ -5073,7 +4997,6 @@ aebc32bb3 Phases 0, 1, 2
 Saved working directory and index state On currency: phase3-wip
 stash@{0}: On currency: phase3-wip
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:19:36-0400)**_
@@ -5110,7 +5033,6 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
    Start at  15:19:33
    Duration  3.05s (transform 696ms, setup 1.79s, import 183ms, tests 28ms, environment 882ms)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:19:42-0400)**_
@@ -5146,7 +5068,6 @@ Dropped refs/stash@{0} (18052d268fc6cadcd401d5f6de34f56da985751a)
  M packages/desktop-client/src/components/reports/reports/NetWorthCard.tsx
  M packages/desktop-client/src/components/reports/spreadsheets/net-worth-spreadsheet.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:19:44-0400)**_
@@ -5163,7 +5084,6 @@ Check test file history vs master
 6c47ea071 [AI] Add Sort A to Z / Sort Z to A options to budget category groups (#7831)
 --- diff vs master ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:19:55-0400)**_
@@ -5197,7 +5117,6 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
     130|     await result.current.mutateAsync({ category: newCategory(tooLongNa…
        |                          ^
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:20:00-0400)**_
@@ -5208,7 +5127,7 @@ _**Agent (claude-opus-5 2026-09-15 15:20:00-0400)**_
 
 ```text
 1	import type { ReactNode } from 'react';
-2
+2	
 3	import {
 4	  clearServer,
 5	  initServer,
@@ -5217,88 +5136,87 @@ _**Agent (claude-opus-5 2026-09-15 15:20:00-0400)**_
 8	import { renderHook, waitFor } from '@testing-library/react';
 9	import i18next from 'i18next';
 10	import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-11
+11	
 12	import { createTestAppStore, TestProviders } from '#mocks';
 13	import type { AppStore } from '#redux/store';
-14
+14	
 15	import {
 16	  CATEGORY_NAME_MAX_LENGTH,
 17	  useCreateCategoryMutation,
 18	  useSaveCategoryMutation,
 19	} from './mutations';
-20
+20	
 21	vi.mock(
 22	  '@actual-app/core/platform/client/connection',
 23	  () => import('#mocks/connection'),
 24	);
-25
+25	
 26	// With no translation resources loaded, i18next echoes the key back with
 27	// interpolation applied - matching what the notification messages render.
 28	void i18next.init({
 29	  lng: 'en',
 30	  interpolation: { escapeValue: false },
 31	});
-32
+32	
 33	function wrapperFor(store: AppStore) {
 34	  return function Wrapper({ children }: { children: ReactNode }) {
 35	    return <TestProviders store={store}>{children}</TestProviders>;
 36	  };
 37	}
-38
+38	
 39	function getNotifications(store: AppStore) {
 40	  return store.getState().notifications.notifications;
 41	}
-42
+42	
 43	const tooLongName = 'a'.repeat(CATEGORY_NAME_MAX_LENGTH + 1);
 44	const maxLengthName = 'a'.repeat(CATEGORY_NAME_MAX_LENGTH);
-45
+45	
 46	afterEach(async () => {
 47	  await clearServer();
 48	});
-49
+49	
 50	// Mobile's "new category" modal calls useCreateCategoryMutation directly.
 51	describe('useCreateCategoryMutation (mobile category creation)', () => {
 52	  it('rejects a name over the character limit without contacting the server', async () => {
 53	    const createCategoryHandler = vi.fn(async () => 'new-id');
 54	    initServer({ 'category-create': createCategoryHandler });
-55
+55	
 56	    const store = createTestAppStore();
 57	    const { result } = renderHook(() => useCreateCategoryMutation(), {
 58	      wrapper: wrapperFor(store),
 59	    });
-60
+60	
 61	    await result.current.mutateAsync({
 62	      name: tooLongName,
 63	      groupId: 'group1',
 64	      isIncome: false,
 65	      isHidden: false,
 66	    });
-67
+67	
 68	    expect(createCategoryHandler).not.toHaveBeenCalled();
 69	    expect(getNotifications(store)).toMatchObject([
 70	      { type: 'error', message: expect.stringContaining('50') },
 71	    ]);
 72	  });
-73
+73	
 74	  it('allows a name at the character limit', async () => {
 75	    const createCategoryHandler = vi.fn(async () => 'new-id');
 76	    initServer({ 'category-create': createCategoryHandler });
-77
+77	
 78	    const store = createTestAppStore();
 79	    const { result } = renderHook(() => useCreateCategoryMutation(), {
 80	      wrapper: wrapperFor(store),
 81	    });
-82
+82	
 83	    await result.current.mutateAsync({
 84	      name: maxLengthName,
 85	      groupId: 'group1',
 86	      isIncome: false,
 87	      isHidden: false,
 88	    });
-89
+89	
 90	    expect(createCategoryHandler).toHaveBeenCalledWith({
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:20:04-0400)**_
@@ -5312,7 +5230,6 @@ Check TestProviders export
 ```text
 (eval):1: no matches found: packages/desktop-client/src/mocks/*.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:20:07-0400)**_
@@ -5326,7 +5243,6 @@ Locate TestProviders
 ```text
 connection.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:20:15-0400)**_
@@ -5342,7 +5258,6 @@ packages/desktop-client/package.json:33:    "#mocks": "./src/mocks.tsx",
 packages/desktop-client/package.json:34:    "#mocks/*": "./src/mocks/*.ts",
 ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:20:17-0400)**_
@@ -5361,7 +5276,6 @@ Check mocks.tsx exports
 36:export function createTestAppStore() {
 42:export function TestProviders({
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:20:18-0400)**_
@@ -5374,12 +5288,12 @@ _**Agent (claude-opus-5 2026-09-15 15:20:18-0400)**_
 1	import React from 'react';
 2	import type { ReactNode } from 'react';
 3	import { Provider } from 'react-redux';
-4
+4	
 5	import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-6
+6	
 7	import { configureAppStore } from './redux/store';
 8	import type { AppStore } from './redux/store';
-9
+9	
 10	export function createTestQueryClient() {
 11	  return new QueryClient({
 12	    defaultOptions: {
@@ -5389,29 +5303,29 @@ _**Agent (claude-opus-5 2026-09-15 15:20:18-0400)**_
 16	    },
 17	  });
 18	}
-19
+19	
 20	export function configureTestAppStore(
 21	  ...args: Parameters<typeof configureAppStore>
 22	) {
 23	  return configureAppStore(...args);
 24	}
-25
+25	
 26	let testQueryClient = createTestQueryClient();
 27	let testStore = configureTestAppStore({
 28	  queryClient: testQueryClient,
 29	});
-30
+30	
 31	export function resetTestProviders() {
 32	  testQueryClient = createTestQueryClient();
 33	  testStore = configureTestAppStore({ queryClient: testQueryClient });
 34	}
-35
+35	
 36	export function createTestAppStore() {
 37	  return configureAppStore({
 38	    queryClient: testQueryClient,
 39	  });
 40	}
-41
+41	
 42	export function TestProviders({
 43	  children,
 44	  queryClient,
@@ -5429,7 +5343,6 @@ _**Agent (claude-opus-5 2026-09-15 15:20:18-0400)**_
 56	}
 57
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:20:27-0400)**_
@@ -5447,7 +5360,6 @@ Check mutations exports
 99:      if (name.length > CATEGORY_NAME_MAX_LENGTH) {
 162:      if (category.name.length > CATEGORY_NAME_MAX_LENGTH) {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:22:02-0400)**_
@@ -5464,7 +5376,6 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 TypeError: Cannot read properties of null (reading 'mutateAsync')
 TypeError: Cannot read properties of null (reading 'mutateAsync')
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:22:16-0400)**_
@@ -5505,7 +5416,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 1	import React, { useMemo, useState } from 'react';
 2	import { Form } from 'react-aria-components';
 3	import { Trans, useTranslation } from 'react-i18next';
-4
+4	
 5	import { Button } from '@actual-app/components/button';
 6	import { Input } from '@actual-app/components/input';
 7	import { styles } from '@actual-app/components/styles';
@@ -5517,14 +5428,14 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 13	} from '@actual-app/core/shared/util';
 14	import type { IntegerAmount } from '@actual-app/core/shared/util';
 15	import type { CategoryEntity } from '@actual-app/core/types/models';
-16
+16	
 17	import { CategoryAutocomplete } from '#components/autocomplete/CategoryAutocomplete';
 18	import {
 19	  addToBeBudgetedGroup,
 20	  removeCategoriesFromGroups,
 21	} from '#components/budget/util';
 22	import { useCategories } from '#hooks/useCategories';
-23
+23	
 24	type CoverMenuProps = {
 25	  showToBeBudgeted?: boolean;
 26	  initialAmount?: IntegerAmount | null;
@@ -5532,7 +5443,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 28	  onSubmit: (amount: IntegerAmount, categoryId: CategoryEntity['id']) => void;
 29	  onClose: () => void;
 30	};
-31
+31	
 32	export function CoverMenu({
 33	  showToBeBudgeted = true,
 34	  initialAmount = 0,
@@ -5541,12 +5452,12 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 37	  onClose,
 38	}: CoverMenuProps) {
 39	  const { t } = useTranslation();
-40
+40	
 41	  const { data: { grouped: originalCategoryGroups } = { grouped: [] } } =
 42	    useCategories();
-43
+43	
 44	  const [fromCategoryId, setFromCategoryId] = useState<string | null>(null);
-45
+45	
 46	  const filteredCategoryGroups = useMemo(() => {
 47	    const expenseGroups = originalCategoryGroups.filter(g => !g.is_income);
 48	    const categoryGroups = showToBeBudgeted
@@ -5556,10 +5467,10 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 52	      ? removeCategoriesFromGroups(categoryGroups, categoryId)
 53	      : categoryGroups;
 54	  }, [categoryId, showToBeBudgeted, originalCategoryGroups]);
-55
+55	
 56	  const _initialAmount = integerToCurrency(Math.abs(initialAmount ?? 0));
 57	  const [amount, setAmount] = useState<string>(_initialAmount);
-58
+58	
 59	  function _onSubmit() {
 60	    const parsedAmount = evalArithmetic(amount || '');
 61	    if (parsedAmount && fromCategoryId) {
@@ -5567,7 +5478,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 63	    }
 64	    onClose();
 65	  }
-66
+66	
 67	  return (
 68	    <Form
 69	      onSubmit={e => {
@@ -5590,7 +5501,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 86	        <View style={{ margin: '10px 0 5px 0' }}>
 87	          <Trans>From:</Trans>
 88	        </View>
-89
+89	
 90	        <CategoryAutocomplete
 91	          categoryGroups={filteredCategoryGroups}
 92	          value={null}
@@ -5602,7 +5513,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 98	          }}
 99	          showHiddenCategories={false}
 100	        />
-101
+101	
 102	        <View
 103	          style={{
 104	            alignItems: 'flex-end',
@@ -5626,7 +5537,6 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 122	}
 123
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
@@ -5638,14 +5548,14 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 ```text
 1	import { useEffect, useRef, useState } from 'react';
 2	import type { FocusEvent } from 'react';
-3
+3	
 4	import { Input } from '@actual-app/components/input';
 5	import type { InputProps } from '@actual-app/components/input';
 6	import { styles } from '@actual-app/components/styles';
 7	import type { IntegerAmount } from '@actual-app/core/shared/util';
-8
+8	
 9	import { useFormat } from '#hooks/useFormat';
-10
+10	
 11	type FinancialInputProps = Omit<
 12	  InputProps,
 13	  'value' | 'onUpdate' | 'onChangeValue' | 'onEnter'
@@ -5655,7 +5565,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 17	  onChangeValue?: (value: IntegerAmount) => void;
 18	  onEnter?: (value: IntegerAmount) => void;
 19	};
-20
+20	
 21	export function FinancialInput({
 22	  ref,
 23	  value: integerValue,
@@ -5672,13 +5582,13 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 34	    format(integerValue, 'financial'),
 35	  );
 36	  const [isFocused, setIsFocused] = useState(false);
-37
+37	
 38	  useEffect(() => {
 39	    if (!isFocused) {
 40	      setInternalValue(format(integerValue, 'financial'));
 41	    }
 42	  }, [integerValue, format, isFocused]);
-43
+43	
 44	  const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
 45	    setIsFocused(true);
 46	    setInternalValue(format.forEdit(integerValue));
@@ -5687,7 +5597,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 49	    }, 0);
 50	    onFocus?.(e);
 51	  };
-52
+52	
 53	  const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
 54	    setIsFocused(false);
 55	    const finalInteger = format.fromEdit(internalValue, 0) ?? 0;
@@ -5695,32 +5605,32 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 57	    setInternalValue(format(finalInteger, 'financial'));
 58	    onBlur?.(e);
 59	  };
-60
+60	
 61	  const handleEnter = (stringValue: string) => {
 62	    const finalInteger = format.fromEdit(stringValue, 0) ?? 0;
 63	    onUpdate?.(finalInteger);
 64	    onEnter?.(finalInteger);
 65	  };
-66
+66	
 67	  const handleChange = (stringValue: string) => {
 68	    setInternalValue(stringValue);
-69
+69	
 70	    if (onChangeValue) {
 71	      const newInteger = format.fromEdit(stringValue, 0) ?? 0;
 72	      onChangeValue(newInteger);
 73	    }
 74	  };
-75
+75	
 76	  const setInputRef = (node: HTMLInputElement | null) => {
 77	    inputRef.current = node;
-78
+78	
 79	    if (typeof ref === 'function') {
 80	      ref(node);
 81	    } else if (ref) {
 82	      ref.current = node;
 83	    }
 84	  };
-85
+85	
 86	  return (
 87	    <Input
 88	      {...restProps}
@@ -5736,7 +5646,6 @@ _**Agent (claude-opus-5 2026-09-15 15:24:16-0400)**_
 98	}
 99
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
@@ -5749,13 +5658,13 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 1	import React, { useMemo, useState } from 'react';
 2	import { Form } from 'react-aria-components';
 3	import { Trans, useTranslation } from 'react-i18next';
-4
+4	
 5	import { Button } from '@actual-app/components/button';
 6	import { InitialFocus } from '@actual-app/components/initial-focus';
 7	import { View } from '@actual-app/components/view';
 8	import type { IntegerAmount } from '@actual-app/core/shared/util';
 9	import type { CategoryEntity } from '@actual-app/core/types/models';
-10
+10	
 11	import { CategoryAutocomplete } from '#components/autocomplete/CategoryAutocomplete';
 12	import {
 13	  addToBeBudgetedGroup,
@@ -5763,7 +5672,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 15	} from '#components/budget/util';
 16	import { FinancialInput } from '#components/util/FinancialInput';
 17	import { useCategories } from '#hooks/useCategories';
-18
+18	
 19	type TransferMenuProps = {
 20	  categoryId?: CategoryEntity['id'];
 21	  initialAmount?: IntegerAmount | null;
@@ -5771,7 +5680,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 23	  onSubmit: (amount: IntegerAmount, categoryId: CategoryEntity['id']) => void;
 24	  onClose: () => void;
 25	};
-26
+26	
 27	export function TransferMenu({
 28	  categoryId,
 29	  initialAmount = 0,
@@ -5780,7 +5689,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 32	  onClose,
 33	}: TransferMenuProps) {
 34	  const { t } = useTranslation();
-35
+35	
 36	  const { data: { grouped: originalCategoryGroups } = { grouped: [] } } =
 37	    useCategories();
 38	  const filteredCategoryGroups = useMemo(() => {
@@ -5794,19 +5703,19 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 46	      ? removeCategoriesFromGroups(categoryGroups, categoryId)
 47	      : categoryGroups;
 48	  }, [originalCategoryGroups, categoryId, showToBeBudgeted]);
-49
+49	
 50	  const [amount, setAmount] = useState<IntegerAmount>(
 51	    Math.max(initialAmount ?? 0, 0),
 52	  );
 53	  const [toCategoryId, setToCategoryId] = useState<string | null>(null);
-54
+54	
 55	  const _onSubmit = () => {
 56	    if (amount != null && amount > 0 && toCategoryId) {
 57	      onSubmit(amount, toCategoryId);
 58	    }
 59	    onClose();
 60	  };
-61
+61	
 62	  return (
 63	    <Form
 64	      onSubmit={e => {
@@ -5826,7 +5735,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 78	        <View style={{ margin: '10px 0 5px 0' }}>
 79	          <Trans>To:</Trans>
 80	        </View>
-81
+81	
 82	        <CategoryAutocomplete
 83	          categoryGroups={filteredCategoryGroups}
 84	          value={null}
@@ -5837,7 +5746,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 89	          }}
 90	          showHiddenCategories
 91	        />
-92
+92	
 93	        <View
 94	          style={{
 95	            alignItems: 'flex-end',
@@ -5863,7 +5772,6 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 115	}
 116
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
@@ -5876,31 +5784,31 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 1	import React, { useState } from 'react';
 2	import { Form } from 'react-aria-components';
 3	import { Trans } from 'react-i18next';
-4
+4	
 5	import { Button } from '@actual-app/components/button';
 6	import { InitialFocus } from '@actual-app/components/initial-focus';
 7	import { View } from '@actual-app/components/view';
 8	import type { IntegerAmount } from '@actual-app/core/shared/util';
-9
+9	
 10	import { FinancialInput } from '#components/util/FinancialInput';
 11	import { useSheetValue } from '#hooks/useSheetValue';
-12
+12	
 13	type HoldMenuProps = {
 14	  onSubmit: (amount: number) => void;
 15	  onClose: () => void;
 16	};
 17	export function HoldMenu({ onSubmit, onClose }: HoldMenuProps) {
 18	  const [amount, setAmount] = useState<IntegerAmount | null>(null);
-19
+19	
 20	  useSheetValue<'envelope-budget', 'to-budget'>('to-budget', ({ value }) => {
 21	    setAmount(Math.max(value || 0, 0));
 22	  });
-23
+23	
 24	  if (amount === null) {
 25	    // See `TransferMenu` for more info about this
 26	    return null;
 27	  }
-28
+28	
 29	  return (
 30	    <Form
 31	      onSubmit={e => {
@@ -5942,7 +5850,6 @@ _**Agent (claude-opus-5 2026-09-15 15:24:19-0400)**_
 67	}
 68
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:24:45-0400)**_
@@ -5953,7 +5860,6 @@ _**Agent (claude-opus-5 2026-09-15 15:24:45-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:24:50-0400)**_
@@ -5964,7 +5870,6 @@ _**Agent (claude-opus-5 2026-09-15 15:24:50-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:24:54-0400)**_
@@ -5975,7 +5880,6 @@ _**Agent (claude-opus-5 2026-09-15 15:24:54-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
@@ -6002,32 +5906,32 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 11	  TransactionEntity,
 12	} from '@actual-app/core/types/models';
 13	import { isValid as isDateValid, parseISO } from 'date-fns';
-14
+14	
 15	export type SerializedTransaction = Omit<TransactionEntity, 'date'> & {
 16	  date: string;
 17	  debit: CurrencyAmount;
 18	  credit: CurrencyAmount;
 19	};
-20
+20	
 21	export type TransactionEditFunction = (
 22	  id: TransactionEntity['id'],
 23	  name: string,
 24	) => void;
-25
+25	
 26	export type TransactionUpdateFunction = <T extends keyof SerializedTransaction>(
 27	  name: T,
 28	  value: SerializedTransaction[T],
 29	) => void;
-30
+30	
 31	export function serializeTransaction(
 32	  transaction: TransactionEntity,
 33	  showZeroInDeposit?: boolean,
 34	): SerializedTransaction {
 35	  const { amount, date: originalDate } = transaction;
-36
+36	
 37	  let debit = amount < 0 ? -amount : null;
 38	  let credit = amount > 0 ? amount : null;
-39
+39	
 40	  if (amount === 0) {
 41	    if (showZeroInDeposit) {
 42	      credit = 0;
@@ -6035,7 +5939,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 44	      debit = 0;
 45	    }
 46	  }
-47
+47	
 48	  let date = originalDate;
 49	  // Validate the date format
 50	  if (!isDateValid(parseISO(date))) {
@@ -6047,7 +5951,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 56	    // TODO: the fact that the date type is not nullable but we are setting it to null needs to be changed
 57	    date = null as unknown as string;
 58	  }
-59
+59	
 60	  // Convert with decimals here so the value doesn't lose decimals and formatter will show or hide them.
 61	  return {
 62	    ...transaction,
@@ -6056,13 +5960,13 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 65	    credit: credit != null ? integerToCurrencyWithDecimal(credit) : '',
 66	  };
 67	}
-68
+68	
 69	export function deserializeTransaction(
 70	  transaction: SerializedTransaction,
 71	  originalTransaction: TransactionEntity,
 72	) {
 73	  const { debit, credit, date: originalDate, ...realTransaction } = transaction;
-74
+74	
 75	  let amount: number | null;
 76	  if (debit !== '') {
 77	    const parsed = evalArithmetic(debit, null);
@@ -6070,17 +5974,17 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 79	  } else {
 80	    amount = evalArithmetic(credit, null);
 81	  }
-82
+82	
 83	  amount =
 84	    amount != null ? amountToInteger(amount) : originalTransaction.amount;
 85	  let date = originalDate;
 86	  if (date == null) {
 87	    date = originalTransaction.date || currentDay();
 88	  }
-89
+89	
 90	  return { ...realTransaction, date, amount };
 91	}
-92
+92	
 93	export function isLastChild(
 94	  transactions: readonly TransactionEntity[],
 95	  index: number,
@@ -6093,7 +5997,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 102	      transactions[index + 1].parent_id !== trans.parent_id)
 103	  );
 104	}
-105
+105	
 106	export function selectAscDesc(
 107	  field: string,
 108	  ascDesc: 'asc' | 'desc',
@@ -6106,7 +6010,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 115	      : 'asc'
 116	    : defaultAscDesc;
 117	}
-118
+118	
 119	// Decides whether a rule result should be applied to a field while the user is
 120	// entering a new transaction. By default rules only fill fields the user left
 121	// empty, so their manual input isn't overwritten. The exception is the notes
@@ -6127,7 +6031,7 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 136	  ) {
 137	    return true;
 138	  }
-139
+139	
 140	  if (
 141	    field !== 'notes' ||
 142	    typeof currentValue !== 'string' ||
@@ -6136,26 +6040,26 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 145	  ) {
 146	    return false;
 147	  }
-148
+148	
 149	  // The rule preserved the user's note only if the result still contains it
 150	  // verbatim. Otherwise treat it as an overwrite and keep the manual note.
 151	  const index = nextValue.indexOf(currentValue);
 152	  if (index === -1) {
 153	    return false;
 154	  }
-155
+155	
 156	  const prepended = nextValue.slice(0, index);
 157	  const appended = nextValue.slice(index + currentValue.length);
-158
+158	
 159	  // If the note already starts/ends with these exact additions, a previous rule
 160	  // run already applied them — applying again would duplicate the text.
 161	  const alreadyApplied =
 162	    (prepended === '' || currentValue.startsWith(prepended)) &&
 163	    (appended === '' || currentValue.endsWith(appended));
-164
+164	
 165	  return !alreadyApplied;
 166	}
-167
+167	
 168	export function makeTemporaryTransactions(
 169	  currentAccountId: AccountEntity['id'] | null | undefined,
 170	  currentCategoryId: CategoryEntity['id'] | null | undefined,
@@ -6176,7 +6080,6 @@ _**Agent (claude-opus-5 2026-09-15 15:24:56-0400)**_
 185	}
 186
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:24:59-0400)**_
@@ -6205,7 +6108,6 @@ packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:6
 packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:1812:      const transaction = deserializeTransaction(
 packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx:2014:      ...serializeTransaction(transaction, dateFormat),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:25:01-0400)**_
@@ -6310,7 +6212,6 @@ Read TransactionsTable serialize call sites
 
   const {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:25:03-0400)**_
@@ -6406,7 +6307,6 @@ import type {
   ScheduleEntity,
   TransactionEntity,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:25:13-0400)**_
@@ -6462,7 +6362,6 @@ export function amountToCurrencyNoDecimal(amount: Amount): CurrencyAmount {
 
 export function currencyToAmount(currencyAmount: string): Amount | null {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:25:58-0400)**_
@@ -6490,7 +6389,6 @@ packages/desktop-client/src/components/transactions/table/utils.ts:5:  integerTo
 packages/desktop-client/src/components/transactions/table/utils.ts:64:    debit: debit != null ? integerToCurrencyWithDecimal(debit) : '',
 packages/desktop-client/src/components/transactions/table/utils.ts:65:    credit: credit != null ? integerToCurrencyWithDecimal(credit) : '',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:26:19-0400)**_
@@ -6501,7 +6399,6 @@ _**Agent (claude-opus-5 2026-09-15 15:26:19-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/hooks/useFormat.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:26:23-0400)**_
@@ -6512,7 +6409,6 @@ _**Agent (claude-opus-5 2026-09-15 15:26:23-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/hooks/useFormat.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:26:25-0400)**_
@@ -6527,7 +6423,6 @@ _**Agent (claude-opus-5 2026-09-15 15:26:30-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/table/utils.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:26:35-0400)**_
@@ -6538,7 +6433,6 @@ _**Agent (claude-opus-5 2026-09-15 15:26:35-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/table/utils.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:26:43-0400)**_
@@ -6549,7 +6443,6 @@ _**Agent (claude-opus-5 2026-09-15 15:26:43-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/table/utils.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:26:51-0400)**_
@@ -6588,7 +6481,6 @@ export function currencyToAmount(currencyAmount: string): Amount | null {
 export function currencyToInteger(
   currencyAmount: CurrencyAmount,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:11-0400)**_
@@ -6607,7 +6499,6 @@ packages/desktop-client/src/components/transactions/TransactionsTable.tsx:1787: 
 packages/desktop-client/src/components/transactions/TransactionsTable.tsx:1799:            value: debit === '' && credit === '' ? amountToCurrency(0) : debit,
 packages/desktop-client/src/components/transactions/TransactionsTable.tsx:1818:            value ? amountToCurrency(currencyToAmount(value) || 0) : ''
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:15-0400)**_
@@ -6618,7 +6509,6 @@ _**Agent (claude-opus-5 2026-09-15 15:27:15-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:17-0400)**_
@@ -6632,7 +6522,7 @@ _**Agent (claude-opus-5 2026-09-15 15:27:17-0400)**_
 1769	            )}
 1770	          </CustomCell>
 1771	        )}
-1772
+1772	
 1773	        <InputCell
 1774	          /* Debit field for all transactions */
 1775	          type="input"
@@ -6663,7 +6553,7 @@ _**Agent (claude-opus-5 2026-09-15 15:27:17-0400)**_
 1800	            activationFilters: [!isTemporaryId(transaction.id)],
 1801	          }}
 1802	        />
-1803
+1803	
 1804	        <InputCell
 1805	          /* Credit field for all transactions */
 1806	          type="input"
@@ -6689,7 +6579,6 @@ _**Agent (claude-opus-5 2026-09-15 15:27:17-0400)**_
 1826	            value: credit,
 1827	            onUpdate: onUpdate.bind(null, 'credit'),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:25-0400)**_
@@ -6714,7 +6603,6 @@ Map component boundaries
 2346:function TransactionTableInner({
 2729:export const TransactionTable = forwardRef(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:37-0400)**_
@@ -6725,7 +6613,6 @@ _**Agent (claude-opus-5 2026-09-15 15:27:37-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:41-0400)**_
@@ -6736,7 +6623,6 @@ _**Agent (claude-opus-5 2026-09-15 15:27:41-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:42-0400)**_
@@ -6751,7 +6637,6 @@ _**Agent (claude-opus-5 2026-09-15 15:27:45-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:48-0400)**_
@@ -6762,7 +6647,6 @@ _**Agent (claude-opus-5 2026-09-15 15:27:48-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:54-0400)**_
@@ -6773,7 +6657,6 @@ _**Agent (claude-opus-5 2026-09-15 15:27:54-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/transactions/TransactionsTable.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:55-0400)**_
@@ -6866,7 +6749,6 @@ const dropdownChevron = (
   />
 );
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:27:58-0400)**_
@@ -7008,7 +6890,6 @@ Read mobile call sites
           <MobilePageHeader
             title={t('New Transaction')}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:02-0400)**_
@@ -7027,7 +6908,6 @@ Find all 2dp conversions in mobile TransactionEdit
 1317:                      integerToAmount(remaining),
 1789:          amount: -amountToInteger(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:04-0400)**_
@@ -7043,7 +6923,6 @@ Check useFormat availability in mobile TransactionEdit
 256:  const format = useFormat();
 2190:  const format = useFormat();
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:10-0400)**_
@@ -7072,7 +6951,6 @@ Map component boundaries in mobile TransactionEdit
 2160:export const TransactionEdit = (props: TransactionEditProps) => {
 2183:function FillRemainingButton({
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:15-0400)**_
@@ -7118,7 +6996,6 @@ function FillRemainingButton({
   );
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:17-0400)**_
@@ -7133,7 +7010,6 @@ _**Agent (claude-opus-5 2026-09-15 15:28:22-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:26-0400)**_
@@ -7144,7 +7020,6 @@ _**Agent (claude-opus-5 2026-09-15 15:28:26-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:28-0400)**_
@@ -7179,7 +7054,6 @@ import { useLocalPref } from '#hooks/useLocalPref';
 import { useLocationPermission } from '#hooks/useLocationPermission';
 import { useNavigate } from '#hooks/useNavigate';
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:32-0400)**_
@@ -7190,7 +7064,6 @@ _**Agent (claude-opus-5 2026-09-15 15:28:32-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:36-0400)**_
@@ -7201,7 +7074,6 @@ _**Agent (claude-opus-5 2026-09-15 15:28:36-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:37-0400)**_
@@ -7254,7 +7126,6 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
       [unserializedTransactions, dateFormat],
     );
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:44-0400)**_
@@ -7265,7 +7136,6 @@ _**Agent (claude-opus-5 2026-09-15 15:28:44-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:48-0400)**_
@@ -7276,7 +7146,6 @@ _**Agent (claude-opus-5 2026-09-15 15:28:48-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:49-0400)**_
@@ -7322,7 +7191,6 @@ function TransactionEditUnconnected({
     [accounts, searchParams],
   );
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:56-0400)**_
@@ -7333,7 +7201,6 @@ _**Agent (claude-opus-5 2026-09-15 15:28:56-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:28:58-0400)**_
@@ -7365,7 +7232,6 @@ Read searchParams amount site
     }
   }, [
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:02-0400)**_
@@ -7376,7 +7242,6 @@ _**Agent (claude-opus-5 2026-09-15 15:29:02-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:04-0400)**_
@@ -7421,7 +7286,6 @@ Read deps array of that effect
         });
         const diff = getChangedValues(newTransaction, afterRules);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:10-0400)**_
@@ -7432,7 +7296,6 @@ _**Agent (claude-opus-5 2026-09-15 15:29:10-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:12-0400)**_
@@ -7498,7 +7361,6 @@ Find onUpdate deps array
           updated: changes.updated,
         });
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:16-0400)**_
@@ -7509,7 +7371,6 @@ _**Agent (claude-opus-5 2026-09-15 15:29:16-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:18-0400)**_
@@ -7539,7 +7400,6 @@ Read onSelectNearestPayee
   if (accounts.length === 0) {
     return (
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:23-0400)**_
@@ -7550,7 +7410,6 @@ _**Agent (claude-opus-5 2026-09-15 15:29:23-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/TransactionEdit.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:25-0400)**_
@@ -7565,7 +7424,6 @@ _**Agent (claude-opus-5 2026-09-15 15:29:29-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/SplitAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:34-0400)**_
@@ -7576,7 +7434,6 @@ _**Agent (claude-opus-5 2026-09-15 15:29:34-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/SplitAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:38-0400)**_
@@ -7587,7 +7444,6 @@ _**Agent (claude-opus-5 2026-09-15 15:29:38-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/SplitAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:40-0400)**_
@@ -7675,7 +7531,6 @@ Read EnvelopeBudgetMenuModal amount sites
             style={{
               display: showMore ? 'none' : undefined,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:50-0400)**_
@@ -7696,7 +7551,6 @@ Locate conversions in both budget menu modals
 72:    onUpdateBudget?.(amountToInteger(amount));
 119:              value={integerToAmount(budgeted || 0)}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:29:53-0400)**_
@@ -7766,7 +7620,6 @@ import { trackingBudget } from '#spreadsheet/bindings';
 
   const defaultMenuItemStyle: CSSProperties = {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:00-0400)**_
@@ -7797,7 +7650,6 @@ packages/desktop-client/src/components/modals/TrackingBudgetMenuModal.tsx:56:  c
 packages/desktop-client/src/components/modals/TrackingBudgetMenuModal.tsx:74:    onUpdateBudget?.(format.fromAmount(amount));
 packages/desktop-client/src/components/modals/TrackingBudgetMenuModal.tsx:121:              value={format.toAmount(budgeted || 0)}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:04-0400)**_
@@ -7829,7 +7681,6 @@ Verify format placement in tracking modal
     color: theme.formLabelText,
     // Adjust based on desired number of buttons per row.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:05-0400)**_
@@ -7945,7 +7796,6 @@ export function EditFieldModal({
     replace: '',
   });
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:14-0400)**_
@@ -7956,7 +7806,6 @@ _**Agent (claude-opus-5 2026-09-15 15:30:14-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/EditFieldModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:18-0400)**_
@@ -7967,7 +7816,6 @@ _**Agent (claude-opus-5 2026-09-15 15:30:18-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/EditFieldModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:22-0400)**_
@@ -7978,7 +7826,6 @@ _**Agent (claude-opus-5 2026-09-15 15:30:22-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/EditFieldModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:24-0400)**_
@@ -8091,7 +7938,6 @@ export function CreateLocalAccountModal() {
                     value={name}
                     onChangeValue={setName}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:27-0400)**_
@@ -8130,7 +7976,6 @@ Read toRelaxedNumber and server counterpart
     });
   }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:46-0400)**_
@@ -8141,7 +7986,6 @@ _**Agent (claude-opus-5 2026-09-15 15:30:46-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/CreateLocalAccountModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:50-0400)**_
@@ -8152,7 +7996,6 @@ _**Agent (claude-opus-5 2026-09-15 15:30:50-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/CreateLocalAccountModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:54-0400)**_
@@ -8163,7 +8006,6 @@ _**Agent (claude-opus-5 2026-09-15 15:30:54-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/CreateLocalAccountModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:30:59-0400)**_
@@ -8174,7 +8016,6 @@ _**Agent (claude-opus-5 2026-09-15 15:30:59-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/modals/CreateLocalAccountModal.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:31:01-0400)**_
@@ -8188,7 +8029,7 @@ _**Agent (claude-opus-5 2026-09-15 15:31:02-0400)**_
  `./packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx`
 
 ```text
-40
+40	
 41	const AmountInput = memo(function AmountInput({
 42	  focused,
 43	  style,
@@ -8201,26 +8042,26 @@ _**Agent (claude-opus-5 2026-09-15 15:31:02-0400)**_
 50	  const inputRef = useRef<HTMLInputElement>(null);
 51	  const [hideFraction] = useSyncedPref('hideFraction');
 52	  const format = useFormat();
-53
+53	
 54	  const mergedInputRef = useMergedRefs<HTMLInputElement>(
 55	    props.inputRef,
 56	    inputRef,
 57	  );
-58
+58	
 59	  const initialValue = Math.abs(props.value);
-60
+60	
 61	  useEffect(() => {
 62	    if (focused) {
 63	      inputRef.current?.focus();
 64	    }
 65	  }, [focused]);
-66
+66	
 67	  useEffect(() => {
 68	    setEditing(false);
 69	    setText('');
 70	    setValue(initialValue);
 71	  }, [initialValue]);
-72
+72	
 73	  const onKeyUp: HTMLProps<HTMLInputElement>['onKeyUp'] = e => {
 74	    if (e.key === 'Backspace' && text === '') {
 75	      setEditing(true);
@@ -8231,7 +8072,7 @@ _**Agent (claude-opus-5 2026-09-15 15:31:02-0400)**_
 80	      }
 81	    }
 82	  };
-83
+83	
 84	  // Read from the DOM, not React state: onChange state updates flush
 85	  // asynchronously, so an onBlur/onKeyUp fired by the user's next action
 86	  // can see stale `text=''` and save 0 instead of the typed amount.
@@ -8240,18 +8081,18 @@ _**Agent (claude-opus-5 2026-09-15 15:31:02-0400)**_
 89	    const parsed = currencyToAmount(domText) || 0;
 90	    const hasPendingInput = domText !== '' || editing;
 91	    const newValue = hasPendingInput ? parsed : value;
-92
+92	
 93	    setValue(Math.abs(newValue));
 94	    setEditing(false);
 95	    setText('');
-96
+96	
 97	    return newValue;
 98	  };
-99
+99	
 100	  const onFocus: HTMLProps<HTMLInputElement>['onFocus'] = e => {
 101	    props.onFocus?.(e);
 102	  };
-103
+103	
 104	  const onUpdate = (value: string) => {
 105	    const originalAmount = Math.abs(props.value);
 106	    const amount = applyText(value);
@@ -8260,14 +8101,14 @@ _**Agent (claude-opus-5 2026-09-15 15:31:02-0400)**_
 109	      props.onUpdateAmount?.(amount);
 110	    }
 111	  };
-112
+112	
 113	  const onBlur: HTMLProps<HTMLInputElement>['onBlur'] = e => {
 114	    props.onBlur?.(e);
 115	    if (!e.defaultPrevented) {
 116	      onUpdate(e.target.value);
 117	    }
 118	  };
-119
+119	
 120	  const onChangeText = (text: string) => {
 121	    text = reapplyThousandSeparators(text);
 122	    text = appendDecimals(text, String(hideFraction) === 'true');
@@ -8275,11 +8116,10 @@ _**Agent (claude-opus-5 2026-09-15 15:31:02-0400)**_
 124	    setText(text);
 125	    props.onChangeValue?.(text);
 126	  };
-127
+127	
 128	  const input = (
 129	    <input
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:31:03-0400)**_
@@ -8317,7 +8157,6 @@ Read appendDecimals
 267-  'space-comma',
 268-  'apostrophe-dot',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
@@ -8328,58 +8167,58 @@ _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
 
 ```text
 1	import { currencyToAmount } from './util';
-2
+2	
 3	type ParserState = {
 4	  str: string;
 5	  index: number;
 6	};
-7
+7	
 8	type Operator = '+' | '-' | '*' | '/' | '^';
-9
+9	
 10	type OperatorNode = {
 11	  op: Operator;
 12	  left: AstNode;
 13	  right: AstNode;
 14	};
-15
+15	
 16	type AstNode = number | OperatorNode;
-17
+17	
 18	function fail(state: ParserState, msg: string): never {
 19	  throw new Error(
 20	    msg + ': ' + JSON.stringify(state.str.slice(state.index, 10)),
 21	  );
 22	}
-23
+23	
 24	function char(state: ParserState): string | undefined {
 25	  return state.str[state.index];
 26	}
-27
+27	
 28	function next(state: ParserState): string | null {
 29	  if (state.index >= state.str.length) {
 30	    return null;
 31	  }
-32
+32	
 33	  const ch = char(state);
 34	  state.index++;
 35	  return ch ?? null;
 36	}
-37
+37	
 38	function nextOperator(state: ParserState, op: string): boolean {
 39	  if (char(state) === op) {
 40	    next(state);
 41	    return true;
 42	  }
-43
+43	
 44	  return false;
 45	}
-46
+46	
 47	function parsePrimary(state: ParserState): number {
 48	  // We only support numbers
 49	  const isNegative = char(state) === '-';
 50	  if (isNegative) {
 51	    next(state);
 52	  }
-53
+53	
 54	  let numberStr = '';
 55	  let currentChar = char(state);
 56	  while (
@@ -8392,34 +8231,34 @@ _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
 63	    }
 64	    currentChar = char(state);
 65	  }
-66
+66	
 67	  if (numberStr === '') {
 68	    fail(state, 'Unexpected character');
 69	  }
-70
+70	
 71	  const number = currencyToAmount(numberStr);
 72	  if (number === null) {
 73	    fail(state, 'Invalid number format');
 74	  }
 75	  return isNegative ? -number : number;
 76	}
-77
+77	
 78	function parseParens(state: ParserState): AstNode {
 79	  if (char(state) === '(') {
 80	    next(state);
 81	    const expr = parseOperator(state);
-82
+82	
 83	    if (char(state) !== ')') {
 84	      fail(state, 'Unbalanced parentheses');
 85	    }
-86
+86	
 87	    next(state);
 88	    return expr;
 89	  }
-90
+90	
 91	  return parsePrimary(state);
 92	}
-93
+93	
 94	function parseExponent(state: ParserState): AstNode {
 95	  let node = parseParens(state);
 96	  if (nextOperator(state, '^')) {
@@ -8427,7 +8266,7 @@ _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
 98	  }
 99	  return node;
 100	}
-101
+101	
 102	function parseMultiplicative(state: ParserState): AstNode {
 103	  let node = parseExponent(state);
 104	  while (char(state) === '*' || char(state) === '/') {
@@ -8436,7 +8275,7 @@ _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
 107	  }
 108	  return node;
 109	}
-110
+110	
 111	function parseAdditive(state: ParserState): AstNode {
 112	  let node = parseMultiplicative(state);
 113	  while (char(state) === '+' || char(state) === '-') {
@@ -8445,22 +8284,22 @@ _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
 116	  }
 117	  return node;
 118	}
-119
+119	
 120	// These operators go from high to low order of precedence
 121	const parseOperator = parseAdditive;
-122
+122	
 123	function parse(expression: string): AstNode {
 124	  const state = { str: expression.replace(/\s/g, ''), index: 0 };
 125	  return parseOperator(state);
 126	}
-127
+127	
 128	function evaluate(ast: AstNode): number {
 129	  if (typeof ast === 'number') {
 130	    return ast;
 131	  }
-132
+132	
 133	  const { left, right, op } = ast;
-134
+134	
 135	  switch (op) {
 136	    case '+':
 137	      return evaluate(left) + evaluate(right);
@@ -8476,7 +8315,7 @@ _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
 147	      throw new Error('Unknown operator: ' + op);
 148	  }
 149	}
-150
+150	
 151	export function evalArithmetic(
 152	  expression: string,
 153	  defaultValue: number | null = null,
@@ -8485,7 +8324,7 @@ _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
 156	  if (expression === '') {
 157	    return defaultValue;
 158	  }
-159
+159	
 160	  let result: number;
 161	  try {
 162	    result = evaluate(parse(expression));
@@ -8493,13 +8332,12 @@ _**Agent (claude-opus-5 2026-09-15 15:31:33-0400)**_
 164	    // If it errors, return the default value
 165	    return defaultValue;
 166	  }
-167
+167	
 168	  // Never return NaN
 169	  return isNaN(result) ? defaultValue : result;
 170	}
 171
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:31:55-0400)**_
@@ -8510,7 +8348,6 @@ _**Agent (claude-opus-5 2026-09-15 15:31:55-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/hooks/useFormat.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:31:59-0400)**_
@@ -8521,7 +8358,6 @@ _**Agent (claude-opus-5 2026-09-15 15:31:59-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/hooks/useFormat.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:32:05-0400)**_
@@ -8532,7 +8368,6 @@ _**Agent (claude-opus-5 2026-09-15 15:32:05-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:32:08-0400)**_
@@ -8543,7 +8378,6 @@ _**Agent (claude-opus-5 2026-09-15 15:32:08-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:32:13-0400)**_
@@ -8554,7 +8388,6 @@ _**Agent (claude-opus-5 2026-09-15 15:32:13-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:32:21-0400)**_
@@ -8565,7 +8398,6 @@ _**Agent (claude-opus-5 2026-09-15 15:32:21-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:32:25-0400)**_
@@ -8576,7 +8408,6 @@ _**Agent (claude-opus-5 2026-09-15 15:32:25-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:32:26-0400)**_
@@ -8599,7 +8430,6 @@ worker restarts: 0, max worker memory usage: 46.72 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 30.73s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:34:34-0400)**_
@@ -8631,7 +8461,6 @@ Finished in 8220ms on 2311 files using 8 threads.
  M packages/desktop-client/src/components/transactions/table/utils.ts
  M packages/desktop-client/src/hooks/useFormat.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:34:36-0400)**_
@@ -8718,7 +8547,6 @@ describe('useFormat symbol placement', () => {
     const after = renderFormat({
       defaultCurrencyCode: 'EUR',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:34:39-0400)**_
@@ -8767,7 +8595,6 @@ Inspect test structure
   });
 });
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:34:42-0400)**_
@@ -8830,7 +8657,6 @@ describe('useFormat fromEdit', () => {
     const format = renderFormat({ defaultCurrencyCode: 'USD' });
     expect(format.fromEdit(`${LRE}$${PDF}12.34`)).toBe(1234);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:34:43-0400)**_
@@ -8845,7 +8671,6 @@ _**Agent (claude-opus-5 2026-09-15 15:34:50-0400)**_
 ```text
 The file /Users/james/actual-budget/packages/desktop-client/src/hooks/useFormat.test.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:34:59-0400)**_
@@ -8866,7 +8691,6 @@ Run useFormat tests
    Start at  15:34:56
    Duration  2.94s (transform 627ms, setup 1.65s, import 132ms, tests 97ms, environment 909ms)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:37:06-0400)**_
@@ -8924,7 +8748,6 @@ TypeError: Cannot read properties of null (reading 'mutateAsync')
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 2m 1.12s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:37:12-0400)**_
@@ -8951,12 +8774,12 @@ index 100d3fdd3..c0f841597 100644
    reapplyThousandSeparators,
  } from '@actual-app/core/shared/util';
  import { css } from '@emotion/css';
-
+ 
  import { makeAmountFullStyle } from '#components/budget/util';
 +import { useFormat } from '#hooks/useFormat';
  import { useMergedRefs } from '#hooks/useMergedRefs';
 -import { useSyncedPref } from '#hooks/useSyncedPref';
-
+ 
  type AmountInputProps = {
    value: number;
 @@ -48,7 +46,7 @@ const AmountInput = memo(function AmountInput({
@@ -8965,7 +8788,7 @@ index 100d3fdd3..c0f841597 100644
    const inputRef = useRef<HTMLInputElement>(null);
 -  const [hideFraction] = useSyncedPref('hideFraction');
 +  const format = useFormat();
-
+ 
    const mergedInputRef = useMergedRefs<HTMLInputElement>(
      props.inputRef,
 @@ -85,7 +83,10 @@ const AmountInput = memo(function AmountInput({
@@ -8979,11 +8802,11 @@ index 100d3fdd3..c0f841597 100644
 +    const parsed = format.toAmount(format.fromEdit(domText) ?? 0);
      const hasPendingInput = domText !== '' || editing;
      const newValue = hasPendingInput ? parsed : value;
-
+ 
 @@ -116,9 +117,36 @@ const AmountInput = memo(function AmountInput({
      }
    };
-
+ 
 +  // Keypad semantics: digits shift in from the right, so at two decimal places
 +  // "1" becomes 0.01 and "123" becomes 1.23. `appendDecimals` hardcodes two
 +  // decimals, so the shift is done here against the active currency instead.
@@ -9036,16 +8859,16 @@ index 100d3fdd3..c0f841597 100644
 +  const format = useFormat();
    const [isNegative, setIsNegative] = useState(true);
    const [liveValue, setLiveValue] = useState(Math.abs(value));
-
+ 
 @@ -207,7 +238,7 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
    };
-
+ 
    const handleChangeValue = (text: string) => {
 -    setLiveValue(currencyToAmount(text) || 0);
 +    setLiveValue(format.toAmount(format.fromEdit(text) ?? 0));
      onChangeValue?.(text);
    };
-
+ 
 @@ -308,7 +339,7 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
                  ...textStyle,
                }}
@@ -9076,7 +8899,7 @@ index e6ab84526..efc0cf45d 100644
 @@ -12,6 +10,8 @@ import type {
  } from '@actual-app/core/types/models';
  import { isValid as isDateValid, parseISO } from 'date-fns';
-
+ 
 +import type { UseFormatResult } from '#hooks/useFormat';
 +
  export type SerializedTransaction = Omit<TransactionEntity, 'date'> & {
@@ -9085,7 +8908,7 @@ index e6ab84526..efc0cf45d 100644
 @@ -28,8 +28,22 @@ export type TransactionUpdateFunction = <T extends keyof SerializedTransaction>(
    value: SerializedTransaction[T],
  ) => void;
-
+ 
 +// Keep the currency's decimals when the value actually has a fractional part,
 +// so that hiding fractions in the read-only display doesn't truncate the
 +// amount when the cell round-trips back through `deserializeTransaction`.
@@ -9115,14 +8938,14 @@ index e6ab84526..efc0cf45d 100644
 +    credit: credit != null ? serializeAmount(credit, format) : '',
    };
  }
-
+ 
  export function deserializeTransaction(
    transaction: SerializedTransaction,
    originalTransaction: TransactionEntity,
 +  format: UseFormatResult,
  ) {
    const { debit, credit, date: originalDate, ...realTransaction } = transaction;
-
+ 
 -  let amount: number | null;
 +  let amount: IntegerAmount | null;
    if (debit !== '') {
@@ -9133,7 +8956,7 @@ index e6ab84526..efc0cf45d 100644
 -    amount = evalArithmetic(credit, null);
 +    amount = format.fromEdit(credit);
    }
-
+ 
 -  amount =
 -    amount != null ? amountToInteger(amount) : originalTransaction.amount;
 +  amount = amount != null ? amount : originalTransaction.amount;
@@ -9141,7 +8964,6 @@ index e6ab84526..efc0cf45d 100644
    if (date == null) {
      date = originalTransaction.date || currentDay();
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:37:29-0400)**_
@@ -9159,7 +8981,7 @@ index a32011b02..634067c06 100644
 +++ b/packages/desktop-client/src/components/budget/envelope/CoverMenu.tsx
 @@ -3,14 +3,7 @@ import { Form } from 'react-aria-components';
  import { Trans, useTranslation } from 'react-i18next';
-
+ 
  import { Button } from '@actual-app/components/button';
 -import { Input } from '@actual-app/components/input';
 -import { styles } from '@actual-app/components/styles';
@@ -9171,25 +8993,25 @@ index a32011b02..634067c06 100644
 -} from '@actual-app/core/shared/util';
  import type { IntegerAmount } from '@actual-app/core/shared/util';
  import type { CategoryEntity } from '@actual-app/core/types/models';
-
+ 
 @@ -19,6 +12,7 @@ import {
    addToBeBudgetedGroup,
    removeCategoriesFromGroups,
  } from '#components/budget/util';
 +import { FinancialInput } from '#components/util/FinancialInput';
  import { useCategories } from '#hooks/useCategories';
-
+ 
  type CoverMenuProps = {
 @@ -53,13 +47,13 @@ export function CoverMenu({
        : categoryGroups;
    }, [categoryId, showToBeBudgeted, originalCategoryGroups]);
-
+ 
 -  const _initialAmount = integerToCurrency(Math.abs(initialAmount ?? 0));
 -  const [amount, setAmount] = useState<string>(_initialAmount);
 +  const [amount, setAmount] = useState<IntegerAmount>(
 +    Math.abs(initialAmount ?? 0),
 +  );
-
+ 
    function _onSubmit() {
 -    const parsedAmount = evalArithmetic(amount || '');
 -    if (parsedAmount && fromCategoryId) {
@@ -9219,7 +9041,6 @@ packages/desktop-client/src/components/mobile/transactions/FocusableAmountInput.
 packages/desktop-client/src/components/budget/util.ts
 packages/desktop-client/src/hooks/useFormat.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:37:36-0400)**_
@@ -9281,7 +9102,6 @@ packages/desktop-client/src/hooks/useFormulaExecution.ts:590:    return integerT
 packages/desktop-client/src/hooks/useFormulaExecution.ts:649:      return integerToAmount(balances[intervals[0]]?.start || 0, 2);
 packages/desktop-client/src/hooks/useFormulaExecution.ts:651:    return integerToAmount(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:39:16-0400)**_
@@ -9300,7 +9120,6 @@ ai-logs/sprint0/tigerk9/2026-09-13_claude-code_review-pr-34.md (1123ms)
 Format issues found in above 9 files. Run without `--check` to fix.
 Finished in 6717ms on 2311 files using 8 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:39:37-0400)**_
@@ -9323,7 +9142,6 @@ ai-logs/sprint0/bennettmatuszewski/2026-09-13_claude-code_issue-10-test-fixes.md
 ai-logs/sprint0/tigerk9/2026-09-13_claude-code_issue-21-budget-month-scroll.md
 ai-logs/sprint0/tigerk9/2026-09-13_claude-code_review-pr-34.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:39:46-0400)**_
@@ -9340,7 +9158,6 @@ Check e2e setup availability
 }
 "npx playwright test --browser=chromium"
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:39:50-0400)**_
@@ -9377,7 +9194,7 @@ index 06de0f56f..21d6e7aec 100644
 +    serializeTransaction(originalTransaction, format, showZeroInDeposit),
    );
    const isPreview = isPreviewId(transaction.id);
-
+ 
 @@ -988,7 +984,7 @@ const Transaction = memo(function Transaction({
      showZeroInDeposit !== prevShowZero
    ) {
@@ -9399,7 +9216,7 @@ index 06de0f56f..21d6e7aec 100644
 +      setTransaction(
 +        serializeTransaction(deserialized, format, showZeroInDeposit),
 +      );
-
+ 
        const deserializedName = ['credit', 'debit'].includes(name)
          ? 'amount'
 @@ -1781,10 +1780,10 @@ const Transaction = memo(function Transaction({
@@ -9440,7 +9257,7 @@ index d2df1d8a7..4f7bc9025 100644
 @@ -24,9 +24,18 @@ export type FormatType =
    | 'financial-with-sign'
    | 'financial-no-decimals';
-
+ 
 +export type ForEditOptions = {
 +  /**
 +   * Format with the currency's full precision even when the `hideFraction`
@@ -9464,11 +9281,11 @@ index d2df1d8a7..4f7bc9025 100644
 +  /** Whether the `hideFraction` pref is on, so callers don't re-read it. */
 +  hideFraction: boolean;
  };
-
+ 
  export type FormatResult = {
 @@ -232,10 +243,12 @@ export function useFormat(): UseFormatResult {
    );
-
+ 
    const forEdit = useCallback(
 -    (value: IntegerAmount) => {
 +    (value: IntegerAmount, options?: ForEditOptions) => {
@@ -9489,7 +9306,6 @@ index d2df1d8a7..4f7bc9025 100644
    });
  }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-15 15:40:09-0400)**_
@@ -9500,9 +9316,7 @@ Phase 4 is implemented. `yarn typecheck` and `yarn lint` are clean, and `yarn te
 
 ```ts
 const scale = Math.pow(10, format.currency.decimalPlaces);
-return format.forEdit(integerAmount, {
-  keepFraction: integerAmount % scale !== 0,
-});
+return format.forEdit(integerAmount, { keepFraction: integerAmount % scale !== 0 });
 ```
 
 I traced all four combinations (flag on/off × `hideFraction` on/off, plus JPY) and they're byte-identical to the old output, except that JPY is now correct where it previously wasn't.
@@ -9526,30 +9340,32 @@ _**User (2026-09-15 15:41:54-0400)**_
 Stop hook feedback:
 ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/check-on-stop.sh"]: Stop check found failures in touched workspaces:
 [tests failed: @actual-app/web]
-129|
-130| await result.current.mutateAsync({ category: newCategory(tooLongNa…
-| ^
-131|
-132| expect(createCategoryHandler).not.toHaveBeenCalled();
+    129|
+    130|     await result.current.mutateAsync({ category: newCategory(tooLongNa…
+       |                          ^
+    131|
+    132|     expect(createCategoryHandler).not.toHaveBeenCalled();
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
 
-FAIL src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
+ FAIL  src/budget/mutations.test.tsx > useSaveCategoryMutation (desktop category creation) > allows a name at the character limit
 TypeError: Cannot read properties of null (reading 'mutateAsync')
-❯ src/budget/mutations.test.tsx:150:26
-148| });
-149|
-150| await result.current.mutateAsync({ category: newCategory(maxLength…
-| ^
-151|
-152| await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
+ ❯ src/budget/mutations.test.tsx:150:26
+    148|     });
+    149|
+    150|     await result.current.mutateAsync({ category: newCategory(maxLength…
+       |                          ^
+    151|
+    152|     await waitFor(() => expect(createCategoryHandler).toHaveBeenCalled…
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
 
-Test Files 1 failed | 57 passed (58)
-Tests 4 failed | 819 passed | 1 skipped (824)
-Start at 15:40:29
-Duration 84.55s (transform 10.32s, setup 73.16s, import 27.49s, tests 24.15s, environment 35.31s)
+
+ Test Files  1 failed | 57 passed (58)
+      Tests  4 failed | 819 passed | 1 skipped (824)
+   Start at  15:40:29
+   Duration  84.55s (transform 10.32s, setup 73.16s, import 27.49s, tests 24.15s, environment 35.31s)
+
 
 ---
 

@@ -37,7 +37,6 @@ Check current repo and gh auth status
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-10 20:22:52Z)**_
@@ -48,15 +47,15 @@ Check current repo and gh auth status
 
 ```text
 Exit code 1
-gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
 spelling of the name, or if a path was included, verify that the path is correct and try again.
 At line:1 char:302
 + ... y { $PSStyle.OutputRendering = 'PlainText' } catch {} } }; gh repo vi ...
 +                                                                ~~
     + CategoryInfo          : ObjectNotFound: (gh:String) [], CommandNotFoundException
     + FullyQualifiedErrorId : CommandNotFoundException
-
-gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
+ 
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
 spelling of the name, or if a path was included, verify that the path is correct and try again.
 At line:1 char:355
 + ...  } }; gh repo view --json nameWithOwner -q .nameWithOwner; gh auth st ...
@@ -64,7 +63,6 @@ At line:1 char:355
     + CategoryInfo          : ObjectNotFound: (gh:String) [], CommandNotFoundException
     + FullyQualifiedErrorId : CommandNotFoundException
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-10 20:22:56Z)**_
@@ -78,7 +76,6 @@ Check if gh CLI is installed
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-10 20:22:58Z)**_
@@ -102,17 +99,17 @@ _**Agent (claude-sonnet-5 2026-09-10 20:22:58Z)**_
 12	# workspace). It does NOT try to defend against deliberate evasion via unusual
 13	# shell forms (git global options before the subcommand, `git commit -F`/`-C`/
 14	# `--amend`, etc.) — CI and branch protection are the real gates for what lands.
-15
+15	
 16	block() {
 17	  echo "$1" >&2
 18	  exit 2
 19	}
-20
+20	
 21	# Fail closed: a malformed payload (jq parse failure) blocks rather than allows.
 22	cmd=$(jq -r '.tool_input.command // empty' 2>/dev/null) ||
 23	  block "Blocked: could not parse the hook payload (.tool_input.command)."
 24	[ -z "$cmd" ] && exit 0
-25
+25	
 26	# Enforce: always run yarn from the repo root, never in a child workspace.
 27	# Catch cd/pushd into a package dir, or `yarn --cwd packages/...`.
 28	case "$cmd" in
@@ -125,7 +122,7 @@ _**Agent (claude-sonnet-5 2026-09-10 20:22:58Z)**_
 35	        block "Blocked: run yarn from the repo root, not a child workspace (AGENTS.md). Use 'yarn workspace <name> <cmd>' from the root instead." ;;
 36	    esac ;;
 37	esac
-38
+38	
 39	# Everything below only applies to actual git invocations. Match `git` as a
 40	# whole token (not a substring) so commands that merely mention git — e.g.
 41	# `rg "git config" AGENTS.md` — aren't falsely blocked.
@@ -139,13 +136,13 @@ _**Agent (claude-sonnet-5 2026-09-10 20:22:58Z)**_
 49	done
 50	set +f
 51	[ "$is_git" -eq 1 ] || exit 0
-52
+52	
 53	# Never skip git hooks.
 54	case "$cmd" in
 55	  *--no-verify* | *--no-gpg-sign*)
 56	    block "Blocked: skipping git hooks (--no-verify/--no-gpg-sign) is forbidden." ;;
 57	esac
-58
+58	
 59	# Never change git config (reads are fine).
 60	case "$cmd" in
 61	  *"git config"*)
@@ -154,7 +151,7 @@ _**Agent (claude-sonnet-5 2026-09-10 20:22:58Z)**_
 64	      *) block "Blocked: 'git config' changes are forbidden." ;;
 65	    esac ;;
 66	esac
-67
+67	
 68	# Never force-push or push to main/master.
 69	case "$cmd" in
 70	  *"git push"*)
@@ -172,7 +169,7 @@ _**Agent (claude-sonnet-5 2026-09-10 20:22:58Z)**_
 82	        block "Blocked: never push to main/master. Push the feature branch instead." ;;
 83	    esac ;;
 84	esac
-85
+85	
 86	# Commit messages must start with [AI].
 87	case "$cmd" in
 88	  *"git commit"*)
@@ -215,11 +212,10 @@ _**Agent (claude-sonnet-5 2026-09-10 20:22:58Z)**_
 125	      *) block "Blocked: commit messages must start with '[AI]'. Got: $msg" ;;
 126	    esac ;;
 127	esac
-128
+128	
 129	exit 0
 130
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-10 20:23:06Z)**_
@@ -237,7 +233,6 @@ At line:1 char:348
     + CategoryInfo          : NotSpecified: (INFO: Could not...ven pattern(s).:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-10 20:23:09Z)**_
@@ -253,7 +248,6 @@ Check if winget is available to install gh
 ```text
 C:\Users\reese\AppData\Local\Microsoft\WindowsApps\winget.exe
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-10 20:23:21Z)**_
@@ -266,7 +260,6 @@ Show git remotes to confirm repo
 origin	https://github.com/CSCI-435-SE/actual-budget.git (fetch)
 origin	https://github.com/CSCI-435-SE/actual-budget.git (push)
 ```
-
 </details></tool-use>
 
 ---

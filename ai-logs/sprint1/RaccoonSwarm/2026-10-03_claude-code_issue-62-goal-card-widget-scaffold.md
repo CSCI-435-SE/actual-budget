@@ -3897,7 +3897,7 @@ If your course or team has a coverage target and this file is borderline, option
 _**User (2026-10-05 23:19:03Z)**_
 
 This test failed, why?  
-↓ src/server/sync/sync.property.test.ts (2 tests | 2 skipped)
+ ↓ src/server/sync/sync.property.test.ts (2 tests | 2 skipped)
 
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
 

@@ -76,7 +76,6 @@ packages\desktop-client\src\components\Modals.tsx
 packages\desktop-client\src\components\CommandBar.tsx
 packages\desktop-client\src\app\appSlice.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-12 16:07:44Z)**_
@@ -92,7 +91,6 @@ Key related pieces:
 - [packages/desktop-client/src/notes/](packages/desktop-client/src/notes/) — supporting utilities: `linkParser.ts`, `NotesTagFormatter.tsx`, and Desktop/Mobile variants (`DesktopTaggedNotes.tsx`, `DesktopLinkedNotes.tsx`, `MobileTaggedNotes.tsx`, `MobileLinkedNotes.tsx`) for rendering tags/links inside notes text
 
 Where it's wired into category/group/account UI:
-
 - [CategoryMenuModal.tsx](packages/desktop-client/src/components/modals/CategoryMenuModal.tsx) and [CategoryGroupMenuModal.tsx](packages/desktop-client/src/components/modals/CategoryGroupMenuModal.tsx) — category/group notes editing
 - [AccountMenuModal.tsx](packages/desktop-client/src/components/modals/AccountMenuModal.tsx) and [sidebar/Account.tsx](packages/desktop-client/src/components/sidebar/Account.tsx) — account notes
 - [SidebarGroup.tsx](packages/desktop-client/src/components/budget/SidebarGroup.tsx) / [SidebarCategoryButtons.tsx](packages/desktop-client/src/components/budget/SidebarCategoryButtons.tsx) — budget sidebar notes indicators
@@ -110,8 +108,8 @@ _**User (2026-09-12 16:11:12Z)**_
 _**User (2026-09-12 16:11:12Z)**_
 
 <command-name>/model</command-name>
-<command-message>model</command-message>
-<command-args>opus[1m]</command-args>
+            <command-message>model</command-message>
+            <command-args>opus[1m]</command-args>
 
 ---
 
@@ -143,7 +141,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:36Z)**_
 1	import React, { useEffect, useRef } from 'react';
 2	import { useTranslation } from 'react-i18next';
 3	import ReactMarkdown from 'react-markdown';
-4
+4	
 5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 6	import type { CSSProperties } from '@actual-app/components/styles';
 7	import { Text } from '@actual-app/components/text';
@@ -151,21 +149,21 @@ _**Agent (claude-opus-5 2026-09-12 16:12:36Z)**_
 9	import { css } from '@emotion/css';
 10	import rehypeExternalLinks from 'rehype-external-links';
 11	import remarkGfm from 'remark-gfm';
-12
+12	
 13	import {
 14	  markdownBaseStyles,
 15	  remarkBreaks,
 16	  sequentialNewlinesPlugin,
 17	} from '#util/markdown';
-18
+18	
 19	const remarkPlugins = [sequentialNewlinesPlugin, remarkGfm, remarkBreaks];
-20
+20	
 21	const markdownStyles = css(markdownBaseStyles, {
 22	  display: 'block',
 23	  maxWidth: 350,
 24	  padding: 8,
 25	});
-26
+26	
 27	type NotesProps = {
 28	  notes: string;
 29	  editable?: boolean;
@@ -174,7 +172,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:36Z)**_
 32	  onBlur?: (value: string) => void;
 33	  getStyle?: (editable: boolean) => CSSProperties;
 34	};
-35
+35	
 36	export function Notes({
 37	  notes,
 38	  editable,
@@ -185,15 +183,15 @@ _**Agent (claude-opus-5 2026-09-12 16:12:36Z)**_
 43	}: NotesProps) {
 44	  const { isNarrowWidth } = useResponsive();
 45	  const { t } = useTranslation();
-46
+46	
 47	  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-48
+48	
 49	  useEffect(() => {
 50	    if (focused && editable) {
 51	      textAreaRef.current?.focus();
 52	    }
 53	  }, [focused, editable]);
-54
+54	
 55	  return editable ? (
 56	    <textarea
 57	      ref={textAreaRef}
@@ -229,7 +227,6 @@ _**Agent (claude-opus-5 2026-09-12 16:12:36Z)**_
 87	}
 88
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:12:38Z)**_
@@ -316,7 +313,6 @@ packages\desktop-client\src\budget\mutations.ts
 packages\desktop-client\src\app\appSlice.ts
 packages\desktop-client\src\accounts\mutations.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
@@ -331,7 +327,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 3	import { useTranslation } from 'react-i18next';
 4	import { animated, to, useSpring } from 'react-spring';
 5	import { useSwipeable } from 'react-swipeable';
-6
+6	
 7	import { Button, ButtonWithLoading } from '@actual-app/components/button';
 8	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 9	import { AnimatedLoading } from '@actual-app/components/icons/AnimatedLoading';
@@ -342,14 +338,14 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 14	import { theme } from '@actual-app/components/theme';
 15	import { View } from '@actual-app/components/view';
 16	import { css } from '@emotion/css';
-17
+17	
 18	import { removeNotification } from '#notifications/notificationsSlice';
 19	import type { NotificationWithId } from '#notifications/notificationsSlice';
 20	import { useDispatch, useSelector } from '#redux';
-21
+21	
 22	import { Link } from './common/Link';
 23	import { MODAL_Z_INDEX } from './common/Modal';
-24
+24	
 25	// Notification stacking configuration
 26	const MAX_VISIBLE_NOTIFICATIONS = 3; // Maximum number of notifications visible in the stack
 27	const SCALE_MULTIPLIER = 0.05; // Scale reduction per stacked notification
@@ -357,7 +353,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 29	const MIN_OPACITY = 1; // Minimum opacity for stacked notifications
 30	const Y_OFFSET_PER_LEVEL = -20; // Vertical offset in pixels per stacked notification
 31	const BASE_Z_INDEX = 10; // Base z-index for notification stacking
-32
+32	
 33	function compileMessage(
 34	  message: string,
 35	  actions: Record<string, () => void>,
@@ -368,14 +364,14 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 40	    <SpaceBetween direction="vertical" gap={10}>
 41	      {message.split(/\n\n/).map((paragraph, idx) => {
 42	        const parts = paragraph.split(/(\[[^\]]*\]\([^)]*\))/g);
-43
+43	
 44	        return (
 45	          <Text key={idx} style={{ lineHeight: '1.4em' }}>
 46	            {parts.map((part, idx) => {
 47	              const match = part.match(/\[([^\]]*)\]\(([^)]*)\)/);
 48	              if (match) {
 49	                const [_, text, href] = match;
-50
+50	
 51	                if (href[0] === '#') {
 52	                  const actionName = href.slice(1);
 53	                  return (
@@ -395,7 +391,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 67	                    </Link>
 68	                  );
 69	                }
-70
+70	
 71	                return (
 72	                  <Link
 73	                    variant="external"
@@ -415,7 +411,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 87	    </SpaceBetween>
 88	  );
 89	}
-90
+90	
 91	function Notification({
 92	  notification,
 93	  onRemove,
@@ -439,24 +435,24 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 111	    button,
 112	    timeout,
 113	  } = notification;
-114
+114	
 115	  const [loading, setLoading] = useState(false);
 116	  const [overlayLoading, setOverlayLoading] = useState(false);
-117
+117	
 118	  const connected = useEffectEvent(() => {
 119	    if (type === 'error' && internal) {
 120	      console.error('Internal error:', internal);
 121	    }
-122
+122	
 123	    if (!sticky) {
 124	      setTimeout(onRemove, timeout || 6500);
 125	    }
 126	  });
 127	  useEffect(() => connected(), []);
-128
+128	
 129	  const positive = type === 'message';
 130	  const error = type === 'error';
-131
+131	
 132	  const processedMessage = useMemo(
 133	    () =>
 134	      compileMessage(
@@ -467,19 +463,19 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 139	      ),
 140	    [message, messageActions, onRemove, setOverlayLoading],
 141	  );
-142
+142	
 143	  const { isNarrowWidth } = useResponsive();
 144	  const narrowStyle: CSSProperties = isNarrowWidth
 145	    ? { minHeight: styles.mobileMinHeight }
 146	    : {};
-147
+147	
 148	  // Calculate stacking properties based on index (scales for any number of notifications)
 149	  const scale = 1.0 - index * SCALE_MULTIPLIER;
 150	  const stackOpacity = Math.max(MIN_OPACITY, 1.0 - index * OPACITY_MULTIPLIER);
 151	  const zIndex = BASE_Z_INDEX - index;
-152
+152	
 153	  const yOffset = index * Y_OFFSET_PER_LEVEL;
-154
+154	
 155	  const [isSwiped, setIsSwiped] = useState(false);
 156	  const [spring, api] = useSpring(
 157	    () => ({
@@ -492,12 +488,12 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 164	    }),
 165	    [],
 166	  );
-167
+167	
 168	  // Update scale, opacity, and y-position when index changes
 169	  useEffect(() => {
 170	    void api.start({ to: { scale, opacity: stackOpacity, y: yOffset } });
 171	  }, [index, scale, stackOpacity, yOffset, api]);
-172
+172	
 173	  const swipeHandlers = useSwipeable({
 174	    onSwiping: ({ deltaX }) => {
 175	      if (!isSwiped) {
@@ -508,7 +504,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 180	      // Distance to trigger deletion
 181	      const threshold = 100;
 182	      const direction = deltaX > 0 ? 1 : -1;
-183
+183	
 184	      if (Math.abs(deltaX) > threshold || velocity > 0.5) {
 185	        // Animate out & remove item after animation
 186	        void api.start({
@@ -523,7 +519,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 195	    },
 196	    trackMouse: true,
 197	  });
-198
+198	
 199	  return (
 200	    <animated.div
 201	      role="alert"
@@ -590,7 +586,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 262	        >
 263	          <SvgDelete style={{ width: 10, height: 10 }} />
 264	        </Button>
-265
+265	
 266	        {/* Content and action button layout */}
 267	        <SpaceBetween
 268	          direction="vertical"
@@ -608,7 +604,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 280	              {title}
 281	            </View>
 282	          )}
-283
+283	
 284	          {/* Message and button on same row */}
 285	          <SpaceBetween
 286	            wrap={false}
@@ -652,7 +648,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 324	              </ButtonWithLoading>
 325	            )}
 326	          </SpaceBetween>
-327
+327	
 328	          {pre
 329	            ? pre.split('\n\n').map((text, idx) => (
 330	                <View
@@ -694,19 +690,19 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 366	    </animated.div>
 367	  );
 368	}
-369
+369	
 370	export function Notifications({ style }: { style?: CSSProperties }) {
 371	  const dispatch = useDispatch();
 372	  const { isNarrowWidth } = useResponsive();
 373	  const notifications = useSelector(state => state.notifications.notifications);
 374	  const notificationInset = useSelector(state => state.notifications.inset);
-375
+375	
 376	  // Only show the last N notifications (newest first) for z-axis stacking
 377	  // Reverse so newest notification (last in array) becomes index 0 (front)
 378	  const visibleNotifications = notifications
 379	    .slice(-MAX_VISIBLE_NOTIFICATIONS)
 380	    .reverse();
-381
+381	
 382	  return (
 383	    <View
 384	      style={{
@@ -741,7 +737,6 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 413	}
 414
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
@@ -755,11 +750,11 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 2	import type { PayloadAction } from '@reduxjs/toolkit';
 3	import { t } from 'i18next';
 4	import { v4 as uuidv4 } from 'uuid';
-5
+5	
 6	import { resetApp } from '#app/appSlice';
-7
+7	
 8	const sliceName = 'notifications';
-9
+9	
 10	export type Notification = {
 11	  id?: string | undefined;
 12	  type?: 'message' | 'error' | 'warning' | undefined;
@@ -779,7 +774,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 26	  internal?: string | undefined;
 27	};
 28	export type NotificationWithId = Notification & { id: string };
-29
+29	
 30	type NotificationsState = {
 31	  notifications: NotificationWithId[];
 32	  inset?: {
@@ -789,12 +784,12 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 36	    left?: number;
 37	  };
 38	};
-39
+39	
 40	const initialState: NotificationsState = {
 41	  notifications: [],
 42	  inset: {},
 43	};
-44
+44	
 45	type AddNotificationPayload = {
 46	  notification: Notification;
 47	};
@@ -804,7 +799,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 51	type SetNotificationInsetPayload = {
 52	  inset: NotificationsState['inset'];
 53	} | null;
-54
+54	
 55	const notificationsSlice = createSlice({
 56	  name: sliceName,
 57	  initialState,
@@ -814,7 +809,7 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 61	        ...action.payload.notification,
 62	        id: action.payload.notification.id || uuidv4(),
 63	      };
-64
+64	
 65	      if (state.notifications.find(n => n.id === notification.id)) {
 66	        return;
 67	      }
@@ -850,13 +845,13 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 97	    builder.addCase(resetApp, () => initialState);
 98	  },
 99	});
-100
+100	
 101	export const { name, reducer, getInitialState } = notificationsSlice;
-102
+102	
 103	export const actions = {
 104	  ...notificationsSlice.actions,
 105	};
-106
+106	
 107	export const {
 108	  addGenericErrorNotification,
 109	  addNotification,
@@ -865,7 +860,6 @@ _**Agent (claude-opus-5 2026-09-12 16:12:43Z)**_
 112	} = actions;
 113
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:13:18Z)**_
@@ -881,7 +875,6 @@ _**Agent (claude-opus-5 2026-09-12 16:13:20Z)**_
 ```text
 No matches found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:13:21Z)**_
@@ -904,7 +897,6 @@ packages\desktop-client\src\components\ServerContext.tsx:16:import { addNotifica
 
 [Showing results with pagination = limit: 10]
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:13:24Z)**_
@@ -987,7 +979,6 @@ _**Agent (claude-opus-5 2026-09-12 16:13:24Z)**_
 491-    }
 492-  }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:14:02Z)**_
@@ -1002,7 +993,6 @@ _**Agent (claude-opus-5 2026-09-12 16:14:28Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\Notes.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:14:30Z)**_
@@ -1017,7 +1007,6 @@ _**Agent (claude-opus-5 2026-09-12 16:14:39Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\Notes.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:14:40Z)**_
@@ -1032,7 +1021,6 @@ _**Agent (claude-opus-5 2026-09-12 16:14:46Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\Notes.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
@@ -1045,7 +1033,7 @@ _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
 1	import React, { useEffect, useRef } from 'react';
 2	import { useTranslation } from 'react-i18next';
 3	import ReactMarkdown from 'react-markdown';
-4
+4	
 5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 6	import type { CSSProperties } from '@actual-app/components/styles';
 7	import { Text } from '@actual-app/components/text';
@@ -1053,7 +1041,7 @@ _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
 9	import { css } from '@emotion/css';
 10	import rehypeExternalLinks from 'rehype-external-links';
 11	import remarkGfm from 'remark-gfm';
-12
+12	
 13	import { addNotification } from '#notifications/notificationsSlice';
 14	import { useDispatch } from '#redux';
 15	import {
@@ -1061,15 +1049,15 @@ _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
 17	  remarkBreaks,
 18	  sequentialNewlinesPlugin,
 19	} from '#util/markdown';
-20
+20	
 21	const remarkPlugins = [sequentialNewlinesPlugin, remarkGfm, remarkBreaks];
-22
+22	
 23	export const MAX_NOTES_LENGTH = 1800;
 24	const NOTES_LENGTH_WARNING_THRESHOLD = 1700;
-25
+25	
 26	const NOTES_LENGTH_LEVELS = ['none', 'near', 'limit'] as const;
 27	type NotesLengthLevel = (typeof NOTES_LENGTH_LEVELS)[number];
-28
+28	
 29	function getNotesLengthLevel(length: number): NotesLengthLevel {
 30	  if (length >= MAX_NOTES_LENGTH) {
 31	    return 'limit';
@@ -1079,13 +1067,13 @@ _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
 35	  }
 36	  return 'none';
 37	}
-38
+38	
 39	const markdownStyles = css(markdownBaseStyles, {
 40	  display: 'block',
 41	  maxWidth: 350,
 42	  padding: 8,
 43	});
-44
+44	
 45	type NotesProps = {
 46	  notes: string;
 47	  editable?: boolean;
@@ -1094,7 +1082,7 @@ _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
 50	  onBlur?: (value: string) => void;
 51	  getStyle?: (editable: boolean) => CSSProperties;
 52	};
-53
+53	
 54	export function Notes({
 55	  notes,
 56	  editable,
@@ -1106,21 +1094,21 @@ _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
 62	  const { isNarrowWidth } = useResponsive();
 63	  const { t } = useTranslation();
 64	  const dispatch = useDispatch();
-65
+65	
 66	  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 67	  const notifiedLevelRef = useRef<NotesLengthLevel>('none');
-68
+68	
 69	  useEffect(() => {
 70	    if (focused && editable) {
 71	      textAreaRef.current?.focus();
 72	    }
 73	  }, [focused, editable]);
-74
+74	
 75	  function handleChange(value: string) {
 76	    const level = getNotesLengthLevel(value.length);
 77	    const previousLevel = notifiedLevelRef.current;
 78	    notifiedLevelRef.current = level;
-79
+79	
 80	    // Only notify when crossing upwards, so deleting text never re-warns.
 81	    if (
 82	      NOTES_LENGTH_LEVELS.indexOf(level) >
@@ -1144,10 +1132,10 @@ _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
 100	        }),
 101	      );
 102	    }
-103
+103	
 104	    onChange?.(value);
 105	  }
-106
+106	
 107	  return editable ? (
 108	    <textarea
 109	      ref={textAreaRef}
@@ -1163,7 +1151,6 @@ _**Agent (claude-opus-5 2026-09-12 16:14:50Z)**_
 119	      value={notes || ''}
 120	      maxLength={MAX_NOTES_LENGTH}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:14:55Z)**_
@@ -1185,7 +1172,6 @@ _**Agent (claude-opus-5 2026-09-12 16:14:55Z)**_
 48:            <Notes
 57:              onChange={setNotes}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:14:59Z)**_
@@ -1199,7 +1185,6 @@ Run repo typecheck
 ```text
 Command running in background with ID: bakepwq1u. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\bakepwq1u.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:15:04Z)**_
@@ -1229,7 +1214,6 @@ _**Agent (claude-opus-5 2026-09-12 16:15:04Z)**_
 91:          <SvgCustomNotesPaper style={{ width, height, flexShrink: 0 }} />
 102:        <Notes notes={tempNotes} editable focused onChange={setTempNotes} />
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:15:09Z)**_
@@ -1243,7 +1227,6 @@ Check typecheck progress
 ```text
 <tool_use_error>Blocked: sleep 45 followed by: tail -30 "C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\bakepwq1u.output". To wait for a condition, use Monitor with an until-loop (e.g. `until <check>; do sleep 2; done`). To wait for a command you started, use run_in_background: true. Do not chain shorter sleeps to work around this block.</tool_use_error>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:15:13Z)**_
@@ -1259,13 +1242,13 @@ I'll wait for typecheck to finish. Meanwhile, here's what changed.
 
 **[Notes.tsx](packages/desktop-client/src/components/Notes.tsx)** — the shared component behind all three notes surfaces (category, category group, account), reached via both [NotesButton.tsx:102](packages/desktop-client/src/components/NotesButton.tsx#L102) on desktop and [NotesModal.tsx:48](packages/desktop-client/src/components/modals/NotesModal.tsx#L48) on mobile:
 
-- **Hard cap**: `maxLength={1800}` on the textarea. The browser enforces it for typing _and_ paste, and it doesn't truncate pre-existing notes that are already over — those stay intact, the user just can't add more.
+- **Hard cap**: `maxLength={1800}` on the textarea. The browser enforces it for typing *and* paste, and it doesn't truncate pre-existing notes that are already over — those stay intact, the user just can't add more.
 - **Warning at 1700**: dispatches through the existing app-wide toast system (`addNotification` from [notificationsSlice.ts](packages/desktop-client/src/notifications/notificationsSlice.ts)), rendered by [Notifications.tsx](packages/desktop-client/src/components/Notifications.tsx) as a `warning`-styled toast.
 
 Two things worth flagging about the notification logic, since they're judgment calls:
 
 - It fires **once per upward threshold crossing**, not per keystroke — tracked in `notifiedLevelRef`. Deleting text back down never re-warns.
-- I split it into two levels rather than one. At 1700 it says you're _nearing_ the limit; at 1800 it says you've _reached_ it and no more text can be added. Without the second one, typing just silently stops working once the user dismisses the first toast, which seemed like a real gap.
+- I split it into two levels rather than one. At 1700 it says you're *nearing* the limit; at 1800 it says you've *reached* it and no more text can be added. Without the second one, typing just silently stops working once the user dismisses the first toast, which seemed like a real gap.
 
 The stable `id` (`notes-length-near` / `notes-length-limit`) also leans on the slice's built-in dedupe at [notificationsSlice.ts:65](packages/desktop-client/src/notifications/notificationsSlice.ts#L65), so a still-visible warning won't stack.
 
@@ -1300,7 +1283,6 @@ Regenerate i18n translation files
 ```text
 Command running in background with ID: bgwlknjrb. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\bgwlknjrb.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:16:37Z)**_
@@ -1334,7 +1316,6 @@ Show changed files
 ```text
  M packages/desktop-client/src/components/Notes.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:17:20Z)**_
@@ -1348,7 +1329,6 @@ Check if new strings landed in locale files
 ```text
 ---exit:0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:17:23Z)**_
@@ -1364,7 +1344,6 @@ en.json
 === search en.json ===
 packages/desktop-client/locale/en.json
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:17:28Z)**_
@@ -1381,7 +1360,6 @@ Check en.json for new strings
 --- match count: 0 ---
 2348
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:17:33Z)**_
@@ -1396,7 +1374,6 @@ Check if en.json is gitignored
 packages/desktop-client/.gitignore:35:locale/	packages/desktop-client/locale/en.json
 ignored-exit:0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:17:40Z)**_
@@ -1414,7 +1391,6 @@ Run repo lint
 ```text
 Command running in background with ID: blv2v0y8h. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\blv2v0y8h.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:17:49Z)**_
@@ -1494,7 +1470,6 @@ packages/desktop-client/src/components/settings/ThemeInstaller.test.tsx
 packages/desktop-client/src/components/settings/Themes.test.tsx
 packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:16Z)**_
@@ -1509,7 +1484,6 @@ Show vitest config for desktop-client
 Exit code 2
 ls: cannot access 'packages/desktop-client/vitest*': No such file or directory
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
@@ -1520,45 +1494,45 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 
 ```text
 1	import React from 'react';
-2
+2	
 3	import { generateAccount } from '@actual-app/core/mocks';
 4	import { q } from '@actual-app/core/shared/query';
 5	import type { AccountEntity } from '@actual-app/core/types/models';
 6	import { render, screen } from '@testing-library/react';
 7	import userEvent from '@testing-library/user-event';
-8
+8	
 9	import { useSheetValue } from '#hooks/useSheetValue';
 10	import { TestProviders } from '#mocks';
-11
+11	
 12	import { ReconcileMenu, ReconcilingMessage } from './Reconcile';
-13
+13	
 14	vi.mock('#hooks/useSheetValue', () => ({
 15	  useSheetValue: vi.fn(),
 16	}));
-17
+17	
 18	// Use actual arithmetic and util functions for real math behavior
 19	// (we rely on default decimalPlaces=2 semantics for integer amounts)
-20
+20	
 21	describe('ReconcilingMessage math & UI', () => {
 22	  // useSheetValue is mocked above via relative path
-23
+23	
 24	  beforeEach(() => {
 25	    vi.clearAllMocks();
 26	  });
-27
+27	
 28	  function makeBalanceQuery() {
 29	    return {
 30	      name: 'balance-query-test' as const,
 31	      query: q('transactions'),
 32	    };
 33	  }
-34
+34	
 35	  test('shows "All reconciled!" when target matches cleared', async () => {
 36	    vi.mocked(useSheetValue).mockReturnValue(5000);
-37
+37	
 38	    const onDone = vi.fn();
 39	    const onCreateTransaction = vi.fn();
-40
+40	
 41	    render(
 42	      <TestProviders>
 43	        <ReconcilingMessage
@@ -1569,23 +1543,23 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 48	        />
 49	      </TestProviders>,
 50	    );
-51
+51	
 52	    expect(screen.getByText('All reconciled!')).toBeInTheDocument();
 53	    // No reconciliation transaction button when diff is zero
 54	    expect(
 55	      screen.queryByText('Create reconciliation transaction'),
 56	    ).not.toBeInTheDocument();
-57
+57	
 58	    // Done button triggers callback
 59	    await userEvent.click(screen.getByText('Lock transactions'));
 60	    expect(onDone).toHaveBeenCalledTimes(1);
 61	  });
-62
+62	
 63	  test('computes positive difference and passes correct amount', async () => {
 64	    // cleared = 30.00, bank = 100.00 => diff = +70.00
 65	    vi.mocked(useSheetValue).mockReturnValue(3000);
 66	    const onCreateTransaction = vi.fn();
-67
+67	
 68	    render(
 69	      <TestProviders>
 70	        <ReconcilingMessage
@@ -1596,24 +1570,24 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 75	        />
 76	      </TestProviders>,
 77	    );
-78
+78	
 79	    // Formatted amounts present
 80	    expect(screen.getByText('30.00')).toBeInTheDocument();
 81	    expect(screen.getByText('100.00')).toBeInTheDocument();
 82	    // Positive diff shows plus sign
 83	    expect(screen.getByText('+70.00')).toBeInTheDocument();
-84
+84	
 85	    await userEvent.click(
 86	      screen.getByText('Create reconciliation transaction'),
 87	    );
 88	    expect(onCreateTransaction).toHaveBeenCalledWith(7000);
 89	  });
-90
+90	
 91	  test('computes negative difference and passes correct amount', async () => {
 92	    // cleared = 120.00, bank = 100.00 => diff = -20.00
 93	    vi.mocked(useSheetValue).mockReturnValue(12000);
 94	    const onCreateTransaction = vi.fn();
-95
+95	
 96	    render(
 97	      <TestProviders>
 98	        <ReconcilingMessage
@@ -1624,34 +1598,34 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 103	        />
 104	      </TestProviders>,
 105	    );
-106
+106	
 107	    expect(screen.getByText('120.00')).toBeInTheDocument();
 108	    expect(screen.getByText('100.00')).toBeInTheDocument();
 109	    expect(screen.getByText('-20.00')).toBeInTheDocument();
-110
+110	
 111	    await userEvent.click(
 112	      screen.getByText('Create reconciliation transaction'),
 113	    );
 114	    expect(onCreateTransaction).toHaveBeenCalledWith(-2000);
 115	  });
 116	});
-117
+117	
 118	describe('ReconcileMenu arithmetic evaluation', () => {
 119	  // useSheetValue is mocked above via relative path
-120
+120	
 121	  beforeEach(() => {
 122	    vi.clearAllMocks();
 123	  });
-124
+124	
 125	  // Create a valid offline account entity
 126	  const baseAccount: AccountEntity = generateAccount('Checking', false, false);
-127
+127	
 128	  test('defaults input to cleared balance and submits evaluated integer amount', async () => {
 129	    // clearedBalance = 123.45
 130	    vi.mocked(useSheetValue).mockReturnValue(12345);
 131	    const onReconcile = vi.fn();
 132	    const onClose = vi.fn();
-133
+133	
 134	    render(
 135	      <TestProviders>
 136	        <ReconcileMenu
@@ -1661,26 +1635,26 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 140	        />
 141	      </TestProviders>,
 142	    );
-143
+143	
 144	    const input = screen.getByRole('textbox');
 145	    // Replace with arithmetic expression
 146	    await userEvent.clear(input);
 147	    await userEvent.type(input, '100+25.50-10');
-148
+148	
 149	    // Submit
 150	    await userEvent.click(screen.getByRole('button', { name: 'Reconcile' }));
-151
+151	
 152	    // 100 + 25.50 - 10 = 115.50 -> 11550 integer
 153	    expect(onReconcile).toHaveBeenCalledWith(11550);
 154	    expect(onClose).toHaveBeenCalledTimes(1);
 155	  });
-156
+156	
 157	  test('defaults input to cleared balance and submits evaluated invalid amount & use cleared balance', async () => {
 158	    // clearedBalance = 1234.56
 159	    vi.mocked(useSheetValue).mockReturnValue(123456);
 160	    const onReconcile = vi.fn();
 161	    const onClose = vi.fn();
-162
+162	
 163	    render(
 164	      <TestProviders>
 165	        <ReconcileMenu
@@ -1690,27 +1664,27 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 169	        />
 170	      </TestProviders>,
 171	    );
-172
+172	
 173	    const input = screen.getByRole('textbox');
 174	    // Replace with arithmetic expression
 175	    await userEvent.clear(input);
 176	    await userEvent.type(input, 'abcd');
-177
+177	
 178	    // Submit
 179	    await userEvent.click(screen.getByRole('button', { name: 'Reconcile' }));
-180
+180	
 181	    // Input has no digits, so it should use cleared balance for reconciliation
 182	    expect(onReconcile).toHaveBeenCalledWith(123456);
 183	    expect(onClose).toHaveBeenCalledTimes(1);
 184	  });
-185
+185	
 186	  test('clicking "Use last synced total" fills and submits that amount', async () => {
 187	    // clearedBalance present so input renders
 188	    vi.mocked(useSheetValue).mockReturnValue(1000);
-189
+189	
 190	    const onReconcile = vi.fn();
 191	    const onClose = vi.fn();
-192
+192	
 193	    // Ensure the account is the connected variant so balance_current is a number
 194	    const connectedAccount = generateAccount(
 195	      'Checking',
@@ -1718,7 +1692,7 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 197	      false,
 198	    ) as AccountEntity;
 199	    connectedAccount.balance_current = 4321;
-200
+200	
 201	    render(
 202	      <TestProviders>
 203	        <ReconcileMenu
@@ -1728,18 +1702,18 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 207	        />
 208	      </TestProviders>,
 209	    );
-210
+210	
 211	    // Fill from last synced value (43.21)
 212	    await userEvent.click(screen.getByText('Use last synced total'));
-213
+213	
 214	    await userEvent.click(screen.getByRole('button', { name: 'Reconcile' }));
 215	    expect(onReconcile).toHaveBeenCalledWith(4321);
 216	    expect(onClose).toHaveBeenCalledTimes(1);
 217	  });
-218
+218	
 219	  test('submitting with empty input does not reconcile', async () => {
 220	    vi.mocked(useSheetValue).mockReturnValue(2222);
-221
+221	
 222	    const onReconcile = vi.fn();
 223	    const onClose = vi.fn();
 224	    render(
@@ -1751,19 +1725,19 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 230	        />
 231	      </TestProviders>,
 232	    );
-233
+233	
 234	    const input = screen.getByRole('textbox');
 235	    await userEvent.clear(input);
-236
+236	
 237	    await userEvent.click(screen.getByRole('button', { name: 'Reconcile' }));
 238	    expect(onReconcile).not.toHaveBeenCalled();
 239	    expect(onClose).not.toHaveBeenCalled();
 240	  });
-241
+241	
 242	  test('when cleared balance is not available, submits null', async () => {
 243	    // No cleared balance -> input is not rendered
 244	    vi.mocked(useSheetValue).mockReturnValue(null);
-245
+245	
 246	    const onReconcile = vi.fn();
 247	    const onClose = vi.fn();
 248	    render(
@@ -1775,7 +1749,7 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 254	        />
 255	      </TestProviders>,
 256	    );
-257
+257	
 258	    await userEvent.click(screen.getByRole('button', { name: 'Reconcile' }));
 259	    expect(onReconcile).toHaveBeenCalledWith(null);
 260	    expect(onClose).toHaveBeenCalledTimes(1);
@@ -1783,7 +1757,6 @@ _**Agent (claude-opus-5 2026-09-12 16:37:19Z)**_
 262	});
 263
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:23Z)**_
@@ -1813,7 +1786,6 @@ Find vitest configs and test scripts
   "typecheck": "tsgo -b && tsc-strict"
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:27Z)**_
@@ -1934,7 +1906,6 @@ Show desktop-client import aliases
   "#util/*": "./src/util/*.ts"
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:32Z)**_
@@ -1947,12 +1918,12 @@ _**Agent (claude-opus-5 2026-09-12 16:37:32Z)**_
 1	import React from 'react';
 2	import type { ReactNode } from 'react';
 3	import { Provider } from 'react-redux';
-4
+4	
 5	import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-6
+6	
 7	import { configureAppStore } from './redux/store';
 8	import type { AppStore } from './redux/store';
-9
+9	
 10	export function createTestQueryClient() {
 11	  return new QueryClient({
 12	    defaultOptions: {
@@ -1962,29 +1933,29 @@ _**Agent (claude-opus-5 2026-09-12 16:37:32Z)**_
 16	    },
 17	  });
 18	}
-19
+19	
 20	export function configureTestAppStore(
 21	  ...args: Parameters<typeof configureAppStore>
 22	) {
 23	  return configureAppStore(...args);
 24	}
-25
+25	
 26	let testQueryClient = createTestQueryClient();
 27	let testStore = configureTestAppStore({
 28	  queryClient: testQueryClient,
 29	});
-30
+30	
 31	export function resetTestProviders() {
 32	  testQueryClient = createTestQueryClient();
 33	  testStore = configureTestAppStore({ queryClient: testQueryClient });
 34	}
-35
+35	
 36	export function createTestAppStore() {
 37	  return configureAppStore({
 38	    queryClient: testQueryClient,
 39	  });
 40	}
-41
+41	
 42	export function TestProviders({
 43	  children,
 44	  queryClient,
@@ -2002,7 +1973,6 @@ _**Agent (claude-opus-5 2026-09-12 16:37:32Z)**_
 56	}
 57
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:36Z)**_
@@ -2016,7 +1986,6 @@ Find tests that use a test store
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:44Z)**_
@@ -2027,7 +1996,7 @@ _**Agent (claude-opus-5 2026-09-12 16:37:44Z)**_
 
 ```text
 1	import { defineConfig } from 'vitest/config';
-2
+2	
 3	export default defineConfig({
 4	  test: {
 5	    projects: [
@@ -2047,7 +2016,6 @@ _**Agent (claude-opus-5 2026-09-12 16:37:44Z)**_
 19	});
 20
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:48Z)**_
@@ -2069,7 +2037,6 @@ packages/loot-core/vitest.web.config.ts
 packages/sync-server/vitest.config.ts
 === setup files ===
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:52Z)**_
@@ -2108,7 +2075,6 @@ Show desktop-client vite test config
 423-  };
 424-});
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:37:55Z)**_
@@ -2120,47 +2086,46 @@ _**Agent (claude-opus-5 2026-09-12 16:37:55Z)**_
 ```text
 1	import '@testing-library/jest-dom';
 2	import type { ReactNode } from 'react';
-3
+3	
 4	import { resetTestProviders } from './mocks';
-5
+5	
 6	global.IS_TESTING = true;
 7	global.Actual = {} as typeof global.Actual;
-8
+8	
 9	type Size = { height: number; width: number };
-10
+10	
 11	type AutoSizerProps = {
 12	  renderProp?: (size: Size) => ReactNode;
 13	  children?: (size: Size) => ReactNode;
 14	};
-15
+15	
 16	vi.mock('react-virtualized-auto-sizer', () => {
 17	  const AutoSizer = (props: AutoSizerProps) => {
 18	    const render = props.renderProp ?? props.children;
 19	    return render ? render({ height: 1000, width: 600 }) : null;
 20	  };
-21
+21	
 22	  return {
 23	    AutoSizer,
 24	    default: AutoSizer,
 25	  };
 26	});
-27
+27	
 28	global.Date.now = () => 123456789;
-29
+29	
 30	global.__resetWorld = () => {
 31	  resetTestProviders();
 32	};
-33
+33	
 34	process.on('unhandledRejection', (reason: unknown) => {
 35	  console.error('REJECTION', reason);
 36	});
-37
+37	
 38	afterEach(() => {
 39	  global.__resetWorld();
 40	});
 41
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:38:54Z)**_
@@ -2337,12 +2302,12 @@ describe('Notes length notifications', () => {
     expect(notifications()[0].id).toBe('notes-length-near');
   });
 });
+
 ```
 
 ```text
 File created successfully at: C:\Actual Budget\packages\desktop-client\src\components\Notes.test.tsx (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:39:19Z)**_
@@ -2356,7 +2321,6 @@ Run the new Notes tests
 ```text
 Command running in background with ID: bwbk9not3. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\bwbk9not3.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:39:20Z)**_
@@ -2385,7 +2349,6 @@ No-op placeholder
 ```text
 waiting
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:39:26Z)**_
@@ -2413,21 +2376,20 @@ _**Agent (claude-opus-5 2026-09-12 16:40:10Z)**_
  `C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\bwbk9not3.output`
 
 ```text
-1
+1	
 2	 RUN  v4.1.8 C:/Actual Budget/packages/desktop-client
-3
+3	
 4	 ✓ src/components/Notes.test.tsx (11 tests) 315ms
-5
+5	
 6	 Test Files  1 passed (1)
 7	      Tests  11 passed (11)
 8	   Start at  12:39:25
 9	   Duration  42.44s (transform 1.90s, setup 7.10s, import 7.92s, tests 315ms, environment 25.88s)
-10
-11
+10	
+11	
 12	[exited with code 0]
 13
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:40:20Z)**_
@@ -2446,7 +2408,6 @@ Back up Notes.tsx to scratchpad before mutation check
 backed up
 Notes.tsx.bak
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:40:33Z)**_
@@ -2457,7 +2418,6 @@ _**Agent (claude-opus-5 2026-09-12 16:40:33Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\Notes.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:40:37Z)**_
@@ -2471,7 +2431,6 @@ Run tests with maxLength removed
 ```text
 Command running in background with ID: b26w3co4l. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\b26w3co4l.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:40:39Z)**_
@@ -2515,11 +2474,10 @@ _**Agent (claude-opus-5 2026-09-12 16:41:16Z)**_
 14	 FAIL  src/components/Notes.test.tsx > Notes length enforcement > stops accepting typed input at the maximum length
 15	 Test Files  1 failed (1)
 16	      Tests  2 failed | 9 passed (11)
-17
+17	
 18	[exited with code 0]
 19
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:41:24Z)**_
@@ -2534,7 +2492,6 @@ _**Agent (claude-opus-5 2026-09-12 16:41:29Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\Notes.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:41:34Z)**_
@@ -2548,7 +2505,6 @@ Confirm Notes.tsx matches pre-mutation backup
 ```text
 RESTORED-IDENTICAL
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:41:36Z)**_
@@ -2563,7 +2519,6 @@ _**Agent (claude-opus-5 2026-09-12 16:41:40Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\Notes.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:41:45Z)**_
@@ -2577,7 +2532,6 @@ Run tests with threshold changed to 1750
 ```text
 Command running in background with ID: btetmxvc0. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\btetmxvc0.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:41:48Z)**_
@@ -2618,11 +2572,10 @@ _**Agent (claude-opus-5 2026-09-12 16:42:24Z)**_
 11	     × warns again after the previous warning is dismissed 12ms
 12	 Test Files  1 failed (1)
 13	      Tests  4 failed | 7 passed (11)
-14
+14	
 15	[exited with code 0]
 16
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:42:25Z)**_
@@ -2637,7 +2590,6 @@ _**Agent (claude-opus-5 2026-09-12 16:42:31Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\Notes.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:42:35Z)**_
@@ -2653,7 +2605,6 @@ RESTORED-IDENTICAL
  M packages/desktop-client/src/components/Notes.tsx
 ?? packages/desktop-client/src/components/Notes.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:42:37Z)**_
@@ -2671,7 +2622,6 @@ Run tests, lint, and typecheck
 ```text
 Command running in background with ID: b77hr37gb. Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\b77hr37gb.output. You will be notified when it completes. To check interim output, use Read on that file path.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:42:42Z)**_
@@ -2699,16 +2649,16 @@ _**Agent (claude-opus-5 2026-09-12 16:44:36Z)**_
  `C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\e72f47e5-4c20-4a47-951b-7f1c3c5030b1\tasks\b77hr37gb.output`
 
 ```text
-1
+1	
 2	 RUN  v4.1.8 C:/Actual Budget/packages/desktop-client
-3
+3	
 4	 ✓ src/components/Notes.test.tsx (11 tests) 322ms
-5
+5	
 6	 Test Files  1 passed (1)
 7	      Tests  11 passed (11)
 8	   Start at  12:42:44
 9	   Duration  32.61s (transform 4.04s, setup 28.67s, import 1.74s, tests 322ms, environment 1.57s)
-10
+10	
 11	=== LINT ===
 12	upcoming-release-notes/mobile-app-foundations.md (9ms)
 13	upcoming-release-notes/nynab-export-docs.md (8ms)
@@ -2722,7 +2672,7 @@ _**Agent (claude-opus-5 2026-09-12 16:44:36Z)**_
 21	upcoming-release-notes/wip-ai-add-performance-indexes-for-transactions-table.md (78ms)
 22	upcoming-release-notes/wip-chore-api-migrate-node-version-validation-to-typescript.md (10ms)
 23	yarn.config.cjs (2ms)
-24
+24	
 25	Format issues found in above 418 files. Run without `--check` to fix.
 26	Finished in 4801ms on 2298 files using 16 threads.
 27	=== TYPECHECK ===
@@ -2731,7 +2681,7 @@ _**Agent (claude-opus-5 2026-09-12 16:44:36Z)**_
 30	desktop-electron typecheck … queued
 31	desktop-electron typecheck ➔ start
 32	desktop-electron typecheck ✓ done - 6.94s
-33
+33	
 34	Summary
 35	┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 36	@actual-app/web typecheck success, took 42.48s, queued for 0.00s
@@ -2740,12 +2690,11 @@ _**Agent (claude-opus-5 2026-09-12 16:44:36Z)**_
 39	success: 3, skipped: 7, pending: 0, aborted: 0, failed: 0
 40	worker restarts: 0, max worker memory usage: 35.60 MB
 41	┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
-42	Took a total of 1m 5.81s to complete.
-43
+42	Took a total of 1m 5.81s to complete. 
+43	
 44	[exited with code 0]
 45
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:44:42Z)**_
@@ -2767,7 +2716,6 @@ All matched files use the correct format.
 Finished in 292ms on 2 files using 16 threads.
 exit:0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:45:05Z)**_
@@ -2785,7 +2733,6 @@ Run oxlint on the two changed files
 ```text
 packages/desktop-client/src/components/Notes.tsx:108:5: warning jsx-a11y(control-has-associated-label): A control must be associated with a text label. help: Add a text label to the control element. This can be done by adding text content, an `aria-label` attribute, or an `aria-labelledby` attribute.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:45:30Z)**_
@@ -2799,7 +2746,6 @@ Lint the pre-change version of Notes.tsx
 ```text
 C:/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/e72f47e5-4c20-4a47-951b-7f1c3c5030b1/scratchpad/NotesHead.tsx:56:5: warning jsx-a11y(control-has-associated-label): A control must be associated with a text label. help: Add a text label to the control element. This can be done by adding text content, an `aria-label` attribute, or an `aria-labelledby` attribute.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:45:45Z)**_
@@ -2817,7 +2763,6 @@ Added **[Notes.test.tsx](packages/desktop-client/src/components/Notes.test.tsx)*
 One deviation from existing tests worth flagging: no current test reads Redux state, so I used `createTestAppStore()` and passed it via `TestProviders`' existing `store` prop, then asserted on `store.getState().notifications.notifications`. Assertions key off notification `id`/`type` rather than message text, so they don't depend on i18n interpolation being initialized in jsdom.
 
 **Verification** — rather than trusting a green run, I mutation-tested both halves:
-
 - Removing `maxLength` → the 2 enforcement tests fail, other 9 pass.
 - Changing the threshold 1700 → 1750 → 4 notification tests fail, other 7 pass.
 - Source restored and confirmed byte-identical to the pre-mutation backup via `diff`.
@@ -2878,6 +2823,7 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
+
 ---
 
 _**Agent (claude-opus-5 2026-09-12 16:47:35Z)**_
@@ -2888,23 +2834,23 @@ _**Agent (claude-opus-5 2026-09-12 16:47:35Z)**_
 
 ```text
 1	# PR and Commit Rules for AI Agents
-2
+2	
 3	This file lists the PR and commit rules you have to apply yourself.
-4
+4	
 5	## Pull Request Rules
-6
+6	
 7	### `[AI]` prefix on PR titles
-8
+8	
 9	**ALL pull request titles MUST be prefixed with `[AI]`** — you have to apply it
 10	yourself.
-11
+11	
 12	**Examples:**
-13
+13	
 14	- `[AI] Fix type error in account validation`
 15	- `Fix type error in account validation` (MISSING PREFIX — NOT ALLOWED)
-16
+16	
 17	### Do not fill in the PR template
-18
+18	
 19	- **NEVER fill in the PR template** (`.github/PULL_REQUEST_TEMPLATE.md`). Create
 20	  the PR with that template as the body, unmodified — leave all blank spaces and
 21	  placeholder comments as-is, and leave every checklist box unchecked. The human
@@ -2912,23 +2858,22 @@ _**Agent (claude-opus-5 2026-09-12 16:47:35Z)**_
 23	  Checklist sections.
 24	- **Exception**: if a human **explicitly asks** you to fill it out, do so **in
 25	  Chinese**, using Chinese characters (简体中文) for all content you add.
-26
+26	
 27	## GitHub comment, review and issue prefix
-28
+28	
 29	**Prefix everything you post to GitHub with the robot emoji 🤖** — pull-request
 30	and issue comments, pull-request reviews (including inline review comments), and
 31	the title and body of issues you create. This keeps agent-authored content
 32	visibly marked. It does **not** change PR titles (still `[AI] …`) or commit
 33	messages (still `[AI] …`).
-34
+34	
 35	Write the text normally; just make sure 🤖 is the first character (for issues,
 36	on both the title and the body).
-37
+37	
 38	This applies only to comments **you** author — bots like CodeRabbit post under
 39	their own identity and are not affected.
 40
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:47:37Z)**_
@@ -2956,7 +2901,6 @@ b228611bc [AI] Add sprint0 standards doc and AI usage logs
 eb9278d0c Updated student.md with references
 e8468123d test commit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:47:44Z)**_
@@ -2981,7 +2925,6 @@ b228611bc [AI] Add sprint0 standards doc and AI usage logs
 === is branch merged into origin/master? ===
   origin/fix/issue-25-calendar-hover-effect
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:48:11Z)**_
@@ -3002,7 +2945,6 @@ Saved working directory and index state On fix/issue-25-calendar-hover-effect: n
 stash@{0}: On fix/issue-25-calendar-hover-effect: notes character limit work
 === status after stash ===
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:48:17Z)**_
@@ -3031,7 +2973,6 @@ Dropped refs/stash@{0} (b401fdb3f80d26bdb0c3fc7a9da889f55135c78a)
 ?? .specstory/
 ?? packages/desktop-client/src/components/Notes.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:48:26Z)**_
@@ -3051,7 +2992,6 @@ NOTES-TSX-INTACT
 packages/desktop-client/src/components/Notes.test.tsx
 TEST-FILE-PRESENT
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:48:30Z)**_
@@ -3103,6 +3043,7 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
+
 ---
 
 _**Agent (claude-opus-5 2026-09-12 16:48:37Z)**_
@@ -3116,7 +3057,6 @@ Get GitHub username and sample release note format
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: 'git config' changes are forbidden.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:48:39Z)**_
@@ -3150,7 +3090,6 @@ authors: [matt-fidd]
 
 Support clicking on category groups in reports to see the filtered transactions
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:48:52Z)**_
@@ -3169,12 +3108,12 @@ authors: [bennettmatuszewski]
 ---
 
 Limit notes to 1800 characters and show a warning as you approach the limit
+
 ```
 
 ```text
 File created successfully at: C:\Actual Budget\upcoming-release-notes\notes-character-limit.md (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:48:57Z)**_
@@ -3202,7 +3141,6 @@ A  upcoming-release-notes/notes-character-limit.md
  upcoming-release-notes/notes-character-limit.md    |   6 +
  3 files changed, 224 insertions(+), 1 deletion(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:49:08Z)**_
@@ -3237,7 +3175,6 @@ EOF
  create mode 100644 packages/desktop-client/src/components/Notes.test.tsx
  create mode 100644 upcoming-release-notes/notes-character-limit.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:49:20Z)**_
@@ -3255,18 +3192,17 @@ Push new branch explicitly to origin
 ```text
 origin/master
 --- pushing to explicit branch ---
-remote:
-remote: Create a pull request for 'feat/notes-character-limit' on GitHub by visiting:
-remote:      https://github.com/CSCI-435-SE/actual-budget/pull/new/feat/notes-character-limit
-remote:
-remote: GitHub found 73 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 31 moderate, 6 low). To find out more, visit:
-remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot
-remote:
+remote: 
+remote: Create a pull request for 'feat/notes-character-limit' on GitHub by visiting:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/pull/new/feat/notes-character-limit        
+remote: 
+remote: GitHub found 73 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 31 moderate, 6 low). To find out more, visit:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
+remote: 
 branch 'feat/notes-character-limit' set up to track 'origin/feat/notes-character-limit'.
 To https://github.com/CSCI-435-SE/actual-budget.git
  * [new branch]          feat/notes-character-limit -> feat/notes-character-limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:49:34Z)**_
@@ -3281,31 +3217,30 @@ _**Agent (claude-opus-5 2026-09-12 16:49:35Z)**_
 
 ```text
 1	<!-- Thank you for submitting a pull request! Make sure to follow the instructions to write release notes for your PR — it should only take a minute or two: https://actualbudget.org/docs/contributing/#writing-good-release-notes. Try running yarn generate:release-notes *before* pushing your PR for an interactive experience. -->
-2
+2	
 3	## Description
-4
+4	
 5	<!-- What does this PR do? Why is it needed? Please give context on the "why?": why do we need this change? What problem is it solving for you?-->
-6
+6	
 7	<!-- If AI tools wrote a significant part of this change, please disclose it here and name the tool you used. See https://actualbudget.org/docs/contributing/ai-usage-policy -->
-8
+8	
 9	## Related issue(s)
-10
+10	
 11	<!-- e.g. Fixes #123, Relates to #456 -->
-12
+12	
 13	## Testing
-14
+14	
 15	<!-- What did you test? How can we reproduce the issue you are fixing or how can we test the feature you built? -->
-16
+16	
 17	## Checklist
-18
+18	
 19	- [ ] Release notes added (see link above)
 20	- [ ] No obvious regressions in affected areas
 21	- [ ] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
-22
+22	
 23	<!--- actual-bot-sections --->
 24
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:49:41Z)**_
@@ -3323,7 +3258,6 @@ Check if repo is a fork and its default branch
 ```text
 {"defaultBranchRef":{"name":"master"},"isFork":false,"parent":null}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:49:50Z)**_
@@ -3365,7 +3299,6 @@ Build PR body from unmodified template plus attribution
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:49:55Z)**_
@@ -3383,7 +3316,6 @@ Create the pull request
 ```text
 https://github.com/CSCI-435-SE/actual-budget/pull/33
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:50:08Z)**_
@@ -3401,7 +3333,6 @@ packages/desktop-client/src/components/Notes.test.tsx
 packages/desktop-client/src/components/Notes.tsx
 upcoming-release-notes/notes-character-limit.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:50:23Z)**_
@@ -3411,7 +3342,6 @@ Done. PR is open: **https://github.com/CSCI-435-SE/actual-budget/pull/33**
 **What I did differently than a straight commit:** the working branch was `fix/issue-25-calendar-hover-effect`, which had 3 unmerged commits about calendar hover and sprint0 docs. Committing there would have bundled unrelated work into the PR, so I stashed (with `-u` to catch the untracked test file), cut `feat/notes-character-limit` from `origin/master`, and restored the work there. The old branch is untouched.
 
 **Conventions applied:**
-
 - `[AI]` prefix on both the commit message and the PR title — verified on the live PR.
 - PR body is the template **verbatim**, all boxes unchecked and placeholder comments intact, per `.github/agents/pr-and-commit-rules.md`. The Description/Testing/Checklist sections are yours to fill in as the human who tested it.
 - Added `upcoming-release-notes/notes-character-limit.md` (category `Enhancements`, one plain-language sentence, command form) per the release-notes skill.
@@ -3451,7 +3381,6 @@ feat/notes-character-limit
 === PR head before ===
 {"head":"feat/notes-character-limit","state":"OPEN"}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:52:34Z)**_
@@ -3465,7 +3394,6 @@ Rename remote branch via GitHub API
 ```text
 issue-10-notes-character-limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:52:37Z)**_
@@ -3486,7 +3414,6 @@ From https://github.com/CSCI-435-SE/actual-budget
  * [new branch]          issue-10-notes-character-limit -> origin/issue-10-notes-character-limit
 branch 'issue-10-notes-character-limit' set up to track 'origin/issue-10-notes-character-limit'.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:52:49Z)**_
@@ -3510,7 +3437,6 @@ packages/desktop-client/src/components/Notes.test.tsx
 packages/desktop-client/src/components/Notes.tsx
 upcoming-release-notes/notes-character-limit.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:52:55Z)**_
@@ -3533,7 +3459,6 @@ Re-check PR state and remote branches
 === remote branches matching ===
 fd2a38f34d6da13fa6bffb2900cece46d2e50d8b	refs/heads/issue-10-notes-character-limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:53:08Z)**_
@@ -3551,7 +3476,6 @@ Attempt to reopen PR 33
 ```text
 API call failed: GraphQL: Could not open the pull request. (reopenPullRequest)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:53:16Z)**_
@@ -3570,7 +3494,6 @@ Create new PR from renamed branch
 C:/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/e72f47e5-4c20-4a47-951b-7f1c3c5030b1/scratchpad/pr-body.md
 https://github.com/CSCI-435-SE/actual-budget/pull/34
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:53:31Z)**_
@@ -3590,7 +3513,6 @@ upcoming-release-notes/notes-character-limit.md
 === commits ===
 [AI] Limit notes to 1800 characters with a warning near the limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-12 16:53:48Z)**_
@@ -3600,12 +3522,10 @@ Branch renamed and PR is live again: **https://github.com/CSCI-435-SE/actual-bud
 **I have to flag a misstep.** I used GitHub's branch-rename API expecting it to retarget the open PR. It didn't — it **closed PR #33** instead. The code was never at risk (the commit `fd2a38f34` was intact on the renamed branch throughout), but #33 couldn't be reopened since its head ref no longer existed, so the PR had to be recreated as **#34**. Net effect: the PR number changed, and #33 is sitting closed. Had I known, I'd have pushed the new branch name first and deleted the old ref after — which would have kept the original PR.
 
 **Current state, verified:**
-
 - Local branch `issue-10-notes-character-limit`, tracking `origin/issue-10-notes-character-limit`, 0 ahead / 0 behind.
 - Old `feat/notes-character-limit` ref gone locally and remotely.
 - PR #34: open, base `master`, `[AI]` title prefix intact, template body unmodified, same 3 files, single commit.
 
 **Two things for you:**
-
 1. **PR #33 is closed and unlinked.** Want me to drop a 🤖-prefixed comment on it pointing at #34? I didn't post unprompted since commenting is visible to your classmates.
 2. **Branch naming.** I used exactly the name you gave. Note the sibling PR #32 uses `feat/issue-9-limit-budget-category-name-length` — with a `feat/` prefix. If your team's convention wants that prefix, say so and I'll redo the rename properly this time (push new ref, retarget, then delete old).

@@ -29,7 +29,6 @@ Locate Notes.tsx
 ```text
 c:/Actual Budget/packages/desktop-client/src/components/Notes.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:36:38Z)**_
@@ -44,7 +43,7 @@ Read Notes.tsx
      1	import React, { useEffect, useRef } from 'react';
      2	import { useTranslation } from 'react-i18next';
      3	import ReactMarkdown from 'react-markdown';
-     4
+     4	
      5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
      6	import type { CSSProperties } from '@actual-app/components/styles';
      7	import { Text } from '@actual-app/components/text';
@@ -52,7 +51,7 @@ Read Notes.tsx
      9	import { css } from '@emotion/css';
     10	import rehypeExternalLinks from 'rehype-external-links';
     11	import remarkGfm from 'remark-gfm';
-    12
+    12	
     13	import { addNotification } from '#notifications/notificationsSlice';
     14	import { useDispatch } from '#redux';
     15	import {
@@ -60,15 +59,15 @@ Read Notes.tsx
     17	  remarkBreaks,
     18	  sequentialNewlinesPlugin,
     19	} from '#util/markdown';
-    20
+    20	
     21	const remarkPlugins = [sequentialNewlinesPlugin, remarkGfm, remarkBreaks];
-    22
+    22	
     23	export const MAX_NOTES_LENGTH = 1800;
     24	const NOTES_LENGTH_WARNING_THRESHOLD = 1700;
-    25
+    25	
     26	const NOTES_LENGTH_LEVELS = ['none', 'near', 'limit'] as const;
     27	type NotesLengthLevel = (typeof NOTES_LENGTH_LEVELS)[number];
-    28
+    28	
     29	function getNotesLengthLevel(length: number): NotesLengthLevel {
     30	  if (length >= MAX_NOTES_LENGTH) {
     31	    return 'limit';
@@ -78,13 +77,13 @@ Read Notes.tsx
     35	  }
     36	  return 'none';
     37	}
-    38
+    38	
     39	const markdownStyles = css(markdownBaseStyles, {
     40	  display: 'block',
     41	  maxWidth: 350,
     42	  padding: 8,
     43	});
-    44
+    44	
     45	type NotesProps = {
     46	  notes: string;
     47	  editable?: boolean;
@@ -93,7 +92,7 @@ Read Notes.tsx
     50	  onBlur?: (value: string) => void;
     51	  getStyle?: (editable: boolean) => CSSProperties;
     52	};
-    53
+    53	
     54	export function Notes({
     55	  notes,
     56	  editable,
@@ -105,21 +104,21 @@ Read Notes.tsx
     62	  const { isNarrowWidth } = useResponsive();
     63	  const { t } = useTranslation();
     64	  const dispatch = useDispatch();
-    65
+    65	
     66	  const textAreaRef = useRef<HTMLTextAreaElement>(null);
     67	  const notifiedLevelRef = useRef<NotesLengthLevel>('none');
-    68
+    68	
     69	  useEffect(() => {
     70	    if (focused && editable) {
     71	      textAreaRef.current?.focus();
     72	    }
     73	  }, [focused, editable]);
-    74
+    74	
     75	  function handleChange(value: string) {
     76	    const level = getNotesLengthLevel(value.length);
     77	    const previousLevel = notifiedLevelRef.current;
     78	    notifiedLevelRef.current = level;
-    79
+    79	
     80	    // Only notify when crossing upwards, so deleting text never re-warns.
     81	    if (
     82	      NOTES_LENGTH_LEVELS.indexOf(level) >
@@ -143,10 +142,10 @@ Read Notes.tsx
    100	        }),
    101	      );
    102	    }
-   103
+   103	
    104	    onChange?.(value);
    105	  }
-   106
+   106	
    107	  return editable ? (
    108	    <textarea
    109	      ref={textAreaRef}
@@ -182,7 +181,6 @@ Read Notes.tsx
    139	  );
    140	}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:36:41Z)**_
@@ -196,7 +194,6 @@ Check notification id handling
 ```text
 grep: packages/loot-core/src/client/notifications/notificationsSlice.ts: No such file or directory
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:36:52Z)**_
@@ -221,7 +218,6 @@ packages/desktop-client/src/notifications/notificationsSlice.ts
 72:        id: uuidv4(),
 86:        notif => notif.id !== action.payload.id,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:37:02Z)**_
@@ -274,7 +270,6 @@ sed -n '80,102p' packages/desktop-client/src/components/Notes.tsx
           },
         }),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:37:03Z)**_
@@ -311,7 +306,6 @@ yarn.config.cjs (26ms)
 Format issues found in above 423 files. Run without `--check` to fix.
 Finished in 5369ms on 2300 files using 16 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:37:31Z)**_
@@ -327,7 +321,6 @@ Check diff stat and lint output for Notes.tsx
  packages/desktop-client/src/components/Notes.tsx   |    4 +-
  2 files changed, 3 insertions(+), 3532 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:39:23Z)**_
@@ -365,7 +358,6 @@ worker restarts: 0, max worker memory usage: 56.14 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 27.57s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:39:29Z)**_
@@ -425,6 +417,7 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
+
 ---
 
 _**Agent (claude-opus-5 2026-09-13 15:43:42Z)**_
@@ -476,7 +469,6 @@ on both the title and the body).
 This applies only to comments **you** author — bots like CodeRabbit post under
 their own identity and are not affected.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:43:45Z)**_
@@ -497,7 +489,6 @@ D  .gitignore
 issue-10-notes-character-limit
 origin/issue-10-notes-character-limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:43:57Z)**_
@@ -521,13 +512,13 @@ Inspect staged changes and gitignore difference
 < !actual-server.js
 < **/xcuserdata/*
 < export-2020-01-10.csv
-<
+< 
 < # MacOS
 < .DS_Store
-<
+< 
 < # Logs
 < **/*.log
-<
+< 
 < # JavaScript
 < node_modules
 < packages/api/app/bundle.api.js
@@ -562,10 +553,10 @@ Inspect staged changes and gitignore difference
 < bundle.desktop.js.map
 < bundle.mobile.js
 < bundle.mobile.js.map
-<
+< 
 < # Python virtualenv (Electron CI provisions one at the repo root for setuptools)
 < .venv/
-<
+< 
 < # Yarn
 < .pnp.*
 < .yarn/*
@@ -574,52 +565,52 @@ Inspect staged changes and gitignore difference
 < !.yarn/releases
 < !.yarn/sdks
 < !.yarn/versions
-<
+< 
 < # VSCode
 < .vscode/*
 < !.vscode/settings.default.json
 < !.vscode/extensions.json
-<
+< 
 < # IntelliJ IDEA
 < .idea
-<
+< 
 < # Claude Code
 < .claude/worktrees/*
 < .claude/settings.local.json
-<
+< 
 < # Misc
 < .#*
-<
+< 
 < # Local Netlify folder
 < .netlify
-<
+< 
 < # Personal devcontainer config
 < .devcontainer/*.local
-<
+< 
 < # build output
 < package.tgz
-<
+< 
 < # Fly.io configuration
 < fly.toml
-<
+< 
 < # TypeScript cache
 < build/
-<
+< 
 < # .d.ts files aren't type-checked with skipLibCheck set to true
 < *.d.ts
 < # ...except hand-written ambient declarations that must be committed
 < !packages/api/virtual-modules.d.ts
 < !packages/loot-core/default-filesystem.d.ts
-<
+< 
 < # Lage cache
 < .lage/
-<
+< 
 < # Test results (JUnit XML reports, Playwright artifacts)
 < **/test-results/
-<
+< 
 < *storybook.log
 < storybook-static
-<
+< 
 < # cli config when testing locally
 < .actualrc.json
 < .actualrc
@@ -635,13 +626,13 @@ Inspect staged changes and gitignore difference
 > !actual-server.js
 > **/xcuserdata/*
 > export-2020-01-10.csv
->
+> 
 > # MacOS
 > .DS_Store
->
+> 
 > # Logs
 > **/*.log
->
+> 
 > # JavaScript
 > node_modules
 > packages/api/app/bundle.api.js
@@ -676,10 +667,10 @@ Inspect staged changes and gitignore difference
 > bundle.desktop.js.map
 > bundle.mobile.js
 > bundle.mobile.js.map
->
+> 
 > # Python virtualenv (Electron CI provisions one at the repo root for setuptools)
 > .venv/
->
+> 
 > # Yarn
 > .pnp.*
 > .yarn/*
@@ -688,52 +679,52 @@ Inspect staged changes and gitignore difference
 > !.yarn/releases
 > !.yarn/sdks
 > !.yarn/versions
->
+> 
 > # VSCode
 > .vscode/*
 > !.vscode/settings.default.json
 > !.vscode/extensions.json
->
+> 
 > # IntelliJ IDEA
 > .idea
->
+> 
 > # Claude Code
 > .claude/worktrees/*
 > .claude/settings.local.json
->
+> 
 > # Misc
 > .#*
->
+> 
 > # Local Netlify folder
 > .netlify
->
+> 
 > # Personal devcontainer config
 > .devcontainer/*.local
->
+> 
 > # build output
 > package.tgz
->
+> 
 > # Fly.io configuration
 > fly.toml
->
+> 
 > # TypeScript cache
 > build/
->
+> 
 > # .d.ts files aren't type-checked with skipLibCheck set to true
 > *.d.ts
 > # ...except hand-written ambient declarations that must be committed
 > !packages/api/virtual-modules.d.ts
 > !packages/loot-core/default-filesystem.d.ts
->
+> 
 > # Lage cache
 > .lage/
->
+> 
 > # Test results (JUnit XML reports, Playwright artifacts)
 > **/test-results/
->
+> 
 > *storybook.log
 > storybook-static
->
+> 
 > # cli config when testing locally
 > .actualrc.json
 > .actualrc
@@ -749,7 +740,6 @@ Inspect staged changes and gitignore difference
 > .specstory/history/2026-09-13_15-36-30Z-fix-this-issue-in.md
 DIFFERENT
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:44:08Z)**_
@@ -774,7 +764,6 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>" 2>&1 | tail 
 [issue-10-notes-character-limit 9f2a24849] [AI] Scope notes length warning toasts to each note field
  1 file changed, 3 insertions(+), 1 deletion(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:44:15Z)**_
@@ -786,14 +775,13 @@ Push branch to origin
 `cd "c:/Actual Budget" && git push origin issue-10-notes-character-limit 2>&1 | tail -10`
 
 ```text
-remote:
-remote: GitHub found 73 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 31 moderate, 6 low). To find out more, visit:
-remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot
-remote:
+remote: 
+remote: GitHub found 73 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 31 moderate, 6 low). To find out more, visit:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
+remote: 
 To https://github.com/CSCI-435-SE/actual-budget.git
    d0e428cd2..9f2a24849  issue-10-notes-character-limit -> issue-10-notes-character-limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:44:21Z)**_
@@ -835,7 +823,6 @@ D  .gitignore
 ?? ai-logs/sprint0/bennettmatuszewski/2026-09-12_claude-code_issue-10-notes-character-limit.md
 ?? ai-logs/sprint0/bennettmatuszewski/2026-09-13_claude-code_issue-10-review-comments-fixes.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:46:08Z)**_
@@ -850,7 +837,6 @@ Compare old and new log file hashes
 3d83290eafdc8cc92568291094387446c2eb473d
 3d83290eafdc8cc92568291094387446c2eb473d
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:46:10Z)**_
@@ -882,7 +868,6 @@ warning: in the working copy of 'ai-logs/sprint0/bennettmatuszewski/2026-09-13_c
  ...3_claude-code_issue-10-review-comments-fixes.md | 796 +++++++++++++++++++++
  3 files changed, 803 insertions(+)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:46:23Z)**_
@@ -907,7 +892,6 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>" 2>&1 | tail 
  rename ai-logs/sprint0/{ai-logs/sprint0 => }/bennettmatuszewski/2026-09-12_claude-code_issue-10-notes-character-limit.md (100%)
  create mode 100644 ai-logs/sprint0/bennettmatuszewski/2026-09-13_claude-code_issue-10-review-comments-fixes.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:46:30Z)**_
@@ -919,14 +903,13 @@ Push and verify clean tree
 `cd "c:/Actual Budget" && git push origin issue-10-notes-character-limit 2>&1 | tail -5 && echo "--- status ---" && git status --short`
 
 ```text
-remote: GitHub found 73 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 31 moderate, 6 low). To find out more, visit:
-remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot
-remote:
+remote: GitHub found 73 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 31 moderate, 6 low). To find out more, visit:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
+remote: 
 To https://github.com/CSCI-435-SE/actual-budget.git
    9f2a24849..512f406c2  issue-10-notes-character-limit -> issue-10-notes-character-limit
 --- status ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:46:33Z)**_
@@ -934,7 +917,6 @@ _**Agent (claude-opus-5 2026-09-13 15:46:33Z)**_
 Pushed as `512f406c2`. Working tree is clean.
 
 The second commit contains:
-
 - `.gitignore` — +7 lines only (the `.specstory/` entries). I converted the file back to LF first, otherwise every one of its 113 lines would have shown as changed.
 - The sprint0 log moved out of the duplicated `ai-logs/sprint0/ai-logs/sprint0/…` path — git recorded it as a 100% rename, so no content changed.
 - The new `2026-09-13_…review-comments-fixes.md` log (796 lines).
@@ -963,7 +945,6 @@ Locate Notes.test.tsx
 ```text
 packages/desktop-client/src/components/Notes.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 17:06:58Z)**_
@@ -976,21 +957,21 @@ Read Notes.test.tsx
 
 ```text
      1	import React, { useState } from 'react';
-     2
+     2	
      3	import { fireEvent, render, screen } from '@testing-library/react';
      4	import userEvent from '@testing-library/user-event';
-     5
+     5	
      6	import { createTestAppStore, TestProviders } from '#mocks';
      7	import { removeNotification } from '#notifications/notificationsSlice';
-     8
+     8	
      9	import { MAX_NOTES_LENGTH, Notes } from './Notes';
-    10
+    10	
     11	const WARNING_THRESHOLD = 1700;
-    12
+    12	
     13	function setup({ initialNotes = '' } = {}) {
     14	  const store = createTestAppStore();
     15	  const onChange = vi.fn();
-    16
+    16	
     17	  function ControlledNotes() {
     18	    const [notes, setNotes] = useState(initialNotes);
     19	    return (
@@ -1004,15 +985,15 @@ Read Notes.test.tsx
     27	      />
     28	    );
     29	  }
-    30
+    30	
     31	  render(
     32	    <TestProviders store={store}>
     33	      <ControlledNotes />
     34	    </TestProviders>,
     35	  );
-    36
+    36	
     37	  const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
-    38
+    38	
     39	  return {
     40	    store,
     41	    onChange,
@@ -1022,48 +1003,48 @@ Read Notes.test.tsx
     45	      fireEvent.change(textarea, { target: { value } }),
     46	  };
     47	}
-    48
+    48	
     49	describe('Notes length enforcement', () => {
     50	  test('sets maxLength on the textarea', () => {
     51	    const { textarea } = setup();
-    52
+    52	
     53	    expect(textarea).toHaveAttribute('maxlength', String(MAX_NOTES_LENGTH));
     54	  });
-    55
+    55	
     56	  test('stops accepting typed input at the maximum length', async () => {
     57	    const { textarea, onChange } = setup({
     58	      initialNotes: 'a'.repeat(MAX_NOTES_LENGTH - 1),
     59	    });
-    60
+    60	
     61	    await userEvent.type(textarea, 'bbb');
-    62
+    62	
     63	    expect(textarea.value).toHaveLength(MAX_NOTES_LENGTH);
     64	    expect(
     65	      onChange.mock.calls.every(([value]) => value.length <= MAX_NOTES_LENGTH),
     66	    ).toBe(true);
     67	  });
-    68
+    68	
     69	  test('does not truncate notes that already exceed the limit', () => {
     70	    const { textarea } = setup({ initialNotes: 'a'.repeat(2000) });
-    71
+    71	
     72	    expect(textarea.value).toHaveLength(2000);
     73	  });
     74	});
-    75
+    75	
     76	describe('Notes length notifications', () => {
     77	  test('does not notify below the warning threshold', () => {
     78	    const { setNotes, notifications } = setup();
-    79
+    79	
     80	    setNotes('a'.repeat(WARNING_THRESHOLD - 1));
-    81
+    81	
     82	    expect(notifications()).toHaveLength(0);
     83	  });
-    84
+    84	
     85	  test('notifies when reaching the warning threshold', () => {
     86	    const { setNotes, notifications } = setup();
-    87
+    87	
     88	    setNotes('a'.repeat(WARNING_THRESHOLD));
-    89
+    89	
     90	    expect(notifications()).toHaveLength(1);
     91	    expect(notifications()[0]).toMatchObject({
     92	      id: 'notes-length-near',
@@ -1071,76 +1052,75 @@ Read Notes.test.tsx
     94	    });
     95	    expect(notifications()[0].message).toContain('character limit for notes');
     96	  });
-    97
+    97	
     98	  test('does not repeat the warning while staying below the limit', () => {
     99	    const { setNotes, notifications } = setup();
-   100
+   100	
    101	    setNotes('a'.repeat(WARNING_THRESHOLD));
    102	    setNotes('a'.repeat(WARNING_THRESHOLD + 50));
    103	    setNotes('a'.repeat(MAX_NOTES_LENGTH - 1));
-   104
+   104	
    105	    expect(notifications()).toHaveLength(1);
    106	  });
-   107
+   107	
    108	  test('escalates to a second notification once the limit is reached', () => {
    109	    const { setNotes, notifications } = setup();
-   110
+   110	
    111	    setNotes('a'.repeat(WARNING_THRESHOLD));
    112	    setNotes('a'.repeat(MAX_NOTES_LENGTH));
-   113
+   113	
    114	    expect(notifications().map(notification => notification.id)).toEqual([
    115	      'notes-length-near',
    116	      'notes-length-limit',
    117	    ]);
    118	    expect(notifications()[1].message).toContain('character limit for notes');
    119	  });
-   120
+   120	
    121	  test('notifies at the limit when pasting straight past the threshold', () => {
    122	    const { setNotes, notifications } = setup();
-   123
+   123	
    124	    setNotes('a'.repeat(MAX_NOTES_LENGTH));
-   125
+   125	
    126	    expect(notifications()).toHaveLength(1);
    127	    expect(notifications()[0].id).toBe('notes-length-limit');
    128	  });
-   129
+   129	
    130	  test('does not warn again while deleting text back down', () => {
    131	    const { setNotes, notifications } = setup();
-   132
+   132	
    133	    setNotes('a'.repeat(MAX_NOTES_LENGTH));
    134	    setNotes('a'.repeat(WARNING_THRESHOLD + 10));
    135	    setNotes('a'.repeat(WARNING_THRESHOLD));
-   136
+   136	
    137	    expect(notifications()).toHaveLength(1);
    138	    expect(notifications()[0].id).toBe('notes-length-limit');
    139	  });
-   140
+   140	
    141	  test('does not stack a duplicate warning that is still showing', () => {
    142	    const { setNotes, notifications } = setup();
-   143
+   143	
    144	    setNotes('a'.repeat(WARNING_THRESHOLD));
    145	    setNotes('short');
    146	    setNotes('a'.repeat(WARNING_THRESHOLD));
-   147
+   147	
    148	    expect(notifications()).toHaveLength(1);
    149	  });
-   150
+   150	
    151	  test('warns again after the previous warning is dismissed', () => {
    152	    const { setNotes, notifications, store } = setup();
-   153
+   153	
    154	    setNotes('a'.repeat(WARNING_THRESHOLD));
    155	    store.dispatch(removeNotification({ id: 'notes-length-near' }));
    156	    expect(notifications()).toHaveLength(0);
-   157
+   157	
    158	    setNotes('short');
    159	    setNotes('a'.repeat(WARNING_THRESHOLD));
-   160
+   160	
    161	    expect(notifications()).toHaveLength(1);
    162	    expect(notifications()[0].id).toBe('notes-length-near');
    163	  });
    164	});
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 17:07:27Z)**_
@@ -1192,7 +1172,6 @@ AssertionError: expected [ { type: 'warning', …(2) } ] to have a length of +0 
    Start at  13:07:19
    Duration  7.26s (transform 1.75s, setup 3.53s, import 1.37s, tests 388ms, environment 1.63s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 17:07:34Z)**_
@@ -1206,9 +1185,9 @@ _**Agent (claude-opus-5 2026-09-13 19:20:55Z)**_
 **Two of the failing tests covered per-field dedupe ("don't stack a second warning while one's still showing"), which the uuid fix removed. Keep that behavior or drop it?**
 
 Options:
-
 - **Keep it, scope id per instance (Recommended)** - Give each Notes instance a stable uuid and use `notes-length-${instanceId}-${level}` as the notification id. Cross-field bug stays fixed, per-field dedupe survives, and both behavioral tests keep testing real behavior (just with an instance-scoped id). This is the second option the original issue offered.
 - **Drop it, accept stacking** - Leave the fix as-is with random uuids. Repeated warnings can now stack for the same field (cross threshold, delete back down, cross again = two toasts). I'd delete the two dedupe tests and add one asserting the new stacking behavior, so it's a recorded decision rather than a silent gap.
+
 
 **Answer:** Keep it, scope id per instance (Recommended)
 </details></tool-use>
@@ -1292,7 +1271,6 @@ sed -n '62,95p' packages/desktop-client/src/components/Notes.tsx
               level === 'limit'
                 ? t(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:21:19Z)**_
@@ -1306,7 +1284,6 @@ Check i18n test setup
 ```text
 setupTests.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:21:23Z)**_
@@ -1320,7 +1297,6 @@ Inspect test setup for i18n and TestProviders
 ```text
 ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:21:26Z)**_
@@ -1344,7 +1320,6 @@ packages/desktop-client/src/components/reports/graphs/BudgetAnalysisGraph.test.t
 packages/desktop-client/src/components/settings/AuthSettings.test.tsx
 === def ===
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:21:41Z)**_
@@ -1564,12 +1539,12 @@ describe('Notes length notifications', () => {
     );
   });
 });
+
 ```
 
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\Notes.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:22:33Z)**_
@@ -1580,7 +1555,6 @@ _**Agent (claude-opus-5 2026-09-13 19:22:33Z)**_
 ```text
 The file C:\Actual Budget\packages\desktop-client\src\components\Notes.test.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:22:50Z)**_
@@ -1601,7 +1575,6 @@ Run Notes tests again
    Start at  15:22:41
    Duration  7.93s (transform 1.61s, setup 3.52s, import 1.35s, tests 371ms, environment 2.34s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:22:52Z)**_
@@ -1636,7 +1609,6 @@ yarn workspace @actual-app/web run test src/components/Notes.test.tsx 2>&1 | tai
    Start at  15:23:01
    Duration  7.65s (transform 1.72s, setup 3.95s, import 1.34s, tests 449ms, environment 1.58s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:23:11Z)**_
@@ -1661,7 +1633,6 @@ Restore fix and rerun tests
    Start at  15:23:18
    Duration  6.81s (transform 1.56s, setup 3.23s, import 1.35s, tests 385ms, environment 1.51s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:24:56Z)**_
@@ -1682,7 +1653,6 @@ worker restarts: 0, max worker memory usage: 39.25 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 21.40s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:25:08Z)**_
@@ -1696,7 +1666,6 @@ Lint check for Notes files
 ```text
 (exit scan done)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 19:25:17Z)**_
@@ -1714,7 +1683,6 @@ id: `notes-length-${instanceId}-${level}`,
 Two different note fields now get different ids, so neither swallows the other's warning, while a single field still dedupes as before. Both behaviors you were weighing are preserved — nothing about the product behavior changed relative to before my original fix, so there's no undecided behavior change left to hand your teammate.
 
 **[Notes.test.tsx](packages/desktop-client/src/components/Notes.test.tsx)** — 12 tests, all passing:
-
 - The 4 cosmetic ones now assert on `type` and message text rather than a literal id. Message matching uses the prefixes `'You are nearing the'` / `'You have reached the'` so the assertions don't depend on how `{{max}}` interpolates under the test i18n setup.
 - The 2 behavioral ones kept their assertions unchanged, since the behavior is intact. `'warns again after the previous warning is dismissed'` now reads the real id out of the store instead of hardcoding `'notes-length-near'`.
 - Added `'warns for a second note field while the first warning is showing'`, rendering two `Notes` instances — that's the bug the original fix targeted and it had no coverage. I verified it fails against the old fixed-id code and passes against the new code, so it's a real regression test rather than one that passes either way.

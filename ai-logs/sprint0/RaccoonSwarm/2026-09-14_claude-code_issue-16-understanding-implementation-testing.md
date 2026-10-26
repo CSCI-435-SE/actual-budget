@@ -26,7 +26,6 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: C:\Users\reese\AppData\Local\Temp\claude\c--Users-reese-SE-actual-budget\c626ab2e-12f9-45b5-863d-210995f62f5a\tasks\a9c8d75c901b09601.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-15 00:43:59Z)**_
@@ -34,7 +33,6 @@ _**Agent - sidechain (2026-09-15 00:43:59Z)**_
 I'm investigating a bug in the Actual Budget desktop-client sidebar (packages/desktop-client/src/components/sidebar/). The sidebar can be in a "floating" mode where it disappears when the mouse leaves it (likely via CSS hover or a mouseleave/mouseover handler, possibly using a "hidden" state or transform). There's also a BudgetName.tsx component in that same directory which renders a dropdown menu (likely using a Popover or Menu component from @actual-app/components). The bug: when the sidebar is in floating mode and the user opens the BudgetName dropdown, then moves the mouse away, the sidebar itself disappears/collapses but the dropdown menu stays open/visible until the user clicks somewhere else to dismiss it.
 
 Please investigate and report back with:
-
 1. The full contents (or relevant excerpts) of packages/desktop-client/src/components/sidebar/BudgetName.tsx — how the dropdown menu is opened/closed (state variable name, which Popover/Menu component is used, whether it takes an `isOpen`/`onClose` prop or similar).
 2. The file that implements the floating sidebar container (likely Sidebar.tsx or similar in the same directory) — specifically how "floating" state is tracked, what triggers the sidebar to hide (mouseleave, blur, a CSS class, a state variable, a hook like useSidebar), and how child components could react to it.
 3. Any existing context/hook (e.g., a SidebarContext, useSidebar hook, or similar) that other sidebar dropdown-like components (e.g., other items with menus in the sidebar) already use to close their own popovers when the sidebar hides — search other files in packages/desktop-client/src/components/sidebar/ for similar patterns (e.g. grep for "Popover", "useState(false)" combined with menu, "onHoverChange", "onMouseLeave" in that directory).
@@ -62,7 +60,6 @@ packages\desktop-client\src\components\sidebar\SidebarProvider.tsx
 packages\desktop-client\src\components\sidebar\ToggleButton.tsx
 packages\desktop-client\src\components\sidebar\index.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:44:01Z)**_
@@ -79,7 +76,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:01Z)**_
 1	import React, { useRef, useState } from 'react';
 2	import type { ReactNode } from 'react';
 3	import { useTranslation } from 'react-i18next';
-4
+4	
 5	import { Button } from '@actual-app/components/button';
 6	import { SvgExpandArrow } from '@actual-app/components/icons/v0';
 7	import { InitialFocus } from '@actual-app/components/initial-focus';
@@ -89,21 +86,21 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:01Z)**_
 11	import { View } from '@actual-app/components/view';
 12	import { isElectron } from '@actual-app/core/shared/environment';
 13	import * as Platform from '@actual-app/core/shared/platform';
-14
+14	
 15	import { closeBudget } from '#budgetfiles/budgetfilesSlice';
 16	import { useContextMenu } from '#hooks/useContextMenu';
 17	import { useMetadataPref } from '#hooks/useMetadataPref';
 18	import { useNavigate } from '#hooks/useNavigate';
 19	import { pushModal } from '#modals/modalsSlice';
 20	import { useDispatch } from '#redux';
-21
+21	
 22	type BudgetNameProps = {
 23	  children?: ReactNode;
 24	};
-25
+25	
 26	export function BudgetName({ children }: BudgetNameProps) {
 27	  const hasWindowButtons = !Platform.isBrowser && Platform.OS === 'mac';
-28
+28	
 29	  return (
 30	    <View
 31	      style={{
@@ -123,14 +120,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:01Z)**_
 45	      }}
 46	    >
 47	      <EditableBudgetName />
-48
+48	
 49	      <View style={{ flex: 1, flexDirection: 'row' }} />
-50
+50	
 51	      {children}
 52	    </View>
 53	  );
 54	}
-55
+55	
 56	function EditableBudgetName() {
 57	  const { t } = useTranslation();
 58	  const [budgetName, setBudgetNamePref] = useMetadataPref('budgetName');
@@ -164,7 +161,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:01Z)**_
 86	      },
 87	    ],
 88	  });
-89
+89	
 90	  if (editing) {
 91	    return (
 92	      <InitialFocus>
@@ -186,7 +183,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:01Z)**_
 108	      </InitialFocus>
 109	    );
 110	  }
-111
+111	
 112	  return (
 113	    <Button
 114	      ref={triggerRef}
@@ -214,7 +211,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:01Z)**_
 136	}
 137
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:18Z)**_
@@ -228,7 +224,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:18Z)**_
 2	import type { CSSProperties } from 'react';
 3	import { ErrorBoundary } from 'react-error-boundary';
 4	import { useTranslation } from 'react-i18next';
-5
+5	
 6	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 7	import { SvgAdd } from '@actual-app/components/icons/v1';
 8	import { styles } from '@actual-app/components/styles';
@@ -237,37 +233,37 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:18Z)**_
 11	import * as Platform from '@actual-app/core/shared/platform';
 12	import { css } from '@emotion/css';
 13	import { Resizable } from 're-resizable';
-14
+14	
 15	import { FeatureErrorFallback } from '#components/FeatureErrorFallback';
 16	import { useGlobalPref } from '#hooks/useGlobalPref';
 17	import { useLocalPref } from '#hooks/useLocalPref';
 18	import { useResizeObserver } from '#hooks/useResizeObserver';
 19	import { replaceModal } from '#modals/modalsSlice';
 20	import { useDispatch } from '#redux';
-21
+21	
 22	import { Accounts } from './Accounts';
 23	import { BudgetName } from './BudgetName';
 24	import { PrimaryButtons } from './PrimaryButtons';
 25	import { SecondaryButtons } from './SecondaryButtons';
 26	import { useSidebar } from './SidebarProvider';
 27	import { ToggleButton } from './ToggleButton';
-28
+28	
 29	export function Sidebar() {
 30	  const hasWindowButtons = !Platform.isBrowser && Platform.OS === 'mac';
-31
+31	
 32	  const { t } = useTranslation();
 33	  const dispatch = useDispatch();
 34	  const sidebar = useSidebar();
 35	  const { width } = useResponsive();
 36	  const [isFloating = false, setFloatingSidebarPref] =
 37	    useGlobalPref('floatingSidebar');
-38
+38	
 39	  const [sidebarWidthLocalPref, setSidebarWidthLocalPref] =
 40	    useLocalPref('sidebarWidth');
 41	  const DEFAULT_SIDEBAR_WIDTH = 240;
 42	  const MAX_SIDEBAR_WIDTH = width / 3;
 43	  const MIN_SIDEBAR_WIDTH = 200;
-44
+44	
 45	  const [sidebarWidth, setSidebarWidth] = useState(
 46	    Math.min(
 47	      MAX_SIDEBAR_WIDTH,
@@ -277,23 +273,23 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:18Z)**_
 51	      ),
 52	    ),
 53	  );
-54
+54	
 55	  const onResizeStop = () => {
 56	    setSidebarWidthLocalPref(sidebarWidth);
 57	  };
-58
+58	
 59	  const onFloat = () => {
 60	    setFloatingSidebarPref(!isFloating);
 61	  };
-62
+62	
 63	  const onAddAccount = () => {
 64	    dispatch(replaceModal({ modal: { name: 'add-account', options: {} } }));
 65	  };
-66
+66	
 67	  const containerRef = useResizeObserver<HTMLDivElement>(rect => {
 68	    setSidebarWidth(rect.width);
 69	  });
-70
+70	
 71	  return (
 72	    <ErrorBoundary FallbackComponent={FeatureErrorFallback}>
 73	      <Resizable
@@ -339,7 +335,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:18Z)**_
 113	              <ToggleButton isFloating={isFloating} onFloat={onFloat} />
 114	            )}
 115	          </BudgetName>
-116
+116	
 117	          <View
 118	            style={{
 119	              flexGrow: 1,
@@ -349,9 +345,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:18Z)**_
 123	            }}
 124	          >
 125	            <PrimaryButtons />
-126
+126	
 127	            <Accounts />
-128
+128	
 129	            <SecondaryButtons
 130	              buttons={[
 131	                {
@@ -369,7 +365,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:18Z)**_
 143	}
 144
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:19Z)**_
@@ -382,31 +377,31 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:19Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext, useContext, useMemo, useState } from 'react';
 3	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-4
+4	
 5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-6
+6	
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
-8
+8	
 9	type SidebarContextValue = {
 10	  hidden: boolean;
 11	  setHidden: Dispatch<SetStateAction<boolean>>;
 12	  floating: boolean;
 13	  alwaysFloats: boolean;
 14	};
-15
+15	
 16	const SidebarContext = createContext<SidebarContextValue>(null);
-17
+17	
 18	type SidebarProviderProps = {
 19	  children: ReactNode;
 20	};
-21
+21	
 22	export function SidebarProvider({ children }: SidebarProviderProps) {
 23	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 24	  const [hidden, setHidden] = useState(true);
 25	  const { width } = useResponsive();
 26	  const alwaysFloats = width < 668;
 27	  const floating = floatingSidebar || alwaysFloats;
-28
+28	
 29	  return (
 30	    <SidebarContext.Provider
 31	      value={{ hidden, setHidden, floating, alwaysFloats }}
@@ -415,11 +410,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:19Z)**_
 34	    </SidebarContext.Provider>
 35	  );
 36	}
-37
+37	
 38	export function useSidebar() {
 39	  const { hidden, setHidden, floating, alwaysFloats } =
 40	    useContext(SidebarContext);
-41
+41	
 42	  return useMemo(
 43	    () => ({ hidden, setHidden, floating, alwaysFloats }),
 44	    [hidden, setHidden, floating, alwaysFloats],
@@ -427,7 +422,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:19Z)**_
 46	}
 47
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:22Z)**_
@@ -440,7 +434,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:22Z)**_
 packages\desktop-client\src\hooks\useContextMenu.test.ts
 packages\desktop-client\src\hooks\useContextMenu.ts
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:26Z)**_
@@ -452,9 +445,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:26Z)**_
 ```text
 1	import { useCallback, useRef } from 'react';
 2	import type { RefObject } from 'react';
-3
+3	
 4	import type { Falsy } from '@actual-app/core/types/util';
-5
+5	
 6	import {
 7	  addItems,
 8	  setContextMenuPosition,
@@ -462,28 +455,28 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:26Z)**_
 10	import type { ContextMenuItem } from '#contextmenu/types';
 11	import { useRefEventListener } from '#hooks/useRefEventListener';
 12	import { useDispatch } from '#redux';
-13
+13	
 14	type UseContextMenuProps = {
 15	  triggerRef: RefObject<HTMLElement | null>;
 16	  enabled?: boolean;
 17	  items: Falsy<ContextMenuItem>[];
 18	};
-19
+19	
 20	export function useContextMenu({
 21	  triggerRef,
 22	  enabled = true,
 23	  items,
 24	}: UseContextMenuProps) {
 25	  const dispatch = useDispatch();
-26
+26	
 27	  // Store actions in a ref to avoid re-binding the event listener on every render
 28	  const actionsRef = useRef(items);
 29	  actionsRef.current = items;
-30
+30	
 31	  const processedItems = items.filter(
 32	    item => item && (typeof item === 'symbol' || !item.hidden),
 33	  ) as ContextMenuItem[];
-34
+34	
 35	  useRefEventListener(triggerRef, 'contextmenu', (e: MouseEvent) => {
 36	    if (enabled) {
 37	      e.preventDefault();
@@ -491,7 +484,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:26Z)**_
 39	      dispatch(setContextMenuPosition({ x: e.clientX, y: e.clientY }));
 40	    }
 41	  });
-42
+42	
 43	  const handleContextMenu = useCallback(() => {
 44	    if (!triggerRef.current || !enabled) return;
 45	    const rect = triggerRef.current.getBoundingClientRect();
@@ -505,12 +498,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:26Z)**_
 53	      }),
 54	    );
 55	  }, [triggerRef, enabled]);
-56
+56	
 57	  return { handleContextMenu };
 58	}
 59
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:27Z)**_
@@ -521,28 +513,28 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:27Z)**_
 
 ```text
 1	import React from 'react';
-2
+2	
 3	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 4	import { View } from '@actual-app/components/view';
 5	import { useDebounceCallback } from 'usehooks-ts';
-6
+6	
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
-8
+8	
 9	import { Sidebar } from './Sidebar';
 10	import { useSidebar } from './SidebarProvider';
-11
+11	
 12	export function FloatableSidebar() {
 13	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
-14
+14	
 15	  const sidebar = useSidebar();
 16	  const { isNarrowWidth } = useResponsive();
-17
+17	
 18	  const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
 19	  const debouncedHideSidebar = useDebounceCallback(
 20	    () => sidebar.setHidden(true),
 21	    350,
 22	  );
-23
+23	
 24	  return isNarrowWidth ? null : (
 25	    <View
 26	      onMouseOver={
@@ -583,7 +575,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:27Z)**_
 61	}
 62
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:29Z)**_
@@ -605,7 +596,6 @@ packages\desktop-client\src\components\sidebar\SidebarProvider.tsx:39:  const { 
 packages\desktop-client\src\components\sidebar\SidebarProvider.tsx:43:    () => ({ hidden, setHidden, floating, alwaysFloats }),
 packages\desktop-client\src\components\sidebar\SidebarProvider.tsx:44:    [hidden, setHidden, floating, alwaysFloats],
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:34Z)**_
@@ -639,7 +629,6 @@ packages\desktop-client\src\components\budget\SidebarCategory.tsx
 packages\desktop-client\src\components\FinancesApp.tsx
 packages\desktop-client\src\components\ContextMenu.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:37Z)**_
@@ -651,7 +640,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:37Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:37Z)**_
@@ -663,7 +651,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:37Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:39Z)**_
@@ -677,7 +664,6 @@ Find popover/menu files in component-library
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
@@ -688,29 +674,29 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 
 ```text
 1	import { useRef } from 'react';
-2
+2	
 3	import { Menu } from '@actual-app/components/menu';
 4	import type { MenuItem } from '@actual-app/components/menu';
 5	import { Popover } from '@actual-app/components/popover';
 6	import { theme } from '@actual-app/components/theme';
-7
+7	
 8	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 9	import { useRefEventListener } from '#hooks/useRefEventListener';
 10	import { useDispatch, useSelector } from '#redux';
-11
+11	
 12	export function ContextMenu() {
 13	  const dispatch = useDispatch();
 14	  const { isOpen, position, items } = useSelector(state => state.contextMenu);
-15
+15	
 16	  const popoverRef = useRef<HTMLDivElement | null>(null);
 17	  const triggerRef = useRef<HTMLDivElement | null>(null);
-18
+18	
 19	  function handleOpenChange(newOpen: boolean) {
 20	    if (!newOpen) {
 21	      dispatch(closeContextMenu());
 22	    }
 23	  }
-24
+24	
 25	  // Handle left-clicks and right-clicks to DISMISS the menu
 26	  useRefEventListener(document, 'pointerdown', (e: PointerEvent) => {
 27	    // Close the menu if we click anywhere outside the popover DOM element
@@ -722,7 +708,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 33	      handleOpenChange(false);
 34	    }
 35	  });
-36
+36	
 37	  function handleMenuSelect(itemName: string) {
 38	    for (const item of items) {
 39	      if (typeof item === 'object' && item.onClick && item.name === itemName) {
@@ -732,7 +718,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 43	    }
 44	    handleOpenChange(false);
 45	  }
-46
+46	
 47	  return (
 48	    <>
 49	      {/* THE INVISIBLE ANCHOR:
@@ -769,7 +755,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 80	}
 81
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
@@ -783,7 +768,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 2	import React, { useRef, useState } from 'react';
 3	import type { CSSProperties } from 'react';
 4	import { useTranslation } from 'react-i18next';
-5
+5	
 6	import { AlignedText } from '@actual-app/components/aligned-text';
 7	import { Button } from '@actual-app/components/button';
 8	import {
@@ -800,7 +785,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 19	import { View } from '@actual-app/components/view';
 20	import type { AccountEntity } from '@actual-app/core/types/models';
 21	import { css, cx } from '@emotion/css';
-22
+22	
 23	import { useReopenAccountMutation, useUpdateAccountMutation } from '#accounts';
 24	import { BalanceHistoryGraph } from '#components/accounts/BalanceHistoryGraph';
 25	import { Link } from '#components/common/Link';
@@ -816,7 +801,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 35	import { openAccountCloseModal } from '#modals/modalsSlice';
 36	import { useDispatch, useSelector } from '#redux';
 37	import type { Binding, SheetFields } from '#spreadsheet';
-38
+38	
 39	export const accountNameStyle: CSSProperties = {
 40	  marginTop: -2,
 41	  marginBottom: 2,
@@ -829,7 +814,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 48	  ':hover': { backgroundColor: theme.sidebarItemBackgroundHover },
 49	  ...styles.smallText,
 50	};
-51
+51	
 52	type AccountProps<FieldName extends SheetFields<'account'>> = {
 53	  name: string;
 54	  to: string;
@@ -847,7 +832,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 66	  isExactPathMatch?: boolean;
 67	  balanceTestId?: string;
 68	};
-69
+69	
 70	export function Account<FieldName extends SheetFields<'account'>>({
 71	  name,
 72	  account,
@@ -874,9 +859,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 93	        ? 'account-offbudget'
 94	        : 'account-onbudget'
 95	    : 'title';
-96
+96	
 97	  const triggerRef = useRef(null);
-98
+98	
 99	  const { dragRef } = useDraggable({
 100	    type,
 101	    onDragChange,
@@ -884,21 +869,21 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 103	    canDrag: account != null,
 104	  });
 105	  const handleDragRef = useDragRef(dragRef);
-106
+106	
 107	  const { dropRef, dropPos } = useDroppable({
 108	    types: account ? [type] : [],
 109	    id: account && account.id,
 110	    onDrop,
 111	  });
-112
+112	
 113	  const [showBalanceHistory, setShowBalanceHistory] = useSyncedPref(
 114	    `side-nav.show-balance-history-${account?.id}`,
 115	  );
-116
+116	
 117	  const dispatch = useDispatch();
-118
+118	
 119	  const [isEditing, setIsEditing] = useState(false);
-120
+120	
 121	  const accountNote = useNotes(`account-${account?.id}`);
 122	  const isTouchDevice =
 123	    window.matchMedia('(hover: none)').matches ||
@@ -906,9 +891,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 125	  const needsTooltip = !!account?.id && !isTouchDevice;
 126	  const reopenAccount = useReopenAccountMutation();
 127	  const updateAccount = useUpdateAccountMutation();
-128
+128	
 129	  const balanceCell = <CellValue binding={query} type="financial" />;
-130
+130	
 131	  const isContextMenuOpen = useSelector(state =>
 132	    state.contextMenu.items.some(
 133	      i =>
@@ -938,7 +923,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 157	          },
 158	    ],
 159	  });
-160
+160	
 161	  const accountRow = (
 162	    <View innerRef={dropRef} style={{ flexShrink: 0, ...outerStyle }}>
 163	      <View innerRef={triggerRef}>
@@ -1004,7 +989,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 223	                )}
 224	              />
 225	            </View>
-226
+226	
 227	            <AlignedText
 228	              style={
 229	                titleAccount && {
@@ -1053,11 +1038,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 272	      </View>
 273	    </View>
 274	  );
-275
+275	
 276	  if (!needsTooltip || isTestEnv) {
 277	    return accountRow;
 278	  }
-279
+279	
 280	  return (
 281	    <Tooltip
 282	      content={
@@ -1138,7 +1123,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:40Z)**_
 357	}
 358
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:47Z)**_
@@ -1152,7 +1136,6 @@ Locate popover component file
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:48Z)**_
@@ -1164,23 +1147,23 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:48Z)**_
 ```text
 1	import { createSlice } from '@reduxjs/toolkit';
 2	import type { PayloadAction } from '@reduxjs/toolkit';
-3
+3	
 4	import type { ContextMenuItem } from './types';
-5
+5	
 6	const sliceName = 'contextMenu';
-7
+7	
 8	type ContextMenuState = {
 9	  isOpen: boolean;
 10	  position: { x: number; y: number };
 11	  items: ContextMenuItem[];
 12	};
-13
+13	
 14	const initialState: ContextMenuState = {
 15	  isOpen: false,
 16	  position: { x: 0, y: 0 },
 17	  items: [],
 18	};
-19
+19	
 20	const contextMenuSlice = createSlice({
 21	  name: sliceName,
 22	  initialState,
@@ -1191,7 +1174,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:48Z)**_
 27	          state.items.push(item);
 28	        }
 29	      }
-30
+30	
 31	      state.items.sort((a, b) => {
 32	        const orderA = typeof a === 'object' ? (a.order ?? 0) : 0;
 33	        const orderB = typeof b === 'object' ? (b.order ?? 0) : 0;
@@ -1214,13 +1197,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:48Z)**_
 50	    },
 51	  },
 52	});
-53
+53	
 54	export const { name, reducer, getInitialState } = contextMenuSlice;
 55	export const { setContextMenuPosition, closeContextMenu, addItems } =
 56	  contextMenuSlice.actions;
 57
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:50Z)**_
@@ -1232,7 +1214,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:50Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:50Z)**_
@@ -1244,7 +1225,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:50Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:53Z)**_
@@ -1260,7 +1240,6 @@ packages\component-library\src\Select.tsx
 packages\component-library\src\Popover.tsx
 packages\component-library\src\Popover.stories.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:55Z)**_
@@ -1273,20 +1252,20 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:55Z)**_
 1	import { useCallback, useEffect, useRef } from 'react';
 2	import type { ComponentProps } from 'react';
 3	import { Popover as ReactAriaPopover } from 'react-aria-components';
-4
+4	
 5	import { css } from '@emotion/css';
-6
+6	
 7	import { styles } from './styles';
-8
+8	
 9	type PopoverProps = ComponentProps<typeof ReactAriaPopover>;
-10
+10	
 11	export const Popover = ({
 12	  style = {},
 13	  shouldCloseOnInteractOutside,
 14	  ...props
 15	}: PopoverProps) => {
 16	  const ref = useRef<HTMLElement>(null);
-17
+17	
 18	  const handleFocus = useCallback(
 19	    (e: FocusEvent) => {
 20	      if (!ref.current?.contains(e.relatedTarget as Node)) {
@@ -1295,7 +1274,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:55Z)**_
 23	    },
 24	    [props],
 25	  );
-26
+26	
 27	  useEffect(() => {
 28	    if (!props.isNonModal) return;
 29	    if (props.isOpen) {
@@ -1304,7 +1283,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:55Z)**_
 32	      ref.current?.removeEventListener('focusout', handleFocus);
 33	    }
 34	  }, [handleFocus, props.isNonModal, props.isOpen]);
-35
+35	
 36	  return (
 37	    <ReactAriaPopover
 38	      data-popover
@@ -1322,7 +1301,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:55Z)**_
 50	        if (shouldCloseOnInteractOutside) {
 51	          return shouldCloseOnInteractOutside(element);
 52	        }
-53
+53	
 54	        return true;
 55	      }}
 56	      {...props}
@@ -1331,7 +1310,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:44:55Z)**_
 59	};
 60
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:45:00Z)**_
@@ -1346,7 +1324,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:45:00Z)**_
 202:      <ContextMenu />
 210:        <FloatableSidebar />
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:45:15Z)**_
@@ -1354,37 +1331,27 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 00:45:15Z)**_
 ## Investigation Report
 
 ### 1. `packages/desktop-client/src/components/sidebar/BudgetName.tsx`
-
 The dropdown is **not** a locally-owned Popover — `EditableBudgetName` uses the shared `useContextMenu` hook (`packages/desktop-client/src/hooks/useContextMenu.ts`), passing a `triggerRef` (the budget-name `Button`) and a list of menu `items` (rename/settings/load backup/switch file). Clicking the button calls `handleContextMenu()`, which dispatches a synthetic `contextmenu` event that the hook's listener catches and dispatches into Redux: `addItems(processedItems)` + `setContextMenuPosition(...)` (`contextMenuSlice`, state: `isOpen`, `position`, `items`). There is no local `isOpen`/`onClose` state in `BudgetName.tsx` at all — only `editing` (rename input) is local state.
 
 ### 2. Floating sidebar container: `packages/desktop-client/src/components/sidebar/index.tsx` (`FloatableSidebar`)
-
 - Floating state lives in `SidebarProvider.tsx` (`hidden`, `setHidden`, `floating`, `alwaysFloats`) via `useSidebar()`.
 - `FloatableSidebar` wraps `<Sidebar/>` in a `View` with `onMouseOver` → `sidebar.setHidden(false)` and `onMouseLeave` → `useDebounceCallback(() => sidebar.setHidden(true), 350)`. When `hidden` is true, `transform: translateX(-100%)` slides the sidebar off-screen.
 - Nothing here (or in `SidebarProvider`) notifies children/dropdowns that the sidebar is about to hide — `sidebar.hidden` is only consumed for the transform/box-shadow styling in `index.tsx`.
 - `Sidebar.tsx` also has a separate CSS-only `.float`/`&:hover .float` opacity trick for the toggle button, unrelated to the actual hide mechanism.
 
 ### 3. No existing "close my popover when sidebar hides" pattern exists
-
 Grepped the whole `sidebar/` directory for `Popover`, `useMenu`, `onHoverChange`, `setHidden` usage: only `index.tsx` touches `sidebar.hidden`/`setHidden`. `Account.tsx` and `BudgetName.tsx` both use `useContextMenu`, which routes through the single **global** `ContextMenu.tsx` component (mounted once in `FinancesApp.tsx`, alongside `<FloatableSidebar/>`, both siblings — line 202 and 210). That component owns `isOpen` via Redux (`state.contextMenu.isOpen`) and closes on outside `pointerdown` only:
-
 ```tsx
 // ContextMenu.tsx
 useRefEventListener(document, 'pointerdown', (e: PointerEvent) => {
-  if (
-    isOpen &&
-    popoverRef.current &&
-    !popoverRef.current.contains(e.target as Node)
-  ) {
+  if (isOpen && popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
     handleOpenChange(false); // dispatch(closeContextMenu())
   }
 });
 ```
-
 This is why the dropdown survives the sidebar hiding: it's a global, redux-driven popover anchored to a fixed-position 0×0 div, completely decoupled from the sidebar's mouseleave/hidden logic — nothing calls `closeContextMenu()` when `sidebar.setHidden(true)` fires.
 
 ### 4. `packages/component-library/src/Popover.tsx`
-
 Wraps `react-aria-components`'s `Popover`, fully controlled: `type PopoverProps = ComponentProps<typeof ReactAriaPopover>`, and it forwards `isOpen`/`onOpenChange` straight through (`{...props}`). It's already externally force-closable — e.g. `ContextMenu.tsx` sets `isOpen={isOpen && !!items.length}` from Redux. There's also a `isNonModal` + focusout auto-close effect, but no built-in "close on ancestor hide" behavior.
 
 **Likely fix**: in `FloatableSidebar` (or wherever `sidebar.setHidden(true)` is triggered/debounced in `index.tsx`), also `dispatch(closeContextMenu())` (import from `#contextmenu/contextMenuSlice`) — or have `SidebarProvider`'s `setHidden` trigger it via a `useEffect` watching `sidebar.hidden`.
@@ -1403,20 +1370,16 @@ _**User (2026-09-15 00:45:15Z)**_
 <result>## Investigation Report
 
 ### 1. `packages/desktop-client/src/components/sidebar/BudgetName.tsx`
-
 The dropdown is **not** a locally-owned Popover — `EditableBudgetName` uses the shared `useContextMenu` hook (`packages/desktop-client/src/hooks/useContextMenu.ts`), passing a `triggerRef` (the budget-name `Button`) and a list of menu `items` (rename/settings/load backup/switch file). Clicking the button calls `handleContextMenu()`, which dispatches a synthetic `contextmenu` event that the hook's listener catches and dispatches into Redux: `addItems(processedItems)` + `setContextMenuPosition(...)` (`contextMenuSlice`, state: `isOpen`, `position`, `items`). There is no local `isOpen`/`onClose` state in `BudgetName.tsx` at all — only `editing` (rename input) is local state.
 
 ### 2. Floating sidebar container: `packages/desktop-client/src/components/sidebar/index.tsx` (`FloatableSidebar`)
-
 - Floating state lives in `SidebarProvider.tsx` (`hidden`, `setHidden`, `floating`, `alwaysFloats`) via `useSidebar()`.
 - `FloatableSidebar` wraps `&lt;Sidebar/&gt;` in a `View` with `onMouseOver` → `sidebar.setHidden(false)` and `onMouseLeave` → `useDebounceCallback(() =&gt; sidebar.setHidden(true), 350)`. When `hidden` is true, `transform: translateX(-100%)` slides the sidebar off-screen.
 - Nothing here (or in `SidebarProvider`) notifies children/dropdowns that the sidebar is about to hide — `sidebar.hidden` is only consumed for the transform/box-shadow styling in `index.tsx`.
 - `Sidebar.tsx` also has a separate CSS-only `.float`/`&amp;:hover .float` opacity trick for the toggle button, unrelated to the actual hide mechanism.
 
 ### 3. No existing "close my popover when sidebar hides" pattern exists
-
 Grepped the whole `sidebar/` directory for `Popover`, `useMenu`, `onHoverChange`, `setHidden` usage: only `index.tsx` touches `sidebar.hidden`/`setHidden`. `Account.tsx` and `BudgetName.tsx` both use `useContextMenu`, which routes through the single **global** `ContextMenu.tsx` component (mounted once in `FinancesApp.tsx`, alongside `&lt;FloatableSidebar/&gt;`, both siblings — line 202 and 210). That component owns `isOpen` via Redux (`state.contextMenu.isOpen`) and closes on outside `pointerdown` only:
-
 ```tsx
 // ContextMenu.tsx
 useRefEventListener(document, 'pointerdown', (e: PointerEvent) =&gt; {
@@ -1425,11 +1388,9 @@ useRefEventListener(document, 'pointerdown', (e: PointerEvent) =&gt; {
   }
 });
 ```
-
 This is why the dropdown survives the sidebar hiding: it's a global, redux-driven popover anchored to a fixed-position 0×0 div, completely decoupled from the sidebar's mouseleave/hidden logic — nothing calls `closeContextMenu()` when `sidebar.setHidden(true)` fires.
 
 ### 4. `packages/component-library/src/Popover.tsx`
-
 Wraps `react-aria-components`'s `Popover`, fully controlled: `type PopoverProps = ComponentProps&lt;typeof ReactAriaPopover&gt;`, and it forwards `isOpen`/`onOpenChange` straight through (`{...props}`). It's already externally force-closable — e.g. `ContextMenu.tsx` sets `isOpen={isOpen &amp;&amp; !!items.length}` from Redux. There's also a `isNonModal` + focusout auto-close effect, but no built-in "close on ancestor hide" behavior.
 
 **Likely fix**: in `FloatableSidebar` (or wherever `sidebar.setHidden(true)` is triggered/debounced in `index.tsx`), also `dispatch(closeContextMenu())` (import from `#contextmenu/contextMenuSlice`) — or have `SidebarProvider`'s `setHidden` trigger it via a `useEffect` watching `sidebar.hidden`.</result>
@@ -1446,28 +1407,28 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:20Z)**_
 
 ```text
 1	import React from 'react';
-2
+2	
 3	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 4	import { View } from '@actual-app/components/view';
 5	import { useDebounceCallback } from 'usehooks-ts';
-6
+6	
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
-8
+8	
 9	import { Sidebar } from './Sidebar';
 10	import { useSidebar } from './SidebarProvider';
-11
+11	
 12	export function FloatableSidebar() {
 13	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
-14
+14	
 15	  const sidebar = useSidebar();
 16	  const { isNarrowWidth } = useResponsive();
-17
+17	
 18	  const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
 19	  const debouncedHideSidebar = useDebounceCallback(
 20	    () => sidebar.setHidden(true),
 21	    350,
 22	  );
-23
+23	
 24	  return isNarrowWidth ? null : (
 25	    <View
 26	      onMouseOver={
@@ -1508,7 +1469,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:20Z)**_
 61	}
 62
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
@@ -1521,31 +1481,31 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext, useContext, useMemo, useState } from 'react';
 3	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-4
+4	
 5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-6
+6	
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
-8
+8	
 9	type SidebarContextValue = {
 10	  hidden: boolean;
 11	  setHidden: Dispatch<SetStateAction<boolean>>;
 12	  floating: boolean;
 13	  alwaysFloats: boolean;
 14	};
-15
+15	
 16	const SidebarContext = createContext<SidebarContextValue>(null);
-17
+17	
 18	type SidebarProviderProps = {
 19	  children: ReactNode;
 20	};
-21
+21	
 22	export function SidebarProvider({ children }: SidebarProviderProps) {
 23	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 24	  const [hidden, setHidden] = useState(true);
 25	  const { width } = useResponsive();
 26	  const alwaysFloats = width < 668;
 27	  const floating = floatingSidebar || alwaysFloats;
-28
+28	
 29	  return (
 30	    <SidebarContext.Provider
 31	      value={{ hidden, setHidden, floating, alwaysFloats }}
@@ -1554,11 +1514,11 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 34	    </SidebarContext.Provider>
 35	  );
 36	}
-37
+37	
 38	export function useSidebar() {
 39	  const { hidden, setHidden, floating, alwaysFloats } =
 40	    useContext(SidebarContext);
-41
+41	
 42	  return useMemo(
 43	    () => ({ hidden, setHidden, floating, alwaysFloats }),
 44	    [hidden, setHidden, floating, alwaysFloats],
@@ -1566,7 +1526,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 46	}
 47
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
@@ -1579,7 +1538,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 1	import React, { useRef, useState } from 'react';
 2	import type { ReactNode } from 'react';
 3	import { useTranslation } from 'react-i18next';
-4
+4	
 5	import { Button } from '@actual-app/components/button';
 6	import { SvgExpandArrow } from '@actual-app/components/icons/v0';
 7	import { InitialFocus } from '@actual-app/components/initial-focus';
@@ -1589,21 +1548,21 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 11	import { View } from '@actual-app/components/view';
 12	import { isElectron } from '@actual-app/core/shared/environment';
 13	import * as Platform from '@actual-app/core/shared/platform';
-14
+14	
 15	import { closeBudget } from '#budgetfiles/budgetfilesSlice';
 16	import { useContextMenu } from '#hooks/useContextMenu';
 17	import { useMetadataPref } from '#hooks/useMetadataPref';
 18	import { useNavigate } from '#hooks/useNavigate';
 19	import { pushModal } from '#modals/modalsSlice';
 20	import { useDispatch } from '#redux';
-21
+21	
 22	type BudgetNameProps = {
 23	  children?: ReactNode;
 24	};
-25
+25	
 26	export function BudgetName({ children }: BudgetNameProps) {
 27	  const hasWindowButtons = !Platform.isBrowser && Platform.OS === 'mac';
-28
+28	
 29	  return (
 30	    <View
 31	      style={{
@@ -1623,14 +1582,14 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 45	      }}
 46	    >
 47	      <EditableBudgetName />
-48
+48	
 49	      <View style={{ flex: 1, flexDirection: 'row' }} />
-50
+50	
 51	      {children}
 52	    </View>
 53	  );
 54	}
-55
+55	
 56	function EditableBudgetName() {
 57	  const { t } = useTranslation();
 58	  const [budgetName, setBudgetNamePref] = useMetadataPref('budgetName');
@@ -1664,7 +1623,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 86	      },
 87	    ],
 88	  });
-89
+89	
 90	  if (editing) {
 91	    return (
 92	      <InitialFocus>
@@ -1686,7 +1645,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 108	      </InitialFocus>
 109	    );
 110	  }
-111
+111	
 112	  return (
 113	    <Button
 114	      ref={triggerRef}
@@ -1714,7 +1673,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 136	}
 137
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
@@ -1726,9 +1684,9 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 ```text
 1	import { useCallback, useRef } from 'react';
 2	import type { RefObject } from 'react';
-3
+3	
 4	import type { Falsy } from '@actual-app/core/types/util';
-5
+5	
 6	import {
 7	  addItems,
 8	  setContextMenuPosition,
@@ -1736,28 +1694,28 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 10	import type { ContextMenuItem } from '#contextmenu/types';
 11	import { useRefEventListener } from '#hooks/useRefEventListener';
 12	import { useDispatch } from '#redux';
-13
+13	
 14	type UseContextMenuProps = {
 15	  triggerRef: RefObject<HTMLElement | null>;
 16	  enabled?: boolean;
 17	  items: Falsy<ContextMenuItem>[];
 18	};
-19
+19	
 20	export function useContextMenu({
 21	  triggerRef,
 22	  enabled = true,
 23	  items,
 24	}: UseContextMenuProps) {
 25	  const dispatch = useDispatch();
-26
+26	
 27	  // Store actions in a ref to avoid re-binding the event listener on every render
 28	  const actionsRef = useRef(items);
 29	  actionsRef.current = items;
-30
+30	
 31	  const processedItems = items.filter(
 32	    item => item && (typeof item === 'symbol' || !item.hidden),
 33	  ) as ContextMenuItem[];
-34
+34	
 35	  useRefEventListener(triggerRef, 'contextmenu', (e: MouseEvent) => {
 36	    if (enabled) {
 37	      e.preventDefault();
@@ -1765,7 +1723,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 39	      dispatch(setContextMenuPosition({ x: e.clientX, y: e.clientY }));
 40	    }
 41	  });
-42
+42	
 43	  const handleContextMenu = useCallback(() => {
 44	    if (!triggerRef.current || !enabled) return;
 45	    const rect = triggerRef.current.getBoundingClientRect();
@@ -1779,12 +1737,11 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:21Z)**_
 53	      }),
 54	    );
 55	  }, [triggerRef, enabled]);
-56
+56	
 57	  return { handleContextMenu };
 58	}
 59
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:28Z)**_
@@ -1803,7 +1760,6 @@ packages\desktop-client\src\components\sidebar\SidebarProvider.tsx:39:  const { 
 packages\desktop-client\src\components\sidebar\SidebarProvider.tsx:43:    () => ({ hidden, setHidden, floating, alwaysFloats }),
 packages\desktop-client\src\components\sidebar\SidebarProvider.tsx:44:    [hidden, setHidden, floating, alwaysFloats],
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:29Z)**_
@@ -1815,7 +1771,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:29Z)**_
 ```text
 Path does not exist: c:\Users\reese\SE\actual-budget\packages\loot-core\src\client\context-menu\contextMenuSlice.ts. Note: your current working directory is c:\Users\reese\SE\actual-budget.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:33Z)**_
@@ -1831,7 +1786,6 @@ packages\desktop-client\src\hooks\useContextMenu.ts
 packages\desktop-client\src\hooks\useContextMenu.test.ts
 packages\desktop-client\src\components\ContextMenu.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:33Z)**_
@@ -1843,7 +1797,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:33Z)**_
 ```text
 No matches found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:36Z)**_
@@ -1855,7 +1808,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:36Z)**_
 ```text
 No matches found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:39Z)**_
@@ -1869,7 +1821,6 @@ node_modules\.cache\lage\cache\a880\a88034b65f111fabb8aae66a3adc94246357cce6\src
 node_modules\.cache\lage\cache\ff0d\ff0d43f04c85c693f38f6b13e79d4f37c70553b1\src\contextmenu\contextMenuSlice.ts
 packages\desktop-client\src\contextmenu\contextMenuSlice.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:37Z)**_
@@ -1880,29 +1831,29 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:37Z)**_
 
 ```text
 1	import { useRef } from 'react';
-2
+2	
 3	import { Menu } from '@actual-app/components/menu';
 4	import type { MenuItem } from '@actual-app/components/menu';
 5	import { Popover } from '@actual-app/components/popover';
 6	import { theme } from '@actual-app/components/theme';
-7
+7	
 8	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 9	import { useRefEventListener } from '#hooks/useRefEventListener';
 10	import { useDispatch, useSelector } from '#redux';
-11
+11	
 12	export function ContextMenu() {
 13	  const dispatch = useDispatch();
 14	  const { isOpen, position, items } = useSelector(state => state.contextMenu);
-15
+15	
 16	  const popoverRef = useRef<HTMLDivElement | null>(null);
 17	  const triggerRef = useRef<HTMLDivElement | null>(null);
-18
+18	
 19	  function handleOpenChange(newOpen: boolean) {
 20	    if (!newOpen) {
 21	      dispatch(closeContextMenu());
 22	    }
 23	  }
-24
+24	
 25	  // Handle left-clicks and right-clicks to DISMISS the menu
 26	  useRefEventListener(document, 'pointerdown', (e: PointerEvent) => {
 27	    // Close the menu if we click anywhere outside the popover DOM element
@@ -1914,7 +1865,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:37Z)**_
 33	      handleOpenChange(false);
 34	    }
 35	  });
-36
+36	
 37	  function handleMenuSelect(itemName: string) {
 38	    for (const item of items) {
 39	      if (typeof item === 'object' && item.onClick && item.name === itemName) {
@@ -1924,7 +1875,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:37Z)**_
 43	    }
 44	    handleOpenChange(false);
 45	  }
-46
+46	
 47	  return (
 48	    <>
 49	      {/* THE INVISIBLE ANCHOR:
@@ -1961,7 +1912,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:37Z)**_
 80	}
 81
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:49Z)**_
@@ -1973,23 +1923,23 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:49Z)**_
 ```text
 1	import { createSlice } from '@reduxjs/toolkit';
 2	import type { PayloadAction } from '@reduxjs/toolkit';
-3
+3	
 4	import type { ContextMenuItem } from './types';
-5
+5	
 6	const sliceName = 'contextMenu';
-7
+7	
 8	type ContextMenuState = {
 9	  isOpen: boolean;
 10	  position: { x: number; y: number };
 11	  items: ContextMenuItem[];
 12	};
-13
+13	
 14	const initialState: ContextMenuState = {
 15	  isOpen: false,
 16	  position: { x: 0, y: 0 },
 17	  items: [],
 18	};
-19
+19	
 20	const contextMenuSlice = createSlice({
 21	  name: sliceName,
 22	  initialState,
@@ -2000,7 +1950,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:49Z)**_
 27	          state.items.push(item);
 28	        }
 29	      }
-30
+30	
 31	      state.items.sort((a, b) => {
 32	        const orderA = typeof a === 'object' ? (a.order ?? 0) : 0;
 33	        const orderB = typeof b === 'object' ? (b.order ?? 0) : 0;
@@ -2023,13 +1973,12 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:49Z)**_
 50	    },
 51	  },
 52	});
-53
+53	
 54	export const { name, reducer, getInitialState } = contextMenuSlice;
 55	export const { setContextMenuPosition, closeContextMenu, addItems } =
 56	  contextMenuSlice.actions;
 57
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:55Z)**_
@@ -2041,7 +1990,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:45:55Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:45:57Z)**_
@@ -2114,15 +2062,15 @@ sidebar item that uses `useContextMenu` (e.g. `Account.tsx`), without touching
    sidebar into view, click the budget name to open its dropdown, then move the
    mouse away and let the sidebar slide out — confirm the dropdown now closes
    with it instead of lingering.
-4. Also verify the dropdown still works normally when the sidebar is _not_
+4. Also verify the dropdown still works normally when the sidebar is *not*
    floating (opens and closes via outside click as before, since `hidden`
    never becomes `true` in that mode).
+
 ````
 
 ```text
 File created successfully at: C:\Users\reese\.claude\plans\this-budgetname-element-acts-keen-naur.md (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:46:12Z)**_
@@ -2140,7 +2088,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:46:12Z)**_
 ```
 
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:48:50Z)**_
@@ -2148,7 +2095,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:48:50Z)**_
 <tool-use data-tool-type="generic" data-tool-name="ExitPlanMode"><details>
 <summary>Tool use: **ExitPlanMode**</summary>
 
-````text
+```text
 User has approved your plan. You can now start coding. Start with updating your todo list if applicable
 
 Your plan has been saved to: C:\Users\reese\.claude\plans\this-budgetname-element-acts-keen-naur.md
@@ -2202,8 +2149,7 @@ sidebar item that uses `useContextMenu` (e.g. `Account.tsx`), without touching
       dispatch(closeContextMenu());
     }
   }, [hidden, dispatch]);
-````
-
+  ```
 - No other files need to change. The file already carries `// @ts-strict-ignore`,
   so no new strict-typing concerns.
 
@@ -2216,11 +2162,10 @@ sidebar item that uses `useContextMenu` (e.g. `Account.tsx`), without touching
    sidebar into view, click the budget name to open its dropdown, then move the
    mouse away and let the sidebar slide out — confirm the dropdown now closes
    with it instead of lingering.
-4. Also verify the dropdown still works normally when the sidebar is _not_
+4. Also verify the dropdown still works normally when the sidebar is *not*
    floating (opens and closes via outside click as before, since `hidden`
    never becomes `true` in that mode).
-
-````
+```
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:48:52Z)**_
@@ -2234,8 +2179,7 @@ _**Agent (claude-sonnet-5 2026-09-15 00:49:11Z)**_
 
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\SidebarProvider.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
-````
-
+```
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:49:20Z)**_
@@ -2246,7 +2190,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:49:20Z)**_
 ```text
 The file c:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\SidebarProvider.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:49:22Z)**_
@@ -2264,7 +2207,6 @@ Lint and auto-fix the edited file
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:50:18Z)**_
@@ -2276,7 +2218,6 @@ Lint and auto-fix the edited file
 ```text
 Finished in 9079ms on 2303 files using 16 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:50:21Z)**_
@@ -2292,7 +2233,6 @@ Run typecheck and filter for relevant errors
 ```text
 (PowerShell completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:53:11Z)**_
@@ -2315,26 +2255,26 @@ _**Agent (claude-sonnet-5 2026-09-15 00:53:11Z)**_
 7	  useState,
 8	} from 'react';
 9	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-10
+10	
 11	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-12
+12	
 13	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 14	import { useGlobalPref } from '#hooks/useGlobalPref';
 15	import { useDispatch } from '#redux';
-16
+16	
 17	type SidebarContextValue = {
 18	  hidden: boolean;
 19	  setHidden: Dispatch<SetStateAction<boolean>>;
 20	  floating: boolean;
 21	  alwaysFloats: boolean;
 22	};
-23
+23	
 24	const SidebarContext = createContext<SidebarContextValue>(null);
-25
+25	
 26	type SidebarProviderProps = {
 27	  children: ReactNode;
 28	};
-29
+29	
 30	export function SidebarProvider({ children }: SidebarProviderProps) {
 31	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 32	  const [hidden, setHidden] = useState(true);
@@ -2342,13 +2282,13 @@ _**Agent (claude-sonnet-5 2026-09-15 00:53:11Z)**_
 34	  const alwaysFloats = width < 668;
 35	  const floating = floatingSidebar || alwaysFloats;
 36	  const dispatch = useDispatch();
-37
+37	
 38	  useEffect(() => {
 39	    if (hidden) {
 40	      dispatch(closeContextMenu());
 41	    }
 42	  }, [hidden, dispatch]);
-43
+43	
 44	  return (
 45	    <SidebarContext.Provider
 46	      value={{ hidden, setHidden, floating, alwaysFloats }}
@@ -2357,11 +2297,11 @@ _**Agent (claude-sonnet-5 2026-09-15 00:53:11Z)**_
 49	    </SidebarContext.Provider>
 50	  );
 51	}
-52
+52	
 53	export function useSidebar() {
 54	  const { hidden, setHidden, floating, alwaysFloats } =
 55	    useContext(SidebarContext);
-56
+56	
 57	  return useMemo(
 58	    () => ({ hidden, setHidden, floating, alwaysFloats }),
 59	    [hidden, setHidden, floating, alwaysFloats],
@@ -2369,7 +2309,6 @@ _**Agent (claude-sonnet-5 2026-09-15 00:53:11Z)**_
 61	}
 62
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 00:53:15Z)**_
@@ -2396,20 +2335,20 @@ _**Agent (claude-sonnet-5 2026-09-15 01:00:08Z)**_
 1	import { useCallback, useEffect, useRef } from 'react';
 2	import type { ComponentProps } from 'react';
 3	import { Popover as ReactAriaPopover } from 'react-aria-components';
-4
+4	
 5	import { css } from '@emotion/css';
-6
+6	
 7	import { styles } from './styles';
-8
+8	
 9	type PopoverProps = ComponentProps<typeof ReactAriaPopover>;
-10
+10	
 11	export const Popover = ({
 12	  style = {},
 13	  shouldCloseOnInteractOutside,
 14	  ...props
 15	}: PopoverProps) => {
 16	  const ref = useRef<HTMLElement>(null);
-17
+17	
 18	  const handleFocus = useCallback(
 19	    (e: FocusEvent) => {
 20	      if (!ref.current?.contains(e.relatedTarget as Node)) {
@@ -2418,7 +2357,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:00:08Z)**_
 23	    },
 24	    [props],
 25	  );
-26
+26	
 27	  useEffect(() => {
 28	    if (!props.isNonModal) return;
 29	    if (props.isOpen) {
@@ -2427,7 +2366,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:00:08Z)**_
 32	      ref.current?.removeEventListener('focusout', handleFocus);
 33	    }
 34	  }, [handleFocus, props.isNonModal, props.isOpen]);
-35
+35	
 36	  return (
 37	    <ReactAriaPopover
 38	      data-popover
@@ -2445,7 +2384,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:00:08Z)**_
 50	        if (shouldCloseOnInteractOutside) {
 51	          return shouldCloseOnInteractOutside(element);
 52	        }
-53
+53	
 54	        return true;
 55	      }}
 56	      {...props}
@@ -2454,7 +2393,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:00:08Z)**_
 59	};
 60
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:00:21Z)**_
@@ -2506,26 +2444,26 @@ _**Agent (claude-sonnet-5 2026-09-15 01:03:38Z)**_
 7	  useState,
 8	} from 'react';
 9	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-10
+10	
 11	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-12
+12	
 13	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 14	import { useGlobalPref } from '#hooks/useGlobalPref';
 15	import { useDispatch } from '#redux';
-16
+16	
 17	type SidebarContextValue = {
 18	  hidden: boolean;
 19	  setHidden: Dispatch<SetStateAction<boolean>>;
 20	  floating: boolean;
 21	  alwaysFloats: boolean;
 22	};
-23
+23	
 24	const SidebarContext = createContext<SidebarContextValue>(null);
-25
+25	
 26	type SidebarProviderProps = {
 27	  children: ReactNode;
 28	};
-29
+29	
 30	export function SidebarProvider({ children }: SidebarProviderProps) {
 31	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 32	  const [hidden, setHidden] = useState(true);
@@ -2533,13 +2471,13 @@ _**Agent (claude-sonnet-5 2026-09-15 01:03:38Z)**_
 34	  const alwaysFloats = width < 668;
 35	  const floating = floatingSidebar || alwaysFloats;
 36	  const dispatch = useDispatch();
-37
+37	
 38	  useEffect(() => {
 39	    if (hidden) {
 40	      dispatch(closeContextMenu());
 41	    }
 42	  }, [hidden, dispatch]);
-43
+43	
 44	  return (
 45	    <SidebarContext.Provider
 46	      value={{ hidden, setHidden, floating, alwaysFloats }}
@@ -2548,11 +2486,11 @@ _**Agent (claude-sonnet-5 2026-09-15 01:03:38Z)**_
 49	    </SidebarContext.Provider>
 50	  );
 51	}
-52
+52	
 53	export function useSidebar() {
 54	  const { hidden, setHidden, floating, alwaysFloats } =
 55	    useContext(SidebarContext);
-56
+56	
 57	  return useMemo(
 58	    () => ({ hidden, setHidden, floating, alwaysFloats }),
 59	    [hidden, setHidden, floating, alwaysFloats],
@@ -2560,7 +2498,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:03:38Z)**_
 61	}
 62
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:04:48Z)**_
@@ -2571,7 +2508,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:04:48Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\SidebarProvider.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:04:51Z)**_
@@ -2587,7 +2523,6 @@ Lint and auto-fix the edited file
 ```text
 Finished in 8524ms on 2303 files using 16 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:05:50Z)**_
@@ -2606,26 +2541,26 @@ _**Agent (claude-sonnet-5 2026-09-15 01:05:50Z)**_
 7	  useState,
 8	} from 'react';
 9	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-10
+10	
 11	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-12
+12	
 13	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 14	import { useGlobalPref } from '#hooks/useGlobalPref';
 15	import { useDispatch } from '#redux';
-16
+16	
 17	type SidebarContextValue = {
 18	  hidden: boolean;
 19	  setHidden: Dispatch<SetStateAction<boolean>>;
 20	  floating: boolean;
 21	  alwaysFloats: boolean;
 22	};
-23
+23	
 24	const SidebarContext = createContext<SidebarContextValue>(null);
-25
+25	
 26	type SidebarProviderProps = {
 27	  children: ReactNode;
 28	};
-29
+29	
 30	export function SidebarProvider({ children }: SidebarProviderProps) {
 31	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 32	  const [hidden, setHidden] = useState(true);
@@ -2633,13 +2568,13 @@ _**Agent (claude-sonnet-5 2026-09-15 01:05:50Z)**_
 34	  const alwaysFloats = width < 668;
 35	  const floating = floatingSidebar || alwaysFloats;
 36	  const dispatch = useDispatch();
-37
+37	
 38	  // The context-menu popover renders in a portal, outside the sidebar's own
 39	  // DOM subtree, so hovering it never triggers the sidebar's onMouseOver and
 40	  // never cancels its hide timer. Track popover hover separately so a menu
 41	  // opened from the sidebar isn't yanked away while it's still being used.
 42	  const [hoveringPopover, setHoveringPopover] = useState(false);
-43
+43	
 44	  useEffect(() => {
 45	    function handlePointerOver(e: PointerEvent) {
 46	      const target = e.target as Element | null;
@@ -2648,13 +2583,13 @@ _**Agent (claude-sonnet-5 2026-09-15 01:05:50Z)**_
 49	    document.addEventListener('pointerover', handlePointerOver);
 50	    return () => document.removeEventListener('pointerover', handlePointerOver);
 51	  }, []);
-52
+52	
 53	  useEffect(() => {
 54	    if (hidden && !hoveringPopover) {
 55	      dispatch(closeContextMenu());
 56	    }
 57	  }, [hidden, hoveringPopover, dispatch]);
-58
+58	
 59	  return (
 60	    <SidebarContext.Provider
 61	      value={{ hidden, setHidden, floating, alwaysFloats }}
@@ -2663,11 +2598,11 @@ _**Agent (claude-sonnet-5 2026-09-15 01:05:50Z)**_
 64	    </SidebarContext.Provider>
 65	  );
 66	}
-67
+67	
 68	export function useSidebar() {
 69	  const { hidden, setHidden, floating, alwaysFloats } =
 70	    useContext(SidebarContext);
-71
+71	
 72	  return useMemo(
 73	    () => ({ hidden, setHidden, floating, alwaysFloats }),
 74	    [hidden, setHidden, floating, alwaysFloats],
@@ -2675,7 +2610,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:05:50Z)**_
 76	}
 77
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:05:53Z)**_
@@ -2691,7 +2625,6 @@ Run typecheck and filter for relevant errors
 ```text
 (PowerShell completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:08:00Z)**_
@@ -2699,12 +2632,10 @@ _**Agent (claude-sonnet-5 2026-09-15 01:08:00Z)**_
 No errors. Here's a summary of the fix:
 
 **What changed** ([SidebarProvider.tsx](packages/desktop-client/src/components/sidebar/SidebarProvider.tsx#L38-L57)):
-
 - Added a document-level `pointerover` listener that checks whether the hovered element is inside `[data-popover]` (the attribute `Popover.tsx` already stamps on its root DOM node) — this is the only reliable way to detect "cursor is over the portal-rendered menu," since it lives outside the sidebar's own DOM subtree.
 - The `closeContextMenu()` dispatch now only fires when `hidden` is `true` **and** the cursor isn't currently over a popover.
 
 **Resulting behavior:**
-
 - Sidebar hides while you're hovering the dropdown → menu stays open (sidebar slides away underneath it, dropdown still usable).
 - Once you move off the dropdown entirely (and the sidebar is still hidden) → the menu closes right then, instead of lingering until an explicit click elsewhere.
 - If you leave both the sidebar and the dropdown before the 350ms hide-timer even fires, nothing changes from before — dropdown just closes normally on outside click/selection.
@@ -2739,7 +2670,6 @@ packages\desktop-client\src\components\sidebar\SidebarProvider.tsx:68:export fun
 packages\desktop-client\src\components\settings\Format.tsx:37:  const sidebar = useSidebar();
 packages\desktop-client\src\components\settings\Themes.tsx:44:  const sidebar = useSidebar();
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:13:14Z)**_
@@ -2750,11 +2680,11 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:14Z)**_
 
 ```text
 265	}
-266
+266	
 267	type TitlebarProps = {
 268	  style?: CSSProperties;
 269	};
-270
+270	
 271	export function Titlebar({ style }: TitlebarProps) {
 272	  const { t } = useTranslation();
 273	  const navigate = useNavigate();
@@ -2764,7 +2694,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:14Z)**_
 277	  const serverURL = useServerURL();
 278	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 279	  const isTestEnv = useIsTestEnv();
-280
+280	
 281	  return isNarrowWidth ? null : (
 282	    <View
 283	      style={{
@@ -2805,7 +2735,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:14Z)**_
 318	        </Button>
 319	      )}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:13:15Z)**_
@@ -2819,7 +2748,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:15Z)**_
 2	import type { CSSProperties } from 'react';
 3	import { ErrorBoundary } from 'react-error-boundary';
 4	import { useTranslation } from 'react-i18next';
-5
+5	
 6	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 7	import { SvgAdd } from '@actual-app/components/icons/v1';
 8	import { styles } from '@actual-app/components/styles';
@@ -2828,37 +2757,37 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:15Z)**_
 11	import * as Platform from '@actual-app/core/shared/platform';
 12	import { css } from '@emotion/css';
 13	import { Resizable } from 're-resizable';
-14
+14	
 15	import { FeatureErrorFallback } from '#components/FeatureErrorFallback';
 16	import { useGlobalPref } from '#hooks/useGlobalPref';
 17	import { useLocalPref } from '#hooks/useLocalPref';
 18	import { useResizeObserver } from '#hooks/useResizeObserver';
 19	import { replaceModal } from '#modals/modalsSlice';
 20	import { useDispatch } from '#redux';
-21
+21	
 22	import { Accounts } from './Accounts';
 23	import { BudgetName } from './BudgetName';
 24	import { PrimaryButtons } from './PrimaryButtons';
 25	import { SecondaryButtons } from './SecondaryButtons';
 26	import { useSidebar } from './SidebarProvider';
 27	import { ToggleButton } from './ToggleButton';
-28
+28	
 29	export function Sidebar() {
 30	  const hasWindowButtons = !Platform.isBrowser && Platform.OS === 'mac';
-31
+31	
 32	  const { t } = useTranslation();
 33	  const dispatch = useDispatch();
 34	  const sidebar = useSidebar();
 35	  const { width } = useResponsive();
 36	  const [isFloating = false, setFloatingSidebarPref] =
 37	    useGlobalPref('floatingSidebar');
-38
+38	
 39	  const [sidebarWidthLocalPref, setSidebarWidthLocalPref] =
 40	    useLocalPref('sidebarWidth');
 41	  const DEFAULT_SIDEBAR_WIDTH = 240;
 42	  const MAX_SIDEBAR_WIDTH = width / 3;
 43	  const MIN_SIDEBAR_WIDTH = 200;
-44
+44	
 45	  const [sidebarWidth, setSidebarWidth] = useState(
 46	    Math.min(
 47	      MAX_SIDEBAR_WIDTH,
@@ -2868,15 +2797,14 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:15Z)**_
 51	      ),
 52	    ),
 53	  );
-54
+54	
 55	  const onResizeStop = () => {
 56	    setSidebarWidthLocalPref(sidebarWidth);
 57	  };
-58
+58	
 59	  const onFloat = () => {
 60	    setFloatingSidebarPref(!isFloating);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:13:40Z)**_
@@ -2891,28 +2819,28 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:41Z)**_
 
 ```text
 1	import React from 'react';
-2
+2	
 3	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 4	import { View } from '@actual-app/components/view';
 5	import { useDebounceCallback } from 'usehooks-ts';
-6
+6	
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
-8
+8	
 9	import { Sidebar } from './Sidebar';
 10	import { useSidebar } from './SidebarProvider';
-11
+11	
 12	export function FloatableSidebar() {
 13	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
-14
+14	
 15	  const sidebar = useSidebar();
 16	  const { isNarrowWidth } = useResponsive();
-17
+17	
 18	  const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
 19	  const debouncedHideSidebar = useDebounceCallback(
 20	    () => sidebar.setHidden(true),
 21	    350,
 22	  );
-23
+23	
 24	  return isNarrowWidth ? null : (
 25	    <View
 26	      onMouseOver={
@@ -2953,7 +2881,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:41Z)**_
 61	}
 62
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:13:55Z)**_
@@ -2964,7 +2891,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:13:55Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\index.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:13:57Z)**_
@@ -2979,7 +2905,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:14:09Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\SidebarProvider.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:15:30Z)**_
@@ -2990,7 +2915,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:30Z)**_
 ```text
 The file C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\SidebarProvider.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
@@ -3014,15 +2938,15 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
 8	  useState,
 9	} from 'react';
 10	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-11
+11	
 12	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-13
+13	
 14	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 15	import { useGlobalPref } from '#hooks/useGlobalPref';
 16	import { useDispatch } from '#redux';
-17
+17	
 18	const HOVER_HIDE_DELAY = 350;
-19
+19	
 20	type SidebarContextValue = {
 21	  hidden: boolean;
 22	  setHidden: Dispatch<SetStateAction<boolean>>;
@@ -3030,13 +2954,13 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
 24	  floating: boolean;
 25	  alwaysFloats: boolean;
 26	};
-27
+27	
 28	const SidebarContext = createContext<SidebarContextValue>(null);
-29
+29	
 30	type SidebarProviderProps = {
 31	  children: ReactNode;
 32	};
-33
+33	
 34	export function SidebarProvider({ children }: SidebarProviderProps) {
 35	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 36	  const [hidden, setHidden] = useState(true);
@@ -3044,7 +2968,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
 38	  const alwaysFloats = width < 668;
 39	  const floating = floatingSidebar || alwaysFloats;
 40	  const dispatch = useDispatch();
-41
+41	
 42	  // A dropdown menu opened from the sidebar (e.g. BudgetName's) renders in a
 43	  // portal, outside the sidebar's own DOM subtree, so hovering it never
 44	  // triggers the sidebar's onMouseOver/onMouseLeave. Track hover of the
@@ -3053,7 +2977,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
 47	  // is being used, and only hide together once neither is hovered anymore.
 48	  const [hoveringSidebar, setHoveringSidebar] = useState(false);
 49	  const [hoveringPopover, setHoveringPopover] = useState(false);
-50
+50	
 51	  useEffect(() => {
 52	    function handlePointerOver(e: PointerEvent) {
 53	      const target = e.target as Element | null;
@@ -3062,7 +2986,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
 56	    document.addEventListener('pointerover', handlePointerOver);
 57	    return () => document.removeEventListener('pointerover', handlePointerOver);
 58	  }, []);
-59
+59	
 60	  useLayoutEffect(() => {
 61	    if (hoveringSidebar || hoveringPopover) {
 62	      setHidden(false);
@@ -3071,13 +2995,13 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
 65	    const timeout = setTimeout(() => setHidden(true), HOVER_HIDE_DELAY);
 66	    return () => clearTimeout(timeout);
 67	  }, [hoveringSidebar, hoveringPopover]);
-68
+68	
 69	  useEffect(() => {
 70	    if (hidden && !hoveringPopover) {
 71	      dispatch(closeContextMenu());
 72	    }
 73	  }, [hidden, hoveringPopover, dispatch]);
-74
+74	
 75	  return (
 76	    <SidebarContext.Provider
 77	      value={{ hidden, setHidden, setHoveringSidebar, floating, alwaysFloats }}
@@ -3086,11 +3010,11 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
 80	    </SidebarContext.Provider>
 81	  );
 82	}
-83
+83	
 84	export function useSidebar() {
 85	  const { hidden, setHidden, setHoveringSidebar, floating, alwaysFloats } =
 86	    useContext(SidebarContext);
-87
+87	
 88	  return useMemo(
 89	    () => ({ hidden, setHidden, setHoveringSidebar, floating, alwaysFloats }),
 90	    [hidden, setHidden, setHoveringSidebar, floating, alwaysFloats],
@@ -3098,7 +3022,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:33Z)**_
 92	}
 93
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:15:34Z)**_
@@ -3109,23 +3032,23 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:34Z)**_
 
 ```text
 1	import React from 'react';
-2
+2	
 3	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 4	import { View } from '@actual-app/components/view';
-5
+5	
 6	import { useGlobalPref } from '#hooks/useGlobalPref';
-7
+7	
 8	import { Sidebar } from './Sidebar';
 9	import { useSidebar } from './SidebarProvider';
-10
+10	
 11	export function FloatableSidebar() {
 12	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
-13
+13	
 14	  const sidebar = useSidebar();
 15	  const { isNarrowWidth } = useResponsive();
-16
+16	
 17	  const sidebarShouldFloat = floatingSidebar || sidebar.alwaysFloats;
-18
+18	
 19	  return isNarrowWidth ? null : (
 20	    <View
 21	      onMouseOver={
@@ -3167,7 +3090,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:15:34Z)**_
 57	}
 58
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:15:35Z)**_
@@ -3183,7 +3105,6 @@ Lint and auto-fix the edited files
 ```text
 Finished in 5823ms on 2303 files using 16 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:18:01Z)**_
@@ -3195,7 +3116,6 @@ Run typecheck and filter for relevant errors
 ```text
 (PowerShell completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:18:04Z)**_
@@ -3205,7 +3125,7 @@ _**Agent (claude-sonnet-5 2026-09-15 01:18:04Z)**_
  `C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\SidebarProvider.tsx`
 
 ```text
-50
+50	
 51	  useEffect(() => {
 52	    function handlePointerOver(e: PointerEvent) {
 53	      const target = e.target as Element | null;
@@ -3216,7 +3136,6 @@ _**Agent (claude-sonnet-5 2026-09-15 01:18:04Z)**_
 58	  }, []);
 59
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:18:12Z)**_
@@ -3226,7 +3145,7 @@ Clean. Both lint and typecheck pass.
 **Summary of the change:**
 
 - [`index.tsx`](packages/desktop-client/src/components/sidebar/index.tsx): `FloatableSidebar` no longer owns the hide-timer itself. Its `onMouseOver`/`onMouseLeave` now just report `setHoveringSidebar(true/false)` to the provider — the `usehooks-ts` debounce is gone.
-- [`SidebarProvider.tsx`](packages/desktop-client/src/components/sidebar/SidebarProvider.tsx): now tracks two booleans — `hoveringSidebar` (physical hover of the sidebar `View`) and `hoveringPopover` (hover of any portal-rendered dropdown, via the `[data-popover]` check from before). A single `useLayoutEffect` derives `hidden` from both combined: if either is true, show immediately; only once _both_ are false does the 350ms hide-timer start. The existing `closeContextMenu()` effect is unchanged — it still only fires once `hidden` is true and the popover isn't hovered.
+- [`SidebarProvider.tsx`](packages/desktop-client/src/components/sidebar/SidebarProvider.tsx): now tracks two booleans — `hoveringSidebar` (physical hover of the sidebar `View`) and `hoveringPopover` (hover of any portal-rendered dropdown, via the `[data-popover]` check from before). A single `useLayoutEffect` derives `hidden` from both combined: if either is true, show immediately; only once *both* are false does the 350ms hide-timer start. The existing `closeContextMenu()` effect is unchanged — it still only fires once `hidden` is true and the popover isn't hovered.
 
 This fixes the race I flagged earlier with the "just close the menu" approach — deriving `hidden` from one combined effect (rather than reacting to edge-triggered transitions from two independent debounces) avoids the scenario where moving from the popover onto the sidebar would spuriously schedule a hide.
 
@@ -3635,7 +3554,6 @@ List files changed in the working tree
  M upcoming-release-notes/wip-chore-api-migrate-node-version-validation-to-typescript.md
  M yarn.config.cjs
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:24:20Z)**_
@@ -3653,7 +3571,6 @@ Check diff stats for an unrelated file to see what changed
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:24:26Z)**_
@@ -3666,7 +3583,6 @@ Check diff stats for two unrelated files to see what changed
 warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
 warning: in the working copy of 'packages/docs/docs/faq.md', LF will be replaced by CRLF the next time Git touches it
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:24:34Z)**_
@@ -3682,7 +3598,6 @@ warning: in the working copy of 'packages/docs/docs/faq.md', LF will be replaced
 2	8	packages/desktop-client/src/components/sidebar/index.tsx
 true
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:24:51Z)**_
@@ -3727,7 +3642,6 @@ node_modules\sprintf-js\dist\.gitattributes
 node_modules\is-map\.gitattributes
 node_modules\is-weakset\.gitattributes
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:26:16Z)**_
@@ -3741,7 +3655,6 @@ true
 
 file:C:/Program Files/Git/etc/gitconfig	core.autocrlf=true
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:26:19Z)**_
@@ -3753,12 +3666,12 @@ _**Agent (claude-sonnet-5 2026-09-15 01:26:19Z)**_
 ```text
 1	# Set the default behavior, in case people don't have core.autocrlf set.
 2	* text=auto
-3
+3	
 4	# Explicitly declare text files you want to always be normalized and converted
 5	# to native line endings on checkout.
 6	# *.c text
 7	# *.h text
-8
+8	
 9	# Declare files that will always have LF line endings on checkout.
 10	*.js text eol=lf
 11	*.ts text eol=lf
@@ -3767,20 +3680,19 @@ _**Agent (claude-sonnet-5 2026-09-15 01:26:19Z)**_
 14	# Vitest snapshots are written with LF; pin them so Windows autocrlf doesn't
 15	# flag every test run as a diff.
 16	*.snap text eol=lf
-17
+17	
 18	**/bin/* text eol=lf
-19
+19	
 20	yarn.lock text eol=lf
-21
+21	
 22	# Declare files that will always have CRLF line endings on checkout.
 23	packages/mobile-client/android/gradlew.bat text eol=crlf
-24
+24	
 25	# Denote all files that are truly binary and should not be modified.
 26	*.png binary
 27	*.jpg binary
 28
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:26:55Z)**_
@@ -3793,7 +3705,7 @@ Recheck git status after the diff command touched the index cache
 Exit code 255
 Lines Words Characters Property
 ----- ----- ---------- --------
-  385
+  385                          
  M .claude/settings.json
  M .claude/skills/committing-actual-changes/SKILL.md
  M .claude/skills/review-actual-pr/SKILL.md
@@ -3810,7 +3722,6 @@ Lines Words Characters Property
  M .devcontainer/docker-compose.yml
  M .github/FUNDING.yml
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:27:04Z)**_
@@ -3828,7 +3739,6 @@ Lines Words Characters Property
 ----- ----- ---------- --------
     0                0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:28:06Z)**_
@@ -3844,7 +3754,6 @@ Compare index blob hash vs working tree hash for README.md
  M README.md
 warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:28:28Z)**_
@@ -3868,7 +3777,6 @@ git version 2.55.0.windows.5
 .codex/config.toml: needs update
  M README.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:29:24Z)**_
@@ -3881,7 +3789,6 @@ Directly inspect raw line-ending bytes in the working file vs the committed HEAD
 CRLF count: 0, LF-only count: 91
 HEAD blob -> CRLF count: 0, LF-only count: 0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:30:10Z)**_
@@ -3903,7 +3810,6 @@ file:.git/config	core.logallrefupdates=true
 file:.git/config	core.symlinks=false
 file:.git/config	core.ignorecase=true
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:30:21Z)**_
@@ -3921,7 +3827,6 @@ Changes not staged for commit:
 
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:30:46Z)**_
@@ -3939,10 +3844,10 @@ Test-Path : Illegal characters in path.
 At line:5 char:13
 +   if (-not (Test-Path -LiteralPath $f -PathType Leaf)) { continue }
 +             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : InvalidArgument: (C:\Users\reese\...-setup copy.md":String) [Test-Path], ArgumentExcepti
+    + CategoryInfo          : InvalidArgument: (C:\Users\reese\...-setup copy.md":String) [Test-Path], ArgumentExcepti 
    on
     + FullyQualifiedErrorId : ItemExistsArgumentError,Microsoft.PowerShell.Commands.TestPathCommand
-
+ 
 Total checked: 385
 Phantom (identical hash, falsely flagged): 376
 Real content diffs: 8
@@ -3956,7 +3861,6 @@ ai-logs/sprint0/tigerk9/2026-09-13_claude-code_review-pr-34.md
 packages/desktop-client/src/components/sidebar/SidebarProvider.tsx
 packages/desktop-client/src/components/sidebar/index.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:33:17Z)**_
@@ -4359,7 +4263,6 @@ warning: in the working copy of 'README.md', LF will be replaced by CRLF the nex
 100644 797635a29ed6b82aa4b21d533eb7bef1fc4fc99b 0	README.md
 100644 blob 797635a29ed6b82aa4b21d533eb7bef1fc4fc99b	README.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:33:35Z)**_
@@ -4379,12 +4282,11 @@ README.md
 ---actual file info---
 
 git version 2.55.0.windows.5
-Length LastWriteTimeUtc      CreationTimeUtc
------- ----------------      ---------------
+Length LastWriteTimeUtc      CreationTimeUtc    
+------ ----------------      ---------------    
   4668 9/15/2026 12:49:39 AM 9/7/2026 2:01:04 PM
 ---git version cache info---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:35:15Z)**_
@@ -4410,7 +4312,6 @@ packages/desktop-client/src/components/sidebar/SidebarProvider.tsx
 packages/desktop-client/src/components/sidebar/index.tsx
 Phantom list saved: C:\Users\reese\AppData\Local\Temp\claude_crlf_check\phantom.txt
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:37:56Z)**_
@@ -4432,9 +4333,9 @@ index c13267a5e..019accae5 100644
 --- a/STUDENTS.md
 +++ b/STUDENTS.md
 @@ -13,11 +13,11 @@ can explore and experiment with it. Everything runs locally in your browser.
-
+ 
  Install these once before you start:
-
+ 
 -| Tool | Version | Notes |
 -| --- | --- | --- |
 -| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v` |
@@ -4443,7 +4344,6 @@ index c13267a5e..019accae5 100644
 +| Tool                           | Version         | Notes                                                                                                    |
 +| ------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------- |
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:38:11Z)**_
@@ -4460,7 +4360,6 @@ Set repo-local autocrlf to input so this repo stops fighting the global Windows 
 Set local core.autocrlf=input for this repo
 input
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:38:31Z)**_
@@ -4488,7 +4387,6 @@ Lines Words Characters Property
 ----- ----- ---------- --------
     8
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:38:52Z)**_
@@ -4504,7 +4402,6 @@ Confirm nothing got staged and my sidebar changes are still present as unstaged 
  .../src/components/sidebar/index.tsx               | 10 +---
  2 files changed, 53 insertions(+), 13 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 01:39:01Z)**_
@@ -4514,7 +4411,6 @@ Cleaned up. Here's what was actually going on and what I changed:
 **Root cause:** The Git-for-Windows machine-wide default is `core.autocrlf=true`, which conflicts with this repo's own `.gitattributes` (which already pins `*.ts`/`*.tsx`/`*.js`/`*.sh`/`*.snap`/`yarn.lock` to `eol=lf` and leaves everything else to `text=auto`). This left the git index's cached stat entries (recorded file sizes, from when the repo was checked out) out of sync with the real on-disk files — e.g. `README.md`'s index entry recorded 4759 bytes (a hypothetical CRLF version) while the real file was 4668 bytes (already pure LF, byte-identical to the committed blob). `git status`'s fast path trusted that stale stat entry and reported "modified" even though `git diff` correctly showed zero actual differences.
 
 **What I did:**
-
 1. Verified this precisely: for all 385 files `git status` flagged, computed each one's real content hash and compared it to the committed blob — **377 were byte-identical (pure stat-cache noise)**, and only **8 had genuine content differences**.
 2. Set `core.autocrlf=input` **locally for this repo only** (`git config --local`, not touched globally) — this stops future checkouts/operations here from doing the LF→CRLF conversion that caused the drift, while still guarding against ever committing CRLF by accident.
 3. Ran `git add --renormalize` scoped to exactly those 377 confirmed-identical files, which refreshed their stale index cache entries with no actual content change (verified `git diff --cached` is empty — nothing got staged).
@@ -4539,38 +4435,38 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:13Z)**_
 
 ```text
 1	import type { RefObject } from 'react';
-2
+2	
 3	import { act, renderHook } from '@testing-library/react';
 4	import { beforeEach, describe, expect, it, vi } from 'vitest';
 5	import type { Mock } from 'vitest';
-6
+6	
 7	import { addItems } from '#contextmenu/contextMenuSlice';
 8	import { useRefEventListener } from '#hooks/useRefEventListener';
 9	import { useDispatch } from '#redux';
-10
+10	
 11	import { useContextMenu } from './useContextMenu';
-12
+12	
 13	// Mock dependencies
 14	vi.mock('#redux', () => ({
 15	  useDispatch: vi.fn(),
 16	  useSelector: vi.fn(),
 17	}));
-18
+18	
 19	vi.mock('#hooks/useRefEventListener', () => ({
 20	  useRefEventListener: vi.fn(),
 21	}));
-22
+22	
 23	describe('useContextMenu', () => {
 24	  let mockDispatch: Mock;
 25	  let mockTriggerRef: {
 26	    current: { getBoundingClientRect: Mock; dispatchEvent: Mock };
 27	  };
-28
+28	
 29	  beforeEach(() => {
 30	    vi.clearAllMocks();
 31	    mockDispatch = vi.fn();
 32	    (useDispatch as unknown as Mock).mockReturnValue(mockDispatch);
-33
+33	
 34	    mockTriggerRef = {
 35	      current: {
 36	        getBoundingClientRect: vi.fn(() => ({ x: 100, y: 200, height: 50 })),
@@ -4578,49 +4474,49 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:13Z)**_
 38	      },
 39	    };
 40	  });
-41
+41	
 42	  it('should register contextmenu event listener on triggerRef', () => {
 43	    const items = [{ name: 'test', text: 'Test', onClick: vi.fn() }];
-44
+44	
 45	    renderHook(() =>
 46	      useContextMenu({
 47	        triggerRef: mockTriggerRef as unknown as RefObject<HTMLElement | null>,
 48	        items,
 49	      }),
 50	    );
-51
+51	
 52	    expect(useRefEventListener).toHaveBeenCalledWith(
 53	      mockTriggerRef,
 54	      'contextmenu',
 55	      expect.any(Function),
 56	    );
 57	  });
-58
+58	
 59	  it('should dispatch addItems when contextmenu event is fired and enabled is true', () => {
 60	    const items = [{ name: 'test', text: 'Test', onClick: vi.fn() }];
-61
+61	
 62	    renderHook(() =>
 63	      useContextMenu({
 64	        triggerRef: mockTriggerRef as unknown as RefObject<HTMLElement | null>,
 65	        items,
 66	      }),
 67	    );
-68
+68	
 69	    const listener = (useRefEventListener as Mock).mock.calls[0][2];
-70
+70	
 71	    // Simulate event
 72	    listener({
 73	      preventDefault: vi.fn(),
 74	      clientX: 100,
 75	      clientY: 200,
 76	    } as unknown as MouseEvent);
-77
+77	
 78	    expect(mockDispatch).toHaveBeenCalledWith(addItems(items));
 79	  });
-80
+80	
 81	  it('should not dispatch addItems when enabled is false', () => {
 82	    const items = [{ name: 'test', text: 'Test', onClick: vi.fn() }];
-83
+83	
 84	    renderHook(() =>
 85	      useContextMenu({
 86	        triggerRef: mockTriggerRef as unknown as RefObject<HTMLElement | null>,
@@ -4628,46 +4524,46 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:13Z)**_
 88	        items,
 89	      }),
 90	    );
-91
+91	
 92	    const listener = (useRefEventListener as Mock).mock.calls[0][2];
-93
+93	
 94	    // Simulate event
 95	    listener({
 96	      preventDefault: vi.fn(),
 97	      clientX: 100,
 98	      clientY: 200,
 99	    } as unknown as MouseEvent);
-100
+100	
 101	    expect(mockDispatch).not.toHaveBeenCalled();
 102	  });
-103
+103	
 104	  it('should provide handleContextMenu callback that dispatches contextmenu event', () => {
 105	    const items = [{ name: 'test', text: 'Test', onClick: vi.fn() }];
-106
+106	
 107	    const { result } = renderHook(() =>
 108	      useContextMenu({
 109	        triggerRef: mockTriggerRef as unknown as RefObject<HTMLElement | null>,
 110	        items,
 111	      }),
 112	    );
-113
+113	
 114	    act(() => {
 115	      result.current.handleContextMenu();
 116	    });
-117
+117	
 118	    expect(mockTriggerRef.current.getBoundingClientRect).toHaveBeenCalled();
 119	    expect(mockTriggerRef.current.dispatchEvent).toHaveBeenCalled();
-120
+120	
 121	    const dispatchedEvent =
 122	      mockTriggerRef.current.dispatchEvent.mock.calls[0][0];
 123	    expect(dispatchedEvent.type).toBe('contextmenu');
 124	    expect(dispatchedEvent.clientX).toBe(100);
 125	    expect(dispatchedEvent.clientY).toBe(250); // y + height (200 + 50)
 126	  });
-127
+127	
 128	  it('handleContextMenu should do nothing if enabled is false', () => {
 129	    const items = [{ name: 'test', text: 'Test', onClick: vi.fn() }];
-130
+130	
 131	    const { result } = renderHook(() =>
 132	      useContextMenu({
 133	        triggerRef: mockTriggerRef as unknown as RefObject<HTMLElement | null>,
@@ -4675,17 +4571,16 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:13Z)**_
 135	        items,
 136	      }),
 137	    );
-138
+138	
 139	    act(() => {
 140	      result.current.handleContextMenu();
 141	    });
-142
+142	
 143	    expect(mockTriggerRef.current.dispatchEvent).not.toHaveBeenCalled();
 144	  });
 145	});
 146
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:13Z)**_
@@ -4699,7 +4594,6 @@ Check testing-library dependency
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:20Z)**_
@@ -4714,7 +4608,6 @@ packages\desktop-client\package.json:150:    "@testing-library/jest-dom": "^6.9.
 packages\desktop-client\package.json:151:    "@testing-library/react": "16.3.2",
 packages\desktop-client\package.json:152:    "@testing-library/user-event": "14.6.1",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:34Z)**_
@@ -4726,7 +4619,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:34Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:34Z)**_
@@ -4740,7 +4632,6 @@ packages\desktop-client\i18next-parser.config.js
 packages\desktop-client\playwright.config.ts
 packages\desktop-client\vite.config.mts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:37Z)**_
@@ -4754,7 +4645,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:37Z)**_
 401:      environment: 'jsdom',
 403:      setupFiles: './src/setupTests.ts',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:40Z)**_
@@ -4778,15 +4668,15 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 8	  useState,
 9	} from 'react';
 10	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-11
+11	
 12	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
-13
+13	
 14	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 15	import { useGlobalPref } from '#hooks/useGlobalPref';
 16	import { useDispatch } from '#redux';
-17
+17	
 18	const HOVER_HIDE_DELAY = 350;
-19
+19	
 20	type SidebarContextValue = {
 21	  hidden: boolean;
 22	  setHidden: Dispatch<SetStateAction<boolean>>;
@@ -4794,13 +4684,13 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 24	  floating: boolean;
 25	  alwaysFloats: boolean;
 26	};
-27
+27	
 28	const SidebarContext = createContext<SidebarContextValue>(null);
-29
+29	
 30	type SidebarProviderProps = {
 31	  children: ReactNode;
 32	};
-33
+33	
 34	export function SidebarProvider({ children }: SidebarProviderProps) {
 35	  const [floatingSidebar] = useGlobalPref('floatingSidebar');
 36	  const [hidden, setHidden] = useState(true);
@@ -4808,7 +4698,7 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 38	  const alwaysFloats = width < 668;
 39	  const floating = floatingSidebar || alwaysFloats;
 40	  const dispatch = useDispatch();
-41
+41	
 42	  // A dropdown menu opened from the sidebar (e.g. BudgetName's) renders in a
 43	  // portal, outside the sidebar's own DOM subtree, so hovering it never
 44	  // triggers the sidebar's onMouseOver/onMouseLeave. Track hover of the
@@ -4817,7 +4707,7 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 47	  // is being used, and only hide together once neither is hovered anymore.
 48	  const [hoveringSidebar, setHoveringSidebar] = useState(false);
 49	  const [hoveringPopover, setHoveringPopover] = useState(false);
-50
+50	
 51	  useEffect(() => {
 52	    function handlePointerOver(e: PointerEvent) {
 53	      const target = e.target as Element | null;
@@ -4826,7 +4716,7 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 56	    document.addEventListener('pointerover', handlePointerOver);
 57	    return () => document.removeEventListener('pointerover', handlePointerOver);
 58	  }, []);
-59
+59	
 60	  useLayoutEffect(() => {
 61	    if (hoveringSidebar || hoveringPopover) {
 62	      setHidden(false);
@@ -4835,13 +4725,13 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 65	    const timeout = setTimeout(() => setHidden(true), HOVER_HIDE_DELAY);
 66	    return () => clearTimeout(timeout);
 67	  }, [hoveringSidebar, hoveringPopover]);
-68
+68	
 69	  useEffect(() => {
 70	    if (hidden && !hoveringPopover) {
 71	      dispatch(closeContextMenu());
 72	    }
 73	  }, [hidden, hoveringPopover, dispatch]);
-74
+74	
 75	  return (
 76	    <SidebarContext.Provider
 77	      value={{ hidden, setHidden, setHoveringSidebar, floating, alwaysFloats }}
@@ -4850,11 +4740,11 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 80	    </SidebarContext.Provider>
 81	  );
 82	}
-83
+83	
 84	export function useSidebar() {
 85	  const { hidden, setHidden, setHoveringSidebar, floating, alwaysFloats } =
 86	    useContext(SidebarContext);
-87
+87	
 88	  return useMemo(
 89	    () => ({ hidden, setHidden, setHoveringSidebar, floating, alwaysFloats }),
 90	    [hidden, setHidden, setHoveringSidebar, floating, alwaysFloats],
@@ -4862,7 +4752,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 92	}
 93
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
@@ -4874,7 +4763,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:41Z)**_
 ```text
 12:export function useGlobalPref<K extends keyof GlobalPrefs>(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:44Z)**_
@@ -4885,16 +4773,16 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:44Z)**_
 
 ```text
 1	import { useCallback } from 'react';
-2
+2	
 3	import type { GlobalPrefs } from '@actual-app/core/types/prefs';
-4
+4	
 5	import { saveGlobalPrefs } from '#prefs/prefsSlice';
 6	import { useDispatch, useSelector } from '#redux';
-7
+7	
 8	type SetGlobalPrefAction<K extends keyof GlobalPrefs> = (
 9	  value: GlobalPrefs[K],
 10	) => void;
-11
+11	
 12	export function useGlobalPref<K extends keyof GlobalPrefs>(
 13	  prefName: K,
 14	  onSaveGlobalPrefs?: () => void,
@@ -4916,12 +4804,11 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:44Z)**_
 30	  const globalPref = useSelector(
 31	    state => state.prefs.global?.[prefName] as GlobalPrefs[K],
 32	  );
-33
+33	
 34	  return [globalPref, setGlobalPref];
 35	}
 36
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:17:45Z)**_
@@ -4941,7 +4828,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:17:45Z)**_
 19:    isWideWidth: width >= breakpoints.wide,
 21:    width,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:18:16Z)**_
@@ -4953,7 +4839,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:18:16Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:18:16Z)**_
@@ -4966,7 +4851,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:18:16Z)**_
 1:import { useWindowSize } from 'usehooks-ts';
 6:  const { height, width } = useWindowSize({
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:18:59Z)**_
@@ -4978,7 +4862,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:18:59Z)**_
 ```text
 No matches found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:19:04Z)**_
@@ -4990,7 +4873,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:19:04Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:19:07Z)**_
@@ -5005,7 +4887,6 @@ packages\component-library\src\View.tsx:30:export const View = forwardRef<HTMLDi
 packages\component-library\src\View.tsx:31:  const { className = '', style, nativeStyle, innerRef, ...restProps } = props;
 packages\component-library\src\View.tsx:35:      {...restProps}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:19:22Z)**_
@@ -5200,12 +5081,12 @@ describe('SidebarProvider', () => {
     expect(mockDispatch).not.toHaveBeenCalledWith(closeContextMenu());
   });
 });
+
 ```
 
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\SidebarProvider.test.tsx (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:20:04Z)**_
@@ -5251,19 +5132,14 @@ describe('FloatableSidebar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setHoveringSidebar = vi.fn();
-    (useResponsive as unknown as Mock).mockReturnValue({
-      isNarrowWidth: false,
-    });
+    (useResponsive as unknown as Mock).mockReturnValue({ isNarrowWidth: false });
   });
 
   function setup({
     floatingSidebar = true,
     alwaysFloats = false,
   }: { floatingSidebar?: boolean; alwaysFloats?: boolean } = {}) {
-    (useGlobalPref as unknown as Mock).mockReturnValue([
-      floatingSidebar,
-      vi.fn(),
-    ]);
+    (useGlobalPref as unknown as Mock).mockReturnValue([floatingSidebar, vi.fn()]);
     (useSidebar as unknown as Mock).mockReturnValue({
       hidden: false,
       setHidden: vi.fn(),
@@ -5303,12 +5179,12 @@ describe('FloatableSidebar', () => {
     expect(setHoveringSidebar).not.toHaveBeenCalled();
   });
 });
+
 ```
 
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\index.test.tsx (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:20:18Z)**_
@@ -5332,7 +5208,6 @@ Run the two new sidebar test files
    Start at  22:20:41
    Duration  58.88s (transform 7.28s, setup 38.19s, import 13.62s, tests 178ms, environment 62.43s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:21:44Z)**_
@@ -5350,7 +5225,6 @@ Temporarily stash the fix to verify tests catch the regression
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:22:22Z)**_
@@ -5364,7 +5238,6 @@ Saved working directory and index state On master: temp-revert-fix-for-test-veri
 ?? packages/desktop-client/src/components/sidebar/SidebarProvider.test.tsx
 ?? packages/desktop-client/src/components/sidebar/index.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:22:27Z)**_
@@ -5378,7 +5251,6 @@ master
 stash@{0}: On master: temp-revert-fix-for-test-verification
 stash@{1}: WIP on feat/issue-9-limit-budget-category-name-length: 8c935c9d6 [AI] docs: add release note for budget category name length limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:22:37Z)**_
@@ -5406,15 +5278,15 @@ Exit code 1
      × reports hovering the sidebar on mouse over when floating 82ms
      × reports the sidebar as no longer hovered on mouse leave when floating 10ms
      ✓ does not attach hover handlers when the sidebar is docked (not floating) 15ms
-node.exe :
+node.exe : 
 At C:\Users\reese\AppData\Roaming\npm\yarn.ps1:24 char:5
 +     & "node$exe"  "$basedir/node_modules/corepack/dist/yarn.js" $args
 +     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
-
+ 
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
- FAIL  src/components/sidebar/index.test.tsx > FloatableSidebar > reports hovering the sidebar on mouse over when
+ FAIL  src/components/sidebar/index.test.tsx > FloatableSidebar > reports hovering the sidebar on mouse over when 
 floating
 AssertionError: expected "vi.fn()" to be called with arguments: [ true ]
 Number of calls: 0
@@ -5426,7 +5298,7 @@ Number of calls: 0
      58|   });
      59|
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
- FAIL  src/components/sidebar/index.test.tsx > FloatableSidebar > reports the sidebar as no longer hovered on mouse
+ FAIL  src/components/sidebar/index.test.tsx > FloatableSidebar > reports the sidebar as no longer hovered on mouse 
 leave when floating
 AssertionError: expected "vi.fn()" to be called with arguments: [ false ]
 Number of calls: 0
@@ -5438,7 +5310,7 @@ Number of calls: 0
      66|   });
      67|
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
- FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > shows the sidebar immediately while it is
+ FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > shows the sidebar immediately while it is 
 being hovered
 TypeError: result.current.setHoveringSidebar is not a function
  ❯ src/components/sidebar/SidebarProvider.test.tsx:61:22
@@ -5453,7 +5325,7 @@ TypeError: result.current.setHoveringSidebar is not a function
  ❯ Proxy.act ../../node_modules/@testing-library/react/dist/act-compat.js:46:25
  ❯ src/components/sidebar/SidebarProvider.test.tsx:60:5
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
- FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > hides the sidebar 350ms after the mouse
+ FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > hides the sidebar 350ms after the mouse 
 leaves it
 TypeError: result.current.setHoveringSidebar is not a function
  ❯ src/components/sidebar/SidebarProvider.test.tsx:71:22
@@ -5468,7 +5340,7 @@ TypeError: result.current.setHoveringSidebar is not a function
  ❯ Proxy.act ../../node_modules/@testing-library/react/dist/act-compat.js:46:25
  ❯ src/components/sidebar/SidebarProvider.test.tsx:70:5
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
- FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > keeps the sidebar visible while a dropdown
+ FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > keeps the sidebar visible while a dropdown 
 menu opened from it is hovered
 TypeError: result.current.setHoveringSidebar is not a function
  ❯ src/components/sidebar/SidebarProvider.test.tsx:91:22
@@ -5483,7 +5355,7 @@ TypeError: result.current.setHoveringSidebar is not a function
  ❯ Proxy.act ../../node_modules/@testing-library/react/dist/act-compat.js:46:25
  ❯ src/components/sidebar/SidebarProvider.test.tsx:90:5
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
- FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > hides and closes the context menu once the
+ FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > hides and closes the context menu once the 
 mouse leaves the dropdown too
 TypeError: result.current.setHoveringSidebar is not a function
  ❯ src/components/sidebar/SidebarProvider.test.tsx:119:22
@@ -5498,7 +5370,7 @@ TypeError: result.current.setHoveringSidebar is not a function
  ❯ Proxy.act ../../node_modules/@testing-library/react/dist/act-compat.js:46:25
  ❯ src/components/sidebar/SidebarProvider.test.tsx:118:5
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
- FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > does not close the context menu while the
+ FAIL  src/components/sidebar/SidebarProvider.test.tsx > SidebarProvider > does not close the context menu while the 
 dropdown is still hovered
 TypeError: result.current.setHoveringSidebar is not a function
  ❯ src/components/sidebar/SidebarProvider.test.tsx:161:22
@@ -5519,7 +5391,6 @@ TypeError: result.current.setHoveringSidebar is not a function
    Start at  22:23:59
    Duration  8.01s (transform 3.41s, setup 8.83s, import 1.92s, tests 197ms, environment 3.69s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:24:12Z)**_
@@ -5560,7 +5431,6 @@ Dropped refs/stash@{0} (2ebb581f585a6cdf86d05bc2bd91b04727081348)
 ?? packages/desktop-client/src/components/sidebar/SidebarProvider.test.tsx
 ?? packages/desktop-client/src/components/sidebar/index.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:25:49Z)**_
@@ -5584,7 +5454,6 @@ Re-run tests to confirm they pass again with the fix restored
    Start at  22:25:58
    Duration  6.45s (transform 3.00s, setup 6.88s, import 1.58s, tests 156ms, environment 3.40s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:26:50Z)**_
@@ -5598,7 +5467,6 @@ Exit code 1
 Finished in 6760ms on 2309 files using 16 threads.
 packages/desktop-client/src/components/sidebar/SidebarProvider.test.tsx:1:1: error react(jsx-filename-extension): Only files containing JSX may use the extension '.tsx' help: Rename the file with a good extension.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:26:58Z)**_
@@ -5612,7 +5480,6 @@ Rename the non-JSX test file to .test.ts
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:27:02Z)**_
@@ -5626,90 +5493,90 @@ _**Agent (claude-sonnet-5 2026-09-15 02:27:02Z)**_
 2	import { act, renderHook } from '@testing-library/react';
 3	import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 4	import type { Mock } from 'vitest';
-5
+5	
 6	import { closeContextMenu } from '#contextmenu/contextMenuSlice';
 7	import { useGlobalPref } from '#hooks/useGlobalPref';
 8	import { useDispatch } from '#redux';
-9
+9	
 10	import { SidebarProvider, useSidebar } from './SidebarProvider';
-11
+11	
 12	vi.mock('#redux', () => ({
 13	  useDispatch: vi.fn(),
 14	  useSelector: vi.fn(),
 15	}));
-16
+16	
 17	vi.mock('#hooks/useGlobalPref', () => ({
 18	  useGlobalPref: vi.fn(),
 19	}));
-20
+20	
 21	vi.mock('@actual-app/components/hooks/useResponsive', () => ({
 22	  useResponsive: vi.fn(),
 23	}));
-24
+24	
 25	function dispatchPointerOver(target: Element) {
 26	  target.dispatchEvent(new Event('pointerover', { bubbles: true }));
 27	}
-28
+28	
 29	function renderSidebar() {
 30	  return renderHook(() => useSidebar(), { wrapper: SidebarProvider });
 31	}
-32
+32	
 33	describe('SidebarProvider', () => {
 34	  let mockDispatch: Mock;
-35
+35	
 36	  beforeEach(() => {
 37	    vi.clearAllMocks();
 38	    vi.useFakeTimers();
-39
+39	
 40	    mockDispatch = vi.fn();
 41	    (useDispatch as unknown as Mock).mockReturnValue(mockDispatch);
 42	    (useGlobalPref as unknown as Mock).mockReturnValue([false, vi.fn()]);
 43	    (useResponsive as unknown as Mock).mockReturnValue({ width: 1000 });
 44	  });
-45
+45	
 46	  afterEach(() => {
 47	    document.body.innerHTML = '';
 48	    vi.useRealTimers();
 49	  });
-50
+50	
 51	  it('starts hidden', () => {
 52	    const { result } = renderSidebar();
 53	    expect(result.current.hidden).toBe(true);
 54	  });
-55
+55	
 56	  it('shows the sidebar immediately while it is being hovered', () => {
 57	    const { result } = renderSidebar();
-58
+58	
 59	    act(() => {
 60	      result.current.setHoveringSidebar(true);
 61	    });
-62
+62	
 63	    expect(result.current.hidden).toBe(false);
 64	  });
-65
+65	
 66	  it('hides the sidebar 350ms after the mouse leaves it', () => {
 67	    const { result } = renderSidebar();
-68
+68	
 69	    act(() => {
 70	      result.current.setHoveringSidebar(true);
 71	    });
 72	    act(() => {
 73	      result.current.setHoveringSidebar(false);
 74	    });
-75
+75	
 76	    // Not hidden yet -- still within the debounce window.
 77	    expect(result.current.hidden).toBe(false);
-78
+78	
 79	    act(() => {
 80	      vi.advanceTimersByTime(350);
 81	    });
-82
+82	
 83	    expect(result.current.hidden).toBe(true);
 84	  });
-85
+85	
 86	  it('keeps the sidebar visible while a dropdown menu opened from it is hovered', () => {
 87	    const { result } = renderSidebar();
-88
+88	
 89	    act(() => {
 90	      result.current.setHoveringSidebar(true);
 91	    });
@@ -5717,95 +5584,94 @@ _**Agent (claude-sonnet-5 2026-09-15 02:27:02Z)**_
 93	      // Mouse moves off the sidebar and onto its (portal-rendered) dropdown.
 94	      result.current.setHoveringSidebar(false);
 95	    });
-96
+96	
 97	    const popover = document.createElement('div');
 98	    popover.setAttribute('data-popover', '');
 99	    document.body.appendChild(popover);
-100
+100	
 101	    act(() => {
 102	      dispatchPointerOver(popover);
 103	    });
-104
+104	
 105	    // Well past the normal 350ms hide delay -- should still be visible
 106	    // because the dropdown is being hovered.
 107	    act(() => {
 108	      vi.advanceTimersByTime(1000);
 109	    });
-110
+110	
 111	    expect(result.current.hidden).toBe(false);
 112	  });
-113
+113	
 114	  it('hides and closes the context menu once the mouse leaves the dropdown too', () => {
 115	    const { result } = renderSidebar();
-116
+116	
 117	    act(() => {
 118	      result.current.setHoveringSidebar(true);
 119	    });
 120	    act(() => {
 121	      result.current.setHoveringSidebar(false);
 122	    });
-123
+123	
 124	    const popover = document.createElement('div');
 125	    popover.setAttribute('data-popover', '');
 126	    document.body.appendChild(popover);
-127
+127	
 128	    act(() => {
 129	      dispatchPointerOver(popover);
 130	    });
 131	    act(() => {
 132	      vi.advanceTimersByTime(1000);
 133	    });
-134
+134	
 135	    expect(result.current.hidden).toBe(false);
 136	    mockDispatch.mockClear();
-137
+137	
 138	    const elsewhere = document.createElement('div');
 139	    document.body.appendChild(elsewhere);
-140
+140	
 141	    act(() => {
 142	      dispatchPointerOver(elsewhere);
 143	    });
-144
+144	
 145	    // Leaving the popover restarts the same hide delay.
 146	    expect(result.current.hidden).toBe(false);
-147
+147	
 148	    act(() => {
 149	      vi.advanceTimersByTime(350);
 150	    });
-151
+151	
 152	    expect(result.current.hidden).toBe(true);
 153	    expect(mockDispatch).toHaveBeenCalledWith(closeContextMenu());
 154	  });
-155
+155	
 156	  it('does not close the context menu while the dropdown is still hovered', () => {
 157	    const { result } = renderSidebar();
-158
+158	
 159	    act(() => {
 160	      result.current.setHoveringSidebar(true);
 161	    });
 162	    act(() => {
 163	      result.current.setHoveringSidebar(false);
 164	    });
-165
+165	
 166	    const popover = document.createElement('div');
 167	    popover.setAttribute('data-popover', '');
 168	    document.body.appendChild(popover);
-169
+169	
 170	    mockDispatch.mockClear();
-171
+171	
 172	    act(() => {
 173	      dispatchPointerOver(popover);
 174	    });
 175	    act(() => {
 176	      vi.advanceTimersByTime(1000);
 177	    });
-178
+178	
 179	    expect(mockDispatch).not.toHaveBeenCalledWith(closeContextMenu());
 180	  });
 181	});
 182
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:35:14Z)**_
@@ -5996,12 +5862,12 @@ describe('SidebarProvider', () => {
     expect(mockDispatch).not.toHaveBeenCalledWith(closeContextMenu());
   });
 });
+
 ```
 
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar\SidebarProvider.test.ts (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:35:48Z)**_
@@ -6014,12 +5880,11 @@ Remove the old .tsx test file now that content is duplicated as .ts
     Directory: C:\Users\reese\SE\actual-budget\packages\desktop-client\src\components\sidebar
 
 
-Mode                 LastWriteTime         Length Name
-----                 -------------         ------ ----
--a----         9/14/2026  10:26 PM           2430 index.test.tsx
+Mode                 LastWriteTime         Length Name                                                                 
+----                 -------------         ------ ----                                                                 
+-a----         9/14/2026  10:26 PM           2430 index.test.tsx                                                       
 -a----         9/14/2026  10:35 PM           4722 SidebarProvider.test.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:35:50Z)**_
@@ -6035,7 +5900,6 @@ Lint and auto-fix the renamed test files
 ```text
 Finished in 5099ms on 2309 files using 16 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:36:08Z)**_
@@ -6059,7 +5923,6 @@ Final test run after rename
    Start at  22:36:16
    Duration  6.19s (transform 2.20s, setup 6.69s, import 1.37s, tests 161ms, environment 3.27s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:38:27Z)**_
@@ -6071,7 +5934,6 @@ Run full typecheck and filter for relevant errors
 ```text
 (PowerShell completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:38:37Z)**_
@@ -6087,7 +5949,7 @@ Clean typecheck too. Here's a summary:
    - Shows immediately when hovered.
    - Hides 350ms after the mouse leaves.
    - **Stays visible while a `[data-popover]` dropdown is hovered**, even well past 350ms (the actual bug fix).
-   - Hides _and_ dispatches `closeContextMenu()` once the mouse leaves the dropdown too.
+   - Hides *and* dispatches `closeContextMenu()` once the mouse leaves the dropdown too.
    - Does **not** close the context menu while the dropdown is still hovered.
 
 2. **[index.test.tsx](packages/desktop-client/src/components/sidebar/index.test.tsx)** (3 tests) — covers `FloatableSidebar`'s wiring into that logic:
@@ -6156,6 +6018,7 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
+
 ---
 
 _**Agent (claude-sonnet-5 2026-09-15 02:44:24Z)**_
@@ -6169,7 +6032,6 @@ Check for any existing release note about the sidebar issue
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: could not parse the hook payload (.tool_input.command).
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:44:32Z)**_
@@ -6181,7 +6043,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:44:32Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:44:32Z)**_
@@ -6193,7 +6054,6 @@ _**Agent (claude-sonnet-5 2026-09-15 02:44:32Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:44:34Z)**_
@@ -6212,12 +6072,12 @@ authors: [RaccoonSwarm]
 ---
 
 Fix the floating sidebar's budget name menu staying open after the sidebar itself had hidden
+
 ```
 
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). STOP what you are doing and wait for the user to tell you how to proceed.
 ```
-
 </details></tool-use>
 
 ---
@@ -6251,12 +6111,12 @@ authors: [RaccoonSwarm]
 ---
 
 Fix the budget name menu staying open after the floating sidebar hides
+
 ```
 
 ```text
 File created successfully at: C:\Users\reese\SE\actual-budget\upcoming-release-notes\fix-issue-16-budget-name-dropdown.md (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 02:47:28Z)**_

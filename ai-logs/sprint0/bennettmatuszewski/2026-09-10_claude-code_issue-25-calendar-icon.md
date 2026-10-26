@@ -21,7 +21,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:37:35Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:37:35Z)**_
@@ -33,7 +32,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:37:35Z)**_
 ```text
 packages\desktop-client\src\components\budget\index.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:37:38Z)**_
@@ -51,7 +49,6 @@ packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.
 packages\desktop-client\src\components\budget\MonthPicker.tsx
 packages\desktop-client\src\components\budget\MonthCountSelector.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:37:40Z)**_
@@ -63,18 +60,18 @@ _**Agent (claude-sonnet-5 2026-09-11 00:37:40Z)**_
 ```text
 1	import React from 'react';
 2	import { useTranslation } from 'react-i18next';
-3
+3	
 4	import { SvgCalendar } from '@actual-app/components/icons/v2';
 5	import { theme } from '@actual-app/components/theme';
 6	import { View } from '@actual-app/components/view';
-7
+7	
 8	import { useBudgetMonthCount } from './BudgetMonthCountContext';
-9
+9	
 10	type CalendarProps = {
 11	  color: string;
 12	  onClick: () => void;
 13	};
-14
+14	
 15	function Calendar({ color, onClick }: CalendarProps) {
 16	  return (
 17	    <SvgCalendar
@@ -83,26 +80,26 @@ _**Agent (claude-sonnet-5 2026-09-11 00:37:40Z)**_
 20	    />
 21	  );
 22	}
-23
+23	
 24	type MonthCountSelectorProps = {
 25	  maxMonths: number;
 26	  onChange: (value: number) => void;
 27	};
-28
+28	
 29	export function MonthCountSelector({
 30	  maxMonths,
 31	  onChange,
 32	}: MonthCountSelectorProps) {
 33	  const { t } = useTranslation();
-34
+34	
 35	  const { displayMax } = useBudgetMonthCount();
-36
+36	
 37	  // It doesn't make sense to show anything if we can only fit one
 38	  // month
 39	  if (displayMax <= 1) {
 40	    return null;
 41	  }
-42
+42	
 43	  const calendars = [];
 44	  for (let i = 1; i <= displayMax; i++) {
 45	    calendars.push(
@@ -113,7 +110,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:37:40Z)**_
 50	      />,
 51	    );
 52	  }
-53
+53	
 54	  return (
 55	    <View
 56	      style={{
@@ -136,7 +133,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:37:40Z)**_
 73	}
 74
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:37:44Z)**_
@@ -181,7 +177,6 @@ packages\desktop-client\src\components\budget\MonthPicker.tsx
 packages\desktop-client\src\components\budget\MonthCountSelector.tsx
 packages\desktop-client\src\components\budget\DynamicBudgetTable.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:42:26Z)**_
@@ -198,7 +193,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:42:26Z)**_
 103:            <SvgCalendar
 138:          const current = currentMonth === month;
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:42:28Z)**_
@@ -212,7 +206,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:42:28Z)**_
 2	import React, { useState } from 'react';
 3	import type { CSSProperties } from 'react';
 4	import { useTranslation } from 'react-i18next';
-5
+5	
 6	import {
 7	  SvgCheveronLeft,
 8	  SvgCheveronRight,
@@ -222,13 +216,13 @@ _**Agent (claude-sonnet-5 2026-09-11 00:42:28Z)**_
 12	import { theme } from '@actual-app/components/theme';
 13	import { View } from '@actual-app/components/view';
 14	import * as monthUtils from '@actual-app/core/shared/months';
-15
+15	
 16	import { Link } from '#components/common/Link';
 17	import { useLocale } from '#hooks/useLocale';
 18	import { useResizeObserver } from '#hooks/useResizeObserver';
-19
+19	
 20	import type { MonthBounds } from './MonthsContext';
-21
+21	
 22	type MonthPickerProps = {
 23	  startMonth: string;
 24	  numDisplayed: number;
@@ -236,7 +230,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:42:28Z)**_
 26	  style: CSSProperties;
 27	  onSelect: (month: string) => void;
 28	};
-29
+29	
 30	export const MonthPicker = ({
 31	  startMonth,
 32	  numDisplayed,
@@ -248,15 +242,15 @@ _**Agent (claude-sonnet-5 2026-09-11 00:42:28Z)**_
 38	  const { t } = useTranslation();
 39	  const [hoverId, setHoverId] = useState(null);
 40	  const [targetMonthCount, setTargetMonthCount] = useState(12);
-41
+41	
 42	  const currentMonth = monthUtils.currentMonth();
 43	  const firstSelectedMonth = startMonth;
-44
+44	
 45	  const lastSelectedMonth = monthUtils.addMonths(
 46	    firstSelectedMonth,
 47	    numDisplayed - 1,
 48	  );
-49
+49	
 50	  const range = monthUtils.rangeInclusive(
 51	    monthUtils.subMonths(
 52	      firstSelectedMonth,
@@ -267,11 +261,11 @@ _**Agent (claude-sonnet-5 2026-09-11 00:42:28Z)**_
 57	      Math.floor(targetMonthCount / 2 - numDisplayed / 2),
 58	    ),
 59	  );
-60
+60	
 61	  const firstSelectedIndex =
 62	    Math.floor(range.length / 2) - Math.floor(numDisplayed / 2);
 63	  const lastSelectedIndex = firstSelectedIndex + numDisplayed - 1;
-64
+64	
 65	  const [size, setSize] = useState('small');
 66	  const containerRef = useResizeObserver(rect => {
 67	    setSize(rect.width <= 400 ? 'small' : 'big');
@@ -279,9 +273,9 @@ _**Agent (claude-sonnet-5 2026-09-11 00:42:28Z)**_
 69	      Math.min(Math.max(Math.floor(rect.width / 50), 12), 24),
 70	    );
 71	  });
-72
+72	
 73	  const yearHeadersShown = [];
-74
+74	
 75	  return (
 76	    <View
 77	      style={{
@@ -324,7 +318,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:42:28Z)**_
 114	          onPress={() => onSelect(monthUtils.prevMonth(startMonth))}
 115	          style={{
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:42:31Z)**_
@@ -354,7 +347,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:17Z)**_
 82:        cursor: 'pointer',
 113:      variant={props.buttonVariant}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
@@ -367,22 +359,22 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 1	import React from 'react';
 2	import type { ComponentProps, MouseEventHandler, ReactNode } from 'react';
 3	import { NavLink, useMatch } from 'react-router';
-4
+4	
 5	import { Button } from '@actual-app/components/button';
 6	import { styles } from '@actual-app/components/styles';
 7	import type { CSSProperties } from '@actual-app/components/styles';
 8	import { Text } from '@actual-app/components/text';
 9	import { theme } from '@actual-app/components/theme';
 10	import { css } from '@emotion/css';
-11
+11	
 12	import { useNavigate } from '#hooks/useNavigate';
-13
+13	
 14	type TextLinkProps = {
 15	  style?: CSSProperties;
 16	  onClick?: MouseEventHandler;
 17	  children?: ReactNode;
 18	};
-19
+19	
 20	type ButtonLinkProps = Omit<
 21	  ComponentProps<typeof Button>,
 22	  'variant' | 'style'
@@ -392,7 +384,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 26	  to?: string;
 27	  activeStyle?: CSSProperties;
 28	};
-29
+29	
 30	type InternalLinkProps = {
 31	  to?: string;
 32	  style?: CSSProperties;
@@ -401,13 +393,13 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 35	  isDisabled?: boolean;
 36	  isExactPathMatch?: boolean;
 37	};
-38
+38	
 39	const externalLinkColors = {
 40	  purple: theme.pageTextPositive,
 41	  blue: theme.pageTextLink,
 42	  muted: 'inherit',
 43	};
-44
+44	
 45	type ExternalLinkProps = {
 46	  children?: ReactNode;
 47	  to?: string;
@@ -415,7 +407,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 49	  onClick?: MouseEventHandler;
 50	  className?: string;
 51	};
-52
+52	
 53	const ExternalLink = ({
 54	  children,
 55	  to,
@@ -437,7 +429,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 71	    </a>
 72	  );
 73	};
-74
+74	
 75	const TextLink = ({ style, onClick, children, ...props }: TextLinkProps) => {
 76	  return (
 77	    <Text
@@ -459,7 +451,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 93	    </Text>
 94	  );
 95	};
-96
+96	
 97	const ButtonLink = ({ to, style, activeStyle, ...props }: ButtonLinkProps) => {
 98	  const navigate = useNavigate();
 99	  const path = to ?? '';
@@ -484,7 +476,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 118	    />
 119	  );
 120	};
-121
+121	
 122	const InternalLink = ({
 123	  to,
 124	  style,
@@ -495,7 +487,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 129	}: InternalLinkProps) => {
 130	  const path = to ?? '';
 131	  const match = useMatch({ path, end: isExactPathMatch });
-132
+132	
 133	  return (
 134	    <NavLink
 135	      to={path}
@@ -510,42 +502,41 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:19Z)**_
 144	    </NavLink>
 145	  );
 146	};
-147
+147	
 148	type LinkProps =
 149	  | ({ variant: 'button' } & ButtonLinkProps)
 150	  | ({ variant: 'internal' } & InternalLinkProps)
 151	  | ({ variant: 'external' } & ExternalLinkProps)
 152	  | ({ variant: 'text' } & TextLinkProps);
-153
+153	
 154	export function Link(props: LinkProps) {
 155	  switch (props.variant) {
 156	    case 'internal': {
 157	      const { variant: _, ...internalProps } = props;
 158	      return <InternalLink {...internalProps} />;
 159	    }
-160
+160	
 161	    case 'external': {
 162	      const { variant: _, ...externalProps } = props;
 163	      return <ExternalLink {...externalProps} />;
 164	    }
-165
+165	
 166	    case 'button': {
 167	      const { variant: _, ...buttonProps } = props;
 168	      return <ButtonLink {...buttonProps} />;
 169	    }
-170
+170	
 171	    case 'text': {
 172	      const { variant: _, ...textProps } = props;
 173	      return <TextLink {...textProps} />;
 174	    }
-175
+175	
 176	    default:
 177	      throw new Error(`Unrecognised Link variant.`);
 178	  }
 179	}
 180
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:47:22Z)**_
@@ -700,7 +691,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:22Z)**_
 146-          flexShrink: 0,
 147-          padding: _getPadding(variant),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:47:27Z)**_
@@ -751,7 +741,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:27Z)**_
 130	          const monthName = monthUtils.format(month, 'MMM', locale);
 131	          const selected =
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:47:29Z)**_
@@ -766,7 +755,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:52Z)**_
 ```text
 The file c:\Actual Budget\packages\desktop-client\src\components\budget\MonthCountSelector.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:47:55Z)**_
@@ -778,20 +766,20 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:55Z)**_
 ```text
 1	import React from 'react';
 2	import { useTranslation } from 'react-i18next';
-3
+3	
 4	import { SvgCalendar } from '@actual-app/components/icons/v2';
 5	import { theme } from '@actual-app/components/theme';
 6	import { View } from '@actual-app/components/view';
-7
+7	
 8	import { Link } from '#components/common/Link';
-9
+9	
 10	import { useBudgetMonthCount } from './BudgetMonthCountContext';
-11
+11	
 12	type CalendarProps = {
 13	  color: string;
 14	  onClick: () => void;
 15	};
-16
+16	
 17	function Calendar({ color, onClick }: CalendarProps) {
 18	  return (
 19	    <Link
@@ -804,26 +792,26 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:55Z)**_
 26	    </Link>
 27	  );
 28	}
-29
+29	
 30	type MonthCountSelectorProps = {
 31	  maxMonths: number;
 32	  onChange: (value: number) => void;
 33	};
-34
+34	
 35	export function MonthCountSelector({
 36	  maxMonths,
 37	  onChange,
 38	}: MonthCountSelectorProps) {
 39	  const { t } = useTranslation();
-40
+40	
 41	  const { displayMax } = useBudgetMonthCount();
-42
+42	
 43	  // It doesn't make sense to show anything if we can only fit one
 44	  // month
 45	  if (displayMax <= 1) {
 46	    return null;
 47	  }
-48
+48	
 49	  const calendars = [];
 50	  for (let i = 1; i <= displayMax; i++) {
 51	    calendars.push(
@@ -834,7 +822,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:55Z)**_
 56	      />,
 57	    );
 58	  }
-59
+59	
 60	  return (
 61	    <View
 62	      style={{
@@ -857,7 +845,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:47:55Z)**_
 79	}
 80
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:47:57Z)**_
@@ -878,7 +865,6 @@ Type-check the desktop-client workspace
 - Compiling with strict mode...
 🎉 All files passed
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:48:42Z)**_
@@ -901,7 +887,6 @@ Check if dev server is already running on port 3001
   TCP    [::1]:3001             [::1]:59565            TIME_WAIT       0
   TCP    [::1]:50616            [::1]:3001             ESTABLISHED     53592
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:48:47Z)**_
@@ -919,7 +904,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:48:47Z)**_
 ```
 
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:48:51Z)**_
@@ -975,14 +959,14 @@ Pick the row closest to your project. Each example walks through
 launch + first interaction; ignore any trailing "write the skill"
 section - you're using the recipe, not authoring one.
 
-| Project type               | Handle                                               | Example                                          |
-| -------------------------- | ---------------------------------------------------- | ------------------------------------------------ |
-| CLI tool                   | direct invocation, exit code, stdin/stdout           | [examples/cli.md](examples/cli.md)               |
-| Web server / API           | background launch + `curl` smoke                     | [examples/server.md](examples/server.md)         |
-| TUI / interactive terminal | tmux `send-keys` / `capture-pane`                    | [examples/tui.md](examples/tui.md)               |
-| Electron / desktop GUI     | Playwright `_electron` REPL under xvfb               | [examples/electron.md](examples/electron.md)     |
-| Browser-driven             | dev server + `chromium-cli` script                   | [examples/playwright.md](examples/playwright.md) |
-| Library / SDK              | import-and-call smoke script at the package boundary | [examples/library.md](examples/library.md)       |
+| Project type | Handle | Example |
+|---|---|---|
+| CLI tool | direct invocation, exit code, stdin/stdout | [examples/cli.md](examples/cli.md) |
+| Web server / API | background launch + `curl` smoke | [examples/server.md](examples/server.md) |
+| TUI / interactive terminal | tmux `send-keys` / `capture-pane` | [examples/tui.md](examples/tui.md) |
+| Electron / desktop GUI | Playwright `_electron` REPL under xvfb | [examples/electron.md](examples/electron.md) |
+| Browser-driven | dev server + `chromium-cli` script | [examples/playwright.md](examples/playwright.md) |
+| Library / SDK | import-and-call smoke script at the package boundary | [examples/library.md](examples/library.md) |
 
 If nothing fits, start from the closest match and adapt. For a web
 app, [examples/playwright.md](examples/playwright.md) - drive it with
@@ -1006,6 +990,7 @@ If the fallback pattern didn't work out of the box - you had to
 install packages, set env vars, patch config, or write a driver -
 recommend `/run-skill-generator` in your report so that work gets
 captured as a project skill. If it just worked, don't.
+
 
 ## User Request
 
@@ -1033,7 +1018,6 @@ done
 /c/Actual Budget/.claude/skills/writing-actual-docs/SKILL.md:description: Use whenever creating, updating, editing, drafting, restructuring, or fixing documentation in the Actual Budget repo — specifically anything under `packages/docs/` (the Docusaurus site published at actualbudget.org/docs) or any change to `.md` / `.mdx` files in that package. Trigger for asks like "add a doc page for X", "update the FAQ", "write a guide for the new feature", "document this setting", "fix the docs about Y", "add a contributing page", or any work on the docs site, even when the user does not explicitly mention style, structure, or conventions. Actual's docs follow strict Docusaurus conventions (front matter, heading levels, image placement and naming, admonition syntax, Title Case, tone of voice, spelling allowlist) and writing them without consulting the project's style guide reliably produces output that fails review and needs to be redone.
 /c/Actual Budget/.claude/skills/writing-release-notes/SKILL.md:description: Use whenever adding, writing, drafting, or fixing a release note in the Actual Budget repo. This is the changelog entry that ships with a code change, living as a Markdown file in `upcoming-release-notes/`. Trigger for asks like "add a release note", "write the changelog entry", "add the release note for this PR/change", "create the upcoming release note", or any time finishing a user-facing change in this repo where a release note is the natural next step. These notes are published for humans to read, so they must be short, plain-language, and free of technical detail. Writing them like a commit message or with implementation jargon produces entries that get flagged and rewritten in review.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:48:59Z)**_
@@ -1042,26 +1026,26 @@ _**Agent (claude-sonnet-5 2026-09-11 00:48:59Z)**_
 <summary>Tool use: **Read**</summary>
  `C:\Users\Kirby\AppData\Local\Temp\claude\bundled-skills\2.1.259\f4f1b65c93b319c8a880fb9154ccd10f\run\examples\playwright.md`
 
-````text
+```text
 1	# Example: Browser-driven web app
-2
+2	
 3	You have a dev server that serves HTML to a browser. An agent in a
 4	headless container can't open a browser window - so "run the app" means
 5	launching the dev server, driving a headless Chromium against it, and
 6	producing a screenshot that proves the page rendered.
-7
+7	
 8	Don't write a browser driver. Use `chromium-cli`.
-9
+9	
 10	## Dev server
-11
+11	
 12	Find the dev command (`package.json` `scripts.dev`, `Makefile`,
 13	README), start it in the background, and wait for it to actually serve:
-14
+14	
 15	```bash
 16	npm run dev &   # or yarn dev, pnpm dev, make serve, ./dev.sh
 17	timeout 30 bash -c 'until curl -sf http://localhost:3000 >/dev/null; do sleep 1; done'
 18	```
-19
+19	
 20	Don't `sleep 5` - poll the port. Stop by killing the port's listener
 21	-- `lsof -ti:3000 -sTCP:LISTEN | xargs -r kill` - before relaunching,
 22	or the next run hits `EADDRINUSE`. (`$!` after `npm run dev &` is only
@@ -1069,11 +1053,11 @@ _**Agent (claude-sonnet-5 2026-09-11 00:48:59Z)**_
 24	so the port kill is what actually frees it.) Avoid `pkill -f` with a
 25	broad pattern - it can match the agent's own command line and kill the
 26	session.
-27
+27	
 28	## Drive
-29
+29	
 30	`chromium-cli` is a headless-Chromium REPL. Pipe a script to stdin:
-31
+31	
 32	```bash
 33	chromium-cli --session app <<'EOF'
 34	nav http://localhost:3000
@@ -1087,16 +1071,16 @@ _**Agent (claude-sonnet-5 2026-09-11 00:48:59Z)**_
 42	console --errors
 43	EOF
 44	```
-45
+45	
 46	Screenshots land in `chromium_cli/sessions/app/screenshots/` (latest
 47	symlinked as `screenshot.png`). That's the whole loop: `nav` ->
 48	`wait-for` the element you need -> act (`click` / `fill` / `type` /
 49	`press`) -> `screenshot` -> `console --errors` to check nothing threw.
 50	Full command reference: `chromium-cli` skill, or `help` at the prompt.
-51
+51	
 52	For iterative debugging, run it under tmux and `send-keys` one command
 53	at a time - same commands, same session.
-54
+54	
 55	**If `chromium-cli` isn't available:** adapt
 56	[electron.md](electron.md)'s REPL driver - the structure and commands
 57	transfer, but it's `_electron`-specific:
@@ -1105,11 +1089,11 @@ _**Agent (claude-sonnet-5 2026-09-11 00:48:59Z)**_
 60	`(await app.newContext()).newPage()` then `goto()` your dev URL, and
 61	drop the Electron-only window introspection
 62	(`.windows()`/`.firstWindow()`/the `windows` command).
-63
+63	
 64	## What to put in the skill
-65
+65	
 66	The project-specific bits only. `chromium-cli` handles the mechanics.
-67
+67	
 68	- **Dev command + port + stop.** The exact start line, any env vars it
 69	  needs, and the `kill` to stop it.
 70	- **Auth.** Whatever gets a logged-in session - a `set-cookie` line, a
@@ -1118,9 +1102,9 @@ _**Agent (claude-sonnet-5 2026-09-11 00:48:59Z)**_
 73	- **One representative interaction.** Not the whole app - one path that
 74	  proves it's running, ending in a screenshot.
 75	- **App-specific gotchas.** Only the ones you actually hit.
-76
+76	
 77	## Gotchas that recur
-78
+78	
 79	- **React controlled inputs.** `eval el.value = '...'` doesn't fire
 80	  React's onChange. Use `fill` / `type` - they go through Playwright's
 81	  input pipeline.
@@ -1133,8 +1117,7 @@ _**Agent (claude-sonnet-5 2026-09-11 00:48:59Z)**_
 88	- **Check `console --errors` before declaring success.** A page can
 89	  render its shell while every data fetch 500s.
 90
-````
-
+```
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:49:03Z)**_
@@ -1149,7 +1132,6 @@ Check for chromium-cli availability
 which: no chromium-cli in (/c/Users/Kirby/bin:/mingw64/bin:/usr/local/bin:/usr/bin:/bin:/mingw64/bin:/usr/bin:/c/Users/Kirby/bin:/c/Users/Kirby/anaconda3/Scripts:/c/Program Files (x86)/Common Files/Oracle/Java/java8path:/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/c/Program Files (x86)/VMware/VMware Workstation/bin:/c/Python312/Scripts:/c/Python312:/c/WINDOWS/system32:/c/WINDOWS:/c/WINDOWS/System32/Wbem:/c/WINDOWS/System32/WindowsPowerShell/v1.0:/c/WINDOWS/System32/OpenSSH:/cmd:/c/Program Files/dotnet:/c/ProgramData/chocolatey/bin:/c/Gradle/gradle-8.12/bin:/c/Program Files (x86)/QuickTime/QTSystem:/c/Program Files/Docker/Docker/resources/bin:/c/Program Files/nodejs:/c/Users/Kirby/anaconda3:/c/Users/Kirby/anaconda3/Library/mingw-w64/bin:/c/Users/Kirby/anaconda3/Library/usr/bin:/c/Users/Kirby/anaconda3/Library/bin:/c/Users/Kirby/anaconda3/Scripts:/c/Users/Kirby/AppData/Local/Microsoft/WindowsApps:/c/Users/Kirby/AppData/Local/Programs/Microsoft VS Code/bin:/c/MinGW/bin:/c/Users/Kirby/AppData/Local/GitHubDesktop/bin:/c/Users/Kirby/AppData/Roaming/npm:/c/Users/Kirby/AppData/Local/Programs/cursor/resources/app/bin:/c/Users/Kirby/AppData/Local/Unity/bin:/usr/bin/vendor_perl:/usr/bin/core_perl)
 /usr/bin/bash: line 1: chromium-cli: command not found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:49:08Z)**_
@@ -1163,7 +1145,6 @@ Check if playwright is available as a node module
 ```text
 C:\Actual Budget\node_modules\playwright\index.js
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:49:09Z)**_
@@ -1180,21 +1161,14 @@ const { chromium } = require('playwright');
 
 (async () => {
   const browser = await chromium.launch();
-  const page = await browser.newPage({
-    viewport: { width: 1400, height: 900 },
-  });
+  const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
   const logs = [];
   page.on('console', msg => logs.push(`[${msg.type()}] ${msg.text()}`));
   page.on('pageerror', err => logs.push(`[pageerror] ${err.message}`));
 
-  await page.goto('http://localhost:3001', {
-    waitUntil: 'domcontentloaded',
-    timeout: 30000,
-  });
+  await page.goto('http://localhost:3001', { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.waitForTimeout(2000);
-  await page.screenshot({
-    path: 'C:/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd/scratchpad/00-initial.png',
-  });
+  await page.screenshot({ path: 'C:/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd/scratchpad/00-initial.png' });
 
   console.log('URL:', page.url());
   console.log('Title:', await page.title());
@@ -1205,12 +1179,12 @@ const { chromium } = require('playwright');
 
   await browser.close();
 })();
+
 ```
 
 ```text
 File created successfully at: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd\scratchpad\check-hover.js (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:49:22Z)**_
@@ -1248,7 +1222,6 @@ Require stack:
 
 Node.js v24.13.1
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:49:23Z)**_
@@ -1285,7 +1258,6 @@ browserType.launch: Executable doesn't exist at C:\Users\Kirby\AppData\Local\ms-
 
 Node.js v24.13.1
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:50:20Z)**_
@@ -1328,7 +1300,6 @@ Downloading Winldd (playwright winldd v1007) from https://cdn.playwright.dev/dba
 |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 0.1 MiB
 Winldd (playwright winldd v1007) downloaded to C:\Users\Kirby\AppData\Local\ms-playwright\winldd-1007
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:50:31Z)**_
@@ -1364,7 +1335,6 @@ App: v26.7.0 | Server: N/A
 [log] Backend: Client connected
 [log] parse-failure
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:50:43Z)**_
@@ -1380,15 +1350,10 @@ const shot = name =>
 
 (async () => {
   const browser = await chromium.launch();
-  const page = await browser.newPage({
-    viewport: { width: 1400, height: 900 },
-  });
+  const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
   page.on('pageerror', err => console.log('[pageerror]', err.message));
 
-  await page.goto('http://localhost:3001', {
-    waitUntil: 'domcontentloaded',
-    timeout: 30000,
-  });
+  await page.goto('http://localhost:3001', { waitUntil: 'domcontentloaded', timeout: 30000 });
 
   const dontUseServer = page.getByText("Don't use a server", { exact: false });
   if (await dontUseServer.isVisible({ timeout: 10000 }).catch(() => false)) {
@@ -1409,19 +1374,16 @@ const shot = name =>
   await page.screenshot({ path: shot('02-budget-page') });
 
   const icons = page.locator('svg').filter({ hasText: '' });
-  console.log(
-    'body sample:',
-    (await page.locator('body').innerText()).slice(0, 300),
-  );
+  console.log('body sample:', (await page.locator('body').innerText()).slice(0, 300));
 
   await browser.close();
 })();
+
 ```
 
 ```text
 The file C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd\scratchpad\check-hover.js has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:51:14Z)**_
@@ -1442,7 +1404,6 @@ Don't use a server
 Create test file
 App: v26.7.0 | Server: N/A
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:51:16Z)**_
@@ -1460,7 +1421,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:51:25Z)**_
 ```text
 The file C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd\scratchpad\check-hover.js has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:51:45Z)**_
@@ -1503,7 +1463,6 @@ Roth IRA
 Add account
 No server
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:51:46Z)**_
@@ -1534,7 +1493,6 @@ String:   await page.waitForURL('**/budget**', { timeout: 20000 }).catch(() => {
 
   await browser.close();</tool_use_error>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:52:04Z)**_
@@ -1545,47 +1503,46 @@ _**Agent (claude-sonnet-5 2026-09-11 00:52:04Z)**_
 
 ```text
 1	const { chromium } = require('playwright');
-2
+2	
 3	const shot = name =>
 4	  `C:/Users/Kirby/AppData/Local/Temp/claude/c--Actual-Budget/5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd/scratchpad/${name}.png`;
-5
+5	
 6	(async () => {
 7	  const browser = await chromium.launch();
 8	  const page = await browser.newPage({
 9	    viewport: { width: 1400, height: 900 },
 10	  });
 11	  page.on('pageerror', err => console.log('[pageerror]', err.message));
-12
+12	
 13	  await page.goto('http://localhost:3001', {
 14	    waitUntil: 'domcontentloaded',
 15	    timeout: 30000,
 16	  });
-17
+17	
 18	  const dontUseServer = page.getByText("Don't use a server", { exact: false });
 19	  await dontUseServer.click();
 20	  await page.waitForTimeout(2000);
 21	  await page.screenshot({ path: shot('01-setup') });
-22
+22	
 23	  const viewDemo = page.getByText('View demo', { exact: false });
 24	  await viewDemo.waitFor({ timeout: 15000 });
 25	  await viewDemo.click();
-26
+26	
 27	  await page.waitForURL('**/budget**', { timeout: 20000 }).catch(() => {});
 28	  await page.waitForTimeout(2000);
 29	  console.log('URL after demo click:', page.url());
 30	  await page.screenshot({ path: shot('02-budget-page') });
-31
+31	
 32	  const icons = page.locator('svg').filter({ hasText: '' });
 33	  console.log(
 34	    'body sample:',
 35	    (await page.locator('body').innerText()).slice(0, 300),
 36	  );
-37
+37	
 38	  await browser.close();
 39	})();
 40
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:52:14Z)**_
@@ -1596,7 +1553,6 @@ _**Agent (claude-sonnet-5 2026-09-11 00:52:14Z)**_
 ```text
 The file C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd\scratchpad\check-hover.js has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:52:30Z)**_
@@ -1612,7 +1568,6 @@ URL after demo click: http://localhost:3001/budget
 Found month-count links: 0
 Today icon: cursor=pointer background=rgba(0, 0, 0, 0)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:52:52Z)**_
@@ -1652,7 +1607,6 @@ const { chromium } = require('playwright');
 title count: 1
 <div title="Choose the number of months shown at a time" class="css-1ce4llg"><button class="css-1dnk560" data-rac="" type="button" tabindex="0" data-react-aria-pressable="true" id="react-aria9731123523-_r_9d_"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="color: var(--color-pageTextLight); width: 13px; height: 13px;"><path d="M21.5 3h-2.75a.25.25 0 0 1-.25-.25V1a1 1 0 0 0-2 0v4.75a.75.75 0 0 1-.75.75.75.75 0 0 1-.75-.75V3.5a.5.5 0 0 0-.5-.5H8.25A.25.25 0 0 1 8 2.751V1a1 1 0 1 0-2 0v4.75a.75.75 0 0 1-.75.75.75.75 0 0 1-.75-.75V3.5A.5.5 0 0 0 4 3H2.5a2 2 0 0 0-2 2v17a2 2 0 0 0 2 2h19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2M21 22H3a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 3 9h18a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5" fill="currentColor"></path></svg></button><button class="css-1dnk560" data-rac="" type="button" tabindex="0" data-react-aria-pressable="true" id="react-aria9731123523-_r_9f_"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="color: var(--color-pageTextSubdued); width: 13px; height: 13px;"><path d="M21.5 3h-2.75a.25.25 0 0 1-.25-.25V1a1 1 0 0 0-2 0v4.75a.75.75 0 0 1-.75.75.75.75 0 0 1-.75-.75V3.5a.5.5 0 0 0-.5-.5H8.25A.25.25 0 0 1 8 2.751V1a1 1 0 1 0-2 0v4.75a.75.75 0 0 1-.75.75.75.75 0 0 1-.75-.75V3.5A.5.5 0 0 0 4 3H2.5a2 2 0 0 0-2 2v17a2 2 0 0 0 2 2h19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2M21 22H3a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 3 9h18a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5" fill="currentColor"></path></svg></button><button class="css-1dnk560" data-rac="" type="button" tabindex="0" data-react-aria-pressable="true" id="react-aria9731123523-_r_9h_"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="color: var(--color-pageTextSubdued); width: 13px; height: 13px;"><path d="M21.5 3h-2.75a.25.25 0 0 1-.25-.25V1a1 1 0 0 0-2 0v4.75a.75.75 0 0 1-.75.75.75.75 0 0 1-.75-.75V3.5a.5.5 0 0 0-.5-.5H8.25A.25.25 0 0 1 8 2.751V1a1 1 0 1 0-2 0v4.75a.75.75 0 0 1-.75.75.75.75 0 0 1-.75-.75V3.5A.5.5 0 0 0 4 3H2.5a2 2 0 0 0-2 2v17a2 2 0 0 0 2 2h19a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2M21 22H3a.5.5 0 0 1-.5-.5v-12A.5.5 0 0 1 3 9h18a.5.5 0 0 1 .5.5v12a.5.5 0 0 1-.5.5" fill="currentColor"></path></svg></button></div>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:53:17Z)**_
@@ -1721,7 +1675,6 @@ Icon 2 cursor= pointer bg= rgba(100, 100, 100, 0.15)
 Icon 3 cursor= pointer bg= rgba(100, 100, 100, 0.15)
 Today cursor= pointer bg= rgba(100, 100, 100, 0.15)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:53:19Z)**_
@@ -2136,7 +2089,6 @@ Remove temp test script and check git status
 ?? ai-logs/sprint0/bennettmatuszewski/
 ?? docs/sprint0/standards.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:53:33Z)**_
@@ -2152,7 +2104,6 @@ warning: in the working copy of 'package.json', LF will be replaced by CRLF the 
 ---
 warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:53:40Z)**_
@@ -2166,7 +2117,6 @@ Check autocrlf setting and actual diff stats for package.json
 ```text
 PreToolUse:Bash hook error: ["$CLAUDE_PROJECT_DIR/scripts/agent-hooks/git-guard.sh"]: Blocked: 'git config' changes are forbidden.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:53:43Z)**_
@@ -2182,7 +2132,6 @@ warning: in the working copy of 'package.json', LF will be replaced by CRLF the 
 ===
 warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:53:51Z)**_
@@ -2205,14 +2154,14 @@ index 5908c4d38..1862c1909 100644
 @@ -5,6 +5,8 @@ import { SvgCalendar } from '@actual-app/components/icons/v2';
  import { theme } from '@actual-app/components/theme';
  import { View } from '@actual-app/components/view';
-
+ 
 +import { Link } from '#components/common/Link';
 +
  import { useBudgetMonthCount } from './BudgetMonthCountContext';
-
+ 
  type CalendarProps = {
 @@ -14,10 +16,14 @@ type CalendarProps = {
-
+ 
  function Calendar({ color, onClick }: CalendarProps) {
    return (
 -    <SvgCalendar
@@ -2230,7 +2179,6 @@ index 5908c4d38..1862c1909 100644
    );
  }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:53:54Z)**_
@@ -2248,7 +2196,6 @@ Lint the edited file
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 00:54:04Z)**_
@@ -2306,7 +2253,6 @@ eb9278d0c Updated student.md with references
 ---BRANCH---
 * master 37f38def9 [origin/master: ahead 1] chore: commiting claude logs for 9/3 and 9/4
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:03:01Z)**_
@@ -2316,9 +2262,9 @@ _**Agent (claude-sonnet-5 2026-09-11 01:03:01Z)**_
 **You have one local commit (37f38def9 "chore: commiting claude logs for 9/3 and 9/4") ahead of origin/master, not yet pushed. How do you want to undo it?**
 
 Options:
-
 - **Mixed reset (unstage)** - git reset HEAD~1 — removes the commit, puts its changes back as unstaged modifications in the working directory. Matches "unstage" literally.
 - **Soft reset (keep staged)** - git reset --soft HEAD~1 — removes the commit but keeps its changes staged, ready to amend/re-commit immediately.
+
 
 **Answer:** Soft reset (keep staged)
 </details></tool-use>
@@ -2364,7 +2310,6 @@ Untracked files:
 eb9278d0c Updated student.md with references
 e8468123d test commit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:03:09Z)**_
@@ -2396,7 +2341,6 @@ Found 2 files
 packages\desktop-client\src\components\budget\MonthCountSelector.tsx
 packages\desktop-client\src\components\Titlebar.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:09:51Z)**_
@@ -2408,7 +2352,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:09:51Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:09:59Z)**_
@@ -2425,15 +2368,13 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: C:\Users\Kirby\AppData\Local\Temp\claude\c--Actual-Budget\5fdb5449-4529-4a70-a8d1-a2c36e8bb7cd\tasks\a5b25220fdb20f17b.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-11 01:09:59Z)**_
 
-In the Actual Budget repo at C:\Actual Budget, I need to write a new Vitest test file for packages/desktop-client/src/components/budget/MonthCountSelector.tsx (no existing test file for it).
+In the Actual Budget repo at C:\Actual Budget, I need to write a new Vitest test file for packages/desktop-client/src/components/budget/MonthCountSelector.tsx (no existing test file for it). 
 
 Find 2-3 existing small React component test files in packages/desktop-client/src/components/ (ideally something simple like a small icon-button/toolbar component, not a huge page) that use @testing-library/react (render, screen, fireEvent/userEvent) so I can match the codebase's conventions for:
-
 1. Import style and file header
 2. How they wrap components needing hooks/context (MonthCountSelector uses useBudgetMonthCount() from './BudgetMonthCountContext' and useTranslation() from react-i18next)
 3. How they mock/provide i18n (react-i18next) if needed
@@ -2441,7 +2382,6 @@ Find 2-3 existing small React component test files in packages/desktop-client/sr
 5. Naming conventions and describe/it structure, and whether they use vitest's `vi` for mocking
 
 Please report back:
-
 - The exact file paths of 2-3 good examples
 - Key code snippets showing the import/setup boilerplate and a representative test
 - How context providers or hooks are typically mocked (e.g. vi.mock of a context module) in this codebase
@@ -2476,7 +2416,6 @@ packages\desktop-client\src\components\accounts\Reconcile.test.tsx
 packages\desktop-client\src\components\accounts\Balance.test.tsx
 packages\desktop-client\src\components\FatalError.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:02Z)**_
@@ -2489,37 +2428,36 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:02Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext, useContext, useState } from 'react';
 3	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-4
+4	
 5	type BudgetMonthCountContextValue = {
 6	  displayMax: number;
 7	  setDisplayMax: Dispatch<SetStateAction<number>>;
 8	};
-9
+9	
 10	const BudgetMonthCountContext =
 11	  createContext<BudgetMonthCountContextValue>(null);
-12
+12	
 13	type BudgetMonthCountProviderProps = {
 14	  children: ReactNode;
 15	};
-16
+16	
 17	export function BudgetMonthCountProvider({
 18	  children,
 19	}: BudgetMonthCountProviderProps) {
 20	  const [displayMax, setDisplayMax] = useState(1);
-21
+21	
 22	  return (
 23	    <BudgetMonthCountContext.Provider value={{ displayMax, setDisplayMax }}>
 24	      {children}
 25	    </BudgetMonthCountContext.Provider>
 26	  );
 27	}
-28
+28	
 29	export function useBudgetMonthCount() {
 30	  return useContext(BudgetMonthCountContext);
 31	}
 32
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:04Z)**_
@@ -2530,16 +2468,16 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:04Z)**_
 
 ```text
 1	import React, { useRef, useState } from 'react';
-2
+2	
 3	import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 4	import { fireEvent, render, screen } from '@testing-library/react';
-5
+5	
 6	import { CalculatorButtons } from './CalculatorButtons';
-7
+7	
 8	function TestCalculator({ initialValue = '' }: { initialValue?: string }) {
 9	  const [value, setValue] = useState(initialValue);
 10	  const inputRef = useRef<HTMLInputElement>(null);
-11
+11	
 12	  return (
 13	    <>
 14	      <input
@@ -2560,15 +2498,15 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:04Z)**_
 29	    </>
 30	  );
 31	}
-32
+32	
 33	describe('CalculatorButtons', () => {
 34	  it('updates a controlled external input from keypad actions', () => {
 35	    render(<TestCalculator />);
-36
+36	
 37	    const input = screen.getByLabelText('Expression');
-38
+38	
 39	    input.focus();
-40
+40	
 41	    fireEvent.click(screen.getByRole('button', { name: '1' }));
 42	    fireEvent.click(screen.getByRole('button', { name: '2' }));
 43	    fireEvent.click(screen.getByRole('button', { name: '+' }));
@@ -2577,51 +2515,51 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:04Z)**_
 46	    expect(input).toHaveFocus();
 47	    expect(input).toHaveProperty('selectionStart', '12+3'.length);
 48	    expect(input).toHaveProperty('selectionEnd', '12+3'.length);
-49
+49	
 50	    fireEvent.click(screen.getByRole('button', { name: '\u232B' }));
 51	    expect(input).toHaveValue('12+');
 52	    expect(input).toHaveFocus();
 53	    expect(input).toHaveProperty('selectionStart', '12+'.length);
 54	    expect(input).toHaveProperty('selectionEnd', '12+'.length);
-55
+55	
 56	    fireEvent.click(screen.getByRole('button', { name: '3' }));
 57	    fireEvent.click(screen.getByRole('button', { name: '=' }));
 58	    expect(input).toHaveValue('15');
 59	    expect(input).toHaveFocus();
 60	    expect(input).toHaveProperty('selectionStart', '15'.length);
 61	    expect(input).toHaveProperty('selectionEnd', '15'.length);
-62
+62	
 63	    fireEvent.click(screen.getByRole('button', { name: 'AC' }));
 64	    expect(input).toHaveValue('');
 65	    expect(input).toHaveFocus();
 66	    expect(input).toHaveProperty('selectionStart', 0);
 67	    expect(input).toHaveProperty('selectionEnd', 0);
 68	  });
-69
+69	
 70	  it('inserts and deletes at the current caret position', () => {
 71	    render(<TestCalculator initialValue="123" />);
-72
+72	
 73	    const input = screen.getByLabelText('Expression');
-74
+74	
 75	    if (!(input instanceof HTMLInputElement)) {
 76	      throw new Error('Expected expression to be an input');
 77	    }
-78
+78	
 79	    input.focus();
 80	    input.setSelectionRange(1, 1);
-81
+81	
 82	    fireEvent.click(screen.getByRole('button', { name: '0' }));
 83	    expect(input).toHaveValue('1023');
 84	    expect(input).toHaveFocus();
 85	    expect(input).toHaveProperty('selectionStart', 2);
 86	    expect(input).toHaveProperty('selectionEnd', 2);
-87
+87	
 88	    fireEvent.click(screen.getByRole('button', { name: '\u232B' }));
 89	    expect(input).toHaveValue('123');
 90	    expect(input).toHaveFocus();
 91	    expect(input).toHaveProperty('selectionStart', 1);
 92	    expect(input).toHaveProperty('selectionEnd', 1);
-93
+93	
 94	    input.setSelectionRange(1, 3);
 95	    fireEvent.click(screen.getByRole('button', { name: '9' }));
 96	    expect(input).toHaveValue('19');
@@ -2629,43 +2567,42 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:04Z)**_
 98	    expect(input).toHaveProperty('selectionStart', 2);
 99	    expect(input).toHaveProperty('selectionEnd', 2);
 100	  });
-101
+101	
 102	  it('restores input focus when a keypad press starts after blur', () => {
 103	    render(<TestCalculator initialValue="1+2" />);
-104
+104	
 105	    const input = screen.getByLabelText('Expression');
-106
+106	
 107	    if (!(input instanceof HTMLInputElement)) {
 108	      throw new Error('Expected expression to be an input');
 109	    }
-110
+110	
 111	    input.focus();
 112	    input.setSelectionRange(input.value.length, input.value.length);
 113	    input.blur();
-114
+114	
 115	    fireEvent.click(screen.getByRole('button', { name: '3' }));
-116
+116	
 117	    expect(input).toHaveValue('1+23');
 118	    expect(input).toHaveFocus();
-119
+119	
 120	    input.blur();
-121
+121	
 122	    fireEvent.click(screen.getByRole('button', { name: '=' }));
-123
+123	
 124	    expect(input).toHaveValue('24');
 125	    expect(input).toHaveFocus();
-126
+126	
 127	    input.blur();
-128
+128	
 129	    fireEvent.click(screen.getByRole('button', { name: 'AC' }));
-130
+130	
 131	    expect(input).toHaveValue('');
 132	    expect(input).toHaveFocus();
 133	  });
 134	});
 135
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
@@ -2676,14 +2613,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 
 ```text
 1	import React from 'react';
-2
+2	
 3	import { theme } from '@actual-app/components/theme';
 4	import { render, screen } from '@testing-library/react';
-5
+5	
 6	import { TestProviders } from '#mocks';
-7
+7	
 8	import { Change } from './Change';
-9
+9	
 10	describe('Change', () => {
 11	  it('renders a positive amount with a plus sign and positive color', () => {
 12	    render(
@@ -2695,7 +2632,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 18	    expect(el).toBeInTheDocument();
 19	    expect(getComputedStyle(el).color).toBe(theme.reportsNumberPositive);
 20	  });
-21
+21	
 22	  it('renders zero with a plus sign and neutral color', () => {
 23	    render(
 24	      <TestProviders>
@@ -2706,7 +2643,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 29	    expect(el).toBeInTheDocument();
 30	    expect(getComputedStyle(el).color).toBe(theme.reportsNumberNeutral);
 31	  });
-32
+32	
 33	  it('renders a negative amount with a minus sign and negative color', () => {
 34	    render(
 35	      <TestProviders>
@@ -2717,7 +2654,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 40	    expect(el).toBeInTheDocument();
 41	    expect(getComputedStyle(el).color).toBe(theme.reportsNumberNegative);
 42	  });
-43
+43	
 44	  it('merges custom style prop', () => {
 45	    render(
 46	      <TestProviders>
@@ -2732,7 +2669,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 55	});
 56
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
@@ -2744,32 +2680,32 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 ```text
 1	import { render, screen } from '@testing-library/react';
 2	import { vi } from 'vitest';
-3
+3	
 4	import { TestProviders } from '#mocks';
-5
+5	
 6	import { GoCardlessExternalMsgModal } from './GoCardlessExternalMsgModal';
-7
+7	
 8	vi.mock('#hooks/useGlobalPref', () => ({
 9	  useGlobalPref: () => [null],
 10	}));
-11
+11	
 12	vi.mock('#hooks/useGoCardlessStatus', () => ({
 13	  useGoCardlessStatus: () => ({
 14	    configuredGoCardless: true,
 15	    isLoading: false,
 16	  }),
 17	}));
-18
+18	
 19	describe('GoCardlessExternalMsgModal - Country Auto-selection', () => {
 20	  const mockProps = {
 21	    onMoveExternal: vi.fn(),
 22	    onSuccess: vi.fn(),
 23	    onClose: vi.fn(),
 24	  };
-25
+25	
 26	  const originalIntl = global.Intl;
 27	  const originalNavigator = global.navigator;
-28
+28	
 29	  afterEach(() => {
 30	    global.Intl = originalIntl;
 31	    Object.defineProperty(global, 'navigator', {
@@ -2778,7 +2714,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 34	    });
 35	    vi.clearAllMocks();
 36	  });
-37
+37	
 38	  it('should pre-select country based on browser timezone', () => {
 39	    // Mock timezone to Germany
 40	    global.Intl = {
@@ -2787,23 +2723,23 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 43	        resolvedOptions: () => ({ timeZone: 'Europe/Berlin' }),
 44	      })) as unknown as typeof Intl.DateTimeFormat,
 45	    } as typeof Intl;
-46
+46	
 47	    Object.defineProperty(global, 'navigator', {
 48	      value: { language: 'en' },
 49	      writable: true,
 50	    });
-51
+51	
 52	    render(
 53	      <TestProviders>
 54	        <GoCardlessExternalMsgModal {...mockProps} />
 55	      </TestProviders>,
 56	    );
-57
+57	
 58	    const countryInput = screen.getByPlaceholderText('(please select)');
 59	    // The Autocomplete component displays the country name, not the code
 60	    expect(countryInput).toHaveValue('Germany');
 61	  });
-62
+62	
 63	  it('should pre-select country based on locale when timezone is not in EU', () => {
 64	    // Mock timezone to US (not supported)
 65	    global.Intl = {
@@ -2812,23 +2748,23 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 68	        resolvedOptions: () => ({ timeZone: 'America/New_York' }),
 69	      })) as unknown as typeof Intl.DateTimeFormat,
 70	    } as typeof Intl;
-71
+71	
 72	    // But locale is UK
 73	    Object.defineProperty(global, 'navigator', {
 74	      value: { language: 'en-GB' },
 75	      writable: true,
 76	    });
-77
+77	
 78	    render(
 79	      <TestProviders>
 80	        <GoCardlessExternalMsgModal {...mockProps} />
 81	      </TestProviders>,
 82	    );
-83
+83	
 84	    const countryInput = screen.getByPlaceholderText('(please select)');
 85	    expect(countryInput).toHaveValue('United Kingdom');
 86	  });
-87
+87	
 88	  it('should leave country empty when neither timezone nor locale match', () => {
 89	    // Mock timezone to US
 90	    global.Intl = {
@@ -2837,23 +2773,23 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 93	        resolvedOptions: () => ({ timeZone: 'America/New_York' }),
 94	      })) as unknown as typeof Intl.DateTimeFormat,
 95	    } as typeof Intl;
-96
+96	
 97	    // Locale is also US
 98	    Object.defineProperty(global, 'navigator', {
 99	      value: { language: 'en-US' },
 100	      writable: true,
 101	    });
-102
+102	
 103	    render(
 104	      <TestProviders>
 105	        <GoCardlessExternalMsgModal {...mockProps} />
 106	      </TestProviders>,
 107	    );
-108
+108	
 109	    const countryInput = screen.getByPlaceholderText('(please select)');
 110	    expect(countryInput).toHaveValue('');
 111	  });
-112
+112	
 113	  it('should prioritize timezone over locale', () => {
 114	    // Mock timezone to France
 115	    global.Intl = {
@@ -2862,19 +2798,19 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 118	        resolvedOptions: () => ({ timeZone: 'Europe/Paris' }),
 119	      })) as unknown as typeof Intl.DateTimeFormat,
 120	    } as typeof Intl;
-121
+121	
 122	    // Locale is German
 123	    Object.defineProperty(global, 'navigator', {
 124	      value: { language: 'de-DE' },
 125	      writable: true,
 126	    });
-127
+127	
 128	    render(
 129	      <TestProviders>
 130	        <GoCardlessExternalMsgModal {...mockProps} />
 131	      </TestProviders>,
 132	    );
-133
+133	
 134	    const countryInput = screen.getByPlaceholderText('(please select)');
 135	    // Should select France from timezone, not Germany from locale
 136	    expect(countryInput).toHaveValue('France');
@@ -2882,7 +2818,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:05Z)**_
 138	});
 139
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:06Z)**_
@@ -2894,20 +2829,20 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:06Z)**_
 ```text
 1	import React from 'react';
 2	import { useTranslation } from 'react-i18next';
-3
+3	
 4	import { SvgCalendar } from '@actual-app/components/icons/v2';
 5	import { theme } from '@actual-app/components/theme';
 6	import { View } from '@actual-app/components/view';
-7
+7	
 8	import { Link } from '#components/common/Link';
-9
+9	
 10	import { useBudgetMonthCount } from './BudgetMonthCountContext';
-11
+11	
 12	type CalendarProps = {
 13	  color: string;
 14	  onClick: () => void;
 15	};
-16
+16	
 17	function Calendar({ color, onClick }: CalendarProps) {
 18	  return (
 19	    <Link
@@ -2920,26 +2855,26 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:06Z)**_
 26	    </Link>
 27	  );
 28	}
-29
+29	
 30	type MonthCountSelectorProps = {
 31	  maxMonths: number;
 32	  onChange: (value: number) => void;
 33	};
-34
+34	
 35	export function MonthCountSelector({
 36	  maxMonths,
 37	  onChange,
 38	}: MonthCountSelectorProps) {
 39	  const { t } = useTranslation();
-40
+40	
 41	  const { displayMax } = useBudgetMonthCount();
-42
+42	
 43	  // It doesn't make sense to show anything if we can only fit one
 44	  // month
 45	  if (displayMax <= 1) {
 46	    return null;
 47	  }
-48
+48	
 49	  const calendars = [];
 50	  for (let i = 1; i <= displayMax; i++) {
 51	    calendars.push(
@@ -2950,7 +2885,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:06Z)**_
 56	      />,
 57	    );
 58	  }
-59
+59	
 60	  return (
 61	    <View
 62	      style={{
@@ -2973,7 +2908,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:06Z)**_
 79	}
 80
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:09Z)**_
@@ -2999,7 +2933,6 @@ packages\desktop-client\src\components\accounts\Reconcile.test.tsx
 packages\desktop-client\src\components\accounts\Balance.test.tsx
 packages\desktop-client\src\components\FatalError.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:09Z)**_
@@ -3012,37 +2945,36 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:09Z)**_
 1	// @ts-strict-ignore
 2	import React, { createContext, useContext, useState } from 'react';
 3	import type { Dispatch, ReactNode, SetStateAction } from 'react';
-4
+4	
 5	type BudgetMonthCountContextValue = {
 6	  displayMax: number;
 7	  setDisplayMax: Dispatch<SetStateAction<number>>;
 8	};
-9
+9	
 10	const BudgetMonthCountContext =
 11	  createContext<BudgetMonthCountContextValue>(null);
-12
+12	
 13	type BudgetMonthCountProviderProps = {
 14	  children: ReactNode;
 15	};
-16
+16	
 17	export function BudgetMonthCountProvider({
 18	  children,
 19	}: BudgetMonthCountProviderProps) {
 20	  const [displayMax, setDisplayMax] = useState(1);
-21
+21	
 22	  return (
 23	    <BudgetMonthCountContext.Provider value={{ displayMax, setDisplayMax }}>
 24	      {children}
 25	    </BudgetMonthCountContext.Provider>
 26	  );
 27	}
-28
+28	
 29	export function useBudgetMonthCount() {
 30	  return useContext(BudgetMonthCountContext);
 31	}
 32
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
@@ -3055,12 +2987,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
 1	import React from 'react';
 2	import type { ReactNode } from 'react';
 3	import { Provider } from 'react-redux';
-4
+4	
 5	import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-6
+6	
 7	import { configureAppStore } from './redux/store';
 8	import type { AppStore } from './redux/store';
-9
+9	
 10	export function createTestQueryClient() {
 11	  return new QueryClient({
 12	    defaultOptions: {
@@ -3070,29 +3002,29 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
 16	    },
 17	  });
 18	}
-19
+19	
 20	export function configureTestAppStore(
 21	  ...args: Parameters<typeof configureAppStore>
 22	) {
 23	  return configureAppStore(...args);
 24	}
-25
+25	
 26	let testQueryClient = createTestQueryClient();
 27	let testStore = configureTestAppStore({
 28	  queryClient: testQueryClient,
 29	});
-30
+30	
 31	export function resetTestProviders() {
 32	  testQueryClient = createTestQueryClient();
 33	  testStore = configureTestAppStore({ queryClient: testQueryClient });
 34	}
-35
+35	
 36	export function createTestAppStore() {
 37	  return configureAppStore({
 38	    queryClient: testQueryClient,
 39	  });
 40	}
-41
+41	
 42	export function TestProviders({
 43	  children,
 44	  queryClient,
@@ -3110,7 +3042,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
 56	}
 57
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
@@ -3121,29 +3052,29 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
 
 ```text
 1	import React from 'react';
-2
+2	
 3	import type { ScheduleEntity } from '@actual-app/core/types/models';
 4	import { render, screen } from '@testing-library/react';
-5
+5	
 6	import { useCachedSchedules } from '#hooks/useCachedSchedules';
 7	import { useSelectedItems } from '#hooks/useSelected';
 8	import { useSheetValue } from '#hooks/useSheetValue';
 9	import { TestProviders } from '#mocks';
-10
+10	
 11	import { SelectedBalance } from './Balance';
-12
+12	
 13	vi.mock('#hooks/useSelected', () => ({
 14	  useSelectedItems: vi.fn(),
 15	}));
-16
+16	
 17	vi.mock('#hooks/useSheetValue', () => ({
 18	  useSheetValue: vi.fn(),
 19	}));
-20
+20	
 21	vi.mock('#hooks/useCachedSchedules', () => ({
 22	  useCachedSchedules: vi.fn(),
 23	}));
-24
+24	
 25	function makeSchedule(
 26	  id: string,
 27	  amount: number,
@@ -3165,7 +3096,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
 43	    _actions: [],
 44	  } satisfies ScheduleEntity;
 45	}
-46
+46	
 47	function mockedSchedules(schedules: ScheduleEntity[]) {
 48	  return {
 49	    isLoading: false,
@@ -3174,57 +3105,57 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
 52	    statusLabels: new Map(),
 53	  };
 54	}
-55
+55	
 56	describe('SelectedBalance – normal transactions', () => {
 57	  beforeEach(() => {
 58	    vi.clearAllMocks();
 59	    vi.mocked(useCachedSchedules).mockReturnValue(mockedSchedules([]));
 60	  });
-61
+61	
 62	  test('shows balance for selected normal transactions', () => {
 63	    vi.mocked(useSheetValue)
 64	      .mockReturnValueOnce(null)
 65	      .mockReturnValueOnce(-5000);
-66
+66	
 67	    render(
 68	      <TestProviders>
 69	        <SelectedBalance selectedItems={new Set(['tx-123'])} />
 70	      </TestProviders>,
 71	    );
-72
+72	
 73	    expect(screen.getByText('Selected balance:')).toBeInTheDocument();
 74	    expect(screen.getByText('-50.00')).toBeInTheDocument();
 75	  });
-76
+76	
 77	  test('shows balance when balance is falsy', () => {
 78	    vi.mocked(useSheetValue).mockReturnValueOnce(null).mockReturnValueOnce(0);
-79
+79	
 80	    render(
 81	      <TestProviders>
 82	        <SelectedBalance selectedItems={new Set(['tx-123'])} />
 83	      </TestProviders>,
 84	    );
-85
+85	
 86	    expect(screen.getByText('Selected balance:')).toBeInTheDocument();
 87	  });
 88	});
-89
+89	
 90	describe('SelectedBalance – preview (scheduled) transactions', () => {
 91	  beforeEach(() => {
 92	    vi.clearAllMocks();
 93	    vi.mocked(useSheetValue).mockReturnValue(null);
 94	  });
-95
+95	
 96	  test('includes the schedule amount when a preview transaction is selected', () => {
 97	    const scheduleId = 'schedule-abc';
-98
+98	
 99	    vi.mocked(useSelectedItems).mockReturnValue(
 100	      new Set([`preview/${scheduleId}/2026-03-24`]),
 101	    );
 102	    vi.mocked(useCachedSchedules).mockReturnValue(
 103	      mockedSchedules([makeSchedule(scheduleId, -5000, 'account-1')]),
 104	    );
-105
+105	
 106	    render(
 107	      <TestProviders>
 108	        <SelectedBalance
@@ -3232,33 +3163,32 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:11Z)**_
 110	        />
 111	      </TestProviders>,
 112	    );
-113
+113	
 114	    expect(screen.getByText('Selected balance:')).toBeInTheDocument();
 115	  });
-116
+116	
 117	  test('counts each selected occurrence of the same schedule independently', () => {
 118	    const scheduleId = 'schedule-abc';
 119	    const previewId1 = `preview/${scheduleId}/2026-03-24`;
 120	    const previewId2 = `preview/${scheduleId}/2026-04-24`;
 121	    const selectedItems = new Set([previewId1, previewId2]);
-122
+122	
 123	    vi.mocked(useSelectedItems).mockReturnValue(selectedItems);
 124	    vi.mocked(useCachedSchedules).mockReturnValue(
 125	      mockedSchedules([makeSchedule(scheduleId, -5000, 'account-1')]),
 126	    );
-127
+127	
 128	    render(
 129	      <TestProviders>
 130	        <SelectedBalance selectedItems={selectedItems} />
 131	      </TestProviders>,
 132	    );
-133
+133	
 134	    expect(screen.getByText('-100.00')).toBeInTheDocument();
 135	  });
 136	});
 137
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:12Z)**_
@@ -3275,7 +3205,6 @@ packages\desktop-client\src\components\budget\DynamicBudgetTable.tsx:54:  const 
 packages\desktop-client\src\components\budget\DynamicBudgetTable.tsx:67:    setDisplayMax(numPossible);
 packages\desktop-client\src\components\budget\DynamicBudgetTable.tsx:68:  }, [setDisplayMax, numPossible]);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:14Z)**_
@@ -3287,20 +3216,20 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:14Z)**_
 ```text
 1	import React from 'react';
 2	import { useTranslation } from 'react-i18next';
-3
+3	
 4	import { SvgCalendar } from '@actual-app/components/icons/v2';
 5	import { theme } from '@actual-app/components/theme';
 6	import { View } from '@actual-app/components/view';
-7
+7	
 8	import { Link } from '#components/common/Link';
-9
+9	
 10	import { useBudgetMonthCount } from './BudgetMonthCountContext';
-11
+11	
 12	type CalendarProps = {
 13	  color: string;
 14	  onClick: () => void;
 15	};
-16
+16	
 17	function Calendar({ color, onClick }: CalendarProps) {
 18	  return (
 19	    <Link
@@ -3313,26 +3242,26 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:14Z)**_
 26	    </Link>
 27	  );
 28	}
-29
+29	
 30	type MonthCountSelectorProps = {
 31	  maxMonths: number;
 32	  onChange: (value: number) => void;
 33	};
-34
+34	
 35	export function MonthCountSelector({
 36	  maxMonths,
 37	  onChange,
 38	}: MonthCountSelectorProps) {
 39	  const { t } = useTranslation();
-40
+40	
 41	  const { displayMax } = useBudgetMonthCount();
-42
+42	
 43	  // It doesn't make sense to show anything if we can only fit one
 44	  // month
 45	  if (displayMax <= 1) {
 46	    return null;
 47	  }
-48
+48	
 49	  const calendars = [];
 50	  for (let i = 1; i <= displayMax; i++) {
 51	    calendars.push(
@@ -3343,7 +3272,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:14Z)**_
 56	      />,
 57	    );
 58	  }
-59
+59	
 60	  return (
 61	    <View
 62	      style={{
@@ -3366,7 +3295,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:14Z)**_
 79	}
 80
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:15Z)**_
@@ -3378,7 +3306,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:15Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:16Z)**_
@@ -3390,47 +3317,46 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:16Z)**_
 ```text
 1	import '@testing-library/jest-dom';
 2	import type { ReactNode } from 'react';
-3
+3	
 4	import { resetTestProviders } from './mocks';
-5
+5	
 6	global.IS_TESTING = true;
 7	global.Actual = {} as typeof global.Actual;
-8
+8	
 9	type Size = { height: number; width: number };
-10
+10	
 11	type AutoSizerProps = {
 12	  renderProp?: (size: Size) => ReactNode;
 13	  children?: (size: Size) => ReactNode;
 14	};
-15
+15	
 16	vi.mock('react-virtualized-auto-sizer', () => {
 17	  const AutoSizer = (props: AutoSizerProps) => {
 18	    const render = props.renderProp ?? props.children;
 19	    return render ? render({ height: 1000, width: 600 }) : null;
 20	  };
-21
+21	
 22	  return {
 23	    AutoSizer,
 24	    default: AutoSizer,
 25	  };
 26	});
-27
+27	
 28	global.Date.now = () => 123456789;
-29
+29	
 30	global.__resetWorld = () => {
 31	  resetTestProviders();
 32	};
-33
+33	
 34	process.on('unhandledRejection', (reason: unknown) => {
 35	  console.error('REJECTION', reason);
 36	});
-37
+37	
 38	afterEach(() => {
 39	  global.__resetWorld();
 40	});
 41
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:16Z)**_
@@ -3450,7 +3376,6 @@ Exit code 1
 ls: cannot access 'vitest*.config.*': No such file or directory
 ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:21Z)**_
@@ -3462,7 +3387,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:21Z)**_
 ```text
 packages\desktop-client\vite.config.mts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
@@ -3478,7 +3402,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 4	import { cp, mkdir, readdir, rename, rm, writeFile } from 'node:fs/promises';
 5	import * as path from 'path';
 6	import { fileURLToPath } from 'url';
-7
+7	
 8	import {
 9	  defaultDbPath,
 10	  migrationsDir,
@@ -3494,11 +3418,11 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 20	import { build, defineConfig, loadEnv } from 'vite';
 21	import type { Plugin } from 'vite';
 22	import { VitePWA } from 'vite-plugin-pwa';
-23
+23	
 24	const __dirname = path.dirname(fileURLToPath(import.meta.url));
 25	const reactCompilerInclude =
 26	  /[\\/]desktop-client[\\/]src[\\/].*\.[jt]sx(?:$|\?)/;
-27
+27	
 28	const addWatchers = (): Plugin => ({
 29	  name: 'add-watchers',
 30	  configureServer(server) {
@@ -3514,16 +3438,16 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 40	      });
 41	  },
 42	});
-43
+43	
 44	const injectPlugin = (options?: Parameters<typeof inject>[0]): Plugin => {
 45	  // Rollup plugins are currently slightly API-incompatible with Rolldown plugins, but not in a way that prevents them from working here.
 46	  return inject(options) as unknown as Plugin;
 47	};
-48
+48	
 49	// Inject build shims using the inject plugin
 50	const injectShims = (): Plugin[] => {
 51	  const buildShims = path.resolve('./src/build-shims.js');
-52
+52	
 53	  return [
 54	    {
 55	      enforce: 'post',
@@ -3551,9 +3475,9 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 77	    },
 78	  ];
 79	};
-80
+80	
 81	// https://vitejs.dev/config/
-82
+82	
 83	const lootCoreRoot = path.resolve(__dirname, '../loot-core');
 84	const lootCoreOutDir = path.resolve(lootCoreRoot, 'lib-dist/browser');
 85	const lootCoreConfig = path.resolve(lootCoreRoot, 'vite.config.mts');
@@ -3566,9 +3490,9 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 92	  '../plugins-service/dist',
 93	);
 94	const serviceWorkerDir = path.resolve(__dirname, 'service-worker');
-95
+95	
 96	const WORKER_FILENAME_RE = /^kcab\.worker\.(.+)\.js$/;
-97
+97	
 98	async function extractWorkerHash(): Promise<string> {
 99	  const files = await readdir(lootCoreOutDir);
 100	  for (const f of files) {
@@ -3579,7 +3503,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 105	    `loot-core worker build produced no hashed output at ${lootCoreOutDir}`,
 106	  );
 107	}
-108
+108	
 109	// Serve loot-core worker assets with correct content types so the browser can
 110	// stream-compile the sql.js wasm module.
 111	const CONTENT_TYPES: Record<string, string> = {
@@ -3588,12 +3512,12 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 114	  '.map': 'application/json',
 115	  '.wasm': 'application/wasm',
 116	};
-117
+117	
 118	async function stagePluginsService(): Promise<void> {
 119	  await rm(serviceWorkerDir, { recursive: true, force: true });
 120	  await cp(pluginsServiceDistDir, serviceWorkerDir, { recursive: true });
 121	}
-122
+122	
 123	async function stagePublicData(): Promise<void> {
 124	  const migrationsDest = path.resolve(publicDataDir, 'migrations');
 125	  await mkdir(publicDataDir, { recursive: true });
@@ -3603,7 +3527,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 129	    cp(defaultDbPath, path.resolve(publicDataDir, 'default-db.sqlite')),
 130	    cp(sqlWasmPath, path.resolve(publicDir, 'sql-wasm.wasm')),
 131	  ]);
-132
+132	
 133	  const entries = await readdir(publicDataDir, {
 134	    recursive: true,
 135	    withFileTypes: true,
@@ -3625,7 +3549,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 151	    files.join('\n') + '\n',
 152	  );
 153	}
-154
+154	
 155	const lootCoreBackend = (): Plugin => ({
 156	  name: 'loot-core-backend',
 157	  configureServer(server) {
@@ -3657,7 +3581,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 183	    process.once('SIGINT', cleanup);
 184	    process.once('SIGTERM', cleanup);
 185	    process.once('exit', cleanup);
-186
+186	
 187	    server.middlewares.use('/kcab', (req, res, next) => {
 188	      const url = new URL(req.url ?? '/', 'http://localhost');
 189	      const filePath = path.join(lootCoreOutDir, url.pathname);
@@ -3686,7 +3610,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 212	    }
 213	  },
 214	});
-215
+215	
 216	const pluginsServiceAssets = (): Plugin => ({
 217	  name: 'plugins-service-assets',
 218	  configureServer(server) {
@@ -3707,7 +3631,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 233	    });
 234	  },
 235	});
-236
+236	
 237	export default defineConfig(async ({ mode, command }) => {
 238	  const env = loadEnv(mode, process.cwd(), '');
 239	  const isVitest = process.env.VITEST === 'true';
@@ -3715,13 +3639,13 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 241	    'Cross-Origin-Opener-Policy': 'same-origin',
 242	    'Cross-Origin-Embedder-Policy': 'require-corp',
 243	  };
-244
+244	
 245	  // Forward Netlify env variables
 246	  if (process.env.REVIEW_ID) {
 247	    process.env.REACT_APP_REVIEW_ID = process.env.REVIEW_ID;
 248	    process.env.REACT_APP_BRANCH = process.env.BRANCH;
 249	  }
-250
+250	
 251	  // Electron packaging (--mode=desktop) bundles loot-core directly, so skip
 252	  // all browser-only staging there.
 253	  if (mode !== 'desktop') {
@@ -3747,9 +3671,9 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 273	      process.env.REACT_APP_BACKEND_WORKER_HASH = 'dev';
 274	    }
 275	  }
-276
+276	
 277	  const browserOpen = env.BROWSER_OPEN ? `//${env.BROWSER_OPEN}` : true;
-278
+278	
 279	  return {
 280	    base: '/',
 281	    envPrefix: 'REACT_APP_',
@@ -3898,7 +3822,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:22Z)**_
 424	});
 425
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:25Z)**_
@@ -3910,47 +3833,46 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:25Z)**_
 ```text
 1	import '@testing-library/jest-dom';
 2	import type { ReactNode } from 'react';
-3
+3	
 4	import { resetTestProviders } from './mocks';
-5
+5	
 6	global.IS_TESTING = true;
 7	global.Actual = {} as typeof global.Actual;
-8
+8	
 9	type Size = { height: number; width: number };
-10
+10	
 11	type AutoSizerProps = {
 12	  renderProp?: (size: Size) => ReactNode;
 13	  children?: (size: Size) => ReactNode;
 14	};
-15
+15	
 16	vi.mock('react-virtualized-auto-sizer', () => {
 17	  const AutoSizer = (props: AutoSizerProps) => {
 18	    const render = props.renderProp ?? props.children;
 19	    return render ? render({ height: 1000, width: 600 }) : null;
 20	  };
-21
+21	
 22	  return {
 23	    AutoSizer,
 24	    default: AutoSizer,
 25	  };
 26	});
-27
+27	
 28	global.Date.now = () => 123456789;
-29
+29	
 30	global.__resetWorld = () => {
 31	  resetTestProviders();
 32	};
-33
+33	
 34	process.on('unhandledRejection', (reason: unknown) => {
 35	  console.error('REJECTION', reason);
 36	});
-37
+37	
 38	afterEach(() => {
 39	  global.__resetWorld();
 40	});
 41
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:28Z)**_
@@ -3962,7 +3884,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:28Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-11 01:10:31Z)**_
@@ -3978,18 +3899,15 @@ No test file in the codebase mocks react-i18next — `useTranslation()`'s `t` wo
 3. **`reports/Change.test.tsx`** — simplest `TestProviders`-wrapped component test, minimal boilerplate.
 
 ### Import/header boilerplate (consistent across all three)
-
 ```tsx
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react'; // fireEvent only where needed
-import { TestProviders } from '#mocks'; // only when redux/query context needed
+import { TestProviders } from '#mocks';          // only when redux/query context needed
 import { ComponentUnderTest } from './Component';
 ```
-
 No file-level "use client" or license header. `describe`/`it` (or `test`) are globals (vitest globals enabled), no explicit import of `describe/it/expect/vi` needed — confirmed `Balance.test.tsx` uses `vi.mock`/`vi.mocked` and `beforeEach` with no import statement for them (global vitest API).
 
 ### Representative test (CalculatorButtons — closest analog, no context)
-
 ```tsx
 describe('CalculatorButtons', () => {
   it('updates a controlled external input from keypad actions', () => {
@@ -4001,19 +3919,15 @@ describe('CalculatorButtons', () => {
 ```
 
 ### Context/hooks
-
 `TestProviders` (`packages/desktop-client/src/mocks.tsx`) wraps only Redux `Provider` + `QueryClientProvider` — it does **not** cover `BudgetMonthCountContext`. For `MonthCountSelector`, the real `BudgetMonthCountProvider` (`./BudgetMonthCountContext.tsx`) should be used directly as a wrapper (it's a simple `useState`-backed provider, no external deps), e.g. `render(<BudgetMonthCountProvider><MonthCountSelector .../></BudgetMonthCountProvider>)`. Alternatively `vi.mock('./BudgetMonthCountContext', () => ({ useBudgetMonthCount: () => ({ displayMax: 3 }) }))` mirrors the `vi.mock('#hooks/...')` pattern seen in `Balance.test.tsx`/`GoCardlessExternalMsgModal.test.tsx` — either is idiomatic; mocking is more common when the hook is imported from a `#hooks/*` alias.
 
 ### i18n
-
 No test file mocks `react-i18next`. `useTranslation()`'s `t()` is used unmocked and just returns the key/string passed in — no i18n provider or mock needed for tests that only assert on rendered text/attributes.
 
 ### Click/mouse interaction
-
 `CalculatorButtons.test.tsx` uses `fireEvent.click(screen.getByRole('button', { name: ... }))` throughout — no `userEvent` usage was found in the sampled files, and no hover-specific tests were found; click via `fireEvent` is the established pattern for button-role elements (matches MonthCountSelector's `Link`/`onPress` calendar buttons, which render as clickable elements).
 
 ### No custom `render()` helper
-
 There is no wrapping custom `render` (like `renderWithProviders`); tests call `@testing-library/react`'s `render` directly, wrapping children in `<TestProviders>` only when redux/query-client context is actually needed (not needed for MonthCountSelector beyond the budget-month-count context).
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:32Z)**_
@@ -4039,7 +3953,6 @@ packages\desktop-client\src\components\accounts\Reconcile.test.tsx
 packages\desktop-client\src\components\accounts\Balance.test.tsx
 packages\desktop-client\src\components\FatalError.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:33Z)**_
@@ -4050,16 +3963,16 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:33Z)**_
 
 ```text
 1	import React, { useRef, useState } from 'react';
-2
+2	
 3	import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 4	import { fireEvent, render, screen } from '@testing-library/react';
-5
+5	
 6	import { CalculatorButtons } from './CalculatorButtons';
-7
+7	
 8	function TestCalculator({ initialValue = '' }: { initialValue?: string }) {
 9	  const [value, setValue] = useState(initialValue);
 10	  const inputRef = useRef<HTMLInputElement>(null);
-11
+11	
 12	  return (
 13	    <>
 14	      <input
@@ -4080,15 +3993,15 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:33Z)**_
 29	    </>
 30	  );
 31	}
-32
+32	
 33	describe('CalculatorButtons', () => {
 34	  it('updates a controlled external input from keypad actions', () => {
 35	    render(<TestCalculator />);
-36
+36	
 37	    const input = screen.getByLabelText('Expression');
-38
+38	
 39	    input.focus();
-40
+40	
 41	    fireEvent.click(screen.getByRole('button', { name: '1' }));
 42	    fireEvent.click(screen.getByRole('button', { name: '2' }));
 43	    fireEvent.click(screen.getByRole('button', { name: '+' }));
@@ -4097,51 +4010,51 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:33Z)**_
 46	    expect(input).toHaveFocus();
 47	    expect(input).toHaveProperty('selectionStart', '12+3'.length);
 48	    expect(input).toHaveProperty('selectionEnd', '12+3'.length);
-49
+49	
 50	    fireEvent.click(screen.getByRole('button', { name: '\u232B' }));
 51	    expect(input).toHaveValue('12+');
 52	    expect(input).toHaveFocus();
 53	    expect(input).toHaveProperty('selectionStart', '12+'.length);
 54	    expect(input).toHaveProperty('selectionEnd', '12+'.length);
-55
+55	
 56	    fireEvent.click(screen.getByRole('button', { name: '3' }));
 57	    fireEvent.click(screen.getByRole('button', { name: '=' }));
 58	    expect(input).toHaveValue('15');
 59	    expect(input).toHaveFocus();
 60	    expect(input).toHaveProperty('selectionStart', '15'.length);
 61	    expect(input).toHaveProperty('selectionEnd', '15'.length);
-62
+62	
 63	    fireEvent.click(screen.getByRole('button', { name: 'AC' }));
 64	    expect(input).toHaveValue('');
 65	    expect(input).toHaveFocus();
 66	    expect(input).toHaveProperty('selectionStart', 0);
 67	    expect(input).toHaveProperty('selectionEnd', 0);
 68	  });
-69
+69	
 70	  it('inserts and deletes at the current caret position', () => {
 71	    render(<TestCalculator initialValue="123" />);
-72
+72	
 73	    const input = screen.getByLabelText('Expression');
-74
+74	
 75	    if (!(input instanceof HTMLInputElement)) {
 76	      throw new Error('Expected expression to be an input');
 77	    }
-78
+78	
 79	    input.focus();
 80	    input.setSelectionRange(1, 1);
-81
+81	
 82	    fireEvent.click(screen.getByRole('button', { name: '0' }));
 83	    expect(input).toHaveValue('1023');
 84	    expect(input).toHaveFocus();
 85	    expect(input).toHaveProperty('selectionStart', 2);
 86	    expect(input).toHaveProperty('selectionEnd', 2);
-87
+87	
 88	    fireEvent.click(screen.getByRole('button', { name: '\u232B' }));
 89	    expect(input).toHaveValue('123');
 90	    expect(input).toHaveFocus();
 91	    expect(input).toHaveProperty('selectionStart', 1);
 92	    expect(input).toHaveProperty('selectionEnd', 1);
-93
+93	
 94	    input.setSelectionRange(1, 3);
 95	    fireEvent.click(screen.getByRole('button', { name: '9' }));
 96	    expect(input).toHaveValue('19');
@@ -4149,43 +4062,42 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:33Z)**_
 98	    expect(input).toHaveProperty('selectionStart', 2);
 99	    expect(input).toHaveProperty('selectionEnd', 2);
 100	  });
-101
+101	
 102	  it('restores input focus when a keypad press starts after blur', () => {
 103	    render(<TestCalculator initialValue="1+2" />);
-104
+104	
 105	    const input = screen.getByLabelText('Expression');
-106
+106	
 107	    if (!(input instanceof HTMLInputElement)) {
 108	      throw new Error('Expected expression to be an input');
 109	    }
-110
+110	
 111	    input.focus();
 112	    input.setSelectionRange(input.value.length, input.value.length);
 113	    input.blur();
-114
+114	
 115	    fireEvent.click(screen.getByRole('button', { name: '3' }));
-116
+116	
 117	    expect(input).toHaveValue('1+23');
 118	    expect(input).toHaveFocus();
-119
+119	
 120	    input.blur();
-121
+121	
 122	    fireEvent.click(screen.getByRole('button', { name: '=' }));
-123
+123	
 124	    expect(input).toHaveValue('24');
 125	    expect(input).toHaveFocus();
-126
+126	
 127	    input.blur();
-128
+128	
 129	    fireEvent.click(screen.getByRole('button', { name: 'AC' }));
-130
+130	
 131	    expect(input).toHaveValue('');
 132	    expect(input).toHaveFocus();
 133	  });
 134	});
 135
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:50Z)**_
@@ -4198,7 +4110,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:10:50Z)**_
 10:  pageTextLight: 'var(--color-pageTextLight)',
 11:  pageTextSubdued: 'var(--color-pageTextSubdued)',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:10:58Z)**_
@@ -4212,7 +4123,6 @@ Search test files for router wrapping patterns
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:11:01Z)**_
@@ -4234,7 +4144,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:11:01Z)**_
 10	  NavigateOptions,
 11	  To,
 12	} from 'react-router';
-13
+13	
 14	export function useNavigate(): NavigateFunction {
 15	  const location = useLocation();
 16	  const navigate = useNavigateReactRouter();
@@ -4252,10 +4162,10 @@ _**Agent (claude-sonnet-5 2026-09-11 01:11:01Z)**_
 28	            previousLocation: location,
 29	          },
 30	        };
-31
+31	
 32	        const { previousLocation, ...previousOriginalState } =
 33	          location.state || {};
-34
+34	
 35	        if (
 36	          previousLocation == null ||
 37	          !isSamePath(to, previousLocation) ||
@@ -4272,13 +4182,12 @@ _**Agent (claude-sonnet-5 2026-09-11 01:11:01Z)**_
 48	    [navigate, location],
 49	  );
 50	}
-51
+51	
 52	function isSamePath(to: To, location: Location) {
 53	  return to === location.pathname + location.search + location.hash;
 54	}
 55
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:11:07Z)**_
@@ -4292,7 +4201,6 @@ Check react-router version
 ```text
 7.17.0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:11:10Z)**_
@@ -4304,7 +4212,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:11:10Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:11:24Z)**_
@@ -4320,7 +4227,6 @@ Check mocking conventions in Balance.test.tsx
 17:vi.mock('#hooks/useSheetValue', () => ({
 21:vi.mock('#hooks/useCachedSchedules', () => ({
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:11:26Z)**_
@@ -4331,29 +4237,29 @@ _**Agent (claude-sonnet-5 2026-09-11 01:11:26Z)**_
 
 ```text
 1	import React from 'react';
-2
+2	
 3	import type { ScheduleEntity } from '@actual-app/core/types/models';
 4	import { render, screen } from '@testing-library/react';
-5
+5	
 6	import { useCachedSchedules } from '#hooks/useCachedSchedules';
 7	import { useSelectedItems } from '#hooks/useSelected';
 8	import { useSheetValue } from '#hooks/useSheetValue';
 9	import { TestProviders } from '#mocks';
-10
+10	
 11	import { SelectedBalance } from './Balance';
-12
+12	
 13	vi.mock('#hooks/useSelected', () => ({
 14	  useSelectedItems: vi.fn(),
 15	}));
-16
+16	
 17	vi.mock('#hooks/useSheetValue', () => ({
 18	  useSheetValue: vi.fn(),
 19	}));
-20
+20	
 21	vi.mock('#hooks/useCachedSchedules', () => ({
 22	  useCachedSchedules: vi.fn(),
 23	}));
-24
+24	
 25	function makeSchedule(
 26	  id: string,
 27	  amount: number,
@@ -4376,7 +4282,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:11:26Z)**_
 44	  } satisfies ScheduleEntity;
 45	}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:11:30Z)**_
@@ -4387,7 +4292,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:11:30Z)**_
 
 ```text
 45	}
-46
+46	
 47	function mockedSchedules(schedules: ScheduleEntity[]) {
 48	  return {
 49	    isLoading: false,
@@ -4396,38 +4301,37 @@ _**Agent (claude-sonnet-5 2026-09-11 01:11:30Z)**_
 52	    statusLabels: new Map(),
 53	  };
 54	}
-55
+55	
 56	describe('SelectedBalance – normal transactions', () => {
 57	  beforeEach(() => {
 58	    vi.clearAllMocks();
 59	    vi.mocked(useCachedSchedules).mockReturnValue(mockedSchedules([]));
 60	  });
-61
+61	
 62	  test('shows balance for selected normal transactions', () => {
 63	    vi.mocked(useSheetValue)
 64	      .mockReturnValueOnce(null)
 65	      .mockReturnValueOnce(-5000);
-66
+66	
 67	    render(
 68	      <TestProviders>
 69	        <SelectedBalance selectedItems={new Set(['tx-123'])} />
 70	      </TestProviders>,
 71	    );
-72
+72	
 73	    expect(screen.getByText('Selected balance:')).toBeInTheDocument();
 74	    expect(screen.getByText('-50.00')).toBeInTheDocument();
 75	  });
-76
+76	
 77	  test('shows balance when balance is falsy', () => {
 78	    vi.mocked(useSheetValue).mockReturnValueOnce(null).mockReturnValueOnce(0);
-79
+79	
 80	    render(
 81	      <TestProviders>
 82	        <SelectedBalance selectedItems={new Set(['tx-123'])} />
 83	      </TestProviders>,
 84	    );
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:11:31Z)**_
@@ -4525,12 +4429,12 @@ describe('MonthCountSelector', () => {
     expect(icons[2]).toHaveStyle({ color: 'var(--color-pageTextSubdued)' });
   });
 });
+
 ```
 
 ```text
 File created successfully at: c:\Actual Budget\packages\desktop-client\src\components\budget\MonthCountSelector.test.tsx (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:11:43Z)**_
@@ -4555,7 +4459,6 @@ Run the new MonthCountSelector test file
    Start at  21:11:59
    Duration  56.73s (transform 3.86s, setup 17.32s, import 9.42s, tests 332ms, environment 28.49s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:12:59Z)**_
@@ -4573,7 +4476,6 @@ Lint the new test file
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:13:49Z)**_
@@ -4590,7 +4492,6 @@ Typecheck desktop-client workspace including the new test file
 - Compiling with strict mode...
 🎉 All files passed
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:14:08Z)**_
@@ -4612,7 +4513,6 @@ Run all tests under the budget component folder
    Start at  21:13:57
    Duration  9.74s (transform 2.86s, setup 6.47s, import 4.09s, tests 369ms, environment 3.72s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:14:09Z)**_
@@ -4628,16 +4528,16 @@ _**Agent (claude-sonnet-5 2026-09-11 01:14:09Z)**_
 ```text
 1	import React from 'react';
 2	import { MemoryRouter } from 'react-router';
-3
+3	
 4	import { fireEvent, render, screen } from '@testing-library/react';
-5
+5	
 6	import { useBudgetMonthCount } from './BudgetMonthCountContext';
 7	import { MonthCountSelector } from './MonthCountSelector';
-8
+8	
 9	vi.mock('./BudgetMonthCountContext', () => ({
 10	  useBudgetMonthCount: vi.fn(),
 11	}));
-12
+12	
 13	function renderSelector(maxMonths: number, onChange: (value: number) => void) {
 14	  return render(
 15	    <MemoryRouter>
@@ -4645,31 +4545,31 @@ _**Agent (claude-sonnet-5 2026-09-11 01:14:09Z)**_
 17	    </MemoryRouter>,
 18	  );
 19	}
-20
+20	
 21	describe('MonthCountSelector', () => {
 22	  beforeEach(() => {
 23	    vi.clearAllMocks();
 24	  });
-25
+25	
 26	  test('renders nothing when only one month fits on screen', () => {
 27	    vi.mocked(useBudgetMonthCount).mockReturnValue({
 28	      displayMax: 1,
 29	      setDisplayMax: vi.fn(),
 30	    });
-31
+31	
 32	    const { container } = renderSelector(1, vi.fn());
-33
+33	
 34	    expect(container).toBeEmptyDOMElement();
 35	  });
-36
+36	
 37	  test('renders one calendar button per month that can be displayed', () => {
 38	    vi.mocked(useBudgetMonthCount).mockReturnValue({
 39	      displayMax: 3,
 40	      setDisplayMax: vi.fn(),
 41	    });
-42
+42	
 43	    renderSelector(2, vi.fn());
-44
+44	
 45	    const buttons = screen.getAllByRole('button');
 46	    expect(buttons).toHaveLength(3);
 47	    // Each icon is a real, focusable button so it picks up the app's
@@ -4678,34 +4578,34 @@ _**Agent (claude-sonnet-5 2026-09-11 01:14:09Z)**_
 50	      expect(button.tagName).toBe('BUTTON');
 51	    }
 52	  });
-53
+53	
 54	  test('calls onChange with the 1-based index of the clicked month', () => {
 55	    vi.mocked(useBudgetMonthCount).mockReturnValue({
 56	      displayMax: 3,
 57	      setDisplayMax: vi.fn(),
 58	    });
 59	    const onChange = vi.fn();
-60
+60	
 61	    renderSelector(1, onChange);
-62
+62	
 63	    const buttons = screen.getAllByRole('button');
 64	    fireEvent.click(buttons[2]);
-65
+65	
 66	    expect(onChange).toHaveBeenCalledWith(3);
 67	  });
-68
+68	
 69	  test('highlights months up to maxMonths and dims the rest', () => {
 70	    vi.mocked(useBudgetMonthCount).mockReturnValue({
 71	      displayMax: 3,
 72	      setDisplayMax: vi.fn(),
 73	    });
-74
+74	
 75	    renderSelector(2, vi.fn());
-76
+76	
 77	    const icons = screen
 78	      .getAllByRole('button')
 79	      .map(button => button.querySelector('svg'));
-80
+80	
 81	    expect(icons[0]).toHaveStyle({ color: 'var(--color-pageTextLight)' });
 82	    expect(icons[1]).toHaveStyle({ color: 'var(--color-pageTextLight)' });
 83	    expect(icons[2]).toHaveStyle({ color: 'var(--color-pageTextSubdued)' });
@@ -4713,7 +4613,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:14:09Z)**_
 85	});
 86
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:14:14Z)**_
@@ -4723,7 +4622,6 @@ This matches the codebase's established `vi.mock` + `vi.mocked(...).mockReturnVa
 ## Summary
 
 Added [MonthCountSelector.test.tsx](packages/desktop-client/src/components/budget/MonthCountSelector.test.tsx) with 4 tests covering:
-
 - `displayMax <= 1` renders nothing (unchanged early-return logic)
 - one button rendered per displayable month
 - click handler still fires `onChange` with the correct 1-based index
@@ -4766,7 +4664,6 @@ packages/desktop-client/src/components/settings/ThemeInstaller.test.tsx
 packages/desktop-client/src/components/settings/Themes.test.tsx
 packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:17:35Z)**_
@@ -4796,88 +4693,87 @@ _**Agent (claude-sonnet-5 2026-09-11 01:24:31Z)**_
 
 ```text
 1	# Standards & Guidelines - Actual Budget
-2
+2	
 3	**Version & Date:** v1.0 [2026-09-04]
 4	**Project Repo:** https://github.com/CSCI-435-SE/actual-budget
-5
+5	
 6	## Existing Conventions
-7
+7	
 8	There are many existing conventions that exist when contributing to Actual Budget that will be carried over into CSCI-435. Below is a summary of many existing conventions.
-9
+9	
 10	### Contributing Conventions
-11
+11	
 12	These contributing conventions can be found in the documentation here. What follows is a brief summary.
-13
+13	
 14	Before submitting code, run these in order:
-15
+15	
 16	1. `yarn typecheck` — catch type errors
 17	2. `yarn lint:fix` — auto-fix style issues
 18	3. `yarn test` (or workspace-specific variant) — ensure nothing is broken
-19
+19	
 20	Pull requests should:
-21
+21	
 22	- Link the related issue with `Fixes #<ticket_number>` in the description
 23	- Include a release note generated via `yarn generate:release-notes`
 24	- Drop the `[WIP]` prefix from the title when ready for review
 25	- Stay rebased/merged with master until merged
-26
+26	
 27	Release notes live in `upcoming-release-notes/<slug>.md` with front matter specifying category (Features, Enhancements, Bugfix, or Maintenance) and authors. Write them as imperative commands — "Add option to…" not "Added option to…"
-28
+28	
 29	**Feature scope:** Small changes can go straight to a PR. Larger features should start as a GitHub issue to align with the team before implementation begins.
-30
+30	
 31	**Design philosophy:** Minimalist UI that progressively exposes advanced features. Avoid adding user-facing toggles/settings for minor UI details (sizes, padding, etc.) — the settings screen is reserved for core settings only.
-32
+32	
 33	**Process norms:** Issues are open to anyone (no assignments), PRs aren't guaranteed a review without a clear rationale from the author, and maintainer wellbeing takes priority over turnaround speed.
-34
+34	
 35	### AI Use Conventions
-36
+36	
 37	The documentation also contains an official AI use policy which can be found here. In short, AI is allowed for contributions to the project. This being said, it should be used carefully, must be disclosed, and should not be used when interacting with maintainers. It also acknowledges that modern AI tools make it easy to generate a large number of changes very quickly, and emphasizes quality over quantity when creating new PRs.
-38
+38	
 39	### Testing Conventions
-40
+40	
 41	Actual Budget also contains an extensive testing framework, which can be found here. The project uses Vitest for unit testing, Playwright for E2E testing, and Lage for running tests across the monorepo efficiently. The framework notes that before submitting a pull request:
-42
+42	
 43	- All existing tests pass (`yarn test`)
 44	- New functionality has appropriate test coverage
 45	- Tests follow best practices (minimize mocking, descriptive names)
 46	- E2E tests pass if UI changes were made
-47
+47	
 48	### Coding Conventions
-49
+49	
 50	The Actual Budget project contains a list of coding conventions which can be found here. The coding conventions listed are fairly standard across modern web applications made with React, and emphasize clean, readable, and reusable code.
-51
+51	
 52	## Definition of Done
-53
+53	
 54	The Actual Budget documentation does not contain a formal definition of done, but one can be inferred from the available information.
-55
+55	
 56	A pull request is considered ready to merge when:
-57
+57	
 58	### Code Quality
-59
+59	
 60	- `yarn typecheck` passes with no errors
 61	- `yarn lint:fix` has been run and all issues resolved
 62	- All relevant tests pass (`yarn test` or workspace-specific equivalent)
-63
+63	
 64	### PR Hygiene
-65
+65	
 66	- The PR title does not have a `[WIP]` prefix
 67	- The related issue is linked using `Fixes #<ticket_number>` in the description
 68	- The PR description explains why the change is being made and details any tradeoffs
 69	- The branch is up to date with master (via merge or rebase)
-70
+70	
 71	### Release Notes
-72
+72	
 73	- A release note has been generated via `yarn generate:release-notes`
 74	- The note is filed under the correct category: Features, Enhancements, Bugfix, or Maintenance
 75	- The note is phrased as an imperative command ("Add…" not "Added…")
-76
+76	
 77	### Design
-78
+78	
 79	- UI changes follow the minimalist, progressive-disclosure design philosophy
 80	- No unnecessary user-facing toggles or settings have been added for minor UI details
 81
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:24:43Z)**_
@@ -4920,6 +4816,7 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
+
 ---
 
 _**Agent (claude-sonnet-5 2026-09-11 01:24:47Z)**_
@@ -4953,7 +4850,6 @@ no changes added to commit (use "git add" and/or "git commit -a")
  2 files changed, 13 insertions(+), 4 deletions(-)
 ---STAGED DIFF STAT---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:24:53Z)**_
@@ -4989,7 +4885,6 @@ e8468123d test commit
 origin	https://github.com/CSCI-435-SE/actual-budget.git (fetch)
 origin	https://github.com/CSCI-435-SE/actual-budget.git (push)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:25:23Z)**_
@@ -5004,7 +4899,6 @@ Check GitHub issue #25 details
 Exit code 127
 /usr/bin/bash: line 1: gh: command not found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:25:29Z)**_
@@ -5015,15 +4909,15 @@ Check gh CLI availability and view issue #25
 
 ```text
 Exit code 1
-gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
 spelling of the name, or if a path was included, verify that the path is correct and try again.
 At line:1 char:302
 + ... y { $PSStyle.OutputRendering = 'PlainText' } catch {} } }; gh --versi ...
 +                                                                ~~
     + CategoryInfo          : ObjectNotFound: (gh:String) [], CommandNotFoundException
     + FullyQualifiedErrorId : CommandNotFoundException
-
-gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
+ 
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
 spelling of the name, or if a path was included, verify that the path is correct and try again.
 At line:1 char:316
 + ... utputRendering = 'PlainText' } catch {} } }; gh --version; gh issue v ...
@@ -5031,7 +4925,6 @@ At line:1 char:316
     + CategoryInfo          : ObjectNotFound: (gh:String) [], CommandNotFoundException
     + FullyQualifiedErrorId : CommandNotFoundException
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:25:36Z)**_
@@ -5048,7 +4941,6 @@ INFO: Could not find files for the given pattern(s).
 ls: cannot access 'C:/Program Files/GitHub CLI': No such file or directory
 ---env---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:04Z)**_
@@ -5063,7 +4955,6 @@ Check package.json for release-notes generation script
 46:    "generate:i18n": "yarn workspace @actual-app/web generate:i18n",
 47:    "generate:release-notes": "node ./bin/release-note-generator.mts",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:06Z)**_
@@ -5115,6 +5006,7 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
+
 ---
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
@@ -5127,9 +5019,9 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 1	import { exec } from 'node:child_process';
 2	import { existsSync, writeFile } from 'node:fs';
 3	import { exit } from 'node:process';
-4
+4	
 5	import prompts from 'prompts';
-6
+6	
 7	async function run() {
 8	  const username = await execAsync(
 9	    "gh api user --jq '.login'",
@@ -5141,10 +5033,10 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 15	      `Found potentially matching PR ${activePr.number}: ${activePr.title}`,
 16	    );
 17	  }
-18
+18	
 19	  const branchName = await execAsync('git rev-parse --abbrev-ref HEAD');
 20	  const initialSlug = slugify(activePr?.title ?? branchName ?? '');
-21
+21	
 22	  const result = await prompts([
 23	    {
 24	      name: 'githubUsername',
@@ -5180,7 +5072,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 54	      initial: activePr?.title,
 55	    },
 56	  ]);
-57
+57	
 58	  if (
 59	    !result.githubUsername ||
 60	    !result.oneLineSummary ||
@@ -5190,13 +5082,13 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 64	    console.log('All questions must be answered. Exiting');
 65	    exit(1);
 66	  }
-67
+67	
 68	  const fileContents = getFileContents(
 69	    result.releaseNoteType,
 70	    result.githubUsername,
 71	    result.oneLineSummary,
 72	  );
-73
+73	
 74	  const filepath = `./upcoming-release-notes/${result.filenameSlug}.md`;
 75	  if (existsSync(filepath)) {
 76	    const { confirm } = await prompts({
@@ -5209,7 +5101,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 83	      exit(1);
 84	    }
 85	  }
-86
+86	
 87	  writeFile(filepath, fileContents, err => {
 88	    if (err) {
 89	      console.error('Failed to write release note file:', err);
@@ -5219,7 +5111,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 93	    }
 94	  });
 95	}
-96
+96	
 97	function slugify(input: string): string {
 98	  const slug = input
 99	    .toLowerCase()
@@ -5228,7 +5120,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 102	    .slice(0, 80);
 103	  return slug || 'untitled';
 104	}
-105
+105	
 106	// makes an attempt to find an existing open PR from <username>:<branch>
 107	async function getActivePr(
 108	  username: string,
@@ -5243,7 +5135,7 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 117	  const forkHead = `${username}:${branchName}`;
 118	  return getPrNumberFromHead(forkHead);
 119	}
-120
+120	
 121	async function getPrNumberFromHead(
 122	  head: string,
 123	): Promise<{ number: number; title: string } | undefined> {
@@ -5269,17 +5161,17 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 143	    console.warn('error fetching from github pulls api:', e);
 144	  }
 145	}
-146
+146	
 147	function getFileContents(type: string, username: string, summary: string) {
 148	  return `---
 149	category: ${type}
 150	authors: [${username}]
 151	---
-152
+152	
 153	${summary}
 154	`;
 155	}
-156
+156	
 157	// simple exec that fails silently and returns an empty string on failure
 158	async function execAsync(cmd: string, errorLog?: string): Promise<string> {
 159	  return new Promise<string>(res => {
@@ -5293,11 +5185,10 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:13Z)**_
 167	    });
 168	  });
 169	}
-170
+170	
 171	void run();
 172
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:20Z)**_
@@ -5314,7 +5205,6 @@ Check existing release note category values for consistency
      17 category: Enhancements
      12 category: Maintenance
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:23Z)**_
@@ -5328,7 +5218,6 @@ Check the git author identity configured for commits
 ```text
 Oscar Chaparro <ojcch1@gmail.com>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:27Z)**_
@@ -5356,7 +5245,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:26:27Z)**_
 16		vscode-merge-base = origin/master
 17
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:33Z)**_
@@ -5371,12 +5259,12 @@ authors: [BenBonk]
 ---
 
 Show a pointer cursor and hover highlight on the month-count calendar icons in the budget view
+
 ```
 
 ```text
 File created successfully at: c:\Actual Budget\upcoming-release-notes\calendar-icon-hover-effect.md (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:52Z)**_
@@ -5393,7 +5281,6 @@ Checking formatting...
 All matched files use the correct format.
 Finished in 318ms on 3 files using 16 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:26:53Z)**_
@@ -5427,7 +5314,6 @@ Untracked files:
 	ai-logs/sprint0/bennettmatuszewski/
 	docs/sprint0/standards.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:27:02Z)**_
@@ -5454,7 +5340,6 @@ EOF
  create mode 100644 packages/desktop-client/src/components/budget/MonthCountSelector.test.tsx
  create mode 100644 upcoming-release-notes/calendar-icon-hover-effect.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:27:04Z)**_
@@ -5473,7 +5358,6 @@ Push the feature branch to origin, setting upstream tracking
 Exit code 143
 Command timed out after 2m 0s
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:29:13Z)**_
@@ -5499,7 +5383,6 @@ Untracked files:
 no changes added to commit (use "git add" and/or "git commit -a")
 ---
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:29:18Z)**_
@@ -5527,7 +5410,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:29:18Z)**_
 16		vscode-merge-base = origin/master
 17
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:29:47Z)**_
@@ -5541,7 +5423,6 @@ Attempt push with terminal prompts disabled to detect auth issues quickly
 ```text
 EXIT:124
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:29:56Z)**_
@@ -5556,7 +5437,6 @@ Check configured credential helper (read-only)
 manager
 EXIT:0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:30:06Z)**_
@@ -5573,7 +5453,6 @@ Test a lightweight remote read to isolate whether auth prompting is the blocker
 e79ab25f6d98aaaa74582e698dc0dc3faad34a1d	refs/pull/1/head
 EXIT:0
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:30:16Z)**_
@@ -5589,7 +5468,6 @@ fatal: Cannot prompt because user interactivity has been disabled.
 fatal: could not read Username for 'https://github.com': terminal prompts disabled
 EXIT:128
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:30:27Z)**_
@@ -5597,7 +5475,6 @@ _**Agent (claude-sonnet-5 2026-09-11 01:30:27Z)**_
 Everything is committed locally and ready, but the push is blocked on git credentials this environment can't supply — pushing to GitHub over HTTPS needs an interactive sign-in (Git Credential Manager), and this sandboxed shell has no way to complete that OAuth/browser flow.
 
 **What's done:**
-
 - Committed to `fix/issue-25-calendar-hover-effect`: `6207568d5` — `[AI] Add hover cursor and background to month-count calendar icons`
   - `MonthCountSelector.tsx` (the hover fix), `MonthCountSelector.test.tsx` (new tests), and `upcoming-release-notes/calendar-icon-hover-effect.md` (release note, category `Enhancements`)
 - I deliberately left out `.gitignore`, `ai-logs/sprint0/bennettmatuszewski/`, and `docs/sprint0/standards.md` — those look like separate course bookkeeping unrelated to issue #25's calendar-hover fix, not something that belongs in this PR. Let me know if you actually want those bundled in too.
@@ -5611,8 +5488,8 @@ Could you run that push yourself (it'll prompt you to sign in via the credential
 _**User (2026-09-11 01:56:55Z)**_
 
 <command-name>/mcp</command-name>
-<command-message>mcp</command-message>
-<command-args></command-args>
+            <command-message>mcp</command-message>
+            <command-args></command-args>
 
 ---
 
@@ -5643,7 +5520,6 @@ which: no gh in (/c/Users/Kirby/bin:/mingw64/bin:/usr/local/bin:/usr/bin:/bin:/m
 ---auth---
 /usr/bin/bash: line 1: gh: command not found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:58:09Z)**_
@@ -5654,7 +5530,7 @@ Check gh CLI availability via PowerShell
 
 ```text
 Exit code 1
-gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the
+gh : The term 'gh' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the 
 spelling of the name, or if a path was included, verify that the path is correct and try again.
 At line:1 char:348
 + ... atch {} } }; Get-Command gh -ErrorAction SilentlyContinue; gh --versi ...
@@ -5662,7 +5538,6 @@ At line:1 char:348
     + CategoryInfo          : ObjectNotFound: (gh:String) [], CommandNotFoundException
     + FullyQualifiedErrorId : CommandNotFoundException
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:58:17Z)**_
@@ -5678,7 +5553,6 @@ missing: C:\Program Files (x86)\GitHub CLI\gh.exe
 missing: C:\Users\Kirby\AppData\Local\Programs\GitHub CLI\gh.exe
 missing: C:\Users\Kirby\AppData\Local\Microsoft\WinGet\Links\gh.exe
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:58:19Z)**_
@@ -5701,7 +5575,6 @@ github.com
   - Token: gho_************************************
   - Token scopes: 'gist', 'read:org', 'repo', 'workflow'
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:58:25Z)**_
@@ -5722,10 +5595,9 @@ At line:2 char:1
 + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (fatal: Cannot p... been disabled.:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
-
+ 
 fatal: could not read Username for 'https://github.com': terminal prompts disabled
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:58:40Z)**_
@@ -5737,7 +5609,6 @@ Configure git to use gh CLI as the credential helper for GitHub
 ```text
 (PowerShell completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:58:48Z)**_
@@ -5747,25 +5618,24 @@ _**Agent (claude-sonnet-5 2026-09-11 01:58:48Z)**_
 Retry pushing the feature branch now that gh is wired up as git's credential helper
 
 ```text
-git : remote:
+git : remote: 
 At line:2 char:1
 + git push -u origin fix/issue-25-calendar-hover-effect 2>&1
 + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: (remote: :String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
-
-remote: Create a pull request for 'fix/issue-25-calendar-hover-effect' on GitHub by visiting:
-remote:      https://github.com/CSCI-435-SE/actual-budget/pull/new/fix/issue-25-calendar-hover-effect
-remote:
-remote: GitHub found 72 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 30 moderate, 6 low).
-To find out more, visit:
-remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot
-remote:
+ 
+remote: Create a pull request for 'fix/issue-25-calendar-hover-effect' on GitHub by visiting:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/pull/new/fix/issue-25-calendar-hover-effect        
+remote: 
+remote: GitHub found 72 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 30 moderate, 6 low). 
+To find out more, visit:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
+remote: 
 branch 'fix/issue-25-calendar-hover-effect' set up to track 'origin/fix/issue-25-calendar-hover-effect'.
 To https://github.com/CSCI-435-SE/actual-budget.git
  * [new branch]          fix/issue-25-calendar-hover-effect -> fix/issue-25-calendar-hover-effect
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:58:50Z)**_
@@ -5805,7 +5675,6 @@ View the PR template to use it unmodified as the PR body
 
 <!--- actual-bot-sections --->
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:59:01Z)**_
@@ -5841,7 +5710,6 @@ Copy the PR template unmodified for use as the PR body
 
 <!--- actual-bot-sections --->
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:59:09Z)**_
@@ -5853,7 +5721,6 @@ Create the pull request with the AI-prefixed title and unmodified blank template
 ```text
 https://github.com/CSCI-435-SE/actual-budget/pull/31
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:59:12Z)**_
@@ -5871,7 +5738,6 @@ Verify the created PR's title, branches, and body
 ```text
 {"baseRefName":"master","body":"<!-- Thank you for submitting a pull request! Make sure to follow the instructions to write release notes for your PR — it should only take a minute or two: https://actualbudget.org/docs/contributing/#writing-good-release-notes. Try running yarn generate:release-notes *before* pushing your PR for an interactive experience. -->\r\n\r\n## Description\r\n\r\n<!-- What does this PR do? Why is it needed? Please give context on the \"why?\": why do we need this change? What problem is it solving for you?-->\r\n\r\n<!-- If AI tools wrote a significant part of this change, please disclose it here and name the tool you used. See https://actualbudget.org/docs/contributing/ai-usage-policy -->\r\n\r\n## Related issue(s)\r\n\r\n<!-- e.g. Fixes #123, Relates to #456 -->\r\n\r\n## Testing\r\n\r\n<!-- What did you test? How can we reproduce the issue you are fixing or how can we test the feature you built? -->\r\n\r\n## Checklist\r\n\r\n- [ ] Release notes added (see link above)\r\n- [ ] No obvious regressions in affected areas\r\n- [ ] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed\r\n\r\n<!--- actual-bot-sections --->\r\n","headRefName":"fix/issue-25-calendar-hover-effect","labels":[],"title":"[AI] Add hover cursor and background to month-count calendar icons","url":"https://github.com/CSCI-435-SE/actual-budget/pull/31"}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-11 01:59:23Z)**_

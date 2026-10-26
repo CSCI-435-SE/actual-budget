@@ -29,7 +29,6 @@ Locate Notes.tsx
 ```text
 c:/Actual Budget/packages/desktop-client/src/components/Notes.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:36:38Z)**_
@@ -44,7 +43,7 @@ Read Notes.tsx
      1	import React, { useEffect, useRef } from 'react';
      2	import { useTranslation } from 'react-i18next';
      3	import ReactMarkdown from 'react-markdown';
-     4
+     4	
      5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
      6	import type { CSSProperties } from '@actual-app/components/styles';
      7	import { Text } from '@actual-app/components/text';
@@ -52,7 +51,7 @@ Read Notes.tsx
      9	import { css } from '@emotion/css';
     10	import rehypeExternalLinks from 'rehype-external-links';
     11	import remarkGfm from 'remark-gfm';
-    12
+    12	
     13	import { addNotification } from '#notifications/notificationsSlice';
     14	import { useDispatch } from '#redux';
     15	import {
@@ -60,15 +59,15 @@ Read Notes.tsx
     17	  remarkBreaks,
     18	  sequentialNewlinesPlugin,
     19	} from '#util/markdown';
-    20
+    20	
     21	const remarkPlugins = [sequentialNewlinesPlugin, remarkGfm, remarkBreaks];
-    22
+    22	
     23	export const MAX_NOTES_LENGTH = 1800;
     24	const NOTES_LENGTH_WARNING_THRESHOLD = 1700;
-    25
+    25	
     26	const NOTES_LENGTH_LEVELS = ['none', 'near', 'limit'] as const;
     27	type NotesLengthLevel = (typeof NOTES_LENGTH_LEVELS)[number];
-    28
+    28	
     29	function getNotesLengthLevel(length: number): NotesLengthLevel {
     30	  if (length >= MAX_NOTES_LENGTH) {
     31	    return 'limit';
@@ -78,13 +77,13 @@ Read Notes.tsx
     35	  }
     36	  return 'none';
     37	}
-    38
+    38	
     39	const markdownStyles = css(markdownBaseStyles, {
     40	  display: 'block',
     41	  maxWidth: 350,
     42	  padding: 8,
     43	});
-    44
+    44	
     45	type NotesProps = {
     46	  notes: string;
     47	  editable?: boolean;
@@ -93,7 +92,7 @@ Read Notes.tsx
     50	  onBlur?: (value: string) => void;
     51	  getStyle?: (editable: boolean) => CSSProperties;
     52	};
-    53
+    53	
     54	export function Notes({
     55	  notes,
     56	  editable,
@@ -105,21 +104,21 @@ Read Notes.tsx
     62	  const { isNarrowWidth } = useResponsive();
     63	  const { t } = useTranslation();
     64	  const dispatch = useDispatch();
-    65
+    65	
     66	  const textAreaRef = useRef<HTMLTextAreaElement>(null);
     67	  const notifiedLevelRef = useRef<NotesLengthLevel>('none');
-    68
+    68	
     69	  useEffect(() => {
     70	    if (focused && editable) {
     71	      textAreaRef.current?.focus();
     72	    }
     73	  }, [focused, editable]);
-    74
+    74	
     75	  function handleChange(value: string) {
     76	    const level = getNotesLengthLevel(value.length);
     77	    const previousLevel = notifiedLevelRef.current;
     78	    notifiedLevelRef.current = level;
-    79
+    79	
     80	    // Only notify when crossing upwards, so deleting text never re-warns.
     81	    if (
     82	      NOTES_LENGTH_LEVELS.indexOf(level) >
@@ -143,10 +142,10 @@ Read Notes.tsx
    100	        }),
    101	      );
    102	    }
-   103
+   103	
    104	    onChange?.(value);
    105	  }
-   106
+   106	
    107	  return editable ? (
    108	    <textarea
    109	      ref={textAreaRef}
@@ -182,7 +181,6 @@ Read Notes.tsx
    139	  );
    140	}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:36:41Z)**_
@@ -196,7 +194,6 @@ Check notification id handling
 ```text
 grep: packages/loot-core/src/client/notifications/notificationsSlice.ts: No such file or directory
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:36:52Z)**_
@@ -221,7 +218,6 @@ packages/desktop-client/src/notifications/notificationsSlice.ts
 72:        id: uuidv4(),
 86:        notif => notif.id !== action.payload.id,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:37:02Z)**_
@@ -274,7 +270,6 @@ sed -n '80,102p' packages/desktop-client/src/components/Notes.tsx
           },
         }),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:37:03Z)**_
@@ -311,7 +306,6 @@ yarn.config.cjs (26ms)
 Format issues found in above 423 files. Run without `--check` to fix.
 Finished in 5369ms on 2300 files using 16 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:37:31Z)**_
@@ -327,7 +321,6 @@ Check diff stat and lint output for Notes.tsx
  packages/desktop-client/src/components/Notes.tsx   |    4 +-
  2 files changed, 3 insertions(+), 3532 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:39:23Z)**_
@@ -365,7 +358,6 @@ worker restarts: 0, max worker memory usage: 56.14 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 1m 27.57s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:39:29Z)**_
@@ -425,6 +417,7 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
+
 ---
 
 _**Agent (claude-opus-5 2026-09-13 15:43:42Z)**_
@@ -476,7 +469,6 @@ on both the title and the body).
 This applies only to comments **you** author — bots like CodeRabbit post under
 their own identity and are not affected.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:43:45Z)**_
@@ -497,7 +489,6 @@ D  .gitignore
 issue-10-notes-character-limit
 origin/issue-10-notes-character-limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:43:57Z)**_
@@ -521,13 +512,13 @@ Inspect staged changes and gitignore difference
 < !actual-server.js
 < **/xcuserdata/*
 < export-2020-01-10.csv
-<
+< 
 < # MacOS
 < .DS_Store
-<
+< 
 < # Logs
 < **/*.log
-<
+< 
 < # JavaScript
 < node_modules
 < packages/api/app/bundle.api.js
@@ -562,10 +553,10 @@ Inspect staged changes and gitignore difference
 < bundle.desktop.js.map
 < bundle.mobile.js
 < bundle.mobile.js.map
-<
+< 
 < # Python virtualenv (Electron CI provisions one at the repo root for setuptools)
 < .venv/
-<
+< 
 < # Yarn
 < .pnp.*
 < .yarn/*
@@ -574,52 +565,52 @@ Inspect staged changes and gitignore difference
 < !.yarn/releases
 < !.yarn/sdks
 < !.yarn/versions
-<
+< 
 < # VSCode
 < .vscode/*
 < !.vscode/settings.default.json
 < !.vscode/extensions.json
-<
+< 
 < # IntelliJ IDEA
 < .idea
-<
+< 
 < # Claude Code
 < .claude/worktrees/*
 < .claude/settings.local.json
-<
+< 
 < # Misc
 < .#*
-<
+< 
 < # Local Netlify folder
 < .netlify
-<
+< 
 < # Personal devcontainer config
 < .devcontainer/*.local
-<
+< 
 < # build output
 < package.tgz
-<
+< 
 < # Fly.io configuration
 < fly.toml
-<
+< 
 < # TypeScript cache
 < build/
-<
+< 
 < # .d.ts files aren't type-checked with skipLibCheck set to true
 < *.d.ts
 < # ...except hand-written ambient declarations that must be committed
 < !packages/api/virtual-modules.d.ts
 < !packages/loot-core/default-filesystem.d.ts
-<
+< 
 < # Lage cache
 < .lage/
-<
+< 
 < # Test results (JUnit XML reports, Playwright artifacts)
 < **/test-results/
-<
+< 
 < *storybook.log
 < storybook-static
-<
+< 
 < # cli config when testing locally
 < .actualrc.json
 < .actualrc
@@ -635,13 +626,13 @@ Inspect staged changes and gitignore difference
 > !actual-server.js
 > **/xcuserdata/*
 > export-2020-01-10.csv
->
+> 
 > # MacOS
 > .DS_Store
->
+> 
 > # Logs
 > **/*.log
->
+> 
 > # JavaScript
 > node_modules
 > packages/api/app/bundle.api.js
@@ -676,10 +667,10 @@ Inspect staged changes and gitignore difference
 > bundle.desktop.js.map
 > bundle.mobile.js
 > bundle.mobile.js.map
->
+> 
 > # Python virtualenv (Electron CI provisions one at the repo root for setuptools)
 > .venv/
->
+> 
 > # Yarn
 > .pnp.*
 > .yarn/*
@@ -688,52 +679,52 @@ Inspect staged changes and gitignore difference
 > !.yarn/releases
 > !.yarn/sdks
 > !.yarn/versions
->
+> 
 > # VSCode
 > .vscode/*
 > !.vscode/settings.default.json
 > !.vscode/extensions.json
->
+> 
 > # IntelliJ IDEA
 > .idea
->
+> 
 > # Claude Code
 > .claude/worktrees/*
 > .claude/settings.local.json
->
+> 
 > # Misc
 > .#*
->
+> 
 > # Local Netlify folder
 > .netlify
->
+> 
 > # Personal devcontainer config
 > .devcontainer/*.local
->
+> 
 > # build output
 > package.tgz
->
+> 
 > # Fly.io configuration
 > fly.toml
->
+> 
 > # TypeScript cache
 > build/
->
+> 
 > # .d.ts files aren't type-checked with skipLibCheck set to true
 > *.d.ts
 > # ...except hand-written ambient declarations that must be committed
 > !packages/api/virtual-modules.d.ts
 > !packages/loot-core/default-filesystem.d.ts
->
+> 
 > # Lage cache
 > .lage/
->
+> 
 > # Test results (JUnit XML reports, Playwright artifacts)
 > **/test-results/
->
+> 
 > *storybook.log
 > storybook-static
->
+> 
 > # cli config when testing locally
 > .actualrc.json
 > .actualrc
@@ -749,7 +740,6 @@ Inspect staged changes and gitignore difference
 > .specstory/history/2026-09-13_15-36-30Z-fix-this-issue-in.md
 DIFFERENT
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:44:08Z)**_
@@ -774,7 +764,6 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>" 2>&1 | tail 
 [issue-10-notes-character-limit 9f2a24849] [AI] Scope notes length warning toasts to each note field
  1 file changed, 3 insertions(+), 1 deletion(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:44:15Z)**_
@@ -786,14 +775,13 @@ Push branch to origin
 `cd "c:/Actual Budget" && git push origin issue-10-notes-character-limit 2>&1 | tail -10`
 
 ```text
-remote:
-remote: GitHub found 73 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 31 moderate, 6 low). To find out more, visit:
-remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot
-remote:
+remote: 
+remote: GitHub found 73 vulnerabilities on CSCI-435-SE/actual-budget's default branch (36 high, 31 moderate, 6 low). To find out more, visit:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
+remote: 
 To https://github.com/CSCI-435-SE/actual-budget.git
    d0e428cd2..9f2a24849  issue-10-notes-character-limit -> issue-10-notes-character-limit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-opus-5 2026-09-13 15:44:21Z)**_

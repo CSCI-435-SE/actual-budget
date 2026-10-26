@@ -27,7 +27,6 @@ _**Agent (claude-sonnet-5 2026-09-29 21:12:44Z)**_
 ```text
 {"body":"## Summary\n\nUsers tracking long-term financial targets (a vacation fund, an emergency fund, a specific savings goal) currently have no dynamic way to see progress toward that target on the dashboard — only static text in a Notes widget. Actual's dashboard already supports a generic, extensible widget model (`AbstractWidget<type, meta>` in `packages/loot-core/src/types/models/dashboard.ts`), and existing widgets like Net Worth, Cash Flow, and Spending already compute live values from a set of transaction-filter conditions (`RuleConditionEntity[]`) plus a time frame. A \"Personal Goal\" widget would follow that same pattern: a target amount plus a set of filter conditions, rendered as a progress bar showing how far the filtered transaction total is toward the target.\n\nNote: the widget persistence layer (`packages/loot-core/src/server/dashboard/app.ts`) is already generic across widget types — adding a new widget type does **not** require new backend endpoints, just a new `type` + `meta` shape that flows through the existing CRUD.\n\n## User Story\n\nAs a user planning my financial targets, I want to add a dashboard widget that shows progress toward a savings goal — based on a target amount and a set of transaction filters — so that I can monitor my goal completion over time without manually updating static notes.\n\n## Acceptance Criteria\n\n1. A new widget type (e.g. `goal-card`) can be added to the dashboard from the existing \"add widget\" menu in `Overview.tsx`, alongside Net Worth, Cash Flow, Spending, etc.\n2. The widget's settings include, at minimum: a target amount, a set of transaction-filter conditions (reusing `RuleConditionEntity[]` the way `NetWorthWidget`/`CashFlowWidget`/`SpendingWidget` already do), and a time frame.\n3. The widget displays a progress bar showing (sum of matching transactions) / (target amount), plus the raw current total and target amount as text.\n4. Progress values are computed using the app's existing summary/filter calculation logic (the same spreadsheet-style computation `SummaryCard.tsx` / `GetCardData.tsx` use for other widgets) — no new calculation engine.\n5. The widget visually distinguishes at least two states: goal in progress vs. goal complete (100%+). Anything beyond that (e.g. \"near completion\") is left to the implementer's judgment unless Open Question #2 below is resolved first.\n6. Widget settings persist across sessions using the existing generic dashboard widget storage (no new backend work required per the note above).\n7. The widget matches Actual's existing dashboard card visual conventions (sizing, fonts, currency formatting) as used by the other report cards.\n\n## Out of Scope\n\n- A history/trend view of goal progress over time (this is a point-in-time progress card, not a report).\n- Multiple simultaneous goals sharing one widget — each widget instance tracks one goal (add more widgets for more goals, same as other widget types).\n- New backend endpoints or a new persistence mechanism — this must ride on the existing generic widget CRUD.\n- Notifications or alerts when a goal is reached.\n\n## Open Questions\n\n1. Where does the user configure the target amount and filter conditions — inline on the dashboard card itself, or by drilling into a dedicated full-page view the way Net Worth/Cash Flow/Spending each have both a full report page (e.g. `NetWorth.tsx`) and a condensed dashboard card (e.g. `CashFlowCard.tsx`)? This significantly affects scope: a full page + card pair is considerably more work than an inline-editable card alone.\n2. What color/visual states are wanted beyond \"in progress\" vs. \"complete\" — e.g. a distinct state for over-target, or a red state if a deadline is added and missed? (Note: this issue doesn't currently define a deadline/target-date concept at all — only a target amount. If time-bound goals are wanted, that's an additional meta field and UI affordance to decide on now rather than after implementation starts.)\n3. Should this be scoped down to just the read-only progress card (seeded with a manually-constructed widget for now), with the settings-editing UI split into a separate follow-up issue? Given the number of touchpoints (widget type definition, dispatch wiring, add-widget menu entry, progress card UI, and a settings editor), splitting could make each piece independently deliverable and testable rather than one large PR.\n\n## Rough Scope\n\nLarge — Despite the dashboard widget architecture already being generic (no new backend endpoints, no new persistence mechanism), this still touches: a new widget type + meta definition, registration in the add-widget menu and the `Overview.tsx` render dispatch, a new card component with a progress bar and conditional styling, reuse of the existing filter/summary calculation logic, and (pending Open Question #1) potentially a full settings-editing UI. For a beginner team, following the Net Worth/Cash Flow/Spending widgets as a concrete template will help, but the number of files touched keeps this Large rather than Medium. Consider splitting per Open Question #3.\n\n## Source\n\nCommunity feature request / GitHub issue discussion. AI was used to make a more in-depth summary/criteria etc.","labels":[{"id":"LA_kwDOTldplM8AAAACzxRwuw","name":"scope: large","description":"","color":"93474c"}],"title":"Add dynamic Personal Goal tracking widget to dashboard","url":"https://github.com/CSCI-435-SE/actual-budget/issues/14"}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-29 21:13:24Z)**_
@@ -40,7 +39,7 @@ Your instinct (static widget shell → real data integration) is a reasonable an
 2. **Wire live calculation into the card** — connect the card to the real filter conditions + existing summary/filter calc logic (`SummaryCard.tsx`/`GetCardData.tsx` pattern), and add the in-progress/complete visual states. Depends only on #1's meta shape.
 3. **Settings-editing UI** — lets a user actually create/edit a goal (target amount, conditions, time frame) instead of relying on a manually-constructed widget. Also depends only on #1's meta shape.
 
-Because #2 and #3 both just depend on the widget shape from #1 (not on each other), they _can_ run in parallel once #1 lands — #2 can keep testing against a manually-edited stored widget the same way #1 did, and #3 doesn't need real calculation to exist yet to build the form. So it's not a strict 3-step chain, more a "1 unblocks 2 and 3."
+Because #2 and #3 both just depend on the widget shape from #1 (not on each other), they *can* run in parallel once #1 lands — #2 can keep testing against a manually-edited stored widget the same way #1 did, and #3 doesn't need real calculation to exist yet to build the form. So it's not a strict 3-step chain, more a "1 unblocks 2 and 3."
 
 Want me to draft the full descriptions for these three, or would you rather adjust the split first (e.g., fold settings UI into #2, or keep it as your original two-issue plan)?
 
@@ -59,7 +58,6 @@ GitHub has a native "blocked by" / "blocks" relationship you can add in an issue
 The important caveat: **it's purely informational, not enforced.** GitHub won't stop a teammate from opening a branch/PR for issue #2 before #1 is merged — there's no hard gate like branch protection has. So it helps visually (especially on a project board, where you'd typically also see it), but you still need to actually communicate it to your team.
 
 Practical setup I'd suggest for a student team:
-
 1. Add the "blocked by #1" relationship on issues #2 and #3.
 2. On the parent issue #14, add a task list (`- [ ] #1`, `- [ ] #2`, `- [ ] #3`) — GitHub auto-renders this as a tracked-issues progress bar, so anyone opening #14 sees the sequencing at a glance.
 3. If you're using a Projects board, add a "Blocked" status/label and apply it to #2/#3 until #1 closes — cheap, visible, and doesn't require any automation.
@@ -89,7 +87,6 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: /private/tmp/claude-501/-Users-liammclemore-Desktop-csci-csci-435-budget-actual-budget/f905e58f-6944-40c4-be74-d717183fc851/tasks/a07fe22e297859571.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-29 21:16:18Z)**_
@@ -120,13 +117,13 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
      1	import type { ForecastSource } from './forecast';
      2	import type { CustomReportEntity } from './reports';
      3	import type { RuleConditionEntity } from './rule';
-     4
+     4	
      5	export type DashboardPageEntity = {
      6	  id: string;
      7	  name: string;
      8	  tombstone: boolean;
      9	};
-    10
+    10	
     11	export type TimeFrame = {
     12	  start: string;
     13	  end: string;
@@ -139,7 +136,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
     20	    | 'yearToDate'
     21	    | 'priorYearToDate';
     22	};
-    23
+    23	
     24	type AbstractWidget<
     25	  T extends string,
     26	  Meta extends Record<string, unknown> | null = null,
@@ -154,7 +151,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
     35	  meta: Meta;
     36	  tombstone: boolean;
     37	};
-    38
+    38	
     39	export type NetWorthWidget = AbstractWidget<
     40	  'net-worth-card',
     41	  {
@@ -166,7 +163,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
     47	    mode?: 'trend' | 'stacked';
     48	  } | null
     49	>;
-    50
+    50	
     51	export type CashFlowWidget = AbstractWidget<
     52	  'cash-flow-card',
     53	  {
@@ -177,7 +174,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
     58	    showBalance?: boolean;
     59	  } | null
     60	>;
-    61
+    61	
     62	export type SpendingAverageRange =
     63	  | {
     64	      mode: 'last-n-months';
@@ -189,7 +186,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
     70	  | {
     71	      mode: 'all-time';
     72	    };
-    73
+    73	
     74	export type SpendingWidget = AbstractWidget<
     75	  'spending-card',
     76	  {
@@ -240,9 +237,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
    121	  'markdown-card',
    122	  { content: string; text_align?: 'left' | 'right' | 'center' }
    123	>;
-   124
+   124	
    125	export type AgeOfMoneyGranularity = 'daily' | 'weekly' | 'monthly';
-   126
+   126	
    127	export type AgeOfMoneyWidget = AbstractWidget<
    128	  'age-of-money-card',
    129	  {
@@ -253,7 +250,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
    134	    granularity?: AgeOfMoneyGranularity;
    135	  } | null
    136	>;
-   137
+   137	
    138	type SpecializedWidget =
    139	  | NetWorthWidget
    140	  | CashFlowWidget
@@ -268,7 +265,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
    149	  | AgeOfMoneyWidget
    150	  | BalanceForecastWidget;
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
@@ -301,7 +297,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:21Z)**_
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/reports/SpendingCard.tsx
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/reports/SummaryCard.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:25Z)**_
@@ -343,7 +338,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:25Z)**_
 902:                        ) : widget.type === 'formula-card' && formulaMode ? (
 911:                        ) : widget.type === 'sankey-card' &&
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:26Z)**_
@@ -356,7 +350,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:26Z)**_
 ```text
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/Overview.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:27Z)**_
@@ -375,7 +368,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:27Z)**_
 150:      conditions: report.conditions ?? [],
 151:      conditionsOp: report.conditionsOp,
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:28Z)**_
@@ -391,7 +383,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:28Z)**_
 81:        meta?.conditionsOp,
 85:    [start, end, meta?.conditions, meta?.conditionsOp, content, locale],
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:30Z)**_
@@ -402,12 +393,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:30Z)**_
 
 ```text
 540	                  />
-541
+541	
 542	                  <DialogTrigger>
 543	                    <Button variant="primary" isDisabled={isImporting}>
 544	                      <Trans>Add new widget</Trans>
 545	                    </Button>
-546
+546	
 547	                    <Popover>
 548	                      <Dialog>
 549	                        <Menu
@@ -417,7 +408,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:30Z)**_
 553	                              void navigate('/reports/custom');
 554	                              return;
 555	                            }
-556
+556	
 557	                            function isExistingCustomReport(
 558	                              name: string,
 559	                            ): name is `custom-report-${string}` {
@@ -430,14 +421,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:30Z)**_
 566	                              });
 567	                              return;
 568	                            }
-569
+569	
 570	                            if (item === 'markdown-card') {
 571	                              onAddWidget<MarkdownWidget>(item, {
 572	                                content: `### ${t('Text Widget')}\n\n${t('Edit this widget to change the **markdown** content.')}`,
 573	                              });
 574	                              return;
 575	                            }
-576
+576	
 577	                            onAddWidget(item);
 578	                          }}
 579	                          items={[
@@ -472,7 +463,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:30Z)**_
 608	                                    text: t('Budget analysis'),
 609	                                  },
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:31Z)**_
@@ -485,7 +475,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:31Z)**_
 1	import React, { useMemo } from 'react';
 2	import { ErrorBoundary } from 'react-error-boundary';
 3	import { Trans } from 'react-i18next';
-4
+4	
 5	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 6	import { styles } from '@actual-app/components/styles';
 7	import { Text } from '@actual-app/components/text';
@@ -499,7 +489,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:31Z)**_
 15	  PayeeEntity,
 16	} from '@actual-app/core/types/models';
 17	import type { SyncedPrefs } from '@actual-app/core/types/prefs';
-18
+18	
 19	import { ChooseGraph } from '#components/reports/ChooseGraph';
 20	import { getLiveRange } from '#components/reports/getLiveRange';
 21	import { LoadingIndicator } from '#components/reports/LoadingIndicator';
@@ -508,7 +498,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:31Z)**_
 24	import { createGroupedSpreadsheet } from '#components/reports/spreadsheets/grouped-spreadsheet';
 25	import { useReport } from '#components/reports/useReport';
 26	import { useSyncedPref } from '#hooks/useSyncedPref';
-27
+27	
 28	function ErrorFallback() {
 29	  return (
 30	    <>
@@ -521,7 +511,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:31Z)**_
 37	    </>
 38	  );
 39	}
-40
+40	
 41	function convertFromDate(
 42	  interval: string | undefined,
 43	): 'dayFromDate' | 'monthFromDate' | 'yearFromDate' {
@@ -534,7 +524,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:31Z)**_
 50	      return 'dayFromDate';
 51	  }
 52	}
-53
+53	
 54	function convertRangeInclusive(
 55	  interval: string | undefined,
 56	): 'dayRangeInclusive' | 'rangeInclusive' | 'yearRangeInclusive' {
@@ -547,13 +537,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:31Z)**_
 63	      return 'dayRangeInclusive';
 64	  }
 65	}
-66
+66	
 67	export function GetCardData({
 68	  report,
 69	  payees,
 70	  accounts,
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:32Z)**_
@@ -565,7 +554,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:32Z)**_
 ```text
 1	import React, { useEffect, useMemo, useState } from 'react';
 2	import { useTranslation } from 'react-i18next';
-3
+3	
 4	import { View } from '@actual-app/components/view';
 5	import { send } from '@actual-app/core/platform/client/connection';
 6	import * as monthUtils from '@actual-app/core/shared/months';
@@ -573,7 +562,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:32Z)**_
 8	  SummaryContent,
 9	  SummaryWidget,
 10	} from '@actual-app/core/types/models';
-11
+11	
 12	import { DateRange } from '#components/reports/DateRange';
 13	import { ReportCard } from '#components/reports/ReportCard';
 14	import { ReportCardName } from '#components/reports/ReportCardName';
@@ -583,14 +572,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:32Z)**_
 18	import { SummaryNumber } from '#components/reports/SummaryNumber';
 19	import { useReport } from '#components/reports/useReport';
 20	import { useLocale } from '#hooks/useLocale';
-21
+21	
 22	type SummaryCardProps = {
 23	  widgetId: string;
 24	  isEditing?: boolean;
 25	  meta?: SummaryWidget['meta'];
 26	  onMetaChange: (newMeta: SummaryWidget['meta']) => void;
 27	};
-28
+28	
 29	export function SummaryCard({
 30	  widgetId,
 31	  isEditing,
@@ -601,7 +590,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:32Z)**_
 36	  const { t } = useTranslation();
 37	  const [latestTransaction, setLatestTransaction] = useState<string>('');
 38	  const [nameMenuOpen, setNameMenuOpen] = useState(false);
-39
+39	
 40	  useEffect(() => {
 41	    async function fetchLatestTransaction() {
 42	      const latestTrans = await send('get-latest-transaction');
@@ -611,7 +600,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:32Z)**_
 46	    }
 47	    void fetchLatestTransaction();
 48	  }, []);
-49
+49	
 50	  const [start, end] = calculateTimeRange(
 51	    meta?.timeFrame,
 52	    {
@@ -621,10 +610,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:32Z)**_
 56	    },
 57	    latestTransaction,
 58	  );
-59
+59	
 60	  const content = useMemo(
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:33Z)**_
@@ -646,7 +634,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:33Z)**_
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/spending-spreadsheet.test.ts
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/spreadsheets/spending-spreadsheet.ts
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:37Z)**_
@@ -670,7 +657,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:37Z)**_
 277:      conditions: summaryContent?.divisorConditions?.filter(
 294:        [conditionsOpKey]: filters,
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:38Z)**_
@@ -717,7 +703,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:38Z)**_
 118:                onMetaChange({
 155:            showTooltip={!isEditing && !isNarrowWidth}
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:40Z)**_
@@ -739,7 +724,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:40Z)**_
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/reports/Spending.tsx
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/reports/reports/Summary.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:43Z)**_
@@ -768,7 +752,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:43Z)**_
 329:        conditionsOp={conditionsOp}
 330:        onConditionsOpChange={onConditionsOpChange}
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:45Z)**_
@@ -781,7 +764,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:16:45Z)**_
 ```text
 /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/hooks/useRuleConditionFilters.ts
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-29 21:17:05Z)**_
@@ -792,35 +774,29 @@ Here is the report of exact file paths (relative to repo root):
 
 **1. Widget type definitions**
 `packages/loot-core/src/types/models/dashboard.ts`
-
 - Confirmed: defines `AbstractWidget<T extends string, Meta extends Record<string, unknown> | null = null>` (lines 24-37) with fields `id, dashboard_page_id, type: T, x, y, width, height, meta: Meta, tombstone`.
 - Existing widgets are declared as `export type NetWorthWidget = AbstractWidget<'net-worth-card', {...} | null>` (line 39) and `export type SpendingWidget = AbstractWidget<'spending-card', {...} | null>` (line 74). A new "goal-card" widget would follow the same pattern, e.g. `AbstractWidget<'goal-card', { name?: string; conditions?: RuleConditionEntity[]; conditionsOp?: 'and'|'or'; ... } | null>`, then added to the `SpecializedWidget` union (line 138).
 
 **2. Add-widget menu**
 `packages/desktop-client/src/components/reports/Overview.tsx`
-
 - The "Add new widget" `Button` + `Menu` with `items` array listing `cash-flow-card`, `net-worth-card`, `crossover-card`, `age-of-money-card`, `spending-card`, `budget-analysis-card`, etc. lives at roughly lines 542-620 of this same file (there is no separate AddWidgetMenu component — it's inline in Overview.tsx). `onMenuSelect` dispatches to `onAddWidget(item)` (or a typed `onAddWidget<XWidget>(...)` call for widgets needing default meta).
 
 **3. Render dispatch switch**
 `packages/desktop-client/src/components/reports/Overview.tsx`
-
 - Around lines 799-920+: an if/else-if chain (not a `switch`) keyed on `widget.type === 'net-worth-card' ? (...) : widget.type === 'cash-flow-card' ? (...) : widget.type === 'spending-card' ? (...) : ...` etc., rendering the corresponding `*Card` component for each widget type.
 
 **4. Example full card components**
-
 - `packages/desktop-client/src/components/reports/reports/NetWorthCard.tsx`
 - `packages/desktop-client/src/components/reports/reports/CashFlowCard.tsx`
 - `packages/desktop-client/src/components/reports/reports/SpendingCard.tsx`
-  All take props like `{ widgetId, isEditing?, meta, onMetaChange }`, use `useReport`, a dedicated spreadsheet function, and `ReportCard`/`ReportCardName` for the shared card chrome.
+All take props like `{ widgetId, isEditing?, meta, onMetaChange }`, use `useReport`, a dedicated spreadsheet function, and `ReportCard`/`ReportCardName` for the shared card chrome.
 
 **5. Summary/filter calculation files**
-
 - `packages/desktop-client/src/components/reports/reports/SummaryCard.tsx` — the card component; signature `SummaryCard({ widgetId, isEditing, meta = {}, onMetaChange })`, computes `content` via `useMemo` and calls `summarySpreadsheet(...)`.
 - `packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts` — the actual calculation; `export function summarySpreadsheet(..., conditions: RuleConditionEntity[] = [], conditionsOp: 'and' | 'or' = 'and', ...)`, uses `send('make-filters-from-conditions', { conditions })` to build the filter, then queries the spreadsheet with `[conditionsOpKey]: filters` where `conditionsOpKey` is `$and`/`$or`.
 - `packages/desktop-client/src/components/reports/reports/GetCardData.tsx` — a more general-purpose helper (`export function GetCardData({ report, payees, accounts, ... })`) used for the custom-report-style total/grouped-data computation (uses `createGroupedSpreadsheet`/`createCustomSpreadsheet` plus `conditions`/`conditionsOp` from the report entity), not the same file as SummaryCard but analogous "compute totals from conditions + time frame" logic.
 
 **6. Settings/filter-editing UI for an existing widget**
-
 - The inline editable name/mode/interval controls live directly in the card components (e.g. `NetWorthCard.tsx` lines ~102-155 use `isEditing`/`onMetaChange` plus `ReportCardName` for renaming).
 - The actual condition-filter editing UI (add/remove `RuleConditionEntity[]`, and/or toggle) is implemented in the full "drill-down" report pages, not the dashboard card itself:
   - `packages/desktop-client/src/components/reports/reports/NetWorth.tsx` (uses `filters={conditions}` / `conditionsOp` / `onConditionsOpChange` around lines 325-330)
@@ -846,35 +822,29 @@ Here is the report of exact file paths (relative to repo root):
 
 **1. Widget type definitions**
 `packages/loot-core/src/types/models/dashboard.ts`
-
 - Confirmed: defines `AbstractWidget&lt;T extends string, Meta extends Record&lt;string, unknown&gt; | null = null&gt;` (lines 24-37) with fields `id, dashboard_page_id, type: T, x, y, width, height, meta: Meta, tombstone`.
 - Existing widgets are declared as `export type NetWorthWidget = AbstractWidget&lt;'net-worth-card', {...} | null&gt;` (line 39) and `export type SpendingWidget = AbstractWidget&lt;'spending-card', {...} | null&gt;` (line 74). A new "goal-card" widget would follow the same pattern, e.g. `AbstractWidget&lt;'goal-card', { name?: string; conditions?: RuleConditionEntity[]; conditionsOp?: 'and'|'or'; ... } | null&gt;`, then added to the `SpecializedWidget` union (line 138).
 
 **2. Add-widget menu**
 `packages/desktop-client/src/components/reports/Overview.tsx`
-
 - The "Add new widget" `Button` + `Menu` with `items` array listing `cash-flow-card`, `net-worth-card`, `crossover-card`, `age-of-money-card`, `spending-card`, `budget-analysis-card`, etc. lives at roughly lines 542-620 of this same file (there is no separate AddWidgetMenu component — it's inline in Overview.tsx). `onMenuSelect` dispatches to `onAddWidget(item)` (or a typed `onAddWidget&lt;XWidget&gt;(...)` call for widgets needing default meta).
 
 **3. Render dispatch switch**
 `packages/desktop-client/src/components/reports/Overview.tsx`
-
 - Around lines 799-920+: an if/else-if chain (not a `switch`) keyed on `widget.type === 'net-worth-card' ? (...) : widget.type === 'cash-flow-card' ? (...) : widget.type === 'spending-card' ? (...) : ...` etc., rendering the corresponding `*Card` component for each widget type.
 
 **4. Example full card components**
-
 - `packages/desktop-client/src/components/reports/reports/NetWorthCard.tsx`
 - `packages/desktop-client/src/components/reports/reports/CashFlowCard.tsx`
 - `packages/desktop-client/src/components/reports/reports/SpendingCard.tsx`
-  All take props like `{ widgetId, isEditing?, meta, onMetaChange }`, use `useReport`, a dedicated spreadsheet function, and `ReportCard`/`ReportCardName` for the shared card chrome.
+All take props like `{ widgetId, isEditing?, meta, onMetaChange }`, use `useReport`, a dedicated spreadsheet function, and `ReportCard`/`ReportCardName` for the shared card chrome.
 
 **5. Summary/filter calculation files**
-
 - `packages/desktop-client/src/components/reports/reports/SummaryCard.tsx` — the card component; signature `SummaryCard({ widgetId, isEditing, meta = {}, onMetaChange })`, computes `content` via `useMemo` and calls `summarySpreadsheet(...)`.
 - `packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts` — the actual calculation; `export function summarySpreadsheet(..., conditions: RuleConditionEntity[] = [], conditionsOp: 'and' | 'or' = 'and', ...)`, uses `send('make-filters-from-conditions', { conditions })` to build the filter, then queries the spreadsheet with `[conditionsOpKey]: filters` where `conditionsOpKey` is `$and`/`$or`.
 - `packages/desktop-client/src/components/reports/reports/GetCardData.tsx` — a more general-purpose helper (`export function GetCardData({ report, payees, accounts, ... })`) used for the custom-report-style total/grouped-data computation (uses `createGroupedSpreadsheet`/`createCustomSpreadsheet` plus `conditions`/`conditionsOp` from the report entity), not the same file as SummaryCard but analogous "compute totals from conditions + time frame" logic.
 
 **6. Settings/filter-editing UI for an existing widget**
-
 - The inline editable name/mode/interval controls live directly in the card components (e.g. `NetWorthCard.tsx` lines ~102-155 use `isEditing`/`onMetaChange` plus `ReportCardName` for renaming).
 - The actual condition-filter editing UI (add/remove `RuleConditionEntity[]`, and/or toggle) is implemented in the full "drill-down" report pages, not the dashboard card itself:
   - `packages/desktop-client/src/components/reports/reports/NetWorth.tsx` (uses `filters={conditions}` / `conditionsOp` / `onConditionsOpChange` around lines 325-330)
@@ -904,7 +874,6 @@ Add a new `goal-card` widget type to the dashboard architecture and a presentati
 As a user, I want a "Personal Goal" option in the dashboard's add-widget menu so I can add a goal-tracking card to my dashboard.
 
 **Acceptance Criteria**
-
 1. New widget type added in `packages/loot-core/src/types/models/dashboard.ts`: `AbstractWidget<'goal-card', GoalCardWidgetMeta | null>`, added to the `SpecializedWidget` union — following the pattern of `NetWorthWidget`/`SpendingWidget`.
 2. Meta shape includes at minimum: `name`, `targetAmount`, `conditions: RuleConditionEntity[]`, `conditionsOp`, `timeFrame` (fields can be optional/stubbed for now — real use comes in #2/#3).
 3. "Personal Goal" entry added to the add-widget menu in `packages/desktop-client/src/components/reports/Overview.tsx`.
@@ -914,7 +883,6 @@ As a user, I want a "Personal Goal" option in the dashboard's add-widget menu so
 7. Widget can be added, resized, moved, and removed via the existing generic dashboard widget CRUD — confirms no backend changes are needed.
 
 **Out of Scope**
-
 - Computing real progress from transactions (→ #2).
 - Settings-editing UI for target amount/conditions/time frame (→ #3).
 - In-progress vs. complete visual states tied to real data (→ #2).
@@ -932,7 +900,6 @@ None — this is the foundational issue. #2 and #3 are both blocked by this one.
 Connect `GoalCard.tsx` to the existing spreadsheet-style filter/summary calculation so the progress bar reflects real transaction totals against the widget's stored conditions and time frame, and add the in-progress/complete visual states from #14's AC #5.
 
 **Acceptance Criteria**
-
 1. `GoalCard.tsx` computes the current total via the existing calc logic (`summarySpreadsheet` in `packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts`, or equivalent), passing `widget.meta.conditions`, `conditionsOp`, and `timeFrame` — no new calculation engine.
 2. Progress bar shows `(computed total) / (target amount)`, updating reactively as transactions change (same `useReport` pattern as other cards).
 3. Two visual states implemented: goal in progress vs. goal complete (≥100%).
@@ -940,7 +907,6 @@ Connect `GoalCard.tsx` to the existing spreadsheet-style filter/summary calculat
 5. Currency values wrapped per typography rules (`FinancialText`/`styles.tnum`).
 
 **Out of Scope**
-
 - Settings-editing UI (→ #3).
 - Deadline/target-date concept — still an open question from #14, not decided here.
 
@@ -957,14 +923,12 @@ Blocked by #1 (needs the `goal-card` type + `GoalCard.tsx` to exist). Can procee
 Build the UI that lets a user actually configure a goal (target amount, filter conditions, time frame) instead of relying on a manually-constructed widget. Resolves Open Question #1 from #14 (inline-editable card vs. a dedicated full report page).
 
 **Acceptance Criteria**
-
 1. Decide and document: inline-editable card vs. a full page (like `NetWorth.tsx`/`Spending.tsx`) — recommend starting with inline-on-card to keep scope down, but leave the call explicit in the PR.
 2. UI lets the user set/edit target amount (numeric input), filter conditions (reuse `packages/desktop-client/src/hooks/useRuleConditionFilters.ts` and the condition-editing components `NetWorth.tsx`/`Spending.tsx` already use), and time frame (reuse the existing time-frame picker pattern).
 3. Settings persist via `onMetaChange` → existing generic widget CRUD (`packages/loot-core/src/server/dashboard/app.ts`) — no new backend endpoints.
 4. A user can add a goal-card from the menu (#1) and fully configure it without needing manually-edited data.
 
 **Out of Scope**
-
 - Deadline/target-date field (Open Question #2 from #14 remains open — flag as a possible future issue).
 
 **Dependencies**
@@ -999,7 +963,6 @@ Add a new `goal-card` widget type to the dashboard architecture and a presentati
 As a user, I want a "Personal Goal" option in the dashboard's add-widget menu so I can add a goal-tracking card to my dashboard.
 
 **Acceptance Criteria**
-
 1. New widget type added in `packages/loot-core/src/types/models/dashboard.ts`: `AbstractWidget<'goal-card', GoalCardWidgetMeta | null>`, added to the `SpecializedWidget` union — following the pattern of `NetWorthWidget`/`SpendingWidget`.
 2. Meta shape includes at minimum: `name`, `targetAmount`, `conditions: RuleConditionEntity[]`, `conditionsOp`, `timeFrame` (fields can be optional/stubbed for now — real use comes in #2/#3).
 3. "Personal Goal" entry added to the add-widget menu in `packages/desktop-client/src/components/reports/Overview.tsx`.
@@ -1009,13 +972,11 @@ As a user, I want a "Personal Goal" option in the dashboard's add-widget menu so
 7. Widget can be added, resized, moved, and removed via the existing generic dashboard widget CRUD — confirms no backend changes are needed.
 
 **Out of Scope**
-
 - Computing real progress from transactions (→ #2).
 - Settings-editing UI for target amount/conditions/time frame (→ #3).
 - In-progress vs. complete visual states tied to real data (→ #2).
 
 **Open Questions**
-
 1. Should placeholder values live in the widget's actual `meta` fields (so #2 just starts reading real fields), or be literally hardcoded in `GoalCard.tsx` for now? The former is a bit more work here but makes #2 cleaner to pick up.
 2. What should a freshly-added "Personal Goal" widget default to before #3's settings UI exists — a zero/empty state, or seeded example data?
 3. Is "Personal Goal" / `goal-card` the right menu label and type string, or should it match different terminology from the original community request?
@@ -1035,7 +996,6 @@ Connect `GoalCard.tsx` to the existing spreadsheet-style filter/summary calculat
 As a user tracking a savings goal, I want my goal-card's progress bar to reflect my actual transactions so I can see real progress toward my target without manually updating anything.
 
 **Acceptance Criteria**
-
 1. `GoalCard.tsx` computes the current total via the existing calc logic (`summarySpreadsheet` in `packages/desktop-client/src/components/reports/spreadsheets/summary-spreadsheet.ts`, or equivalent), passing `widget.meta.conditions`, `conditionsOp`, and `timeFrame` — no new calculation engine.
 2. Progress bar shows `(computed total) / (target amount)`, updating reactively as transactions change (same `useReport` pattern as other cards).
 3. Two visual states implemented: goal in progress vs. goal complete (≥100%).
@@ -1043,12 +1003,10 @@ As a user tracking a savings goal, I want my goal-card's progress bar to reflect
 5. Currency values wrapped per typography rules (`FinancialText`/`styles.tnum`).
 
 **Out of Scope**
-
 - Settings-editing UI (→ #3).
 - Deadline/target-date concept — still an open question from #14, not decided here.
 
 **Open Questions**
-
 1. Should `conditionsOp` default to `'and'` or `'or'` when unset, consistent with how other widgets default it?
 2. Is a binary in-progress/complete state sufficient, or is a distinct "overshot target" state wanted now rather than deferring to #14's Open Question #2?
 3. Should the progress total be cumulative since the goal was created (ignoring the widget's time frame selector), or does it respect the same selectable time frame as other report widgets? This changes the UX meaningfully and isn't settled by #14.
@@ -1068,18 +1026,15 @@ Build the UI that lets a user actually configure a goal (target amount, filter c
 As a user, I want to set up and edit my goal's target amount, filters, and time frame directly from the dashboard so I don't need engineering help to configure a goal.
 
 **Acceptance Criteria**
-
 1. Decide and document: inline-editable card vs. a full page (like `NetWorth.tsx`/`Spending.tsx`) — recommend starting with inline-on-card to keep scope down, but leave the call explicit in the PR.
 2. UI lets the user set/edit target amount (numeric input), filter conditions (reuse `packages/desktop-client/src/hooks/useRuleConditionFilters.ts` and the condition-editing components `NetWorth.tsx`/`Spending.tsx` already use), and time frame (reuse the existing time-frame picker pattern).
 3. Settings persist via `onMetaChange` → existing generic widget CRUD (`packages/loot-core/src/server/dashboard/app.ts`) — no new backend endpoints.
 4. A user can add a goal-card from the menu (#1) and fully configure it without needing manually-edited data.
 
 **Out of Scope**
-
 - Deadline/target-date field (Open Question #2 from #14 remains open — flag as a possible future issue).
 
 **Open Questions**
-
 1. Inline-editable card vs. dedicated full page — carried over unresolved from #14's Open Question #1; needs a decision before or during implementation here.
 2. Should a deadline/target-date field be added to the form now (cheap to add a field, even with no calculation behind it yet), or deferred entirely until a future issue takes on #14's Open Question #2?
 3. What validation is needed — e.g., target amount must be positive, at least one filter condition required — and how should invalid states be surfaced to the user?
@@ -1107,13 +1062,11 @@ Here's each issue as title + body, ready to paste directly into GitHub's new-iss
 ---
 
 **Issue 1 title:**
-
 ```
 Add goal-card widget scaffold with static progress display
 ```
 
 **Issue 1 body:**
-
 ```markdown
 ## Summary
 
@@ -1161,13 +1114,11 @@ Split from #14.
 ---
 
 **Issue 2 title:**
-
 ```
 Wire live spending calculation into goal-card
 ```
 
 **Issue 2 body:**
-
 ```markdown
 ## Summary
 
@@ -1212,13 +1163,11 @@ Split from #14.
 ---
 
 **Issue 3 title:**
-
 ```
 Settings-editing UI for goal-card
 ```
 
 **Issue 3 body:**
-
 ```markdown
 ## Summary
 
@@ -1266,16 +1215,16 @@ Once you have the real issue numbers, swap the "follow-up issue"/"widget-scaffol
 
 _**User (2026-09-29 21:35:57Z)**_
 
-Ok I've added all of those things. I think this session is complete, we just need to log it, and I'll add it as a comment in the format
+Ok I've added all of those things. I think this session is complete, we just need to log it, and I'll add it as a comment in the format 
 
 ### AI Assistance — @your-github-username
 
 **Role in this issue:** Implementation / Code review / Testing / Other
 
-| #   | Tool        | Log                                                                              | What AI helped with                             |
-| --- | ----------- | -------------------------------------------------------------------------------- | ----------------------------------------------- |
-| 1   | claude-web  | [link](ai-logs/sprint0/jsmith/2026-09-08_claude-web_understanding-issue-42.md)   | Understanding the issue, locating relevant code |
-| 2   | claude-code | [link](ai-logs/sprint0/jsmith/2026-09-09_claude-code_issue-42-implementation.md) | Implementing the fix and writing tests          |
+| # | Tool | Log | What AI helped with |
+|---|---|---|---|
+| 1 | claude-web | [link](ai-logs/sprint0/jsmith/2026-09-08_claude-web_understanding-issue-42.md) | Understanding the issue, locating relevant code |
+| 2 | claude-code | [link](ai-logs/sprint0/jsmith/2026-09-09_claude-code_issue-42-implementation.md) | Implementing the fix and writing tests |
 
 **Attachments:** [2026-09-08_claude-web_understanding-issue-42/](ai-logs/sprint0/jsmith/2026-09-08_claude-web_understanding-issue-42/)
 
@@ -1301,47 +1250,46 @@ _**Agent (claude-sonnet-5 2026-09-29 21:36:08Z)**_
 ╰─────────────────────────────────────────────────────────────╯
 
 
-  SpecStory is a wrapper for terminal coding agents that auto-saves markdown files of all your chat interactions.
-
-  Supported agents: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code Copilot
-  IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini (Gemini
-  CLI), muse (Muse Code).
-
-  USAGE
-
-    specstory [command] [--flags]
-
-  EXAMPLES
-
-    # Check terminal coding agents installation
-    specstory check
-
-    # Run the default agent with auto-saving
-    specstory run
-
-    # Run a specific agent with auto-saving
-    specstory run antigravity
-    specstory run claude
-    specstory run codex
-    specstory run copilotide
-    specstory run cursor
-    specstory run cursoride
-    specstory run deepseek
-    specstory run droid
-    specstory run gemini
-    specstory run muse
-
-    # Run with custom command
-    specstory run antigravity -c "/custom/path/to/agent"
-
-    # Generate markdown files for all agent sessions associated with the current directory
-    specstory sync
-
-    # Generate markdown files for specific agent sessions
-    specstory sync -s <session-id>
+  SpecStory is a wrapper for terminal coding agents that auto-saves markdown files of all your chat interactions.       
+                                                                                                                        
+  Supported agents: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code Copilot 
+  IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini (Gemini 
+  CLI), muse (Muse Code).                                                                                               
+         
+  USAGE  
+         
+    specstory [command] [--flags]                                                           
+            
+  EXAMPLES  
+            
+    # Check terminal coding agents installation                                             
+    specstory check                                                                         
+                                                                                            
+    # Run the default agent with auto-saving                                                
+    specstory run                                                                           
+                                                                                            
+    # Run a specific agent with auto-saving                                                 
+    specstory run antigravity                                                               
+    specstory run claude                                                                    
+    specstory run codex                                                                     
+    specstory run copilotide                                                                
+    specstory run cursor                                                                    
+    specstory run cursoride                                                                 
+    specstory run deepseek                                                                  
+    specstory run droid                                                                     
+    specstory run gemini                                                                    
+    specstory run muse                                                                      
+                                                                                            
+    # Run with custom command                                                               
+    specstory run antigravity -c "/custom/path/to/agent"                                    
+                                                                                            
+    # Generate markdown files for all agent sessions associated with the current directory  
+    specstory sync                                                                          
+                                                                                            
+    # Generate markdown files for specific agent sessions                                   
+    specstory sync -s <session-id>                                                          
     specstory sync -s <session-id-1> -s <session-id-2>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-29 21:36:11Z)**_
@@ -1362,56 +1310,56 @@ _**Agent (claude-sonnet-5 2026-09-29 21:36:11Z)**_
 ╰─────────────────────────────────────────────────────────────╯
 
 
-  Create or update markdown files for the agent sessions in the current working directory.
-
-  By default, syncs all registered providers that have activity.
-  Provide a specific agent ID to sync a specific provider.
-
-  Available provider IDs: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code
-  Copilot IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini
-  (Gemini CLI), muse (Muse Code).
-
-  USAGE
-
-    specstory sync [provider-id] [--flags]
-
-  EXAMPLES
-
-    # Sync all agents with activity
-    specstory sync
-
-    # Sync specific agent
-    specstory sync antigravity
-    specstory sync claude
-    specstory sync codex
-    specstory sync copilotide
-    specstory sync cursor
-    specstory sync cursoride
-    specstory sync deepseek
-    specstory sync droid
-    specstory sync gemini
-    specstory sync muse
-
-    # Sync a specific session by UUID
-    specstory sync -s <session-id>
-
-    # Sync multiple sessions
-    specstory sync -s <session-id-1> -s <session-id-2> -s <session-id-3>
-
-    # Output session markdown to stdout without saving
-    specstory sync -s <session-id> --print
-
-    # Output multiple sessions to stdout
-    specstory sync -s <session-id-1> -s <session-id-2> --print
-
-    # Sync all sessions for the current directory, with console output
-    specstory sync --console
-
-    # Sync all sessions for the current directory, with a log file
-    specstory sync --log
-
-  FLAGS
-
+  Create or update markdown files for the agent sessions in the current working directory.                              
+                                                                                                                        
+  By default, syncs all registered providers that have activity.                                                        
+  Provide a specific agent ID to sync a specific provider.                                                              
+                                                                                                                        
+  Available provider IDs: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code   
+  Copilot IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini 
+  (Gemini CLI), muse (Muse Code).                                                                                       
+         
+  USAGE  
+         
+    specstory sync [provider-id] [--flags]                                
+            
+  EXAMPLES  
+            
+    # Sync all agents with activity                                       
+    specstory sync                                                        
+                                                                          
+    # Sync specific agent                                                 
+    specstory sync antigravity                                            
+    specstory sync claude                                                 
+    specstory sync codex                                                  
+    specstory sync copilotide                                             
+    specstory sync cursor                                                 
+    specstory sync cursoride                                              
+    specstory sync deepseek                                               
+    specstory sync droid                                                  
+    specstory sync gemini                                                 
+    specstory sync muse                                                   
+                                                                          
+    # Sync a specific session by UUID                                     
+    specstory sync -s <session-id>                                        
+                                                                          
+    # Sync multiple sessions                                              
+    specstory sync -s <session-id-1> -s <session-id-2> -s <session-id-3>  
+                                                                          
+    # Output session markdown to stdout without saving                    
+    specstory sync -s <session-id> --print                                
+                                                                          
+    # Output multiple sessions to stdout                                  
+    specstory sync -s <session-id-1> -s <session-id-2> --print            
+                                                                          
+    # Sync all sessions for the current directory, with console output    
+    specstory sync --console                                              
+                                                                          
+    # Sync all sessions for the current directory, with a log file        
+    specstory sync --log                                                  
+         
+  FLAGS  
+         
     --config-dir              Custom directory for the project-level config.toml (default: ./.specstory/cli)
     --console                 Enable error/warn/info output to stdout
     --debug                   Enable debug-level output (requires --console or --log)
@@ -1435,7 +1383,6 @@ _**Agent (claude-sonnet-5 2026-09-29 21:36:11Z)**_
     --telemetry-service-name  Override the default service name for telemetry, if telemetry is enabled
     --user-data-dir           Per-Provider IDE user-data-dir override formatted as provider_id:path (repeatable, e.g., cursoride:D:\apps\cursor\current\data\user-data)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-29 21:36:16Z)**_
@@ -1483,7 +1430,6 @@ ai-logs/sprint0/bennettmatuszewski/2026-09-13_claude-code_issue-10-test-fixes.md
 ai-logs/sprint0/bennettmatuszewski/2026-09-03_claude-code_installation-debugging.md
 ai-logs/sprint0/bennettmatuszewski/2026-09-10_claude-code_issue-25-calendar-icon.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-29 21:36:19Z)**_

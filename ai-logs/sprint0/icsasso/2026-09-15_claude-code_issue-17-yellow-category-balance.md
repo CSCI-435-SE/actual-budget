@@ -25,7 +25,6 @@ Do not duplicate this agent's work — avoid working with the same files or topi
 output_file: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\870915d3-5e8d-48c0-8ccf-7cdd8f380857\tasks\ae4d596ed3c5be645.output
 Do NOT Read or tail this file via the shell tool — it is the full subagent JSONL transcript and reading it will overflow your context. If the user asks for progress, say the agent is still running; you'll get a completion notification.
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (2026-09-15 03:27:19Z)**_
@@ -33,7 +32,6 @@ _**Agent - sidechain (2026-09-15 03:27:19Z)**_
 In the Actual Budget codebase (packages/desktop-client and packages/loot-core), I need to find where the "Balance" column for a budget category is rendered and colored (red for negative, green for positive) in the monthly budget table.
 
 Please find:
-
 1. The React component(s) that render the per-category Balance cell in the budget table (both the "envelope"/rollover budget type and possibly "tracking" type, and both desktop and mobile views if they differ).
 2. The exact logic/CSS class that decides red vs green color (e.g. based on `balance < 0` or similar), including file paths and line numbers.
 3. Where the underlying data comes from — specifically how "balance", "budgeted"/"budget" amount, and "spent" amount for the current month are computed/exposed for a category (look for selectors, hooks, or spreadsheet binding names like `sheetName + '!' + 'leftover'` or similar in loot-core, e.g. in packages/loot-core/src/server/budget/ or similar).
@@ -65,7 +63,6 @@ packages\loot-core\src\server\budget\base.test.ts
 packages\loot-core\src\server\budget\actions.ts
 packages\loot-core\src\server\budget\actions.test.ts
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:22Z)**_
@@ -90,7 +87,6 @@ packages\desktop-client\src\components\budget\envelope\BalanceMovementMenu.tsx
 packages\desktop-client\src\components\budget\envelope\BalanceMenu.tsx
 packages\desktop-client\src\components\budget\BalanceWithCarryover.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
@@ -108,7 +104,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 6	  CSSProperties,
 7	} from 'react';
 8	import { Trans, useTranslation } from 'react-i18next';
-9
+9	
 10	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 11	import { SvgArrowThinRight } from '@actual-app/components/icons/v1';
 12	import { styles } from '@actual-app/components/styles';
@@ -117,19 +113,19 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 15	import { View } from '@actual-app/components/view';
 16	import type { TransObjectLiteral } from '@actual-app/core/types/util';
 17	import { css } from '@emotion/css';
-18
+18	
 19	import { CellValue, CellValueText } from '#components/spreadsheet/CellValue';
 20	import { useFeatureFlag } from '#hooks/useFeatureFlag';
 21	import { useFormat } from '#hooks/useFormat';
 22	import { useSheetValue } from '#hooks/useSheetValue';
 23	import type { Binding } from '#spreadsheet';
-24
+24	
 25	import { makeBalanceAmountStyle } from './util';
-26
+26	
 27	type CarryoverIndicatorProps = {
 28	  style?: CSSProperties;
 29	};
-30
+30	
 31	export function CarryoverIndicator({ style }: CarryoverIndicatorProps) {
 32	  return (
 33	    <View
@@ -152,7 +148,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 50	    </View>
 51	  );
 52	}
-53
+53	
 54	function GoalTooltipRow({ children }) {
 55	  return (
 56	    <div
@@ -167,15 +163,15 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 65	    </div>
 66	  );
 67	}
-68
+68	
 69	type CellValueChildren = ComponentPropsWithoutRef<typeof CellValue>['children'];
-70
+70	
 71	type ChildrenWithClassName = (
 72	  props: Parameters<CellValueChildren>[0] & {
 73	    className: string;
 74	  },
 75	) => ReturnType<CellValueChildren>;
-76
+76	
 77	type BalanceWithCarryoverProps = Omit<
 78	  ComponentPropsWithoutRef<typeof CellValue>,
 79	  'children' | 'binding'
@@ -198,7 +194,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 96	  CarryoverIndicator?: ComponentType<CarryoverIndicatorProps>;
 97	  tooltipDisabled?: boolean;
 98	};
-99
+99	
 100	export function BalanceWithCarryover({
 101	  carryover,
 102	  balance,
@@ -229,7 +225,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 127	    [budgetedValue, goalValue, isGoalTemplatesEnabled, longGoalValue],
 128	  );
 129	  const format = useFormat();
-130
+130	
 131	  const getDifferenceToGoal = useCallback(
 132	    (balanceValue: number) =>
 133	      longGoalValue === 1
@@ -237,7 +233,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 135	        : budgetedValue - goalValue,
 136	    [budgetedValue, goalValue, longGoalValue],
 137	  );
-138
+138	
 139	  const getDefaultClassName = useCallback(
 140	    (balanceValue: number) =>
 141	      css({
@@ -343,7 +339,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 241	    },
 242	    [budgetedValue, format, getDifferenceToGoal, goalValue, longGoalValue, t],
 243	  );
-244
+244	
 245	  return (
 246	    <CellValue binding={balance} type="financial" {...props}>
 247	      {({ type, name, value: balanceValue }) => (
@@ -381,7 +377,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 279	              />
 280	            )}
 281	          </Tooltip>
-282
+282	
 283	          {carryoverValue && (
 284	            <CarryoverIndicatorComponent
 285	              style={getBalanceAmountStyle(balanceValue)}
@@ -408,7 +404,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:25Z)**_
 306	}
 307
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:26Z)**_
@@ -450,7 +445,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:26Z)**_
 653:            <BalanceWithCarryover
 655:              balance={envelopeBudget.catSumAmount(category.id)}
 ```
-
 </details></tool-use>
 
 ---
@@ -462,6 +456,7 @@ Stop hook feedback:
 [typecheck failed: @actual-app/web]
 src/components/budget/envelope/EnvelopeBudgetComponents.tsx(33,66): error TS2307: Cannot find module '../../../..' or its corresponding type declarations.
 src/components/budget/tracking/TrackingBudgetComponents.tsx(34,66): error TS2307: Cannot find module '../../../..' or its corresponding type declarations.
+
 
 ---
 
@@ -489,12 +484,12 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 15	} from '@actual-app/core/types/models';
 16	import type { SyncedPrefs } from '@actual-app/core/types/prefs';
 17	import { t } from 'i18next';
-18
+18	
 19	import type { DropPosition } from '#components/sort';
 20	import type { useSpreadsheet } from '#hooks/useSpreadsheet';
-21
+21	
 22	import { getValidMonthBounds } from './MonthsContext';
-23
+23	
 24	export function addToBeBudgetedGroup(groups: CategoryGroupEntity[]) {
 25	  return [
 26	    {
@@ -511,15 +506,15 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 37	    ...groups,
 38	  ];
 39	}
-40
+40	
 41	export function removeCategoriesFromGroups(
 42	  categoryGroups: CategoryGroupEntity[],
 43	  ...categoryIds: CategoryEntity['id'][]
 44	) {
 45	  if (categoryIds.length === 0) return categoryGroups;
-46
+46	
 47	  const categoryIdsSet = new Set(categoryIds);
-48
+48	
 49	  return categoryGroups
 50	    .map(group => ({
 51	      ...group,
@@ -528,20 +523,20 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 54	    }))
 55	    .filter(group => group.categories?.length);
 56	}
-57
+57	
 58	export function separateGroups(categoryGroups: CategoryGroupEntity[]) {
 59	  return [
 60	    categoryGroups.filter(g => !g.is_income),
 61	    categoryGroups.find(g => g.is_income),
 62	  ] as const;
 63	}
-64
+64	
 65	export function makeAmountGrey(value: number | string | null): CSSProperties {
 66	  return value === 0 || value === '0' || value === '' || value == null
 67	    ? { color: theme.budgetNumberZero }
 68	    : null;
 69	}
-70
+70	
 71	export function makeBalanceAmountStyle(
 72	  value: number,
 73	  goalValue?: number | null,
@@ -550,16 +545,16 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 76	  // Converts an integer currency value to a normalized decimal amount.
 77	  // First converts the integer to currency format, then to a decimal amount.
 78	  // Uses integerToCurrency to display the value correctly according to user prefs.
-79
+79	
 80	  const normalizeIntegerValue = (val: number | null | undefined) =>
 81	    typeof val === 'number' ? currencyToAmount(integerToCurrency(val)) : 0;
-82
+82	
 83	  const currencyValue = normalizeIntegerValue(value);
-84
+84	
 85	  if (currencyValue < 0) {
 86	    return { color: theme.budgetNumberNegative };
 87	  }
-88
+88	
 89	  if (goalValue == null) {
 90	    const greyed = makeAmountGrey(currencyValue);
 91	    if (greyed) {
@@ -569,14 +564,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 95	  } else {
 96	    const budgetedAmount = normalizeIntegerValue(budgetedValue);
 97	    const goalAmount = normalizeIntegerValue(goalValue);
-98
+98	
 99	    if (budgetedAmount < goalAmount) {
 100	      return { color: theme.templateNumberUnderFunded };
 101	    }
 102	    return { color: theme.templateNumberFunded };
 103	  }
 104	}
-105
+105	
 106	export function makeAmountFullStyle(
 107	  value: number,
 108	  colors?: {
@@ -599,7 +594,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 125	          : positiveColorToUse,
 126	  };
 127	}
-128
+128	
 129	export function findSortDown<T extends { id: string }>(
 130	  arr: T[],
 131	  pos: DropPosition | null,
@@ -609,11 +604,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 135	    return { targetId };
 136	  } else {
 137	    const idx = arr.findIndex(item => item.id === targetId);
-138
+138	
 139	    if (idx === -1) {
 140	      throw new Error('findSort: item not found: ' + targetId);
 141	    }
-142
+142	
 143	    const newIdx = idx + 1;
 144	    if (newIdx < arr.length) {
 145	      return { targetId: arr[newIdx].id };
@@ -623,7 +618,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 149	    }
 150	  }
 151	}
-152
+152	
 153	export function findSortUp<T extends { id: string }>(
 154	  arr: T[],
 155	  pos: DropPosition | null,
@@ -633,11 +628,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 159	    return { targetId };
 160	  } else {
 161	    const idx = arr.findIndex(item => item.id === targetId);
-162
+162	
 163	    if (idx === -1) {
 164	      throw new Error('findSort: item not found: ' + targetId);
 165	    }
-166
+166	
 167	    const newIdx = idx - 1;
 168	    if (newIdx >= 0) {
 169	      return { targetId: arr[newIdx].id };
@@ -647,11 +642,11 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 173	    }
 174	  }
 175	}
-176
+176	
 177	export function getScrollbarWidth() {
 178	  return Math.max(styles.scrollbarWidth - 2, 0);
 179	}
-180
+180	
 181	export async function prewarmMonth(
 182	  budgetType: SyncedPrefs['budgetType'],
 183	  spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -661,14 +656,14 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 187	    budgetType === 'tracking'
 188	      ? 'tracking-budget-month'
 189	      : 'envelope-budget-month';
-190
+190	
 191	  const values = await send(method, { month });
-192
+192	
 193	  for (const value of values) {
 194	    spreadsheet.prewarmCache(value.name, value);
 195	  }
 196	}
-197
+197	
 198	export async function prewarmAllMonths(
 199	  budgetType: SyncedPrefs['budgetType'],
 200	  spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -676,21 +671,20 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:29Z)**_
 202	  startMonth: string,
 203	) {
 204	  const numMonths = 3;
-205
+205	
 206	  bounds = getValidMonthBounds(
 207	    bounds,
 208	    monthUtils.subMonths(startMonth, 1),
 209	    monthUtils.addMonths(startMonth, numMonths + 1),
 210	  );
 211	  const months = monthUtils.rangeInclusive(bounds.start, bounds.end);
-212
+212	
 213	  await Promise.all(
 214	    months.map(month => prewarmMonth(budgetType, spreadsheet, month)),
 215	  );
 216	}
 217
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:30Z)**_
@@ -749,7 +743,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:30Z)**_
 526	            tooltipDisabled={balanceMenuOpen}
 527	          />
 528	        </Button>
-529
+529	
 530	        <Popover
 531	          triggerRef={balanceMenuTriggerRef}
 532	          placement="bottom end"
@@ -771,7 +765,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:30Z)**_
 548	        </Popover>
 549	      </Field>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:27:32Z)**_
@@ -784,7 +777,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:27:32Z)**_
 1	import React, { memo, useRef, useState } from 'react';
 2	import type { ComponentProps, CSSProperties, MouseEvent } from 'react';
 3	import { Trans, useTranslation } from 'react-i18next';
-4
+4	
 5	import { Button } from '@actual-app/components/button';
 6	import { SvgCheveronDown } from '@actual-app/components/icons/v1';
 7	import {
@@ -798,7 +791,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:27:32Z)**_
 15	import { View } from '@actual-app/components/view';
 16	import * as monthUtils from '@actual-app/core/shared/months';
 17	import { css } from '@emotion/css';
-18
+18	
 19	import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
 20	import { makeAmountGrey } from '#components/budget/util';
 21	import { NotesButton } from '#components/NotesButton';
@@ -814,17 +807,17 @@ _**Agent (claude-sonnet-5 2026-09-15 03:27:32Z)**_
 31	import type { Binding, SheetFields } from '#spreadsheet';
 32	import { envelopeBudget } from '#spreadsheet/bindings';
 33	import type { CategoryGroupMonthProps, CategoryMonthProps } from '../../../..';
-34
+34	
 35	import { BalanceMovementMenu } from './BalanceMovementMenu';
 36	import { BudgetMenu } from './BudgetMenu';
 37	import { IncomeMenu } from './IncomeMenu';
-38
+38	
 39	export function useEnvelopeSheetName<
 40	  FieldName extends SheetFields<'envelope-budget'>,
 41	>(binding: Binding<'envelope-budget', FieldName>) {
 42	  return useSheetName(binding);
 43	}
-44
+44	
 45	export function useEnvelopeSheetValue<
 46	  FieldName extends SheetFields<'envelope-budget'>,
 47	>(binding: Binding<'envelope-budget', FieldName>) {
@@ -832,7 +825,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:27:32Z)**_
 49	}
 50
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:34Z)**_
@@ -844,7 +836,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:34Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:35Z)**_
@@ -856,7 +847,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:35Z)**_
 ```text
 No matches found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:27:37Z)**_
@@ -874,7 +864,6 @@ d8317c44b [AI] Migrate desktop-client to subpath imports (#7446)
 0793eb592 Add Notes to Monthly Budget Cell (#6620)
 84cebed20 Enforce consistent TypeScript type import style (#6805)
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:37Z)**_
@@ -905,7 +894,6 @@ packages\desktop-client\src\components\budget\envelope\BalanceMovementMenu.tsx
 packages\desktop-client\src\components\budget\envelope\BalanceMenu.tsx
 packages\desktop-client\src\components\autocomplete\CategoryAutocomplete.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:38Z)**_
@@ -941,7 +929,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:38Z)**_
 367:      .removeDependencies(sheetName, 'total-leftover', [
 368:        `group-leftover-${groupId}`,
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:40Z)**_
@@ -970,7 +957,7 @@ index 472b8f6b2..6c67d06d5 100644
  import { envelopeBudget } from '#spreadsheet/bindings';
 -import type { CategoryGroupMonthProps, CategoryMonthProps } from '..';
 +import type { CategoryGroupMonthProps, CategoryMonthProps } from '../../../..';
-
+ 
  import { BalanceMovementMenu } from './BalanceMovementMenu';
  import { BudgetMenu } from './BudgetMenu';
 diff --git a/packages/desktop-client/src/components/budget/tracking/TrackingBudgetComponents.tsx b/packages/desktop-client/src/components/budget/tracking/TrackingBudgetComponents.tsx
@@ -983,11 +970,10 @@ index 4980feebd..7b7bcf285 100644
  import { trackingBudget } from '#spreadsheet/bindings';
 -import type { CategoryGroupMonthProps, CategoryMonthProps } from '..';
 +import type { CategoryGroupMonthProps, CategoryMonthProps } from '../../../..';
-
+ 
  import { BalanceMenu } from './BalanceMenu';
  import { BudgetMenu } from './BudgetMenu';
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
@@ -1002,22 +988,22 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 3	  AccountEntity,
 4	  CategoryEntity,
 5	} from '@actual-app/core/types/models';
-6
+6	
 7	import { uncategorizedTransactions } from '#queries';
-8
+8	
 9	import { parametrizedField } from '.';
 10	import type { Binding, SheetFields, SheetNames } from '.';
-11
+11	
 12	type BudgetType<SheetName extends SheetNames> = Record<
 13	  string,
 14	  SheetFields<SheetName> | ((id: string) => SheetFields<SheetName>)
 15	>;
-16
+16	
 17	const accountParametrizedField = parametrizedField<'account'>();
 18	const categoryParametrizedField = parametrizedField<'category'>();
 19	const envelopeParametrizedField = parametrizedField<'envelope-budget'>();
 20	const trackingParametrizedField = parametrizedField<'tracking-budget'>();
-21
+21	
 22	export function accountBalance(accountId: AccountEntity['id']) {
 23	  return {
 24	    name: accountParametrizedField('balance')(accountId),
@@ -1027,7 +1013,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 28	      .calculate({ $sum: '$amount' }),
 29	  } satisfies Binding<'account', 'balance'>;
 30	}
-31
+31	
 32	export function accountBalanceCleared(accountId: AccountEntity['id']) {
 33	  return {
 34	    name: accountParametrizedField('balanceCleared')(accountId),
@@ -1037,7 +1023,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 38	      .calculate({ $sum: '$amount' }),
 39	  } satisfies Binding<'account', 'balanceCleared'>;
 40	}
-41
+41	
 42	export function accountBalanceUncleared(accountId: AccountEntity['id']) {
 43	  return {
 44	    name: accountParametrizedField('balanceUncleared')(accountId),
@@ -1047,7 +1033,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 48	      .calculate({ $sum: '$amount' }),
 49	  } satisfies Binding<'account', 'balanceUncleared'>;
 50	}
-51
+51	
 52	export function allAccountBalance() {
 53	  return {
 54	    query: q('transactions')
@@ -1056,7 +1042,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 57	    name: 'accounts-balance',
 58	  } satisfies Binding<'account', 'accounts-balance'>;
 59	}
-60
+60	
 61	export function onBudgetAccountBalance() {
 62	  return {
 63	    name: `onbudget-accounts-balance`,
@@ -1065,7 +1051,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 66	      .calculate({ $sum: '$amount' }),
 67	  } satisfies Binding<'account', 'onbudget-accounts-balance'>;
 68	}
-69
+69	
 70	export function offBudgetAccountBalance() {
 71	  return {
 72	    name: `offbudget-accounts-balance`,
@@ -1074,7 +1060,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 75	      .calculate({ $sum: '$amount' }),
 76	  } satisfies Binding<'account', 'offbudget-accounts-balance'>;
 77	}
-78
+78	
 79	export function closedAccountBalance() {
 80	  return {
 81	    name: `closed-accounts-balance`,
@@ -1083,7 +1069,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 84	      .calculate({ $sum: '$amount' }),
 85	  } satisfies Binding<'account', 'closed-accounts-balance'>;
 86	}
-87
+87	
 88	export function categoryBalance(
 89	  categoryId: CategoryEntity['id'],
 90	  month: string,
@@ -1099,7 +1085,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 100	      .calculate({ $sum: '$amount' }),
 101	  } satisfies Binding<'category', 'balance'>;
 102	}
-103
+103	
 104	export function categoryBalanceCleared(
 105	  categoryId: CategoryEntity['id'],
 106	  month: string,
@@ -1116,7 +1102,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 117	      .calculate({ $sum: '$amount' }),
 118	  } satisfies Binding<'category', 'balanceCleared'>;
 119	}
-120
+120	
 121	export function categoryBalanceUncleared(
 122	  categoryId: CategoryEntity['id'],
 123	  month: string,
@@ -1133,41 +1119,41 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 134	      .calculate({ $sum: '$amount' }),
 135	  } satisfies Binding<'category', 'balanceUncleared'>;
 136	}
-137
+137	
 138	export function uncategorizedBalance<SheetName extends SheetNames>() {
 139	  return {
 140	    name: 'uncategorized-balance',
 141	    query: uncategorizedTransactions().calculate({ $sum: '$amount' }),
 142	  } satisfies Binding<SheetName, 'uncategorized-balance'>;
 143	}
-144
+144	
 145	export function uncategorizedCount<SheetName extends SheetNames>() {
 146	  return {
 147	    name: 'uncategorized-amount',
 148	    query: uncategorizedTransactions().calculate({ $count: '$id' }),
 149	  } satisfies Binding<SheetName, 'uncategorized-amount'>;
 150	}
-151
+151	
 152	export const envelopeBudget = {
 153	  incomeAvailable: 'available-funds',
 154	  lastMonthOverspent: 'last-month-overspent',
 155	  forNextMonth: 'buffered-selected',
 156	  totalBudgeted: 'total-budgeted',
 157	  toBudget: 'to-budget',
-158
+158	
 159	  fromLastMonth: 'from-last-month',
 160	  manualBuffered: 'buffered',
 161	  autoBuffered: 'buffered-auto',
 162	  totalIncome: 'total-income',
 163	  totalSpent: 'total-spent',
 164	  totalBalance: 'total-leftover',
-165
+165	
 166	  groupSumAmount: envelopeParametrizedField('group-sum-amount'),
 167	  groupIncomeReceived: 'total-income',
-168
+168	
 169	  groupBudgeted: envelopeParametrizedField('group-budget'),
 170	  groupBalance: envelopeParametrizedField('group-leftover'),
-171
+171	
 172	  catBudgeted: envelopeParametrizedField('budget'),
 173	  catSumAmount: envelopeParametrizedField('sum-amount'),
 174	  catBalance: envelopeParametrizedField('leftover'),
@@ -1175,23 +1161,23 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 176	  catGoal: envelopeParametrizedField('goal'),
 177	  catLongGoal: envelopeParametrizedField('long-goal'),
 178	} satisfies BudgetType<'envelope-budget'>;
-179
+179	
 180	export const trackingBudget = {
 181	  totalBudgetedExpense: 'total-budgeted',
 182	  totalBudgetedIncome: 'total-budget-income',
 183	  totalBudgetedSaved: 'total-saved',
-184
+184	
 185	  totalIncome: 'total-income',
 186	  totalSpent: 'total-spent',
 187	  totalSaved: 'real-saved',
-188
+188	
 189	  totalLeftover: 'total-leftover',
 190	  groupSumAmount: trackingParametrizedField('group-sum-amount'),
 191	  groupIncomeReceived: 'total-income',
-192
+192	
 193	  groupBudgeted: trackingParametrizedField('group-budget'),
 194	  groupBalance: trackingParametrizedField('group-leftover'),
-195
+195	
 196	  catBudgeted: trackingParametrizedField('budget'),
 197	  catSumAmount: trackingParametrizedField('sum-amount'),
 198	  catBalance: trackingParametrizedField('leftover'),
@@ -1201,7 +1187,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 202	} satisfies BudgetType<'tracking-budget'>;
 203
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
@@ -1213,7 +1198,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 ```text
 1	import type { CSSProperties } from 'react';
 2	import { useTranslation } from 'react-i18next';
-3
+3	
 4	import { Button } from '@actual-app/components/button';
 5	import { SvgArrowThickRight } from '@actual-app/components/icons/v1';
 6	import { styles } from '@actual-app/components/styles';
@@ -1223,16 +1208,16 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 10	import type { CategoryEntity } from '@actual-app/core/types/models';
 11	import { css, cx } from '@emotion/css';
 12	import { AutoTextSize } from 'auto-text-size';
-13
+13	
 14	import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
 15	import { PrivacyFilter } from '#components/PrivacyFilter';
 16	import { useFormat } from '#hooks/useFormat';
 17	import { useSyncedPref } from '#hooks/useSyncedPref';
 18	import type { Binding } from '#spreadsheet';
 19	import { envelopeBudget, trackingBudget } from '#spreadsheet/bindings';
-20
+20	
 21	import { getColumnWidth, PILL_STYLE } from './BudgetTable';
-22
+22	
 23	type BalanceCellProps = {
 24	  binding: Binding<
 25	    'envelope-budget' | 'tracking-budget',
@@ -1243,7 +1228,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 30	  onPress?: () => void;
 31	  'aria-label'?: string;
 32	};
-33
+33	
 34	export function BalanceCell({
 35	  binding,
 36	  category,
@@ -1256,29 +1241,29 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 43	  const columnWidth = getColumnWidth({
 44	    show3Columns,
 45	  });
-46
+46	
 47	  const goal =
 48	    budgetType === 'tracking'
 49	      ? trackingBudget.catGoal(category.id)
 50	      : envelopeBudget.catGoal(category.id);
-51
+51	
 52	  const longGoal =
 53	    budgetType === 'tracking'
 54	      ? trackingBudget.catLongGoal(category.id)
 55	      : envelopeBudget.catLongGoal(category.id);
-56
+56	
 57	  const budgeted =
 58	    budgetType === 'tracking'
 59	      ? trackingBudget.catBudgeted(category.id)
 60	      : envelopeBudget.catBudgeted(category.id);
-61
+61	
 62	  const carryover =
 63	    budgetType === 'tracking'
 64	      ? trackingBudget.catCarryover(category.id)
 65	      : envelopeBudget.catCarryover(category.id);
-66
+66	
 67	  const format = useFormat();
-68
+68	
 69	  return (
 70	    <BalanceWithCarryover
 71	      aria-label={t('Balance for {{categoryName}} category', {
@@ -1348,7 +1333,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:41Z)**_
 135	}
 136
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:42Z)**_
@@ -1376,7 +1360,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:42Z)**_
 490:            onOpenChange={() => setBalanceMenuOpen(false)}
 493:            <BalanceMenu
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:44Z)**_
@@ -1392,7 +1375,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:46Z)**_
 ```text
 No files found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:27:46Z)**_
@@ -1407,7 +1389,6 @@ packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.
 packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx
 packages\desktop-client\src\components\budget\index.tsx
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:47Z)**_
@@ -1433,7 +1414,6 @@ packages\component-library\src\Themes\midnight.css:46:  --color-budgetNumberZero
 packages\component-library\src\Themes\midnight.css:48:  --color-budgetNumberPositive: var(--color-budgetNumberNeutral);
 packages\component-library\src\Themes\midnight.css:53:  --color-toBudgetNegative: var(--color-budgetNumberNegative);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:27:48Z)**_
@@ -1448,7 +1428,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:28:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:50Z)**_
@@ -1464,15 +1443,15 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:50Z)**_
 4	// @ts-strict-ignore
 5	import * as monthUtils from '#shared/months';
 6	import { safeNumber } from '#shared/util';
-7
+7	
 8	import { createCategory as createCategoryFromBase } from './base';
 9	import { flatten2, number, sumAmounts, unflatten2 } from './util';
-10
+10	
 11	function getBlankSheet(months) {
 12	  const blankMonth = monthUtils.prevMonth(months[0]);
 13	  return monthUtils.sheetForMonth(blankMonth);
 14	}
-15
+15	
 16	export function createBlankCategory(cat, months) {
 17	  if (months.length > 0) {
 18	    const sheetName = getBlankSheet(months);
@@ -1481,19 +1460,19 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:50Z)**_
 21	    sheet.get().createStatic(sheetName, `leftover-pos-${cat.id}`, 0);
 22	  }
 23	}
-24
+24	
 25	function createBlankMonth(categories, sheetName, months) {
 26	  sheet.get().createStatic(sheetName, 'is-blank', true);
 27	  sheet.get().createStatic(sheetName, 'to-budget', 0);
 28	  sheet.get().createStatic(sheetName, 'buffered', 0);
-29
+29	
 30	  categories.forEach(cat => createBlankCategory(cat, months));
 31	}
-32
+32	
 33	export function createCategory(cat, sheetName, prevSheetName) {
 34	  if (!cat.is_income) {
 35	    sheet.get().createStatic(sheetName, `budget-${cat.id}`, 0);
-36
+36	
 37	    // This makes the app more robust by "fixing up" null budget values.
 38	    // Those should not be allowed, but in case somehow a null value
 39	    // ends up there, we are resilient to it. Preferrably the
@@ -1502,9 +1481,9 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:50Z)**_
 42	    if (sheet.get().getCellValue(sheetName, `budget-${cat.id}`) == null) {
 43	      sheet.get().set(resolveName(sheetName, `budget-${cat.id}`), 0);
 44	    }
-45
+45	
 46	    sheet.get().createStatic(sheetName, `carryover-${cat.id}`, false);
-47
+47	
 48	    sheet.get().createDynamic(sheetName, `leftover-${cat.id}`, {
 49	      initialValue: 0,
 50	      dependencies: [
@@ -1522,7 +1501,7 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:50Z)**_
 62	        );
 63	      },
 64	    });
-65
+65	
 66	    sheet.get().createDynamic(sheetName, 'leftover-pos-' + cat.id, {
 67	      initialValue: 0,
 68	      dependencies: [`leftover-${cat.id}`],
@@ -1532,24 +1511,23 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:50Z)**_
 72	    });
 73	  }
 74	}
-75
+75	
 76	export function createCategoryGroup(group, sheetName) {
 77	  sheet.get().createDynamic(sheetName, 'group-sum-amount-' + group.id, {
 78	    initialValue: 0,
 79	    dependencies: group.categories.map(cat => `sum-amount-${cat.id}`),
 80	    run: sumAmounts,
 81	  });
-82
+82	
 83	  if (!group.is_income) {
 84	    sheet.get().createDynamic(sheetName, 'group-budget-' + group.id, {
 85	      initialValue: 0,
 86	      dependencies: group.categories.map(cat => `budget-${cat.id}`),
 87	      run: sumAmounts,
 88	    });
-89
+89	
 90	    sheet.get().createDynamic(sheetName, 'group-leftover-' + group.id, {
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:55Z)**_
@@ -1566,7 +1544,6 @@ _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:27:55Z)**_
 152:      .recompute(resolveName(sheetName, 'sum-amount-' + newValue.transferId));
 327:      const sumCell = `sum-amount-${cat.id}`;
 ```
-
 </details></tool-use>
 
 _**Agent - sidechain (claude-sonnet-5 2026-09-15 03:28:16Z)**_
@@ -1598,7 +1575,6 @@ if (goalValue == null) {
   // goal-template funded/underfunded coloring branch
 }
 ```
-
 `BalanceWithCarryover.tsx` calls this via `getBalanceAmountStyle` (line 120‑128) and applies it as `className` (line 139‑152, `getDefaultClassName`). Theme tokens defined in `packages/component-library/src/theme.ts` (~201‑204) and `Themes/{light,dark,midnight}.css` (~45‑53): `budgetNumberNegative` → `--color-numberNegative`, `budgetNumberPositive` → `--color-budgetNumberNeutral` (note: "positive" is actually a neutral/grey-ish color in this theme, not bright green), `budgetNumberZero` → subdued grey.
 
 **3. Underlying data / spreadsheet bindings**
@@ -1606,30 +1582,21 @@ if (goalValue == null) {
 Binding names/accessors: `packages/desktop-client/src/spreadsheet/bindings.ts` (152–202) — `envelopeBudget`/`trackingBudget` objects: `catBudgeted` → `budget-{id}`, `catSumAmount` (spent) → `sum-amount-{id}`, `catBalance` → `leftover-{id}`, `catCarryover` → `carryover-{id}`.
 
 Computation: `packages/loot-core/src/server/budget/envelope.ts` lines 33–74. Key dynamic cell:
-
 ```ts
 sheet.get().createDynamic(sheetName, `leftover-${cat.id}`, {
-  dependencies: [
-    `budget-${cat.id}`,
-    `sum-amount-${cat.id}`,
-    `${prevSheetName}!carryover-${cat.id}`,
-    `${prevSheetName}!leftover-${cat.id}`,
-    `${prevSheetName}!leftover-pos-${cat.id}`,
-  ],
+  dependencies: [`budget-${cat.id}`, `sum-amount-${cat.id}`,
+    `${prevSheetName}!carryover-${cat.id}`, `${prevSheetName}!leftover-${cat.id}`,
+    `${prevSheetName}!leftover-pos-${cat.id}`],
   run: (budgeted, spent, prevCarryover, prevLeftover, prevLeftoverPos) =>
-    safeNumber(
-      number(budgeted) +
-        number(spent) +
-        (prevCarryover ? number(prevLeftover) : number(prevLeftoverPos)),
-    ),
+    safeNumber(number(budgeted) + number(spent) +
+      (prevCarryover ? number(prevLeftover) : number(prevLeftoverPos))),
 });
 ```
-
 So `leftover` (= balance) = budgeted + spent (spent is negative for expenses) + rolled-over prior balance (only if that category had carryover enabled last month). `sum-amount` is this month's spent; `budget` is this month's budgeted amount — both available standalone via the same bindings, independent of the rolled-over portion.
 
 **4. Existing carryover/rollover concept**
 
-Yes — `carryover-{id}` is a per-category, per-month boolean flag (`envelope.ts` line 19, 46), exposed as `catCarryover` binding. It's already surfaced in the UI as `CarryoverIndicator` (small arrow icon, `EnvelopeBudgetComponents.tsx` lines 31–52, and `MobileCarryoverIndicator` in `BalanceCell.tsx` lines 117–135), rendered inside `BalanceWithCarryover.tsx` (lines 283–287) whenever `carryoverValue` is truthy, colored via `getBalanceAmountStyle`. This is a UI _indicator_, not a color state — the cell text color is still driven solely by `makeBalanceAmountStyle`.
+Yes — `carryover-{id}` is a per-category, per-month boolean flag (`envelope.ts` line 19, 46), exposed as `catCarryover` binding. It's already surfaced in the UI as `CarryoverIndicator` (small arrow icon, `EnvelopeBudgetComponents.tsx` lines 31–52, and `MobileCarryoverIndicator` in `BalanceCell.tsx` lines 117–135), rendered inside `BalanceWithCarryover.tsx` (lines 283–287) whenever `carryoverValue` is truthy, colored via `getBalanceAmountStyle`. This is a UI *indicator*, not a color state — the cell text color is still driven solely by `makeBalanceAmountStyle`.
 
 **5. Tests**
 
@@ -1645,7 +1612,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:28:57Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:29:05Z)**_
@@ -1655,13 +1621,11 @@ Both broken imports are fixed (they'd been corrupted to `'../../../..'` in the u
 Now, on the actual feature request — my research agent finished mapping the balance-coloring logic. Here's the plan:
 
 **Where things live:**
-
 - Color logic: `makeBalanceAmountStyle()` in [packages/desktop-client/src/components/budget/util.ts:71-104](packages/desktop-client/src/components/budget/util.ts#L71-L104) — currently red if `balance < 0`, else a neutral/green tone.
 - It's invoked from `BalanceWithCarryover.tsx` (shared by desktop envelope, tracking, and mobile `BalanceCell.tsx`).
 - Data: `catBudgeted` (this month's budget), `catSumAmount` (this month's spent, negative), `catBalance`/`leftover` (budgeted + spent + rolled-over prior balance) — all separate spreadsheet bindings, already computed in `loot-core/src/server/budget/envelope.ts`. Tracking budgets don't have carryover/rollover the same way, so this only really applies to envelope (rollover) budgets.
 
 **Plan to implement:**
-
 1. Add a new theme token (e.g. `budgetNumberWarning`) to `component-library/src/theme.ts` and the three `Themes/*.css` files (light/dark/midnight) — a yellow/amber tone.
 2. Thread the `catSumAmount` (spent) and `catBudgeted` (budgeted) bindings into `BalanceWithCarryover` where not already passed, so it can compare spent vs. budgeted.
 3. Update `makeBalanceAmountStyle` to accept spent/budgeted and return the new yellow style when `balance >= 0 && abs(spent) > budgeted`.
@@ -1702,12 +1666,12 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 15	} from '@actual-app/core/types/models';
 16	import type { SyncedPrefs } from '@actual-app/core/types/prefs';
 17	import { t } from 'i18next';
-18
+18	
 19	import type { DropPosition } from '#components/sort';
 20	import type { useSpreadsheet } from '#hooks/useSpreadsheet';
-21
+21	
 22	import { getValidMonthBounds } from './MonthsContext';
-23
+23	
 24	export function addToBeBudgetedGroup(groups: CategoryGroupEntity[]) {
 25	  return [
 26	    {
@@ -1724,15 +1688,15 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 37	    ...groups,
 38	  ];
 39	}
-40
+40	
 41	export function removeCategoriesFromGroups(
 42	  categoryGroups: CategoryGroupEntity[],
 43	  ...categoryIds: CategoryEntity['id'][]
 44	) {
 45	  if (categoryIds.length === 0) return categoryGroups;
-46
+46	
 47	  const categoryIdsSet = new Set(categoryIds);
-48
+48	
 49	  return categoryGroups
 50	    .map(group => ({
 51	      ...group,
@@ -1741,20 +1705,20 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 54	    }))
 55	    .filter(group => group.categories?.length);
 56	}
-57
+57	
 58	export function separateGroups(categoryGroups: CategoryGroupEntity[]) {
 59	  return [
 60	    categoryGroups.filter(g => !g.is_income),
 61	    categoryGroups.find(g => g.is_income),
 62	  ] as const;
 63	}
-64
+64	
 65	export function makeAmountGrey(value: number | string | null): CSSProperties {
 66	  return value === 0 || value === '0' || value === '' || value == null
 67	    ? { color: theme.budgetNumberZero }
 68	    : null;
 69	}
-70
+70	
 71	export function makeBalanceAmountStyle(
 72	  value: number,
 73	  goalValue?: number | null,
@@ -1763,16 +1727,16 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 76	  // Converts an integer currency value to a normalized decimal amount.
 77	  // First converts the integer to currency format, then to a decimal amount.
 78	  // Uses integerToCurrency to display the value correctly according to user prefs.
-79
+79	
 80	  const normalizeIntegerValue = (val: number | null | undefined) =>
 81	    typeof val === 'number' ? currencyToAmount(integerToCurrency(val)) : 0;
-82
+82	
 83	  const currencyValue = normalizeIntegerValue(value);
-84
+84	
 85	  if (currencyValue < 0) {
 86	    return { color: theme.budgetNumberNegative };
 87	  }
-88
+88	
 89	  if (goalValue == null) {
 90	    const greyed = makeAmountGrey(currencyValue);
 91	    if (greyed) {
@@ -1782,14 +1746,14 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 95	  } else {
 96	    const budgetedAmount = normalizeIntegerValue(budgetedValue);
 97	    const goalAmount = normalizeIntegerValue(goalValue);
-98
+98	
 99	    if (budgetedAmount < goalAmount) {
 100	      return { color: theme.templateNumberUnderFunded };
 101	    }
 102	    return { color: theme.templateNumberFunded };
 103	  }
 104	}
-105
+105	
 106	export function makeAmountFullStyle(
 107	  value: number,
 108	  colors?: {
@@ -1812,7 +1776,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 125	          : positiveColorToUse,
 126	  };
 127	}
-128
+128	
 129	export function findSortDown<T extends { id: string }>(
 130	  arr: T[],
 131	  pos: DropPosition | null,
@@ -1822,11 +1786,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 135	    return { targetId };
 136	  } else {
 137	    const idx = arr.findIndex(item => item.id === targetId);
-138
+138	
 139	    if (idx === -1) {
 140	      throw new Error('findSort: item not found: ' + targetId);
 141	    }
-142
+142	
 143	    const newIdx = idx + 1;
 144	    if (newIdx < arr.length) {
 145	      return { targetId: arr[newIdx].id };
@@ -1836,7 +1800,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 149	    }
 150	  }
 151	}
-152
+152	
 153	export function findSortUp<T extends { id: string }>(
 154	  arr: T[],
 155	  pos: DropPosition | null,
@@ -1846,11 +1810,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 159	    return { targetId };
 160	  } else {
 161	    const idx = arr.findIndex(item => item.id === targetId);
-162
+162	
 163	    if (idx === -1) {
 164	      throw new Error('findSort: item not found: ' + targetId);
 165	    }
-166
+166	
 167	    const newIdx = idx - 1;
 168	    if (newIdx >= 0) {
 169	      return { targetId: arr[newIdx].id };
@@ -1860,11 +1824,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 173	    }
 174	  }
 175	}
-176
+176	
 177	export function getScrollbarWidth() {
 178	  return Math.max(styles.scrollbarWidth - 2, 0);
 179	}
-180
+180	
 181	export async function prewarmMonth(
 182	  budgetType: SyncedPrefs['budgetType'],
 183	  spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -1874,14 +1838,14 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 187	    budgetType === 'tracking'
 188	      ? 'tracking-budget-month'
 189	      : 'envelope-budget-month';
-190
+190	
 191	  const values = await send(method, { month });
-192
+192	
 193	  for (const value of values) {
 194	    spreadsheet.prewarmCache(value.name, value);
 195	  }
 196	}
-197
+197	
 198	export async function prewarmAllMonths(
 199	  budgetType: SyncedPrefs['budgetType'],
 200	  spreadsheet: ReturnType<typeof useSpreadsheet>,
@@ -1889,21 +1853,20 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:26Z)**_
 202	  startMonth: string,
 203	) {
 204	  const numMonths = 3;
-205
+205	
 206	  bounds = getValidMonthBounds(
 207	    bounds,
 208	    monthUtils.subMonths(startMonth, 1),
 209	    monthUtils.addMonths(startMonth, numMonths + 1),
 210	  );
 211	  const months = monthUtils.rangeInclusive(bounds.start, bounds.end);
-212
+212	
 213	  await Promise.all(
 214	    months.map(month => prewarmMonth(budgetType, spreadsheet, month)),
 215	  );
 216	}
 217
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
@@ -1921,7 +1884,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 6	  CSSProperties,
 7	} from 'react';
 8	import { Trans, useTranslation } from 'react-i18next';
-9
+9	
 10	import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 11	import { SvgArrowThinRight } from '@actual-app/components/icons/v1';
 12	import { styles } from '@actual-app/components/styles';
@@ -1930,19 +1893,19 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 15	import { View } from '@actual-app/components/view';
 16	import type { TransObjectLiteral } from '@actual-app/core/types/util';
 17	import { css } from '@emotion/css';
-18
+18	
 19	import { CellValue, CellValueText } from '#components/spreadsheet/CellValue';
 20	import { useFeatureFlag } from '#hooks/useFeatureFlag';
 21	import { useFormat } from '#hooks/useFormat';
 22	import { useSheetValue } from '#hooks/useSheetValue';
 23	import type { Binding } from '#spreadsheet';
-24
+24	
 25	import { makeBalanceAmountStyle } from './util';
-26
+26	
 27	type CarryoverIndicatorProps = {
 28	  style?: CSSProperties;
 29	};
-30
+30	
 31	export function CarryoverIndicator({ style }: CarryoverIndicatorProps) {
 32	  return (
 33	    <View
@@ -1965,7 +1928,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 50	    </View>
 51	  );
 52	}
-53
+53	
 54	function GoalTooltipRow({ children }) {
 55	  return (
 56	    <div
@@ -1980,15 +1943,15 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 65	    </div>
 66	  );
 67	}
-68
+68	
 69	type CellValueChildren = ComponentPropsWithoutRef<typeof CellValue>['children'];
-70
+70	
 71	type ChildrenWithClassName = (
 72	  props: Parameters<CellValueChildren>[0] & {
 73	    className: string;
 74	  },
 75	) => ReturnType<CellValueChildren>;
-76
+76	
 77	type BalanceWithCarryoverProps = Omit<
 78	  ComponentPropsWithoutRef<typeof CellValue>,
 79	  'children' | 'binding'
@@ -2011,7 +1974,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 96	  CarryoverIndicator?: ComponentType<CarryoverIndicatorProps>;
 97	  tooltipDisabled?: boolean;
 98	};
-99
+99	
 100	export function BalanceWithCarryover({
 101	  carryover,
 102	  balance,
@@ -2042,7 +2005,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 127	    [budgetedValue, goalValue, isGoalTemplatesEnabled, longGoalValue],
 128	  );
 129	  const format = useFormat();
-130
+130	
 131	  const getDifferenceToGoal = useCallback(
 132	    (balanceValue: number) =>
 133	      longGoalValue === 1
@@ -2050,7 +2013,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 135	        : budgetedValue - goalValue,
 136	    [budgetedValue, goalValue, longGoalValue],
 137	  );
-138
+138	
 139	  const getDefaultClassName = useCallback(
 140	    (balanceValue: number) =>
 141	      css({
@@ -2156,7 +2119,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 241	    },
 242	    [budgetedValue, format, getDifferenceToGoal, goalValue, longGoalValue, t],
 243	  );
-244
+244	
 245	  return (
 246	    <CellValue binding={balance} type="financial" {...props}>
 247	      {({ type, name, value: balanceValue }) => (
@@ -2194,7 +2157,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 279	              />
 280	            )}
 281	          </Tooltip>
-282
+282	
 283	          {carryoverValue && (
 284	            <CarryoverIndicatorComponent
 285	              style={getBalanceAmountStyle(balanceValue)}
@@ -2221,7 +2184,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:27Z)**_
 306	}
 307
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:30:31Z)**_
@@ -2237,7 +2199,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:31Z)**_
 653:            <BalanceWithCarryover
 655:              balance={envelopeBudget.catSumAmount(category.id)}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:30:33Z)**_
@@ -2336,7 +2297,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:33Z)**_
 526	            tooltipDisabled={balanceMenuOpen}
 527	          />
 528	        </Button>
-529
+529	
 530	        <Popover
 531	          triggerRef={balanceMenuTriggerRef}
 532	          placement="bottom end"
@@ -2360,7 +2321,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:33Z)**_
 550	    </View>
 551	  );
 552	});
-553
+553	
 554	type IncomeGroupMonthProps = {
 555	  month: string;
 556	};
@@ -2387,7 +2348,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:33Z)**_
 577	    </View>
 578	  );
 579	}
-580
+580	
 581	export function IncomeCategoryMonth({
 582	  category,
 583	  isLast,
@@ -2403,7 +2364,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:33Z)**_
 593	  });
 594	  const resetIncomePosition = (crossOffset = 0, offset = 0) =>
 595	    setIncomePosition({ crossOffset, offset });
-596
+596	
 597	  const handleIncomeContextMenu = (e: MouseEvent) => {
 598	    e.preventDefault();
 599	    const rect = e.currentTarget.getBoundingClientRect();
@@ -2413,7 +2374,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:33Z)**_
 603	    });
 604	    setIncomeMenuOpen(true);
 605	  };
-606
+606	
 607	  return (
 608	    <View style={{ flex: 1 }}>
 609	      <Field
@@ -2478,7 +2439,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:33Z)**_
 668	            {...incomePosition}
 669	          >
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:30:38Z)**_
@@ -2501,7 +2461,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:38Z)**_
 200:  catGoal: trackingParametrizedField('goal'),
 201:  catLongGoal: trackingParametrizedField('long-goal'),
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:30:41Z)**_
@@ -2534,7 +2493,6 @@ Check carryover/leftover logic in tracking budget
 263:      .removeDependencies(sheetName, 'total-leftover', [
 264:        `group-leftover-${groupId}`,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:30:45Z)**_
@@ -2548,7 +2506,6 @@ packages\desktop-client\src\components\budget\BalanceWithCarryover.tsx:25:import
 packages\desktop-client\src\components\budget\BalanceWithCarryover.tsx:122:      makeBalanceAmountStyle(
 packages\desktop-client\src\components\budget\util.ts:71:export function makeBalanceAmountStyle(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:30:48Z)**_
@@ -2578,7 +2535,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:48Z)**_
 484-            />
 485-          </Button>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:30:50Z)**_
@@ -2590,7 +2546,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:50Z)**_
 ```text
 1	import type { CSSProperties } from 'react';
 2	import { useTranslation } from 'react-i18next';
-3
+3	
 4	import { Button } from '@actual-app/components/button';
 5	import { SvgArrowThickRight } from '@actual-app/components/icons/v1';
 6	import { styles } from '@actual-app/components/styles';
@@ -2600,16 +2556,16 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:50Z)**_
 10	import type { CategoryEntity } from '@actual-app/core/types/models';
 11	import { css, cx } from '@emotion/css';
 12	import { AutoTextSize } from 'auto-text-size';
-13
+13	
 14	import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
 15	import { PrivacyFilter } from '#components/PrivacyFilter';
 16	import { useFormat } from '#hooks/useFormat';
 17	import { useSyncedPref } from '#hooks/useSyncedPref';
 18	import type { Binding } from '#spreadsheet';
 19	import { envelopeBudget, trackingBudget } from '#spreadsheet/bindings';
-20
+20	
 21	import { getColumnWidth, PILL_STYLE } from './BudgetTable';
-22
+22	
 23	type BalanceCellProps = {
 24	  binding: Binding<
 25	    'envelope-budget' | 'tracking-budget',
@@ -2620,7 +2576,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:50Z)**_
 30	  onPress?: () => void;
 31	  'aria-label'?: string;
 32	};
-33
+33	
 34	export function BalanceCell({
 35	  binding,
 36	  category,
@@ -2633,29 +2589,29 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:50Z)**_
 43	  const columnWidth = getColumnWidth({
 44	    show3Columns,
 45	  });
-46
+46	
 47	  const goal =
 48	    budgetType === 'tracking'
 49	      ? trackingBudget.catGoal(category.id)
 50	      : envelopeBudget.catGoal(category.id);
-51
+51	
 52	  const longGoal =
 53	    budgetType === 'tracking'
 54	      ? trackingBudget.catLongGoal(category.id)
 55	      : envelopeBudget.catLongGoal(category.id);
-56
+56	
 57	  const budgeted =
 58	    budgetType === 'tracking'
 59	      ? trackingBudget.catBudgeted(category.id)
 60	      : envelopeBudget.catBudgeted(category.id);
-61
+61	
 62	  const carryover =
 63	    budgetType === 'tracking'
 64	      ? trackingBudget.catCarryover(category.id)
 65	      : envelopeBudget.catCarryover(category.id);
-66
+66	
 67	  const format = useFormat();
-68
+68	
 69	  return (
 70	    <BalanceWithCarryover
 71	      aria-label={t('Balance for {{categoryName}} category', {
@@ -2725,7 +2681,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:30:50Z)**_
 135	}
 136
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:31:15Z)**_
@@ -2767,7 +2722,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:31:15Z)**_
 51-    let isMounted = true;
 52-
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:31:36Z)**_
@@ -2779,7 +2733,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:31:36Z)**_
 ```text
 File does not exist. Note: your current working directory is C:\Users\icsab\actual-budget\actual-budget. Did you mean useSheetName.tsx?
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:31:37Z)**_
@@ -2792,9 +2745,9 @@ _**Agent (claude-sonnet-5 2026-09-15 03:31:37Z)**_
 1	// @ts-strict-ignore
 2	import { createContext, useContext } from 'react';
 3	import type { PropsWithChildren } from 'react';
-4
+4	
 5	import type { Binding, SheetFields, SheetNames } from '#spreadsheet';
-6
+6	
 7	function unresolveName(name) {
 8	  const idx = name.indexOf('!');
 9	  if (idx !== -1) {
@@ -2805,11 +2758,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:31:37Z)**_
 14	  }
 15	  return { sheet: null, name };
 16	}
-17
+17	
 18	const SheetNameContext = createContext<string | undefined>(undefined);
-19
+19	
 20	type SheetNameProviderProps = PropsWithChildren<{ name: string }>;
-21
+21	
 22	export function SheetNameProvider({ children, name }: SheetNameProviderProps) {
 23	  return (
 24	    <SheetNameContext.Provider value={name}>
@@ -2817,7 +2770,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:31:37Z)**_
 26	    </SheetNameContext.Provider>
 27	  );
 28	}
-29
+29	
 30	export function useSheetName<
 31	  SheetName extends SheetNames,
 32	  FieldName extends SheetFields<SheetName>,
@@ -2825,19 +2778,19 @@ _**Agent (claude-sonnet-5 2026-09-15 03:31:37Z)**_
 34	  if (!binding) {
 35	    throw new Error('Sheet binding is required');
 36	  }
-37
+37	
 38	  const isStringBinding = typeof binding === 'string';
-39
+39	
 40	  let bindingName: string = isStringBinding ? binding : binding.name;
-41
+41	
 42	  if (global.IS_TESTING && !isStringBinding && !bindingName) {
 43	    bindingName = binding.value.toString();
 44	  }
-45
+45	
 46	  if (bindingName == null) {
 47	    throw new Error('Binding name is now required');
 48	  }
-49
+49	
 50	  // Get the current sheet name, and unresolve the binding name if
 51	  // necessary (you might pass a fully resolved name like foo!name)
 52	  let sheetName = useContext(SheetNameContext) || '__global';
@@ -2846,7 +2799,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:31:37Z)**_
 55	    sheetName = unresolved.sheet;
 56	    bindingName = unresolved.name;
 57	  }
-58
+58	
 59	  return {
 60	    sheetName,
 61	    bindingName,
@@ -2855,7 +2808,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:31:37Z)**_
 64	}
 65
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:32:10Z)**_
@@ -2875,7 +2827,6 @@ packages/desktop-client/src/components/mobile/budget/ExpenseCategoryListItem.tsx
 packages/desktop-client/src/components/mobile/budget/IncomeCategoryListItem.tsx:21:import { BalanceCell } from './BalanceCell';
 packages/desktop-client/src/components/mobile/budget/IncomeCategoryListItem.tsx:151:        <BalanceCell
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:32:12Z)**_
@@ -2916,7 +2867,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:32:12Z)**_
 198	          })}
 199	        />
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:32:15Z)**_
@@ -2936,7 +2886,6 @@ Find spent/balance prop definitions in ExpenseCategoryListItem
 233:    `${budgetType as BudgetType}-balance-menu` as const;
 368:    if (balanceMenuModalName === 'envelope-balance-menu') {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:32:17Z)**_
@@ -2948,7 +2897,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:32:17Z)**_
 ```text
 100	  );
 101	}
-102
+102	
 103	type ExpenseCategoryCellsProps = {
 104	  category: CategoryEntity;
 105	  month: string;
@@ -2958,7 +2907,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:32:17Z)**_
 109	  onOpenBalanceMenu: () => void;
 110	  onShowActivity: () => void;
 111	};
-112
+112	
 113	function ExpenseCategoryCells({
 114	  category,
 115	  month,
@@ -2974,22 +2923,22 @@ _**Agent (claude-sonnet-5 2026-09-15 03:32:17Z)**_
 125	    isSidebar: false,
 126	  });
 127	  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
-128
+128	
 129	  const budgeted =
 130	    budgetType === 'tracking'
 131	      ? trackingBudget.catBudgeted(category.id)
 132	      : envelopeBudget.catBudgeted(category.id);
-133
+133	
 134	  const spent =
 135	    budgetType === 'tracking'
 136	      ? trackingBudget.catSumAmount(category.id)
 137	      : envelopeBudget.catSumAmount(category.id);
-138
+138	
 139	  const balance =
 140	    budgetType === 'tracking'
 141	      ? trackingBudget.catBalance(category.id)
 142	      : envelopeBudget.catBalance(category.id);
-143
+143	
 144	  return (
 145	    <View
 146	      style={{
@@ -2997,7 +2946,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:32:17Z)**_
 148	        alignItems: 'center',
 149	        flexDirection: 'row',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:32:20Z)**_
@@ -3014,17 +2962,17 @@ _**Agent (claude-sonnet-5 2026-09-15 03:32:20Z)**_
 104	  const { t } = useTranslation();
 105	  const columnWidth = getColumnWidth();
 106	  const [budgetType = 'envelope'] = useSyncedPref('budgetType');
-107
+107	
 108	  const budgeted =
 109	    budgetType === 'tracking'
 110	      ? trackingBudget.catBudgeted(category.id)
 111	      : envelopeBudget.catBudgeted(category.id);
-112
+112	
 113	  const balance =
 114	    budgetType === 'tracking'
 115	      ? trackingBudget.catSumAmount(category.id)
 116	      : envelopeBudget.catSumAmount(category.id);
-117
+117	
 118	  return (
 119	    <View
 120	      style={{
@@ -3050,7 +2998,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:32:20Z)**_
 140	          />
 141	        </View>
 142	      )}
-143
+143	
 144	      <View
 145	        style={{
 146	          width: columnWidth,
@@ -3073,7 +3021,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:32:20Z)**_
 163	          }
 164	        />
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:33:52Z)**_
@@ -3099,7 +3046,6 @@ packages\component-library\src\Themes\dark.css:46:  --color-budgetNumberZero: va
 packages\component-library\src\Themes\dark.css:48:  --color-budgetNumberPositive: var(--color-budgetNumberNeutral);
 packages\component-library\src\Themes\dark.css:53:  --color-toBudgetNegative: var(--color-budgetNumberNegative);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:33:57Z)**_
@@ -3140,7 +3086,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:33:57Z)**_
 213	  noteTagText: 'var(--color-noteTagText)',
 214	  budgetOtherMonth: 'var(--color-budgetOtherMonth)',
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:00Z)**_
@@ -3165,11 +3110,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:34:00Z)**_
 13	  --color-pageTextPositive: var(--palette-purple600);
 14	  --color-pageTextLink: var(--palette-blue600);
 15	  --color-pageTextLinkLight: var(--palette-blue300);
-16
+16	
 17	  --color-cardBackground: var(--palette-white);
 18	  --color-cardBorder: var(--palette-purple700);
 19	  --color-cardShadow: var(--palette-navy700);
-20
+20	
 21	  --color-tableBackground: var(--palette-white);
 22	  --color-tableRowBackgroundAlternate: var(--color-tableBackground);
 23	  --color-tableRowBackgroundHover: var(--palette-navy50);
@@ -3190,7 +3135,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:34:00Z)**_
 38	  --color-tableRowBackgroundHighlightText: var(--palette-navy700);
 39	  --color-tableRowHeaderBackground: var(--palette-navy50);
 40	  --color-tableRowHeaderText: var(--palette-navy800);
-41
+41	
 42	  --color-numberPositive: var(--palette-green700);
 43	  --color-numberNegative: var(--palette-red500);
 44	  --color-numberNeutral: var(--palette-navy100);
@@ -3203,7 +3148,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:34:00Z)**_
 51	  --color-toBudgetPositive: var(--color-numberPositive);
 52	  --color-toBudgetZero: var(--color-numberPositive);
 53	  --color-toBudgetNegative: var(--color-budgetNumberNegative);
-54
+54	
 55	  --color-sidebarBackground: var(--palette-navy900);
 56	  --color-sidebarItemBackgroundPending: var(--palette-orange200);
 57	  --color-sidebarItemBackgroundPositive: var(--palette-green500);
@@ -3211,7 +3156,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:34:00Z)**_
 59	  --color-sidebarItemBackgroundHover: var(--palette-navy800);
 60	  --color-sidebarItemAccentSelected: var(--palette-purple200);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:04Z)**_
@@ -3263,7 +3207,6 @@ packages\component-library\src\Themes\midnight.css:166:  --color-warningTextLigh
 packages\component-library\src\Themes\midnight.css:167:  --color-warningTextDark: var(--palette-orange100);
 packages\component-library\src\Themes\midnight.css:168:  --color-warningBorder: var(--palette-orange500);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:09Z)**_
@@ -3300,7 +3243,6 @@ packages\desktop-client\src\components\Notifications.tsx
 packages\desktop-client\src\components\SharedArrayBufferWarning.tsx
 packages\desktop-client\src\components\DevelopmentTopBar.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:17Z)**_
@@ -3328,7 +3270,6 @@ packages/component-library/src/Themes/midnight.css:46:  --color-budgetNumberZero
 packages/component-library/src/Themes/midnight.css:48:  --color-budgetNumberPositive: var(--color-budgetNumberNeutral);
 packages/component-library/src/Themes/midnight.css:53:  --color-toBudgetNegative: var(--color-budgetNumberNegative);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:19Z)**_
@@ -3343,7 +3284,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:34:31Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\component-library\src\theme.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:40Z)**_
@@ -3354,7 +3294,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:34:40Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\component-library\src\Themes\light.css has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:49Z)**_
@@ -3365,7 +3304,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:34:49Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\component-library\src\Themes\dark.css has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:58Z)**_
@@ -3376,7 +3314,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:34:58Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\component-library\src\Themes\midnight.css has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:34:59Z)**_
@@ -3391,7 +3328,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:35:18Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\util.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:35:19Z)**_
@@ -3406,7 +3342,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:35:48Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BalanceWithCarryover.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:35:56Z)**_
@@ -3417,7 +3352,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:35:56Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BalanceWithCarryover.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:07Z)**_
@@ -3428,7 +3362,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:36:07Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BalanceWithCarryover.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:14Z)**_
@@ -3448,7 +3381,6 @@ rg: regex parse error:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 error: invalid hexadecimal digit
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:16Z)**_
@@ -3461,7 +3393,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:36:16Z)**_
 packages\desktop-client\src\spreadsheet\index.ts:96:export type BindingObject<
 packages\desktop-client\src\spreadsheet\index.ts:105:export type Binding<
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:18Z)**_
@@ -3474,19 +3405,19 @@ _**Agent (claude-sonnet-5 2026-09-15 03:36:18Z)**_
 80	    // Common fields
 81	    'uncategorized-amount': number;
 82	    'uncategorized-balance': number;
-83
+83	
 84	    // Balance fields
 85	    [key: `balance-query-${string}`]: number;
 86	    [key: `selected-transactions-${string}`]: Array<{ id: string }>;
 87	    [key: `selected-balance-${string}`]: number;
 88	  };
 89	};
-90
+90	
 91	export type SheetNames = keyof Spreadsheets & string;
-92
+92	
 93	export type SheetFields<SheetName extends SheetNames> =
 94	  keyof Spreadsheets[SheetName] & string;
-95
+95	
 96	export type BindingObject<
 97	  SheetName extends SheetNames,
 98	  SheetFieldName extends SheetFields<SheetName>,
@@ -3495,7 +3426,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:36:18Z)**_
 101	  value?: Spreadsheets[SheetName][SheetFieldName] | undefined;
 102	  query?: Query | undefined;
 103	};
-104
+104	
 105	export type Binding<
 106	  SheetName extends SheetNames,
 107	  SheetFieldName extends SheetFields<SheetName>,
@@ -3512,7 +3443,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:36:18Z)**_
 118	  (id?: string): SheetFieldName =>
 119	    `${field}-${id}` as SheetFieldName;
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:30Z)**_
@@ -3537,7 +3467,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:36:32Z)**_
 526	            tooltipDisabled={balanceMenuOpen}
 527	          />
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:41Z)**_
@@ -3548,7 +3477,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:36:41Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:43Z)**_
@@ -3588,12 +3516,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:36:44Z)**_
 483	              longGoal={trackingBudget.catLongGoal(category.id)}
 484	            />
 485	          </Button>
-486
+486	
 487	          <Popover
 488	            triggerRef={triggerBalanceMenuRef}
 489	            isOpen={balanceMenuOpen}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:47Z)**_
@@ -3613,7 +3540,6 @@ Find all is_income and balance related code in TrackingBudgetComponents
 477:            <BalanceWithCarryover
 478:              isDisabled={category.is_income}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:36:49Z)**_
@@ -3628,7 +3554,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:37:02Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:37:19Z)**_
@@ -3639,7 +3564,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:37:19Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\mobile\budget\BalanceCell.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:37:34Z)**_
@@ -3650,7 +3574,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:37:34Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\mobile\budget\BalanceCell.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:37:35Z)**_
@@ -3665,7 +3588,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:37:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\mobile\budget\ExpenseCategoryListItem.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:37:48Z)**_
@@ -3732,7 +3654,6 @@ src/components/budget/tracking/TrackingBudgetComponents.tsx(34,66): error TS2307
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 16.75s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:38:19Z)**_
@@ -3745,7 +3666,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:19Z)**_
 1	import React, { memo, useRef, useState } from 'react';
 2	import type { ComponentProps, CSSProperties, MouseEvent } from 'react';
 3	import { Trans, useTranslation } from 'react-i18next';
-4
+4	
 5	import { Button } from '@actual-app/components/button';
 6	import { SvgCheveronDown } from '@actual-app/components/icons/v1';
 7	import {
@@ -3759,7 +3680,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:19Z)**_
 15	import { View } from '@actual-app/components/view';
 16	import * as monthUtils from '@actual-app/core/shared/months';
 17	import { css } from '@emotion/css';
-18
+18	
 19	import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
 20	import { makeAmountGrey } from '#components/budget/util';
 21	import { NotesButton } from '#components/NotesButton';
@@ -3775,15 +3696,14 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:19Z)**_
 31	import type { Binding, SheetFields } from '#spreadsheet';
 32	import { envelopeBudget } from '#spreadsheet/bindings';
 33	import type { CategoryGroupMonthProps, CategoryMonthProps } from 'packages/desktop-client';
-34
+34	
 35	import { BalanceMovementMenu } from './BalanceMovementMenu';
 36	import { BudgetMenu } from './BudgetMenu';
 37	import { IncomeMenu } from './IncomeMenu';
-38
+38	
 39	export function useEnvelopeSheetName<
 40	  FieldName extends SheetFields<'envelope-budget'>,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:38:30Z)**_
@@ -3836,7 +3756,6 @@ List subpath import aliases defined in desktop-client package.json
 55:    "#components/mobile/utils": "./src/components/mobile/utils.ts",
 56:    "#components/modals/BudgetAutomationsModal/migrateTemplatesToAutomations": "./src/components/modals/BudgetAutomationsModal/migrateTemplatesToAutomations.ts",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:38:31Z)**_
@@ -3851,7 +3770,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:46Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:38:48Z)**_
@@ -3861,7 +3779,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:48Z)**_
  `C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\envelope\EnvelopeBudgetComponents.tsx`
 
 ```text
-18
+18	
 19	import type {
 20	  CategoryGroupMonthProps,
 21	  CategoryMonthProps,
@@ -3880,7 +3798,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:48Z)**_
 34	import { useUndo } from '#hooks/useUndo';
 35	import type { Binding, SheetFields } from '#spreadsheet';
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:38:49Z)**_
@@ -3898,7 +3815,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:50Z)**_
 2	import React, { memo, useRef, useState } from 'react';
 3	import type { ComponentProps, CSSProperties } from 'react';
 4	import { Trans } from 'react-i18next';
-5
+5	
 6	import { Button } from '@actual-app/components/button';
 7	import { SvgCheveronDown } from '@actual-app/components/icons/v1';
 8	import {
@@ -3913,7 +3830,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:50Z)**_
 17	import * as monthUtils from '@actual-app/core/shared/months';
 18	import { css } from '@emotion/css';
 19	import { t } from 'i18next';
-20
+20	
 21	import { BalanceWithCarryover } from '#components/budget/BalanceWithCarryover';
 22	import { makeAmountGrey } from '#components/budget/util';
 23	import { NotesButton } from '#components/NotesButton';
@@ -3928,10 +3845,9 @@ _**Agent (claude-sonnet-5 2026-09-15 03:38:50Z)**_
 32	import type { Binding, SheetFields } from '#spreadsheet';
 33	import { trackingBudget } from '#spreadsheet/bindings';
 34	import type { CategoryGroupMonthProps, CategoryMonthProps } from 'packages/desktop-client';
-35
+35	
 36	import { BalanceMenu } from './BalanceMenu';
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:39:07Z)**_
@@ -3942,7 +3858,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:39:07Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\tracking\TrackingBudgetComponents.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:39:26Z)**_
@@ -3983,7 +3898,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:39:26Z)**_
 141	      isGoalTemplatesEnabled,
 142	      longGoalValue,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:39:45Z)**_
@@ -3994,7 +3908,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:39:45Z)**_
 ```text
 The file C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\BalanceWithCarryover.tsx has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:39:46Z)**_
@@ -4051,7 +3964,6 @@ worker restarts: 0, max worker memory usage: 40.06 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 46.94s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:40:57Z)**_
@@ -4070,7 +3982,6 @@ Check for existing test files in budget component directory
 BudgetSummaries.test.tsx
 MonthCountSelector.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:41:08Z)**_
@@ -4087,7 +3998,6 @@ packages/loot-core/src/shared/util.ts:458:export function integerToCurrencyWithD
 packages/loot-core/src/shared/util.ts:500:export function currencyToAmount(currencyAmount: string): Amount | null {
 packages/loot-core/src/shared/util.ts:541:export function amountToInteger(
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:41:10Z)**_
@@ -4099,11 +4009,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:41:10Z)**_
 ```text
 440	  return value;
 441	}
-442
+442	
 443	export function toRelaxedNumber(currencyAmount: CurrencyAmount): Amount {
 444	  return integerToAmount(currencyToInteger(currencyAmount) || 0);
 445	}
-446
+446	
 447	export function integerToCurrency(
 448	  integerAmount: IntegerAmount,
 449	  formatter = getNumberFormat().formatter,
@@ -4111,10 +4021,10 @@ _**Agent (claude-sonnet-5 2026-09-15 03:41:10Z)**_
 451	) {
 452	  const divisor = Math.pow(10, decimalPlaces);
 453	  const amount = safeNumber(integerAmount) / divisor;
-454
+454	
 455	  return formatter.format(amount);
 456	}
-457
+457	
 458	export function integerToCurrencyWithDecimal(
 459	  integerAmount: IntegerAmount,
 460	  currencyCode?: string,
@@ -4127,7 +4037,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:41:10Z)**_
 467	      dp,
 468	    );
 469	  }
-470
+470	
 471	  // If decimal digits exist, keep them. Otherwise format them as usual.
 472	  if (integerAmount % 100 !== 0) {
 473	    return integerToCurrency(
@@ -4138,32 +4048,31 @@ _**Agent (claude-sonnet-5 2026-09-15 03:41:10Z)**_
 478	      }).formatter,
 479	    );
 480	  }
-481
+481	
 482	  return integerToCurrency(integerAmount);
 483	}
-484
+484	
 485	export function amountToCurrencyInteger(amount: number, code: string): number {
 486	  return amountToInteger(amount, getDecimalPlaces(code));
 487	}
-488
+488	
 489	export function amountToCurrency(amount: Amount): CurrencyAmount {
 490	  return getNumberFormat().formatter.format(amount);
 491	}
-492
+492	
 493	export function amountToCurrencyNoDecimal(amount: Amount): CurrencyAmount {
 494	  return getNumberFormat({
 495	    ...numberFormatConfig,
 496	    hideFraction: true,
 497	  }).formatter.format(amount);
 498	}
-499
+499	
 500	export function currencyToAmount(currencyAmount: string): Amount | null {
 501	  currencyAmount = currencyAmount.replace(/\u2212/g, '-');
-502
+502	
 503	  let integer, fraction;
 504
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:41:15Z)**_
@@ -4178,7 +4087,6 @@ Find existing tests exercising currency util functions
 packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx
 packages/desktop-client/src/components/transactions/TransactionsTable.test.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:41:40Z)**_
@@ -4236,12 +4144,12 @@ describe('makeBalanceAmountStyle', () => {
     });
   });
 });
+
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\packages\desktop-client\src\components\budget\util.test.ts (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:41:56Z)**_
@@ -4262,7 +4170,6 @@ Run the new util.test.ts unit tests
    Start at  23:41:51
    Duration  4.34s (transform 825ms, setup 2.01s, import 254ms, tests 23ms, environment 1.80s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:41:58Z)**_
@@ -4290,7 +4197,6 @@ Run all budget-related unit tests
    Start at  23:42:10
    Duration  7.68s (transform 2.33s, setup 6.18s, import 3.04s, tests 313ms, environment 3.55s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:42:21Z)**_
@@ -4309,7 +4215,6 @@ Run lint with auto-fix across the repo
 Finished in 3846ms on 2313 files using 12 threads.
 [This command modified 3 files you've previously read: packages\component-library\src\Themes\dark.css, packages\component-library\src\Themes\light.css, packages\component-library\src\Themes\midnight.css. Call Read before editing.]
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:42:46Z)**_
@@ -4323,7 +4228,6 @@ Show diff of theme CSS files after lint fix
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:42:50Z)**_
@@ -4714,7 +4618,6 @@ List changed files excluding unrelated preexisting config diffs
 ?? ai-logs/sprint0/icsasso/
 ?? packages/desktop-client/src/components/budget/util.test.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:43:01Z)**_
@@ -4735,7 +4638,6 @@ Show diff stats for the files touched by this feature
  .../mobile/budget/ExpenseCategoryListItem.tsx      |  1 +
  7 files changed, 54 insertions(+), 3 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:43:03Z)**_
@@ -4753,7 +4655,6 @@ Diff the three theme CSS files against HEAD
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:43:08Z)**_
@@ -4807,7 +4708,6 @@ index d4d1f6006..d719ef1af 100644
    --color-templateNumberUnderFunded: var(--palette-orange200);
    --color-toBudgetPositive: var(--color-numberPositive);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:43:09Z)**_
@@ -4863,6 +4763,7 @@ The body is the changelog line. It is read by everyday users, not developers.
 Good: `Fix incorrect balance when reconciling an account with future transactions`
 Too technical: `Fix off-by-one in reconcileTransactions() when txn.date > today`
 
+
 ---
 
 _**Agent (claude-sonnet-5 2026-09-15 03:44:05Z)**_
@@ -4877,7 +4778,6 @@ Look for existing GitHub username used by this contributor
 Exit code 1
 Isabella Sasso
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:44:18Z)**_
@@ -4892,7 +4792,6 @@ Get authenticated GitHub username via gh CLI
 Exit code 127
 /usr/bin/bash: line 1: gh: command not found
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:44:22Z)**_
@@ -4911,7 +4810,6 @@ bennettmatuszewski
 icsasso
 tigerk9
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:44:24Z)**_
@@ -4930,12 +4828,12 @@ authors: [icsasso]
 ---
 
 Show a category balance in yellow when this month's spending has exceeded the budgeted amount but a rollover surplus is still covering it
+
 ```
 
 ```text
 File created successfully at: C:\Users\icsab\actual-budget\actual-budget\upcoming-release-notes\highlight-overspent-category-balance-yellow.md (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:44:51Z)**_
@@ -4990,14 +4888,14 @@ Pick the row closest to your project. Each example walks through
 launch + first interaction; ignore any trailing "write the skill"
 section - you're using the recipe, not authoring one.
 
-| Project type               | Handle                                               | Example                                          |
-| -------------------------- | ---------------------------------------------------- | ------------------------------------------------ |
-| CLI tool                   | direct invocation, exit code, stdin/stdout           | [examples/cli.md](examples/cli.md)               |
-| Web server / API           | background launch + `curl` smoke                     | [examples/server.md](examples/server.md)         |
-| TUI / interactive terminal | tmux `send-keys` / `capture-pane`                    | [examples/tui.md](examples/tui.md)               |
-| Electron / desktop GUI     | Playwright `_electron` REPL under xvfb               | [examples/electron.md](examples/electron.md)     |
-| Browser-driven             | dev server + `chromium-cli` script                   | [examples/playwright.md](examples/playwright.md) |
-| Library / SDK              | import-and-call smoke script at the package boundary | [examples/library.md](examples/library.md)       |
+| Project type | Handle | Example |
+|---|---|---|
+| CLI tool | direct invocation, exit code, stdin/stdout | [examples/cli.md](examples/cli.md) |
+| Web server / API | background launch + `curl` smoke | [examples/server.md](examples/server.md) |
+| TUI / interactive terminal | tmux `send-keys` / `capture-pane` | [examples/tui.md](examples/tui.md) |
+| Electron / desktop GUI | Playwright `_electron` REPL under xvfb | [examples/electron.md](examples/electron.md) |
+| Browser-driven | dev server + `chromium-cli` script | [examples/playwright.md](examples/playwright.md) |
+| Library / SDK | import-and-call smoke script at the package boundary | [examples/library.md](examples/library.md) |
 
 If nothing fits, start from the closest match and adapt. For a web
 app, [examples/playwright.md](examples/playwright.md) - drive it with
@@ -5022,6 +4920,7 @@ install packages, set env vars, patch config, or write a driver -
 recommend `/run-skill-generator` in your report so that work gets
 captured as a project skill. If it just worked, don't.
 
+
 ---
 
 _**Agent (claude-sonnet-5 2026-09-15 03:45:35Z)**_
@@ -5044,7 +4943,6 @@ done
 /c/Users/icsab/actual-budget/actual-budget/.claude/skills/writing-actual-docs/SKILL.md:description: Use whenever creating, updating, editing, drafting, restructuring, or fixing documentation in the Actual Budget repo — specifically anything under `packages/docs/` (the Docusaurus site published at actualbudget.org/docs) or any change to `.md` / `.mdx` files in that package. Trigger for asks like "add a doc page for X", "update the FAQ", "write a guide for the new feature", "document this setting", "fix the docs about Y", "add a contributing page", or any work on the docs site, even when the user does not explicitly mention style, structure, or conventions. Actual's docs follow strict Docusaurus conventions (front matter, heading levels, image placement and naming, admonition syntax, Title Case, tone of voice, spelling allowlist) and writing them without consulting the project's style guide reliably produces output that fails review and needs to be redone.
 /c/Users/icsab/actual-budget/actual-budget/.claude/skills/writing-release-notes/SKILL.md:description: Use whenever adding, writing, drafting, or fixing a release note in the Actual Budget repo. This is the changelog entry that ships with a code change, living as a Markdown file in `upcoming-release-notes/`. Trigger for asks like "add a release note", "write the changelog entry", "add the release note for this PR/change", "create the upcoming release note", or any time finishing a user-facing change in this repo where a release note is the natural next step. These notes are published for humans to read, so they must be short, plain-language, and free of technical detail. Writing them like a commit message or with implementation jargon produces entries that get flagged and rewritten in review.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:45:39Z)**_
@@ -5056,7 +4954,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:45:39Z)**_
 ```text
 File does not exist. Note: your current working directory is C:\Users\icsab\actual-budget\actual-budget.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:46:07Z)**_
@@ -5069,7 +4966,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:46:07Z)**_
 C:\Users\icsab\AppData\Local\Temp\claude\bundled-skills\2.1.267\eeb37051d106ab017310ab046158871d\run\examples\playwright.md
 C:\Users\icsab\AppData\Local\Temp\claude\bundled-skills\2.1.267\21d65c9f3afaef99cff6a10511f674b1\run\examples\playwright.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:46:09Z)**_
@@ -5078,26 +4974,26 @@ _**Agent (claude-sonnet-5 2026-09-15 03:46:09Z)**_
 <summary>Tool use: **Read**</summary>
  `C:\Users\icsab\AppData\Local\Temp\claude\bundled-skills\2.1.267\21d65c9f3afaef99cff6a10511f674b1\run\examples\playwright.md`
 
-````text
+```text
 1	# Example: Browser-driven web app
-2
+2	
 3	You have a dev server that serves HTML to a browser. An agent in a
 4	headless container can't open a browser window - so "run the app" means
 5	launching the dev server, driving a headless Chromium against it, and
 6	producing a screenshot that proves the page rendered.
-7
+7	
 8	Don't write a browser driver. Use `chromium-cli`.
-9
+9	
 10	## Dev server
-11
+11	
 12	Find the dev command (`package.json` `scripts.dev`, `Makefile`,
 13	README), start it in the background, and wait for it to actually serve:
-14
+14	
 15	```bash
 16	npm run dev &   # or yarn dev, pnpm dev, make serve, ./dev.sh
 17	timeout 30 bash -c 'until curl -sf http://localhost:3000 >/dev/null; do sleep 1; done'
 18	```
-19
+19	
 20	Don't `sleep 5` - poll the port. Stop by killing the port's listener
 21	-- `lsof -ti:3000 -sTCP:LISTEN | xargs -r kill` - before relaunching,
 22	or the next run hits `EADDRINUSE`. (`$!` after `npm run dev &` is only
@@ -5105,11 +5001,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:46:09Z)**_
 24	so the port kill is what actually frees it.) Avoid `pkill -f` with a
 25	broad pattern - it can match the agent's own command line and kill the
 26	session.
-27
+27	
 28	## Drive
-29
+29	
 30	`chromium-cli` is a headless-Chromium REPL. Pipe a script to stdin:
-31
+31	
 32	```bash
 33	chromium-cli --session app <<'EOF'
 34	nav http://localhost:3000
@@ -5123,16 +5019,16 @@ _**Agent (claude-sonnet-5 2026-09-15 03:46:09Z)**_
 42	console --errors
 43	EOF
 44	```
-45
+45	
 46	Screenshots land in `chromium_cli/sessions/app/screenshots/` (latest
 47	symlinked as `screenshot.png`). That's the whole loop: `nav` ->
 48	`wait-for` the element you need -> act (`click` / `fill` / `type` /
 49	`press`) -> `screenshot` -> `console --errors` to check nothing threw.
 50	Full command reference: `chromium-cli` skill, or `help` at the prompt.
-51
+51	
 52	For iterative debugging, run it under tmux and `send-keys` one command
 53	at a time - same commands, same session.
-54
+54	
 55	**If `chromium-cli` isn't available:** adapt
 56	[electron.md](electron.md)'s REPL driver - the structure and commands
 57	transfer, but it's `_electron`-specific:
@@ -5141,11 +5037,11 @@ _**Agent (claude-sonnet-5 2026-09-15 03:46:09Z)**_
 60	`(await app.newContext()).newPage()` then `goto()` your dev URL, and
 61	drop the Electron-only window introspection
 62	(`.windows()`/`.firstWindow()`/the `windows` command).
-63
+63	
 64	## What to put in the skill
-65
+65	
 66	The project-specific bits only. `chromium-cli` handles the mechanics.
-67
+67	
 68	- **Dev command + port + stop.** The exact start line, any env vars it
 69	  needs, and the `kill` to stop it.
 70	- **Auth.** Whatever gets a logged-in session - a `set-cookie` line, a
@@ -5154,9 +5050,9 @@ _**Agent (claude-sonnet-5 2026-09-15 03:46:09Z)**_
 73	- **One representative interaction.** Not the whole app - one path that
 74	  proves it's running, ending in a screenshot.
 75	- **App-specific gotchas.** Only the ones you actually hit.
-76
+76	
 77	## Gotchas that recur
-78
+78	
 79	- **React controlled inputs.** `eval el.value = '...'` doesn't fire
 80	  React's onChange. Use `fill` / `type` - they go through Playwright's
 81	  input pipeline.
@@ -5169,8 +5065,7 @@ _**Agent (claude-sonnet-5 2026-09-15 03:46:09Z)**_
 88	- **Check `console --errors` before declaring success.** A page can
 89	  render its shell while every data fetch 500s.
 90
-````
-
+```
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:46:14Z)**_
@@ -5185,7 +5080,6 @@ Check availability of chromium-cli tool
 which: no chromium-cli in (/c/Users/icsab/bin:/mingw64/bin:/usr/local/bin:/usr/bin:/bin:/mingw64/bin:/usr/bin:/c/Users/icsab/bin:/c/Users/icsab/anaconda3/Scripts:/c/Python314/Scripts:/c/Python314:/c/Program Files/Common Files/Oracle/Java/javapath:/c/Program Files/Eclipse Adoptium/jdk-21.0.4.7-hotspot/bin:/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/c/WINDOWS/system32:/c/WINDOWS:/c/WINDOWS/System32/Wbem:/c/WINDOWS/System32/WindowsPowerShell/v1.0:/c/WINDOWS/System32/OpenSSH:/c/Program Files/Gradle/gradle-8.10/bin:/c/msys64/ucrt64/bin:/cmd:/c/Program Files/nodejs:/c/ProgramData/chocolatey/bin:/c/Users/icsab/develop/flutter/bin:/c/Users/icsab/anaconda3:/c/Users/icsab/anaconda3/Library/mingw-w64/bin:/c/Users/icsab/anaconda3/Library/usr/bin:/c/Users/icsab/anaconda3/Library/bin:/c/Users/icsab/anaconda3/Scripts:/c/Users/icsab/AppData/Local/Programs/Python/Python311/Scripts:/c/Users/icsab/AppData/Local/Programs/Python/Python311:/c/Users/icsab/AppData/Local/Microsoft/WindowsApps:/c/Users/icsab/AppData/Local/Programs/Microsoft VS Code/bin:/c/Users/icsab/AppData/Local/Android/Sdk/cmdline-tools/latest/bin:/c/Users/icsab/AppData/Local/Android/Sdk/platform-tools:/c/Users/icsab/Downloads/apache-maven-3.9.11/bin:/c/Users/icsab/AppData/Local/Programs/DockerDesktop/resources/bin:/c/Users/icsab/AppData/Roaming/npm:/usr/bin/vendor_perl:/usr/bin/core_perl)
 /c/Program Files/nodejs/npx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:47:01Z)**_
@@ -5200,7 +5094,6 @@ Check if playwright and a chromium binary are already installed
 Command did not complete within its 30s timeout and was moved to the background (ID: b3jil4yiq). Output is being written to: C:\Users\icsab\AppData\Local\Temp\claude\c--Users-icsab-actual-budget-actual-budget\870915d3-5e8d-48c0-8ccf-7cdd8f380857\tasks\b3jil4yiq.output. You will be notified when it completes. To check interim output, use Read on that file path.
 Session cwd remains C:\Users\icsab\actual-budget\actual-budget; directory changes made by the backgrounded command do not apply to subsequent commands.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:47:04Z)**_
@@ -5213,7 +5106,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:47:04Z)**_
 Found 1 file
 packages\desktop-client\package.json
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:47:30Z)**_
@@ -5227,7 +5119,6 @@ Check for cached Playwright browser binaries
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  what is the purpose of this action
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 03:47:38Z)**_
@@ -5249,10 +5140,10 @@ _**Agent (claude-sonnet-5 2026-09-15 03:49:09Z)**_
 **How would you like to verify the yellow balance color visually?**
 
 Options:
-
 - **I'll check it myself** - You run `yarn start`, use "View demo", and check an overspent-but-rollover-covered category shows yellow. I'll skip further browser setup.
 - **Set up Playwright and verify now** - I'll install Playwright's Chromium browser here and drive the dev server myself to capture a screenshot proving the color renders correctly. Takes a few extra minutes.
 - **Skip visual verification** - Trust the unit tests and typecheck as sufficient for this change; move on to committing/PR.
+
 
 **Answer:** I'll check it myself
 </details></tool-use>
@@ -5262,7 +5153,6 @@ _**Agent (claude-sonnet-5 2026-09-15 03:49:20Z)**_
 Sounds good. Here's a summary of what's ready for you to test:
 
 **What changed:**
-
 - [util.ts](packages/desktop-client/src/components/budget/util.ts) — `makeBalanceAmountStyle` now takes a `spentValue` and returns a new yellow/warning color when this month's spending magnitude exceeds the budgeted amount, but only when the overall balance is still ≥ 0 (i.e. a rollover surplus is absorbing it).
 - [BalanceWithCarryover.tsx](packages/desktop-client/src/components/budget/BalanceWithCarryover.tsx) — added an optional `spent` binding prop, threaded into the style calculation.
 - [EnvelopeBudgetComponents.tsx](packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx) and [TrackingBudgetComponents.tsx](packages/desktop-client/src/components/budget/tracking/TrackingBudgetComponents.tsx) — pass the `spent` binding for expense-category balance cells only (income rows are left untouched, so they keep current behavior).
@@ -5298,15 +5188,15 @@ _**Agent (claude-sonnet-5 2026-09-15 04:05:59Z)**_
 4	// @ts-strict-ignore
 5	import * as monthUtils from '#shared/months';
 6	import { safeNumber } from '#shared/util';
-7
+7	
 8	import { createCategory as createCategoryFromBase } from './base';
 9	import { flatten2, number, sumAmounts, unflatten2 } from './util';
-10
+10	
 11	function getBlankSheet(months) {
 12	  const blankMonth = monthUtils.prevMonth(months[0]);
 13	  return monthUtils.sheetForMonth(blankMonth);
 14	}
-15
+15	
 16	export function createBlankCategory(cat, months) {
 17	  if (months.length > 0) {
 18	    const sheetName = getBlankSheet(months);
@@ -5315,19 +5205,19 @@ _**Agent (claude-sonnet-5 2026-09-15 04:05:59Z)**_
 21	    sheet.get().createStatic(sheetName, `leftover-pos-${cat.id}`, 0);
 22	  }
 23	}
-24
+24	
 25	function createBlankMonth(categories, sheetName, months) {
 26	  sheet.get().createStatic(sheetName, 'is-blank', true);
 27	  sheet.get().createStatic(sheetName, 'to-budget', 0);
 28	  sheet.get().createStatic(sheetName, 'buffered', 0);
-29
+29	
 30	  categories.forEach(cat => createBlankCategory(cat, months));
 31	}
-32
+32	
 33	export function createCategory(cat, sheetName, prevSheetName) {
 34	  if (!cat.is_income) {
 35	    sheet.get().createStatic(sheetName, `budget-${cat.id}`, 0);
-36
+36	
 37	    // This makes the app more robust by "fixing up" null budget values.
 38	    // Those should not be allowed, but in case somehow a null value
 39	    // ends up there, we are resilient to it. Preferrably the
@@ -5336,9 +5226,9 @@ _**Agent (claude-sonnet-5 2026-09-15 04:05:59Z)**_
 42	    if (sheet.get().getCellValue(sheetName, `budget-${cat.id}`) == null) {
 43	      sheet.get().set(resolveName(sheetName, `budget-${cat.id}`), 0);
 44	    }
-45
+45	
 46	    sheet.get().createStatic(sheetName, `carryover-${cat.id}`, false);
-47
+47	
 48	    sheet.get().createDynamic(sheetName, `leftover-${cat.id}`, {
 49	      initialValue: 0,
 50	      dependencies: [
@@ -5356,7 +5246,7 @@ _**Agent (claude-sonnet-5 2026-09-15 04:05:59Z)**_
 62	        );
 63	      },
 64	    });
-65
+65	
 66	    sheet.get().createDynamic(sheetName, 'leftover-pos-' + cat.id, {
 67	      initialValue: 0,
 68	      dependencies: [`leftover-${cat.id}`],
@@ -5366,21 +5256,21 @@ _**Agent (claude-sonnet-5 2026-09-15 04:05:59Z)**_
 72	    });
 73	  }
 74	}
-75
+75	
 76	export function createCategoryGroup(group, sheetName) {
 77	  sheet.get().createDynamic(sheetName, 'group-sum-amount-' + group.id, {
 78	    initialValue: 0,
 79	    dependencies: group.categories.map(cat => `sum-amount-${cat.id}`),
 80	    run: sumAmounts,
 81	  });
-82
+82	
 83	  if (!group.is_income) {
 84	    sheet.get().createDynamic(sheetName, 'group-budget-' + group.id, {
 85	      initialValue: 0,
 86	      dependencies: group.categories.map(cat => `budget-${cat.id}`),
 87	      run: sumAmounts,
 88	    });
-89
+89	
 90	    sheet.get().createDynamic(sheetName, 'group-leftover-' + group.id, {
 91	      initialValue: 0,
 92	      dependencies: group.categories.map(cat => `leftover-${cat.id}`),
@@ -5388,12 +5278,11 @@ _**Agent (claude-sonnet-5 2026-09-15 04:05:59Z)**_
 94	    });
 95	  }
 96	}
-97
+97	
 98	export function createSummary(groups, categories, prevSheetName, sheetName) {
 99	  const incomeGroup = groups.filter(group => group.is_income)[0];
 100	  const expenseCategories = categories.filter(cat => !cat.is_income);
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 04:06:15Z)**_
@@ -5410,7 +5299,7 @@ _**Agent (claude-sonnet-5 2026-09-15 04:06:15Z)**_
 104	  CarryoverIndicator?: ComponentType<CarryoverIndicatorProps>;
 105	  tooltipDisabled?: boolean;
 106	};
-107
+107	
 108	export function BalanceWithCarryover({
 109	  carryover,
 110	  balance,
@@ -5454,7 +5343,6 @@ _**Agent (claude-sonnet-5 2026-09-15 04:06:15Z)**_
 148	    ],
 149	  );
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 04:06:17Z)**_
@@ -5473,22 +5361,22 @@ _**Agent (claude-sonnet-5 2026-09-15 04:06:17Z)**_
 77	  // Converts an integer currency value to a normalized decimal amount.
 78	  // First converts the integer to currency format, then to a decimal amount.
 79	  // Uses integerToCurrency to display the value correctly according to user prefs.
-80
+80	
 81	  const normalizeIntegerValue = (val: number | null | undefined) =>
 82	    typeof val === 'number' ? currencyToAmount(integerToCurrency(val)) : 0;
-83
+83	
 84	  const currencyValue = normalizeIntegerValue(value);
-85
+85	
 86	  if (currencyValue < 0) {
 87	    return { color: theme.budgetNumberNegative };
 88	  }
-89
+89	
 90	  if (goalValue == null) {
 91	    const greyed = makeAmountGrey(currencyValue);
 92	    if (greyed) {
 93	      return greyed;
 94	    }
-95
+95	
 96	    // Spending is negative for expense categories, so its magnitude is what
 97	    // needs to be compared against this month's budgeted amount. A balance
 98	    // that's still >= 0 despite this means a prior rollover surplus is
@@ -5498,24 +5386,23 @@ _**Agent (claude-sonnet-5 2026-09-15 04:06:17Z)**_
 102	    if (Math.abs(spentAmount) > budgetedAmount) {
 103	      return { color: theme.budgetNumberOverspent };
 104	    }
-105
+105	
 106	    return { color: theme.budgetNumberPositive };
 107	  } else {
 108	    const budgetedAmount = normalizeIntegerValue(budgetedValue);
 109	    const goalAmount = normalizeIntegerValue(goalValue);
-110
+110	
 111	    if (budgetedAmount < goalAmount) {
 112	      return { color: theme.templateNumberUnderFunded };
 113	    }
 114	    return { color: theme.templateNumberFunded };
 115	  }
 116	}
-117
+117	
 118	export function makeAmountFullStyle(
 119	  value: number,
 120	  colors?: {
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 04:06:33Z)**_
@@ -5527,14 +5414,13 @@ _**Agent (claude-sonnet-5 2026-09-15 04:06:33Z)**_
 ```text
 packages\loot-core\src\types\prefs.ts:2:  | 'goalTemplatesEnabled'
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 04:06:46Z)**_
 
 That's expected if the demo data just doesn't happen to contain a category matching the exact pattern — the yellow state needs two consecutive months set up a specific way (it's not something you'll stumble into by scrolling the default demo). Here's a reliable way to trigger it manually:
 
-1. In "View demo", go to a **prior month** and pick any expense category (e.g. Groceries). Budget it, e.g., $200, and let it be underspent (spend $50) so it ends the month with a $150 leftover — that leftover **automatically rolls forward** to next month regardless of any "rollover overspending" toggle (only _negative_ leftovers need that toggle to roll forward).
+1. In "View demo", go to a **prior month** and pick any expense category (e.g. Groceries). Budget it, e.g., $200, and let it be underspent (spend $50) so it ends the month with a $150 leftover — that leftover **automatically rolls forward** to next month regardless of any "rollover overspending" toggle (only *negative* leftovers need that toggle to roll forward).
 2. Move to the **next month**, same category. Set its budget low, e.g. $100, and add/enter transactions spending $220 this month (or edit the "Spent" figure via a transaction).
 3. That category's balance this month should be: `100 (budgeted) − 220 (spent) + 150 (last month's rollover) = 30` — still positive, but this month's spending ($220) exceeds this month's budget ($100). That's exactly the yellow condition.
 
@@ -5602,6 +5488,7 @@ Maintainers triage AI-authored contributions separately, and the `[AI]` prefix i
 
 The rules file is short. Read it.
 
+
 ---
 
 _**Agent (claude-sonnet-5 2026-09-15 04:10:46Z)**_
@@ -5626,7 +5513,6 @@ Check status of the specific files for this feature
 ?? packages/desktop-client/src/components/budget/util.test.ts
 ?? upcoming-release-notes/highlight-overspent-category-balance-yellow.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 04:10:48Z)**_
@@ -6090,7 +5976,6 @@ A  upcoming-release-notes/highlight-overspent-category-balance-yellow.md
  M yarn.config.cjs
 ?? ai-logs/sprint0/icsasso/
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 04:11:07Z)**_
@@ -6123,7 +6008,6 @@ EOF
  create mode 100644 packages/desktop-client/src/components/budget/util.test.ts
  create mode 100644 upcoming-release-notes/highlight-overspent-category-balance-yellow.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-09-15 04:11:36Z)**_

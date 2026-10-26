@@ -6,7 +6,7 @@
 
 _**User (2026-10-03 20:00:04Z)**_
 
-Let's work on implementing an issue. We'll log this session using specstory, so at the end of our session we'll run "specstory sync" to sync all the AI use in this session. the file will be named
+Let's work on implementing an issue.  We'll log this session using specstory, so at the end of our session we'll run "specstory sync" to sync all the AI use in this session. the file will be named 
 
 YYYY-MM-DD_claude-code_<short-slug>.md
 
@@ -35,7 +35,7 @@ author:	jamesleonard3rd (James Leonard)
 labels:	scope: medium
 comments:	0
 assignees:	TigerK9 (Liam McLemore)
-projects:
+projects:	
 milestone:	Sprint 1
 number:	60
 --
@@ -77,7 +77,6 @@ Medium. The library comparison is research, but it needs small hands-on tests of
 ## Source
 Split from #57, which was too large for one issue. This is sub-issue A of 3: (A) library choice and table rows, (B) PDF export option and one-page PDF, (C) multi-page layout and cross-platform checks.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:16Z)**_
@@ -93,9 +92,9 @@ state:	OPEN
 author:	jamesleonard3rd (James Leonard)
 labels:	scope: large
 comments:	0
-assignees:
-projects:
-milestone:
+assignees:	
+projects:	
+milestone:	
 number:	57
 --
 ## Summary
@@ -142,7 +141,6 @@ Large. Actual currently has no printing or PDF code, so this adds a new dependen
 ## Source
 Split from #39. Chosen over the simpler print-dialog approach so users get a consistent, one-click PDF download.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:20Z)**_
@@ -161,7 +159,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:00:20Z)**_
 2	CLOSED	Export Account Transactions as CSV	scope: medium	2026-09-13T16:20:48Z
 8	CLOSED	CSV Import Column Mapping UI	scope: large	2026-09-30T00:56:18Z
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:25Z)**_
@@ -178,7 +175,7 @@ author:	jamesleonard3rd (James Leonard)
 labels:	scope: medium
 comments:	1
 assignees:	bennettmatuszewski (Bennett Matuszewski)
-projects:
+projects:	
 milestone:	Sprint 1
 number:	56
 --
@@ -223,7 +220,6 @@ Medium. There is an existing CSV export pattern to follow (Budget Analysis build
 ## Source
 Split from #39 to deliver CSV export separately from the more complex PDF export.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:31Z)**_
@@ -250,7 +246,6 @@ status:	none
 | 1 | claude-code | [link](2026-09-30_claude-code_issue-56-export-budget-to-csv) | Implementing the feature and writing tests |
 --
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:36Z)**_
@@ -288,7 +283,6 @@ for d in data:
 32 2026-09-15T02:11:25Z [AI] feat: limit budget category name length (#9)
 31 2026-09-12T23:47:11Z [AI] Add hover cursor and background to month-count calendar icons
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:42Z)**_
@@ -315,7 +309,6 @@ ca62ef25d [AI] Add Escape shortcut to back out of report drill-downs
 a094aac74 [AI] Add ai-log for Sprint 0 report PR session
 76938923e [AI] Add Sprint 0 report with screenshots
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:48Z)**_
@@ -336,7 +329,6 @@ d14788b91 [AI] Add AI session log for PR #71 review
 ---is master ancestor---
 no
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:51Z)**_
@@ -352,22 +344,22 @@ Author: Bennett Matuszewski <164584687+bennettmatuszewski@users.noreply.github.c
 Date:   Wed Sep 30 18:02:39 2026 -0400
 
     [AI] Add CSV export for a budget month
-
+    
     Add an Export button to the budget page titlebar (envelope budgets only)
     that downloads the selected month as <budget-name>-<YYYY-MM>.csv. When
     several months are shown, the menu lists one entry per visible month.
-
+    
     The CSV lists every visible category group and category in page order
     with Budgeted, Spent and Balance columns, a subtotal row per group, a
     grand Total row and a To Budget / Overbudgeted summary. Values are read
     from the same spreadsheet cells the page displays, so carryover
     balances and totals match exactly. Hidden items follow the page's
     show-hidden toggle.
-
+    
     Extract the csv-stringify call and formula-injection guard into a
     shared stringifyCsv helper, now also used by the Budget Analysis
     export, and share the visible-months calculation via getVisibleMonths.
-
+    
     Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 
  ...30_claude-code_issue-56-export-budget-to-csv.md | 10990 +++++++++++++++++++
@@ -381,7 +373,6 @@ Date:   Wed Sep 30 18:02:39 2026 -0400
  upcoming-release-notes/export-budget-month-csv.md  |     6 +
  9 files changed, 11519 insertions(+), 18 deletions(-)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:52Z)**_
@@ -529,7 +520,6 @@ export async function fetchBudgetMonthCells(
   return new Map(values.map(({ name, value }) => [name, value]));
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:55Z)**_
@@ -750,7 +740,6 @@ describe('getBudgetMonthCsvFilename', () => {
   });
 });
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:00:57Z)**_
@@ -907,7 +896,6 @@ export function BudgetExportMenu() {
   );
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:01:00Z)**_
@@ -928,7 +916,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:00Z)**_
 ./packages/desktop-client/build/ts/src/hooks/useFormat.test.d.ts
 ./packages/desktop-client/build/ts/src/hooks/useFormatList.d.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
@@ -939,7 +926,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 
 ```text
 1	import { useCallback, useEffect, useMemo } from 'react';
-2
+2	
 3	import { evalArithmetic } from '@actual-app/core/shared/arithmetic';
 4	import { getCurrency } from '@actual-app/core/shared/currencies';
 5	import type { Currency } from '@actual-app/core/shared/currencies';
@@ -953,9 +940,9 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 13	  setNumberFormat,
 14	} from '@actual-app/core/shared/util';
 15	import type { Amount, IntegerAmount } from '@actual-app/core/shared/util';
-16
+16	
 17	import { useSyncedPref } from './useSyncedPref';
-18
+18	
 19	export type FormatType =
 20	  | 'string'
 21	  | 'number'
@@ -963,7 +950,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 23	  | 'financial'
 24	  | 'financial-with-sign'
 25	  | 'financial-no-decimals';
-26
+26	
 27	export type ForEditOptions = {
 28	  /**
 29	   * Format with the currency's full precision even when the `hideFraction`
@@ -972,7 +959,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 32	   */
 33	  keepFraction?: boolean;
 34	};
-35
+35	
 36	export type UseFormatResult = {
 37	  (value: unknown, type?: FormatType): string;
 38	  forEdit: (value: IntegerAmount, options?: ForEditOptions) => string;
@@ -988,12 +975,12 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 48	  /** Whether the `hideFraction` pref is on, so callers don't re-read it. */
 49	  hideFraction: boolean;
 50	};
-51
+51	
 52	export type FormatResult = {
 53	  numericValue?: number;
 54	  formattedString: string;
 55	};
-56
+56	
 57	function format(
 58	  value: unknown,
 59	  type: FormatType,
@@ -1003,7 +990,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 63	  switch (type) {
 64	    case 'string': {
 65	      const val = JSON.stringify(value);
-66
+66	
 67	      if (val.charAt(0) === '"' && val.charAt(val.length - 1) === '"') {
 68	        return { formattedString: val.slice(1, -1) };
 69	      }
@@ -1041,13 +1028,13 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 101	        }
 102	        localValue = parsed;
 103	      }
-104
+104	
 105	      if (typeof localValue !== 'number') {
 106	        throw new Error(
 107	          'Value is not a number (' + typeof localValue + '): ' + localValue,
 108	        );
 109	      }
-110
+110	
 111	      return {
 112	        numericValue: localValue,
 113	        formattedString: integerToCurrency(
@@ -1061,7 +1048,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 121	      throw new Error('Unknown format type: ' + type);
 122	  }
 123	}
-124
+124	
 125	export function useFormat(): UseFormatResult {
 126	  const [numberFormatPref] = useSyncedPref('numberFormat');
 127	  const [hideFractionPref] = useSyncedPref('hideFraction');
@@ -1070,11 +1057,11 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 130	  const [spaceEnabledPref] = useSyncedPref(
 131	    'currencySpaceBetweenAmountAndSymbol',
 132	  );
-133
+133	
 134	  const activeCurrency = useMemo(() => {
 135	    return getCurrency(defaultCurrencyCodePref || '');
 136	  }, [defaultCurrencyCodePref]);
-137
+137	
 138	  const numberFormatConfig = useMemo(
 139	    () =>
 140	      parseNumberFormat({
@@ -1083,7 +1070,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 143	      }),
 144	    [numberFormatPref, hideFractionPref],
 145	  );
-146
+146	
 147	  // Hack: keep the global number format in sync - update the settings when
 148	  // the underlying configuration changes.
 149	  // This should be patched by moving all number-formatting utilities away from
@@ -1091,42 +1078,42 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 151	  useEffect(() => {
 152	    setNumberFormat(numberFormatConfig);
 153	  }, [numberFormatConfig]);
-154
+154	
 155	  const applyCurrencyStyling = useCallback(
 156	    (formattedNumericValue: string, currencySymbol: string): string => {
 157	      if (!currencySymbol) {
 158	        return formattedNumericValue;
 159	      }
-160
+160	
 161	      let sign = '';
 162	      let valueWithoutSign = formattedNumericValue;
 163	      if (formattedNumericValue.startsWith('-')) {
 164	        sign = '-';
 165	        valueWithoutSign = formattedNumericValue.slice(1);
 166	      }
-167
+167	
 168	      const space = spaceEnabledPref === 'true' ? '\u202F' : '';
 169	      const position = symbolPositionPref || 'before';
-170
+170	
 171	      const styledAmount =
 172	        position === 'after'
 173	          ? `${valueWithoutSign}${space}${currencySymbol}`
 174	          : `\u202A${currencySymbol}\u202C${space}${valueWithoutSign}`;
-175
+175	
 176	      return sign + styledAmount;
 177	    },
 178	    [symbolPositionPref, spaceEnabledPref],
 179	  );
-180
+180	
 181	  const formatDisplay = useCallback(
 182	    (value: unknown, type: FormatType = 'string'): string => {
 183	      const isFinancialType =
 184	        type === 'financial' ||
 185	        type === 'financial-with-sign' ||
 186	        type === 'financial-no-decimals';
-187
+187	
 188	      let displayDecimalPlaces: number | undefined;
-189
+189	
 190	      if (isFinancialType) {
 191	        if (type === 'financial-no-decimals' || hideFractionPref === 'true') {
 192	          displayDecimalPlaces = 0;
@@ -1134,19 +1121,19 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 194	          displayDecimalPlaces = activeCurrency.decimalPlaces;
 195	        }
 196	      }
-197
+197	
 198	      const intlFormatter = getNumberFormat({
 199	        format: numberFormatConfig.format,
 200	        decimalPlaces: displayDecimalPlaces,
 201	      }).formatter;
-202
+202	
 203	      const { numericValue, formattedString } = format(
 204	        value,
 205	        type,
 206	        intlFormatter,
 207	        activeCurrency.decimalPlaces,
 208	      );
-209
+209	
 210	      let styledValue = formattedString;
 211	      if (isFinancialType && activeCurrency && activeCurrency.code !== '') {
 212	        styledValue = applyCurrencyStyling(
@@ -1154,7 +1141,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 214	          activeCurrency.symbol,
 215	        );
 216	      }
-217
+217	
 218	      if (
 219	        type === 'financial-with-sign' &&
 220	        numericValue != null &&
@@ -1171,17 +1158,17 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 231	      hideFractionPref,
 232	    ],
 233	  );
-234
+234	
 235	  const toAmount = useCallback(
 236	    (value: number) => integerToAmount(value, activeCurrency.decimalPlaces),
 237	    [activeCurrency.decimalPlaces],
 238	  );
-239
+239	
 240	  const fromAmount = useCallback(
 241	    (value: number) => amountToInteger(value, activeCurrency.decimalPlaces),
 242	    [activeCurrency.decimalPlaces],
 243	  );
-244
+244	
 245	  const forEdit = useCallback(
 246	    (value: IntegerAmount, options?: ForEditOptions) => {
 247	      const amount = toAmount(value);
@@ -1202,7 +1189,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 262	      numberFormatConfig.format,
 263	    ],
 264	  );
-265
+265	
 266	  const fromEdit = useCallback(
 267	    (
 268	      value: string,
@@ -1211,31 +1198,31 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 271	      if (value == null) {
 272	        return defaultValue;
 273	      }
-274
+274	
 275	      const trimmed = value.trim();
 276	      if (trimmed === '') {
 277	        return defaultValue;
 278	      }
-279
+279	
 280	      // strip directional formatting characters and letters
 281	      const normalized = trimmed
 282	        .replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '')
 283	        .replace(/\p{L}+/gu, '');
 284	      let numericValue: number | null = evalArithmetic(normalized, null);
-285
+285	
 286	      if (numericValue === null || isNaN(numericValue)) {
 287	        numericValue = currencyToAmount(normalized);
 288	      }
-289
+289	
 290	      if (numericValue !== null && !isNaN(numericValue)) {
 291	        return fromAmount(numericValue);
 292	      }
-293
+293	
 294	      return defaultValue;
 295	    },
 296	    [fromAmount],
 297	  );
-298
+298	
 299	  return Object.assign(formatDisplay, {
 300	    forEdit,
 301	    fromEdit,
@@ -1247,7 +1234,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:02Z)**_
 307	}
 308
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:01:12Z)**_
@@ -1260,7 +1246,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:12Z)**_
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:01:15Z)**_
@@ -1274,11 +1259,11 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:15Z)**_
 title:	Choose a PDF library and build the PDF data rows
 state:	CLOSED
 author:	jamesleonard3rd (James Leonard)
-labels:
+labels:	
 comments:	0
-assignees:
-projects:
-milestone:
+assignees:	
+projects:	
+milestone:	
 number:	59
 --
 ### Verified feature request does not already exist?
@@ -1338,7 +1323,6 @@ _No response_
 
 _No response_
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:01:26Z)**_
@@ -1366,7 +1350,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:01:26Z)**_
 68-  /** Decimal places of the active currency. */
 69-  decimalPlaces?: number;
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:01:27Z)**_
@@ -1409,7 +1392,6 @@ license: MIT
 deps: ['queue', 'events', 'pdfkit', 'prop-types', 'object-assign', '@babel/runtime', '@react-pdf/fns', '@react-pdf/font', '@react-pdf/types', '@react-pdf/layout', '@react-pdf/render', '@react-pdf/primitives', '@react-pdf/reconciler']
 Shell cwd was reset to /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:01:36Z)**_
@@ -1441,7 +1423,6 @@ gzip: 341621 size: 973441 dependencyCount: 3
 === @react-pdf/renderer ===
 gzip: 442267 size: 1200522 dependencyCount: 13
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:01:42Z)**_
@@ -1459,7 +1440,6 @@ You have sent too many requests in a given amount of time.
 ---retry simple---
 {"name":"jspdf-autotable","version":"5.0.8","size":30251,"gzip":9789,"assets":[{"gzip":9789,"name":"main","size":30251,"type":"js"}],"dependencyCount":0,"dependencySizes":[{"approximateSize":60150,"name":"jspdf-autotable"}],"description":"Generate pdf tables with javascript (jsPDF plugin)","hasJSModule":false,"hasJSNext":false,"hasSideEffects":true,"isModuleType":false,"peerDependencies":["jspdf"],"repository":"https://github.com/simonbengtsson/jsPDF-AutoTable.git","scoped":false}
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:02:14Z)**_
@@ -1472,7 +1452,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:02:14Z)**_
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:02:16Z)**_
@@ -1486,7 +1465,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:02:16Z)**_
 packages/desktop-client/src/components/budget/envelope/EnvelopeBudgetComponents.tsx
 packages/desktop-client/src/components/budget/tracking/TrackingBudgetComponents.tsx
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:02:18Z)**_
@@ -1506,7 +1484,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:02:18Z)**_
 561:export function IncomeGroupMonth({ month }: IncomeGroupMonthProps) {
 585:export function IncomeCategoryMonth({
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:02:21Z)**_
@@ -1520,7 +1497,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:02:21Z)**_
 146	  group,
 147	}: CategoryGroupMonthProps) {
 148	  const { id } = group;
-149
+149	
 150	  return (
 151	    <View
 152	      style={{
@@ -1568,11 +1545,10 @@ _**Agent (claude-sonnet-5 2026-10-03 20:02:21Z)**_
 194	    </View>
 195	  );
 196	});
-197
+197	
 198	export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
 199	  month,
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:07:22Z)**_
@@ -1582,30 +1558,27 @@ _**Agent (claude-sonnet-5 2026-10-03 20:07:22Z)**_
 **Issue 60's Open Question 1 asks whether the PDF row-builder should share code with the already-merged CSV builder (budgetMonthCsv.ts) so the two formats can't drift apart. How should I handle this?**
 
 Options:
-
 - **Extract a shared raw-row core (Recommended)** - Refactor budgetMonthCsv.ts to pull its group/category-walking logic into a new shared function (e.g. collectBudgetMonthRows) that both the CSV and new PDF row-builder consume. Guarantees the two formats can never show different numbers, but touches the already-shipped, tested CSV file.
 - **Independent implementation** - Write the PDF row-builder as its own self-contained module that re-derives values from categoryGroups/cells the same way budgetMonthCsv.ts does, without modifying the existing CSV file at all. Zero risk to shipped CSV code, but the group/category traversal logic is duplicated across two files.
 
 **Issue's AC#4 requires recording which budget mode(s) the PDF supports. The merged CSV export only supports envelope budgets (imports envelopeBudget bindings only, per BudgetExportMenu.tsx's own comment). Should the PDF row-builder match that scope?**
 
 Options:
-
 - **Envelope only, matching CSV (Recommended)** - Keep scope aligned with the shipped CSV export. Tracking-budget support can be a later follow-up issue if needed.
 - **Envelope and tracking both** - Also wire up trackingBudget bindings (TrackingBudgetComponents.tsx) now, roughly doubling the row-builder's surface and test matrix in this same issue.
 
 **AC#5 says each row is marked as a 'group header', 'category', 'group subtotal', or 'grand total'. On the actual envelope budget page, a category group's name and its Budgeted/Spent/Balance totals are rendered as ONE combined row (see EnvelopeBudgetComponents.tsx CategoryGroupMonth) — there's no separate header-then-subtotal split. How should the row type enum model this?**
 
 Options:
-
 - **One combined row per group (Recommended)** - Emit a single row per group (name + Budgeted/Spent/Balance together, bold-styled) tagged as the group's header/subtotal row — this matches the page and the CSV output exactly. The type union still declares 4 kinds for the renderer's benefit, but in practice only one of the 'header'/'subtotal' tags is ever produced per group.
 - **Split into two rows per group** - Emit a name-only 'group header' row, then the category rows, then a separate 'group subtotal' row with the amounts at the bottom of each group — a more literal reading of AC#5, but it changes row order/layout from how the page and CSV currently show groups, and needs its own sign-off since it diverges from page parity (AC#6/7).
 
 **I researched bundle size via npm/bundlephobia: jsPDF+jspdf-autotable ≈140KB gzip (MIT, mature table/page-break support built for tabular reports), pdfmake ≈342KB gzip (MIT, declarative table defs, built-in header-row repeat), @react-pdf/renderer ≈442KB gzip (MIT, JSX-based, fits the codebase's declarative style but heaviest, and has no built-in table primitive). All three default to Latin-only built-in fonts, so none supports ₹ or non-Latin category names without embedding a custom font. My recommendation for sub-issue B is jsPDF+jspdf-autotable for its much smaller footprint and purpose-built table/repeating-header support. Should I draft this as the comparison write-up and post it (with the 🤖 prefix) as a comment on issue #60 for team approval, as AC#3 requires?**
 
 Options:
-
 - **Yes, draft it and show me before posting (Recommended)** - I'll write the full comparison/recommendation comment, show it to you first, and only run `gh issue comment` once you approve the exact text.
 - **Skip posting for now** - I'll still write up the comparison in the plan/session notes, but won't post anything to GitHub — you can post it yourself later.
+
 
 **Answer:** Extract a shared raw-row core (Recommended), Envelope only, matching CSV (Recommended), One combined row per group (Recommended), Yes, draft it and show me before posting (Recommended)
 </details></tool-use>
@@ -1691,7 +1664,7 @@ to pull its group/category-walking loop out into a new file,
 
 ```ts
 export type RawBudgetMonthRowKind =
-  'group' | 'category' | 'income' | 'incomeCategory' | 'total' | 'toBudget';
+  | 'group' | 'category' | 'income' | 'incomeCategory' | 'total' | 'toBudget';
 
 export type RawBudgetMonthRow = {
   kind: RawBudgetMonthRowKind;
@@ -1724,8 +1697,7 @@ its exported API (`buildBudgetMonthCsv`, `getBudgetMonthCsvFilename`,
 `packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts`:
 
 ```ts
-export type PdfRowType =
-  'groupHeader' | 'category' | 'groupSubtotal' | 'grandTotal';
+export type PdfRowType = 'groupHeader' | 'category' | 'groupSubtotal' | 'grandTotal';
 
 export type PdfRow = {
   type: PdfRowType;
@@ -1783,16 +1755,16 @@ release note (nothing ships to users yet, per the issue's own summary).
 - `yarn lint:fix`.
 - Show you the drafted GitHub comment (bundle-size comparison + recorded
   decisions) before posting it to issue #60 with `gh issue comment 60 --body
-"🤖 ..."`.
+  "🤖 ..."`.
 - At the end of the session, run `specstory sync` and follow
   `committing-actual-changes` for the commit/PR (title prefixed `[AI]`, PR
   template left blank, `[AI]` PR title).
+
 ````
 
 ```text
 File created successfully at: /Users/liammclemore/.claude/plans/let-s-work-on-implementing-jaunty-pinwheel.md (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:08:32Z)**_
@@ -1810,7 +1782,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:08:32Z)**_
 ```
 
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:10:12Z)**_
@@ -1821,7 +1792,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:10:12Z)**_
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  This all looks good. Save the .md to my downloads folder. The team approves of this, so we can move forward with the changes
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:10:19Z)**_
@@ -1834,7 +1804,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:10:19Z)**_
 ```text
 copied
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:10:20Z)**_
@@ -1846,7 +1815,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:11:45Z)**_
 <tool-use data-tool-type="generic" data-tool-name="ExitPlanMode"><details>
 <summary>Tool use: **ExitPlanMode**</summary>
 
-````text
+```text
 User has approved your plan. You can now start coding. Start with updating your todo list if applicable
 
 Your plan has been saved to: /Users/liammclemore/.claude/plans/let-s-work-on-implementing-jaunty-pinwheel.md
@@ -1950,7 +1919,7 @@ export function collectBudgetMonthRows(options: {
   cells: Map<string, unknown>;
   showHiddenCategories: boolean;
 }): RawBudgetMonthRow[];
-````
+```
 
 Values stay as **raw integer cents** (not yet divided by `decimalPlaces`),
 since that's what both consumers need: `integerToAmount` for CSV's plain
@@ -1967,7 +1936,10 @@ its exported API (`buildBudgetMonthCsv`, `getBudgetMonthCsvFilename`,
 
 ```ts
 export type PdfRowType =
-  'groupHeader' | 'category' | 'groupSubtotal' | 'grandTotal';
+  | 'groupHeader'
+  | 'category'
+  | 'groupSubtotal'
+  | 'grandTotal';
 
 export type PdfRow = {
   type: PdfRowType;
@@ -2029,8 +2001,7 @@ release note (nothing ships to users yet, per the issue's own summary).
 - At the end of the session, run `specstory sync` and follow
   `committing-actual-changes` for the commit/PR (title prefixed `[AI]`, PR
   template left blank, `[AI]` PR title).
-
-````
+```
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:11:46Z)**_
@@ -2048,8 +2019,7 @@ _**Agent (claude-sonnet-5 2026-10-03 20:11:53Z)**_
 ---
 Switched to a new branch 'feat/issue-60-pdf-library-rows'
 branch 'feat/issue-60-pdf-library-rows' set up to track 'origin/master'.
-````
-
+```
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:11:55Z)**_
@@ -2197,7 +2167,6 @@ export async function fetchBudgetMonthCells(
   return new Map(values.map(({ name, value }) => [name, value]));
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:12:02Z)**_
@@ -2228,7 +2197,6 @@ export function stringifyCsv(rows: unknown[][], columns: string[]): string {
   });
 }
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:12:03Z)**_
@@ -2249,7 +2217,12 @@ import { separateGroups } from '#components/budget/util';
 import { envelopeBudget } from '#spreadsheet/bindings';
 
 export type RawBudgetMonthRowKind =
-  'group' | 'category' | 'income' | 'incomeCategory' | 'total' | 'toBudget';
+  | 'group'
+  | 'category'
+  | 'income'
+  | 'incomeCategory'
+  | 'total'
+  | 'toBudget';
 
 export type RawBudgetMonthRow = {
   kind: RawBudgetMonthRowKind;
@@ -2327,7 +2300,9 @@ export function collectBudgetMonthRows({
       balance: null,
     });
 
-    for (const category of (incomeGroup.categories ?? []).filter(isVisible)) {
+    for (const category of (incomeGroup.categories ?? []).filter(
+      isVisible,
+    )) {
       rows.push({
         kind: 'incomeCategory',
         groupName: incomeGroup.name,
@@ -2361,12 +2336,12 @@ export function collectBudgetMonthRows({
 
   return rows;
 }
+
 ```
 
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  what is this code exactly doing?
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:14:21Z)**_
@@ -2378,7 +2353,6 @@ This is step 1 of the plan: extracting the shared "raw row" logic out of the alr
 **Key design choice:** it returns amounts as raw integer cents (e.g. `150000` for $1500.00), not yet divided into dollars. That's deliberate — CSV wants plain decimal numbers (divides by 100), while the PDF formatter (`useFormat`'s `'financial'` type) specifically expects raw integer cents to apply currency symbol/thousands separators correctly. Keeping the shared layer in raw cents means neither consumer has to convert back and forth.
 
 **Row-by-row, in page order:**
-
 1. For each visible expense group: one `kind: 'group'` row (its subtotal cells), then one `kind: 'category'` row per visible category in it.
 2. The income group (always shown, even if marked hidden): one `kind: 'income'` row, then `kind: 'incomeCategory'` rows. Budgeted/balance are `null` because the page shows those cells blank for income.
 3. A `kind: 'total'` row (grand total; budgeted is negated because of how that cell is stored).
@@ -2409,7 +2383,6 @@ feat/issue-60-pdf-library-rows
 From https://github.com/CSCI-435-SE/actual-budget
  * branch                master     -> FETCH_HEAD
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:14:39Z)**_
@@ -2427,7 +2400,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:14:39Z)**_
 d5507b08c Merge pull request #71 from CSCI-435-SE/issue-56-export-budget-csv
 d5507b08c Merge pull request #71 from CSCI-435-SE/issue-56-export-budget-csv
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:14:40Z)**_
@@ -2447,7 +2419,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:15:08Z)**_
 We're creating `budgetMonthRows.ts` as a new file (rather than just adding the PDF logic straight into `budgetMonthCsv.ts`) because of the "shared code" decision we made during planning — you picked "Extract a shared raw-row core" when I asked how to handle Open Question 1 from the issue (whether PDF and CSV should share code so they can't drift apart).
 
 The reasoning:
-
 - `budgetMonthCsv.ts` is CSV-specific — it does CSV string formatting, quoting/escaping, the `stringifyCsv` call, and the `.csv` filename helper. None of that belongs to the PDF path.
 - The actual valuable logic — walking category groups/categories in page order and pulling Budgeted/Spent/Balance out of the right spreadsheet cells — is format-agnostic. Both CSV and PDF need exactly the same traversal, same filtering, same carryover/subtotal/negation quirks.
 - Having the PDF builder `import { collectBudgetMonthRows } from './budgetMonthCsv'` would work mechanically, but it's a confusing dependency: a module literally named "Csv" becoming the data source for PDF rows. A neutral shared file keeps the naming honest and makes clear it's not owned by either format.
@@ -2495,7 +2466,12 @@ import { separateGroups } from '#components/budget/util';
 import { envelopeBudget } from '#spreadsheet/bindings';
 
 export type RawBudgetMonthRowKind =
-  'group' | 'category' | 'income' | 'incomeCategory' | 'total' | 'toBudget';
+  | 'group'
+  | 'category'
+  | 'income'
+  | 'incomeCategory'
+  | 'total'
+  | 'toBudget';
 
 export type RawBudgetMonthRow = {
   kind: RawBudgetMonthRowKind;
@@ -2573,7 +2549,9 @@ export function collectBudgetMonthRows({
       balance: null,
     });
 
-    for (const category of (incomeGroup.categories ?? []).filter(isVisible)) {
+    for (const category of (incomeGroup.categories ?? []).filter(
+      isVisible,
+    )) {
       rows.push({
         kind: 'incomeCategory',
         groupName: incomeGroup.name,
@@ -2607,12 +2585,12 @@ export function collectBudgetMonthRows({
 
   return rows;
 }
+
 ```
 
 ```text
 File created successfully at: /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/export/budgetMonthRows.ts (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:16:47Z)**_
@@ -2698,12 +2676,12 @@ export async function fetchBudgetMonthCells(
   const values = await send('envelope-budget-month', { month });
   return new Map(values.map(({ name, value }) => [name, value]));
 }
+
 ```
 
 ```text
 The file /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/export/budgetMonthCsv.ts has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:17:01Z)**_
@@ -2727,7 +2705,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:17:27Z)**_
    Start at  16:17:26
    Duration  1.75s (transform 357ms, setup 973ms, import 113ms, tests 9ms, environment 552ms)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:17:29Z)**_
@@ -2754,7 +2731,10 @@ import {
 // that combined row; `groupSubtotal` is kept in the type for the renderer's
 // vocabulary (per the issue's acceptance criteria) but is never emitted here.
 export type PdfRowType =
-  'groupHeader' | 'category' | 'groupSubtotal' | 'grandTotal';
+  | 'groupHeader'
+  | 'category'
+  | 'groupSubtotal'
+  | 'grandTotal';
 
 export type PdfRow = {
   type: PdfRowType;
@@ -2815,12 +2795,12 @@ export function buildBudgetMonthPdfRows({
     balance: amount(row.balance),
   }));
 }
+
 ```
 
 ```text
 File created successfully at: /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:19:11Z)**_
@@ -2979,19 +2959,14 @@ describe('buildBudgetMonthPdfRows', () => {
       {
         id: 'bills',
         name: 'Bills',
-        categories: [
-          { id: 'power', name: 'Power', group: 'bills', hidden: true },
-        ],
+        categories: [{ id: 'power', name: 'Power', group: 'bills', hidden: true }],
       },
     ];
     const rows = build({
       groups,
       cells: makeCells(),
     });
-    expect(rows[0]).toMatchObject({
-      type: 'groupHeader',
-      categoryGroup: 'Bills',
-    });
+    expect(rows[0]).toMatchObject({ type: 'groupHeader', categoryGroup: 'Bills' });
     expect(rows[1]).toMatchObject({ type: 'grandTotal' });
   });
 
@@ -3091,12 +3066,12 @@ describe('buildBudgetMonthPdfRows', () => {
     expect(incomeGroupRow).toMatchObject({ budgeted: '', balance: '' });
   });
 });
+
 ```
 
 ```text
 File created successfully at: /Users/liammclemore/Desktop/csci/csci-435/budget/actual-budget/packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.test.ts (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:20:41Z)**_
@@ -3121,7 +3096,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:20:56Z)**_
    Start at  16:20:54
    Duration  1.81s (transform 690ms, setup 2.02s, import 222ms, tests 13ms, environment 1.17s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:20:59Z)**_
@@ -3177,7 +3151,6 @@ worker restarts: 0, max worker memory usage: 62.00 MB
 ┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
 Took a total of 22.04s to complete.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:21:28Z)**_
@@ -3194,7 +3167,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:21:41Z)**_
 ```text
 Finished in 2936ms on 2364 files using 12 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:21:43Z)**_
@@ -3244,7 +3216,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:21:43Z)**_
 ?? packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts
 ?? packages/desktop-client/src/components/budget/export/budgetMonthRows.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:21:46Z)**_
@@ -3264,9 +3235,9 @@ index c13267a5e..019accae5 100644
 --- a/STUDENTS.md
 +++ b/STUDENTS.md
 @@ -13,11 +13,11 @@ can explore and experiment with it. Everything runs locally in your browser.
-
+ 
  Install these once before you start:
-
+ 
 -| Tool | Version | Notes |
 -| --- | --- | --- |
 -| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v` |
@@ -3277,10 +3248,9 @@ index c13267a5e..019accae5 100644
 +| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v`                                                                                     |
 +| [Yarn](https://yarnpkg.com/)   | **4.9.1+**      | Comes with Node via Corepack — see below                                                                 |
 +| [Git](https://git-scm.com/)    | any recent      | On **Windows**, install "Git for Windows" — it also provides the `sh` and `bash` shells some scripts use |
-
+ 
  > 💡 **New to Yarn workspaces?** Actual Budget uses [Yarn workspaces](https://yarnpkg.com/features/workspaces) to manage multiple packages in a single repo. You mostly run commands from the root — but understanding workspaces helps when something goes wrong in a sub-package.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:21:50Z)**_
@@ -3303,7 +3273,6 @@ git status --short
 ?? packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts
 ?? packages/desktop-client/src/components/budget/export/budgetMonthRows.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:22:08Z)**_
@@ -3320,7 +3289,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:22:25Z)**_
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:22:28Z)**_
@@ -3343,7 +3311,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:22:28Z)**_
 57:    "lint": "oxfmt --check . && oxlint --type-aware --quiet",
 58:    "lint:fix": "oxfmt . && oxlint --fix --type-aware --quiet",
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:22:39Z)**_
@@ -3370,7 +3337,6 @@ No files found to lint. Please check your paths and ignore patterns.
 ?? packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts
 ?? packages/desktop-client/src/components/budget/export/budgetMonthRows.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:22:49Z)**_
@@ -3393,7 +3359,6 @@ oxlint not found
 ---try without npx, direct bin---
 Finished in 39ms on 1 files using 12 threads.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:22:50Z)**_
@@ -3424,7 +3389,6 @@ No files found to lint. Please check your paths and ignore patterns.
 ?? packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts
 ?? packages/desktop-client/src/components/budget/export/budgetMonthRows.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:23:01Z)**_
@@ -3472,7 +3436,6 @@ github.com/microsoft/typescript-go/internal/parser.(*Parser).parseArrowFunctionE
 ...
 </persisted-output>
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:23:04Z)**_
@@ -3488,7 +3451,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:23:04Z)**_
 ?? packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts
 ?? packages/desktop-client/src/components/budget/export/budgetMonthRows.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:23:06Z)**_
@@ -3515,7 +3477,6 @@ done
 === packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.test.ts ===
 === packages/desktop-client/src/components/budget/export/budgetMonthRows.ts ===
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:23:26Z)**_
@@ -3550,7 +3511,6 @@ exit: 0
 ?? packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts
 ?? packages/desktop-client/src/components/budget/export/budgetMonthRows.ts
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:23:27Z)**_
@@ -3575,7 +3535,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:23:45Z)**_
    Start at  16:23:43
    Duration  1.82s (transform 697ms, setup 2.07s, import 235ms, tests 13ms, environment 1.09s)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:23:49Z)**_
@@ -3641,7 +3600,7 @@ author:	jamesleonard3rd (James Leonard)
 labels:	scope: medium
 comments:	0
 assignees:	TigerK9 (Liam McLemore)
-projects:
+projects:	
 milestone:	Sprint 1
 number:	61
 --
@@ -3676,7 +3635,6 @@ Medium. Page breaks and repeated headers depend on what the chosen library suppo
 ## Source
 Split from #57. Sub-issue 2 of 2; builds on the basic PDF export from sub-issue 1.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:27:43Z)**_
@@ -3686,12 +3644,11 @@ Mechanically, yes — #60's PR should land on `master` first, since whatever com
 But there's a bigger gap worth flagging: **#61 isn't actually startable yet, even once #60 merges.**
 
 Here's why. #60's own "Source" note describes three planned sub-issues of #57:
-
 - (A) library choice + table rows — that's #60, which we just did
 - (B) PDF export option + a basic one-page PDF (the actual library install, the Export menu option, rendering, download)
 - (C) multi-page layout, repeating headers, page numbers, cross-platform checks
 
-#61's title says "dependent on #60," but its body text says it depends on "the first sub-issue" which "produces **a basic PDF** of the selected month" — i.e., #61 is expecting sub-issue B's output to already exist (a working one-page PDF download) so it has something to polish. #60 deliberately does _not_ produce that — no library installed, no download, nothing user-visible, by its own explicit "Out of Scope" list.
+#61's title says "dependent on #60," but its body text says it depends on "the first sub-issue" which "produces **a basic PDF** of the selected month" — i.e., #61 is expecting sub-issue B's output to already exist (a working one-page PDF download) so it has something to polish. #60 deliberately does *not* produce that — no library installed, no download, nothing user-visible, by its own explicit "Out of Scope" list.
 
 So sub-issue B — the one that would actually add jsPDF/jspdf-autotable to the project and wire a "PDF" option into `BudgetExportMenu.tsx` — was never filed as its own GitHub issue. Only A (#60) and this polish one (#61) exist.
 
@@ -3704,9 +3661,9 @@ _**Agent (claude-sonnet-5 2026-10-03 20:31:49Z)**_
 **Sub-issue B (install the PDF library, add the Export menu option, render/download a basic one-page PDF) was never filed as its own GitHub issue — only #60 (library choice/rows, done) and #61 (polish/multi-page, blocked on B) exist. How do you want to handle the missing piece?**
 
 Options:
-
 - **File a new issue for sub-issue B** - Create a GitHub issue for the basic PDF export/download work, scoped the way #60's own Source note describes it, so the tracker accurately reflects three sub-issues of #57 and #61 has a real dependency to point at.
 - **Just build it now, no new issue** - Skip filing a tracker issue and go straight to implementing the basic PDF export (library + menu option + one-page render/download) as the next piece of work, treating it as part of closing out #60/#61's gap informally.
+
 
 **Answer:** File a new issue for sub-issue B
 </details></tool-use>
@@ -3727,7 +3684,6 @@ for m in json.load(sys.stdin):
 ```text
 The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Hang on, let me get one of my teammates to submit an issue, because we can't code the issues we create, or we can just create another branch and make a PR for what it solves, even though it doesn't solve an actual existing "issue" - my teammate just forgot to make the third sub issue, so we'll implement it, but this needs to be a separate branch from the one we're working on now. Let's submit the changes here with an ai log, then start working on the next issue with its own ai log and commits.
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:34:15Z)**_
@@ -3746,7 +3702,6 @@ _**Agent (claude-sonnet-5 2026-10-03 20:34:30Z)**_
 ```text
 (Bash completed with no output)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:34:46Z)**_
@@ -3759,11 +3714,11 @@ _**Agent (claude-sonnet-5 2026-10-03 20:34:46Z)**_
 
 Compared bundle size (npm + bundlephobia, gzip), license, and table/page-break support for the three libraries the issue suggests:
 
-| Library                 | Bundle (gzip)              | License | Table support                                                                 | Page breaks / repeating headers                                                                                             |
-| ----------------------- | -------------------------- | ------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| jsPDF + jspdf-autotable | ~130KB + ~10KB ≈ **140KB** | MIT     | `autoTable()` plugin, purpose-built for tabular reports                       | Built-in: rows never split across pages, `showHead: 'everyPage'` repeats the header row, automatic page numbering via hooks |
-| pdfmake                 | ~342KB                     | MIT     | Declarative `table` in the document definition                                | Built-in `headerRows` repeats header rows; page breaks handled automatically                                                |
-| @react-pdf/renderer     | ~442KB                     | MIT     | No built-in table primitive — a table has to be hand-built from `View`/`Text` | Page breaks via `wrap`/`break`; header repetition via `fixed` views, but requires manual layout work                        |
+| Library | Bundle (gzip) | License | Table support | Page breaks / repeating headers |
+| --- | --- | --- | --- | --- |
+| jsPDF + jspdf-autotable | ~130KB + ~10KB ≈ **140KB** | MIT | `autoTable()` plugin, purpose-built for tabular reports | Built-in: rows never split across pages, `showHead: 'everyPage'` repeats the header row, automatic page numbering via hooks |
+| pdfmake | ~342KB | MIT | Declarative `table` in the document definition | Built-in `headerRows` repeats header rows; page breaks handled automatically |
+| @react-pdf/renderer | ~442KB | MIT | No built-in table primitive — a table has to be hand-built from `View`/`Text` | Page breaks via `wrap`/`break`; header repetition via `fixed` views, but requires manual layout work |
 
 **Fonts/currency symbols:** all three ship only the standard Latin (WinAnsi) fonts by default. That covers €, £, and ¥, but **not** ₹ or non-Latin category names (e.g. Cyrillic, CJK, Devanagari) in any of them — all three would need a custom embedded font (e.g. Noto Sans) for full Unicode support. Embedding adds roughly 150–300KB gzip depending on script coverage, and is tracked as a follow-up rather than part of this issue.
 
@@ -3780,12 +3735,12 @@ Posting for team approval per AC#3 before sub-issue B starts.
 ## Row-building function (AC#5–#10)
 
 `buildBudgetMonthPdfRows` (in `packages/desktop-client/src/components/budget/export/budgetMonthPdfRows.ts`) reuses the same row traversal the CSV export uses (factored out into `budgetMonthRows.ts`'s `collectBudgetMonthRows`) so the two formats can never drift apart — this resolves Open Question 1. Each row is tagged `groupHeader`, `category`, or `grandTotal` (the `groupSubtotal` type is declared for the renderer's vocabulary but isn't emitted — the envelope page shows a group's name and its Budgeted/Spent/Balance as one combined row, so there's no separate header/subtotal split to preserve). Amounts are pre-formatted via an injected formatter so the function stays decoupled from both React and the eventual PDF library (AC#9). Covered by 9 unit tests in `budgetMonthPdfRows.test.ts` (row order/types, group subtotal and grand total amounts, carryover, a group with no visible categories, a negative/Overbudgeted balance, hidden-item toggling, and blank-cell handling).
+
 ```
 
 ```text
 File created successfully at: /private/tmp/claude-501/-Users-liammclemore-Desktop-csci-csci-435-budget-actual-budget/bd86a981-ee48-4de7-a178-25b1aa7d363e/scratchpad/issue-60-comment.md (file state is current in your context — no need to Read it back)
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:34:55Z)**_
@@ -3798,24 +3753,22 @@ Here's the draft comment for issue #60 (library recommendation + recorded decisi
 
 Compared bundle size (npm + bundlephobia, gzip), license, and table/page-break support for the three libraries the issue suggests:
 
-| Library                 | Bundle (gzip)              | License | Table support                                               | Page breaks / repeating headers                                                                                             |
-| ----------------------- | -------------------------- | ------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| jsPDF + jspdf-autotable | ~130KB + ~10KB ≈ **140KB** | MIT     | `autoTable()` plugin, purpose-built for tabular reports     | Built-in: rows never split across pages, `showHead: 'everyPage'` repeats the header row, automatic page numbering via hooks |
-| pdfmake                 | ~342KB                     | MIT     | Declarative `table` in the document definition              | Built-in `headerRows` repeats header rows; page breaks handled automatically                                                |
-| @react-pdf/renderer     | ~442KB                     | MIT     | No built-in table primitive — hand-built from `View`/`Text` | Page breaks via `wrap`/`break`; header repetition via `fixed` views, manual layout                                          |
+| Library | Bundle (gzip) | License | Table support | Page breaks / repeating headers |
+|---|---|---|---|---|
+| jsPDF + jspdf-autotable | ~130KB + ~10KB ≈ **140KB** | MIT | `autoTable()` plugin, purpose-built for tabular reports | Built-in: rows never split across pages, `showHead: 'everyPage'` repeats the header row, automatic page numbering via hooks |
+| pdfmake | ~342KB | MIT | Declarative `table` in the document definition | Built-in `headerRows` repeats header rows; page breaks handled automatically |
+| @react-pdf/renderer | ~442KB | MIT | No built-in table primitive — hand-built from `View`/`Text` | Page breaks via `wrap`/`break`; header repetition via `fixed` views, manual layout |
 
 **Fonts/currency symbols:** all three ship only Latin (WinAnsi) fonts by default — covers €/£/¥ but not ₹ or non-Latin category names in any of them. All three would need an embedded custom font (e.g. Noto Sans), adding ~150–300KB gzip depending on script coverage — tracked as a follow-up, not part of this issue.
 
 **Recommendation: jsPDF + jspdf-autotable** — smallest by far, purpose-built for this exact report shape, most mature. @react-pdf/renderer's JSX fits our style better but is heaviest with no table primitive. Posting for team approval per AC#3.
 
 ## Recorded decisions (AC#4)
-
 - **Budget mode:** envelope only, matching CSV's scope.
 - **To Budget/Overbudgeted placement:** bottom, after the grand total — same as CSV.
 - **Hidden categories:** follow the page's `showHiddenCategories` toggle, same as CSV.
 
 ## Row-building function (AC#5–#10)
-
 `buildBudgetMonthPdfRows` reuses the CSV export's row traversal (factored into `collectBudgetMonthRows`) so the formats can't drift apart (Open Question 1). Rows are tagged `groupHeader`/`category`/`grandTotal`; amounts are pre-formatted via an injected formatter, decoupling the function from both React and the chosen library (AC#9). 9 unit tests cover row order, subtotals, carryover, an empty group, a negative balance, hidden-item toggling, and blank cells.
 
 ---
@@ -3841,11 +3794,11 @@ Here's the full comment text — copy everything between the lines:
 
 Compared bundle size (npm + bundlephobia, gzip), license, and table/page-break support for the three libraries the issue suggests:
 
-| Library                 | Bundle (gzip)              | License | Table support                                                                 | Page breaks / repeating headers                                                                                             |
-| ----------------------- | -------------------------- | ------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| jsPDF + jspdf-autotable | ~130KB + ~10KB ≈ **140KB** | MIT     | `autoTable()` plugin, purpose-built for tabular reports                       | Built-in: rows never split across pages, `showHead: 'everyPage'` repeats the header row, automatic page numbering via hooks |
-| pdfmake                 | ~342KB                     | MIT     | Declarative `table` in the document definition                                | Built-in `headerRows` repeats header rows; page breaks handled automatically                                                |
-| @react-pdf/renderer     | ~442KB                     | MIT     | No built-in table primitive — a table has to be hand-built from `View`/`Text` | Page breaks via `wrap`/`break`; header repetition via `fixed` views, but requires manual layout work                        |
+| Library | Bundle (gzip) | License | Table support | Page breaks / repeating headers |
+| --- | --- | --- | --- | --- |
+| jsPDF + jspdf-autotable | ~130KB + ~10KB ≈ **140KB** | MIT | `autoTable()` plugin, purpose-built for tabular reports | Built-in: rows never split across pages, `showHead: 'everyPage'` repeats the header row, automatic page numbering via hooks |
+| pdfmake | ~342KB | MIT | Declarative `table` in the document definition | Built-in `headerRows` repeats header rows; page breaks handled automatically |
+| @react-pdf/renderer | ~442KB | MIT | No built-in table primitive — a table has to be hand-built from `View`/`Text` | Page breaks via `wrap`/`break`; header repetition via `fixed` views, but requires manual layout work |
 
 **Fonts/currency symbols:** all three ship only the standard Latin (WinAnsi) fonts by default. That covers €, £, and ¥, but **not** ₹ or non-Latin category names (e.g. Cyrillic, CJK, Devanagari) in any of them — all three would need a custom embedded font (e.g. Noto Sans) for full Unicode support. Embedding adds roughly 150–300KB gzip depending on script coverage, and is tracked as a follow-up rather than part of this issue.
 
@@ -3896,30 +3849,29 @@ _**Agent (claude-sonnet-5 2026-10-03 20:38:11Z)**_
 ╰─────────────────────────────────────────────────────────────╯
 
 
-  SpecStory is a wrapper for terminal coding agents that auto-saves markdown files of all your chat interactions.
-
-  Supported agents: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code Copilot
-  IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini (Gemini
-  CLI), muse (Muse Code).
-
-  USAGE
-
-    specstory [command] [--flags]
-
-  EXAMPLES
-
-    # Check terminal coding agents installation
-    specstory check
-
-    # Run the default agent with auto-saving
-    specstory run
-
-    # Run a specific agent with auto-saving
+  SpecStory is a wrapper for terminal coding agents that auto-saves markdown files of all your chat interactions.       
+                                                                                                                        
+  Supported agents: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code Copilot 
+  IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini (Gemini 
+  CLI), muse (Muse Code).                                                                                               
+         
+  USAGE  
+         
+    specstory [command] [--flags]                                                           
+            
+  EXAMPLES  
+            
+    # Check terminal coding agents installation                                             
+    specstory check                                                                         
+                                                                                            
+    # Run the default agent with auto-saving                                                
+    specstory run                                                                           
+                                                                                            
+    # Run a specific agent with auto-saving                                                 
 ---existing ai-logs dir for tigerk9---
 2026-09-28_claude-code_rescope-issues-11-12-and-14.md
 2026-09-29_claude-code_rescope-issue-14-subissues.md
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:38:15Z)**_
@@ -3940,37 +3892,36 @@ _**Agent (claude-sonnet-5 2026-10-03 20:38:15Z)**_
 ╰─────────────────────────────────────────────────────────────╯
 
 
-  Create or update markdown files for the agent sessions in the current working directory.
-
-  By default, syncs all registered providers that have activity.
-  Provide a specific agent ID to sync a specific provider.
-
-  Available provider IDs: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code
-  Copilot IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini
-  (Gemini CLI), muse (Muse Code).
-
-  USAGE
-
-    specstory sync [provider-id] [--flags]
-
-  EXAMPLES
-
-    # Sync all agents with activity
-    specstory sync
-
-    # Sync specific agent
-    specstory sync antigravity
-    specstory sync claude
-    specstory sync codex
-    specstory sync copilotide
-    specstory sync cursor
-    specstory sync cursoride
-    specstory sync deepseek
-    specstory sync droid
-    specstory sync gemini
+  Create or update markdown files for the agent sessions in the current working directory.                              
+                                                                                                                        
+  By default, syncs all registered providers that have activity.                                                        
+  Provide a specific agent ID to sync a specific provider.                                                              
+                                                                                                                        
+  Available provider IDs: antigravity (Antigravity CLI), claude (Claude Code), codex (Codex CLI), copilotide (VS Code   
+  Copilot IDE), cursor (Cursor CLI), cursoride (Cursor IDE), deepseek (DeepSeek TUI), droid (Factory Droid CLI), gemini 
+  (Gemini CLI), muse (Muse Code).                                                                                       
+         
+  USAGE  
+         
+    specstory sync [provider-id] [--flags]                                
+            
+  EXAMPLES  
+            
+    # Sync all agents with activity                                       
+    specstory sync                                                        
+                                                                          
+    # Sync specific agent                                                 
+    specstory sync antigravity                                            
+    specstory sync claude                                                 
+    specstory sync codex                                                  
+    specstory sync copilotide                                             
+    specstory sync cursor                                                 
+    specstory sync cursoride                                              
+    specstory sync deepseek                                               
+    specstory sync droid                                                  
+    specstory sync gemini                                                 
     specstory sync muse
 ```
-
 </details></tool-use>
 
 _**Agent (claude-sonnet-5 2026-10-03 20:38:16Z)**_
