@@ -48,7 +48,9 @@ export function NotificationsButton() {
           onPress={() => void navigate('/notifications')}
           data-testid="notifications-button"
         >
-          <SvgNotificationsOutline style={{ width: iconSize, height: iconSize }} />
+          <SvgNotificationsOutline
+            style={{ width: iconSize, height: iconSize }}
+          />
         </Button>
         {unseenCount > 0 && (
           <Text

@@ -13,12 +13,12 @@ export function IconSizeSettings() {
   const { t } = useTranslation();
   const [iconSize, setIconSize] = useGlobalPref('iconSize');
 
-const iconSizeOptions: SelectOption[] = [
-  ['0.75', t('Small')],
-  ['1', t('Medium (Default)')],
-  ['1.25', t('Large')],
-  ['1.5', t('Extra Large')]
-];
+  const iconSizeOptions: SelectOption[] = [
+    ['0.75', t('Small')],
+    ['1', t('Medium (Default)')],
+    ['1.25', t('Large')],
+    ['1.5', t('Extra Large')],
+  ];
 
   return (
     <Setting

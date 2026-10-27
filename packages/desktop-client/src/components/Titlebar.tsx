@@ -80,7 +80,6 @@ function PrivacyButton({ style }: PrivacyButtonProps) {
   const iconSize = scaledIconSize(15);
   const privacyIconStyle = { width: iconSize, height: iconSize };
 
-
   useHotkeys(
     'shift+ctrl+p, shift+cmd+p, shift+meta+p',
     () => {

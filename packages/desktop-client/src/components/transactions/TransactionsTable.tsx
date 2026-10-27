@@ -120,7 +120,6 @@ import type {
   OnDropCallback,
 } from '#hooks/useDragDrop';
 import { useFormat } from '#hooks/useFormat';
-import { scaledIconSize } from '#style';
 import { useLocalPref } from '#hooks/useLocalPref';
 import { useMergedRefs } from '#hooks/useMergedRefs';
 import { usePrevious } from '#hooks/usePrevious';
@@ -137,6 +136,7 @@ import { addNotification } from '#notifications/notificationsSlice';
 import { getPayeesById } from '#payees';
 import { aqlQuery } from '#queries/aqlQuery';
 import { useDispatch } from '#redux';
+import { scaledIconSize } from '#style';
 import { getStatusLabel } from '#util/schedule';
 import {
   calculateFutureTransactionInfo,

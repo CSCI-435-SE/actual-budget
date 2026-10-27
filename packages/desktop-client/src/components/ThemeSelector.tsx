@@ -63,7 +63,9 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
           onPress={() => setMenuOpen(true)}
           style={style}
         >
-          <Icon style={{ width: iconSize, height: iconSize, color: 'inherit' }} />
+          <Icon
+            style={{ width: iconSize, height: iconSize, color: 'inherit' }}
+          />
         </Button>
       </Tooltip>
 
