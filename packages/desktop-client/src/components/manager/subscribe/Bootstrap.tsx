@@ -69,14 +69,19 @@ export function Bootstrap() {
   return (
     <View style={{ maxWidth: 450 }}>
       <Title text={t('Welcome to Actual!')} />
-      <Paragraph style={{ fontSize: 'var(--font-size-16)', color: theme.pageTextDark }}>
+      <Paragraph
+        style={{ fontSize: 'var(--font-size-16)', color: theme.pageTextDark }}
+      >
         <Trans>
           Actual is a super fast privacy-focused app for managing your finances.
           To secure your data, you'll need to set a password for your server.
         </Trans>
       </Paragraph>
 
-      <Paragraph isLast style={{ fontSize: 'var(--font-size-16)', color: theme.pageTextDark }}>
+      <Paragraph
+        isLast
+        style={{ fontSize: 'var(--font-size-16)', color: theme.pageTextDark }}
+      >
         <Trans>
           Consider opening{' '}
           <Link variant="external" to="https://actualbudget.org/docs/tour/">

@@ -287,7 +287,11 @@ export const FocusableAmountInput = memo(function FocusableAmountInput({
             display: 'none',
           }),
         }}
-        textStyle={{ fontSize: 'var(--font-size-15)', textAlign: 'right', ...textStyle }}
+        textStyle={{
+          fontSize: 'var(--font-size-15)',
+          textAlign: 'right',
+          ...textStyle,
+        }}
       />
 
       <View>

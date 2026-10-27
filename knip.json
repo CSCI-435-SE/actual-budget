@@ -31,7 +31,12 @@
     "packages/component-library": {
       "entry": ["src/icons/index-template.ts", "src/icons/template.ts"],
       "ignore": ["src/icons/.svgrrc.js", "src/icons/add-attribute.ts"],
-      "ignoreDependencies": ["@svgr/babel-plugin-add-jsx-attribute"]
+      "ignoreDependencies": [
+        "@babel/template",
+        "@babel/traverse",
+        "@babel/types",
+        "@svgr/babel-plugin-add-jsx-attribute"
+      ]
     },
     "packages/crdt": {
       "ignore": ["src/proto/**"],

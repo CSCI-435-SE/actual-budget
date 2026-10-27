@@ -967,7 +967,12 @@ function SankeyInner({ widget }: SankeyInnerProps) {
                       color: theme.pageTextSubdued,
                     }}
                   >
-                    <Text style={{ fontSize: 'var(--font-size-16)', textAlign: 'center' }}>
+                    <Text
+                      style={{
+                        fontSize: 'var(--font-size-16)',
+                        textAlign: 'center',
+                      }}
+                    >
                       {graphMode === 'budgeted' && (
                         <Trans>
                           No data available for this period. Try budgeting

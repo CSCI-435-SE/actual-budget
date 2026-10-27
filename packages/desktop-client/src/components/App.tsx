@@ -28,10 +28,10 @@ import { loadGlobalPrefs } from '#prefs/prefsSlice';
 import { useDispatch, useSelector, useStore } from '#redux';
 import {
   CustomThemeStyle,
+  FontSizeStyle,
   hasHiddenScrollbars,
   ThemeStyle,
   useTheme,
-  FontSizeStyle,
 } from '#style';
 import { signOut } from '#users/usersSlice';
 import { ExposeNavigate } from '#util/router-tools';

@@ -25,7 +25,12 @@ type KeybindingProps = {
 
 function Keybinding({ keyName }: KeybindingProps) {
   return (
-    <Text style={{ fontSize: 'var(--font-size-10)', color: theme.menuKeybindingText }}>
+    <Text
+      style={{
+        fontSize: 'var(--font-size-10)',
+        color: theme.menuKeybindingText,
+      }}
+    >
       {keyName}
     </Text>
   );
