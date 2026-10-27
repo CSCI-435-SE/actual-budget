@@ -12,8 +12,8 @@ import { listen } from '@actual-app/core/platform/client/connection';
 import { getNormalisedString } from '@actual-app/core/shared/normalisation';
 
 import { Search } from '#components/common/Search';
-import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { useTableNavigator } from '#components/table';
+import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { SelectedProvider, useSelected } from '#hooks/useSelected';
 import { useTags } from '#hooks/useTags';
 

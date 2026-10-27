@@ -140,7 +140,13 @@ export function MobileBankSyncAccountEditPage() {
               isMobile
             />
 
-            <Text style={{ fontSize: 'var(--font-size-15)', marginTop: 20, marginBottom: 10 }}>
+            <Text
+              style={{
+                fontSize: 'var(--font-size-15)',
+                marginTop: 20,
+                marginBottom: 10,
+              }}
+            >
               <Trans>Options</Trans>
             </Text>
 

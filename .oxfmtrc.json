@@ -4,6 +4,7 @@
   "trailingComma": "all",
   "arrowParens": "avoid",
   "printWidth": 80,
+  "ignorePatterns": ["ai-logs/**", "docs/**"],
   "experimentalSortImports": {
     "groups": [
       "react",

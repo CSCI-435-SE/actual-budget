@@ -1,15 +1,15 @@
 // @ts-strict-ignore
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Must be before any import that triggers main.ts
-vi.mock('#server/main', () => ({
-  getDefaultDocumentDir: () => '/mock/documents',
-}));
-
 import * as asyncStorage from '#platform/server/asyncStorage';
 import { runHandler } from '#server/mutators';
 
 import { app } from './app';
+
+// vi.mock is hoisted above the imports, so this applies before main.ts loads
+vi.mock('#server/main', () => ({
+  getDefaultDocumentDir: () => '/mock/documents',
+}));
 
 const saveGlobalPrefs = app.handlers['save-global-prefs'];
 const loadGlobalPrefs = app.handlers['load-global-prefs'];

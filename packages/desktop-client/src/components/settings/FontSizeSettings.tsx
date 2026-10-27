@@ -13,12 +13,12 @@ export function FontSizeSettings() {
   const { t } = useTranslation();
   const [fontSize, setFontSize] = useGlobalPref('fontSize');
 
-const fontSizeOptions: SelectOption[] = [
-  ['0.85', t('Small')],
-  ['1', t('Medium (Default)')],
-  ['1.15', t('Large')],
-  ['1.3', t('Extra Large')]
-];
+  const fontSizeOptions: SelectOption[] = [
+    ['0.85', t('Small')],
+    ['1', t('Medium (Default)')],
+    ['1.15', t('Large')],
+    ['1.3', t('Extra Large')],
+  ];
 
   return (
     <Setting
