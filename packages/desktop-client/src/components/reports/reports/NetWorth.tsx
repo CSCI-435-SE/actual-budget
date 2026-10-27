@@ -372,7 +372,10 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
             </PrivacyFilter>
           </View>
           <PrivacyFilter>
-            <Change amount={data.totalChange} />
+            <Change
+              amount={data.totalChange}
+              percent={data.totalChangePercent}
+            />
           </PrivacyFilter>
         </View>
 
