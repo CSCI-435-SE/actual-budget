@@ -41,6 +41,53 @@ describe('Change', () => {
     expect(getComputedStyle(el).color).toBe(theme.reportsNumberNegative);
   });
 
+  it('renders a positive percentage with a plus sign', () => {
+    render(
+      <TestProviders>
+        <Change amount={12345} percent={12.5} />
+      </TestProviders>,
+    );
+    const el = screen.getByText('+123.45 (+12.5%)');
+    expect(getComputedStyle(el).color).toBe(theme.reportsNumberPositive);
+  });
+
+  it('renders a negative percentage with a minus sign', () => {
+    render(
+      <TestProviders>
+        <Change amount={-9876} percent={-7.3} />
+      </TestProviders>,
+    );
+    const el = screen.getByText('-98.76 (-7.3%)');
+    expect(getComputedStyle(el).color).toBe(theme.reportsNumberNegative);
+  });
+
+  it('rounds the percentage to one decimal place', () => {
+    render(
+      <TestProviders>
+        <Change amount={1000} percent={100 / 3} />
+      </TestProviders>,
+    );
+    expect(screen.getByText('+10.00 (+33.3%)')).toBeInTheDocument();
+  });
+
+  it('renders a zero percentage without a sign', () => {
+    render(
+      <TestProviders>
+        <Change amount={0} percent={0} />
+      </TestProviders>,
+    );
+    expect(screen.getByText('+0.00 (0.0%)')).toBeInTheDocument();
+  });
+
+  it('renders a placeholder when the percentage is null', () => {
+    render(
+      <TestProviders>
+        <Change amount={1000} percent={null} />
+      </TestProviders>,
+    );
+    expect(screen.getByText('+10.00 (--)')).toBeInTheDocument();
+  });
+
   it('merges custom style prop', () => {
     render(
       <TestProviders>
