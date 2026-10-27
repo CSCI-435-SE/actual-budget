@@ -80,6 +80,11 @@ export async function saveGlobalPrefs(prefs: GlobalPrefs) {
   if (!prefs) {
     return 'ok';
   }
+
+  if (prefs.iconSize !== undefined) {
+    await asyncStorage.setItem('icon-size', prefs.iconSize);
+  }
+
   if (prefs.fontSize !== undefined) {
     await asyncStorage.setItem('font-size', prefs.fontSize);
   }
@@ -155,6 +160,7 @@ export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
   const {
     'floating-sidebar': floatingSidebar,
     'font-size': fontSize,
+    'icon-size': iconSize,
     'category-expanded-state': categoryExpandedState,
     'max-months': maxMonths,
     'document-dir': documentDir,
@@ -173,6 +179,7 @@ export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
   } = await asyncStorage.multiGet([
     'floating-sidebar',
     'font-size',
+    'icon-size',
     'category-expanded-state',
     'max-months',
     'document-dir',
@@ -192,6 +199,7 @@ export async function loadGlobalPrefs(): Promise<GlobalPrefs> {
   return {
     floatingSidebar: floatingSidebar === 'true',
     fontSize: fontSize || '1',
+    iconSize: iconSize || '1',
     categoryExpandedState: stringToInteger(categoryExpandedState || '') || 0,
     maxMonths: stringToInteger(maxMonths || '') || 1,
     documentDir: documentDir || getDefaultDocumentDir(),

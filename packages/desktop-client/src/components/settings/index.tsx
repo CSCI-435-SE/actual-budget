@@ -33,6 +33,7 @@ import { ExperimentalFeatures } from './Experimental';
 import { ExportBudget } from './Export';
 import { FormatSettings } from './Format';
 import { FontSizeSettings } from './FontSizeSettings';
+import { IconSizeSettings } from './IconSizeSettings';
 import { LanguageSettings } from './LanguageSettings';
 import { RepairTransactions } from './RepairTransactions';
 import { ResetCache, ResetSync } from './Reset';
@@ -251,6 +252,7 @@ export function Settings() {
         <About />
         <ThemeSettings />
         <FontSizeSettings />
+        <IconSizeSettings />
         <FormatSettings />
         <LanguageSettings />
         <AuthSettings />

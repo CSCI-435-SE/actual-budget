@@ -120,6 +120,7 @@ import type {
   OnDropCallback,
 } from '#hooks/useDragDrop';
 import { useFormat } from '#hooks/useFormat';
+import { scaledIconSize } from '#style';
 import { useLocalPref } from '#hooks/useLocalPref';
 import { useMergedRefs } from '#hooks/useMergedRefs';
 import { usePrevious } from '#hooks/usePrevious';
@@ -406,6 +407,8 @@ const TransactionHeader = memo(
 TransactionHeader.displayName = 'TransactionHeader';
 
 function ClearedColumnLegend() {
+  const iconSize = scaledIconSize(13);
+
   const legendItems = [
     {
       Icon: SvgCheckCircleHollow,
@@ -454,7 +457,9 @@ function ClearedColumnLegend() {
             marginTop: 6,
           }}
         >
-          <Icon style={{ width: 13, height: 13, color, flexShrink: 0 }} />
+          <Icon
+            style={{ width: iconSize, height: iconSize, color, flexShrink: 0 }}
+          />
           <Text>{label}</Text>
         </View>
       ))}
@@ -483,6 +488,8 @@ function StatusCell({
   onEdit,
   onUpdate,
 }: StatusCellProps) {
+  const statusIconSize = scaledIconSize(13);
+
   const isClearedField =
     status === 'cleared' || status === 'reconciled' || status == null;
   const statusProps = getStatusProps(status);
@@ -540,8 +547,8 @@ function StatusCell({
       >
         {createElement(statusProps.Icon, {
           style: {
-            width: 13,
-            height: 13,
+            width: statusIconSize,
+            height: statusIconSize,
             color: statusColor,
             marginTop: status === 'due' ? -1 : 0,
           },
@@ -664,6 +671,7 @@ function PayeeCell({
   const transferAccount = transferAccountsByTransaction[transaction.id];
 
   const displayPayee = useDisplayPayee({ transaction });
+  const splitIconSize = scaledIconSize(14);
 
   return transaction.is_parent ? (
     <Cell
@@ -721,8 +729,8 @@ function PayeeCell({
           <SvgSplit
             style={{
               color: 'inherit',
-              width: 14,
-              height: 14,
+              width: splitIconSize,
+              height: splitIconSize,
               marginRight: 5,
               flexShrink: 0,
             }}
@@ -888,7 +896,6 @@ const payeeIconButtonStyle = {
   height: 23,
   color: 'inherit',
 };
-const scheduleIconStyle = { width: 13, height: 13 };
 const transferIconStyle = { width: 10, height: 10 };
 
 type PayeeIconsProps = {
@@ -905,6 +912,11 @@ function PayeeIcons({
   onNavigateToSchedule,
 }: PayeeIconsProps) {
   const { t } = useTranslation();
+  const scheduleIconSize = scaledIconSize(13);
+  const scheduleIconStyle = {
+    width: scheduleIconSize,
+    height: scheduleIconSize,
+  };
 
   const scheduleId = transaction.schedule;
   const { isLoading, schedules = [] } = useCachedSchedules();
@@ -1453,6 +1465,7 @@ const Transaction = memo(function Transaction({
 
   // Merge refs: drag on row, drop on outer view
   const rowRef = useMergedRefs(triggerRef, dragRef);
+  const chevronIconSize = scaledIconSize(14);
 
   // Check if this row is a valid drop target for the currently dragged transaction
   const isValidDropTarget = useMemo(() => {
@@ -1847,8 +1860,8 @@ const Transaction = memo(function Transaction({
                   <SvgCheveronDown
                     style={{
                       color: 'inherit',
-                      width: 14,
-                      height: 14,
+                      width: chevronIconSize,
+                      height: chevronIconSize,
                       transition: 'transform .08s',
                       transform: expanded ? 'rotateZ(0)' : 'rotateZ(-90deg)',
                     }}
@@ -1923,8 +1936,8 @@ const Transaction = memo(function Transaction({
                   <Text style={{ flex: 1 }}>{label}</Text>
                   <SvgCheveronDown
                     style={{
-                      width: 14,
-                      height: 14,
+                      width: chevronIconSize,
+                      height: chevronIconSize,
                       marginLeft: 0,
                       color: theme.pageTextSubdued,
                     }}

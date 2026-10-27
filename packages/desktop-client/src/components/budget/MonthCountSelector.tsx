@@ -6,6 +6,7 @@ import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
 import { Link } from '#components/common/Link';
+import { scaledIconSize } from '#style';
 
 import { useBudgetMonthCount } from './BudgetMonthCountContext';
 
@@ -15,6 +16,7 @@ type CalendarProps = {
 };
 
 function Calendar({ color, onClick }: CalendarProps) {
+  const iconSize = scaledIconSize(18);
   return (
     <Link
       variant="button"
@@ -22,7 +24,7 @@ function Calendar({ color, onClick }: CalendarProps) {
       onPress={onClick}
       style={{ padding: 2, marginRight: 3 }}
     >
-      <SvgCalendar style={{ width: 18, height: 18, color }} />
+      <SvgCalendar style={{ width: iconSize, height: iconSize, color }} />
     </Link>
   );
 }

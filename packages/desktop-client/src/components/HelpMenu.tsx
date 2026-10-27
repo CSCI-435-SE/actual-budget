@@ -13,6 +13,7 @@ import { useToggle } from 'usehooks-ts';
 import { useFeatureFlag } from '#hooks/useFeatureFlag';
 import { pushModal } from '#modals/modalsSlice';
 import { useDispatch } from '#redux';
+import { scaledIconSize } from '#style';
 
 import { useTour } from './tour/TourProvider';
 
@@ -55,7 +56,7 @@ type HelpButtonProps = {
 
 const HelpButton = forwardRef<HTMLButtonElement, HelpButtonProps>(
   ({ onPress }, ref) => {
-    const size = 15;
+    const size = scaledIconSize(15);
     return (
       <Button
         variant="bare"
@@ -68,7 +69,7 @@ const HelpButton = forwardRef<HTMLButtonElement, HelpButtonProps>(
           gap: 4,
         }}
       >
-        <SvgHelp width={size} height={size} />
+        <SvgHelp style={{ width: size, height: size }} />
         <Trans>Help</Trans>
       </Button>
     );

@@ -10,6 +10,8 @@ import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import { css } from '@emotion/css';
 
+import { scaledIconSize } from '#style';
+
 type SearchProps = {
   ref?: Ref<HTMLInputElement>;
   value: string;
@@ -32,6 +34,8 @@ export function Search({
   style,
 }: SearchProps) {
   const { t } = useTranslation();
+  const searchIconSize = scaledIconSize(13);
+  const clearIconSize = scaledIconSize(8);
 
   const [focused, setFocused] = useState(false);
 
@@ -61,8 +65,8 @@ export function Search({
     >
       <SvgSearchAlternate
         style={{
-          width: 13,
-          height: 13,
+          width: searchIconSize,
+          height: searchIconSize,
           flexShrink: 0,
           color: value ? theme.menuItemTextSelected : 'inherit',
           margin: 5,
@@ -114,7 +118,9 @@ export function Search({
             }}
             onPress={() => onChange('')}
           >
-            <SvgRemove style={{ width: 8, height: 8 }} />
+            <SvgRemove
+              style={{ width: clearIconSize, height: clearIconSize }}
+            />
           </Button>
         </View>
       )}

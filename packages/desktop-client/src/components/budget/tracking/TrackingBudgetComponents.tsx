@@ -31,6 +31,7 @@ import { Field, SheetCell } from '#components/table';
 import type { SheetCellProps } from '#components/table';
 import { useCategoryScheduleGoalTemplateIndicator } from '#hooks/useCategoryScheduleGoalTemplateIndicator';
 import { useFormat } from '#hooks/useFormat';
+import { scaledIconSize } from '#style';
 import { useNavigate } from '#hooks/useNavigate';
 import { useSheetValue } from '#hooks/useSheetValue';
 import { useUndo } from '#hooks/useUndo';
@@ -219,6 +220,7 @@ export const CategoryMonth = memo(function CategoryMonth({
   const { showUndoNotification } = useUndo();
 
   const navigate = useNavigate();
+  const scheduleIconSize = scaledIconSize(12);
 
   const { schedule, scheduleStatus, isScheduleRecurring, description } =
     useCategoryScheduleGoalTemplateIndicator({
@@ -442,9 +444,19 @@ export const CategoryMonth = memo(function CategoryMonth({
                 }
               >
                 {isScheduleRecurring ? (
-                  <SvgArrowsSynchronize style={{ width: 12, height: 12 }} />
+                  <SvgArrowsSynchronize
+                    style={{
+                      width: scheduleIconSize,
+                      height: scheduleIconSize,
+                    }}
+                  />
                 ) : (
-                  <SvgCalendar3 style={{ width: 12, height: 12 }} />
+                  <SvgCalendar3
+                    style={{
+                      width: scheduleIconSize,
+                      height: scheduleIconSize,
+                    }}
+                  />
                 )}
               </Button>
             </View>

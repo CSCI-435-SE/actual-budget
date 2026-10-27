@@ -33,6 +33,7 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { useSyncStatus } from '#hooks/useSyncStatus';
 import { useDispatch } from '#redux';
 import * as bindings from '#spreadsheet/bindings';
+import { scaledIconSize } from '#style';
 
 import { AccountSyncCheck } from './accounts/AccountSyncCheck';
 import { AnimatedRefresh } from './AnimatedRefresh';
@@ -76,7 +77,9 @@ function PrivacyButton({ style }: PrivacyButtonProps) {
     useSyncedPref('isPrivacyEnabled');
   const isPrivacyEnabled = String(isPrivacyEnabledPref) === 'true';
 
-  const privacyIconStyle = { width: 15, height: 15 };
+  const iconSize = scaledIconSize(15);
+  const privacyIconStyle = { width: iconSize, height: iconSize };
+
 
   useHotkeys(
     'shift+ctrl+p, shift+cmd+p, shift+meta+p',

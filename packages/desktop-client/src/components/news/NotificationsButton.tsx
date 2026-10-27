@@ -9,6 +9,7 @@ import { View } from '@actual-app/components/view';
 
 import { useNavigate } from '#hooks/useNavigate';
 import { useNewsFeed } from '#hooks/useNewsFeed';
+import { scaledIconSize } from '#style';
 
 // Keeps the badge small; the feed only ever holds a couple of dozen entries.
 const MAX_DISPLAYED_COUNT = 9;
@@ -36,6 +37,8 @@ export function NotificationsButton() {
       ? `${MAX_DISPLAYED_COUNT}+`
       : String(unseenCount);
 
+  const iconSize = scaledIconSize(15);
+
   return (
     <Tooltip placement="bottom end" content={label}>
       <View style={{ position: 'relative' }}>
@@ -45,7 +48,7 @@ export function NotificationsButton() {
           onPress={() => void navigate('/notifications')}
           data-testid="notifications-button"
         >
-          <SvgNotificationsOutline style={{ width: 15, height: 15 }} />
+          <SvgNotificationsOutline style={{ width: iconSize, height: iconSize }} />
         </Button>
         {unseenCount > 0 && (
           <Text

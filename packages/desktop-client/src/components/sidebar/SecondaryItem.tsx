@@ -11,6 +11,8 @@ import { Block } from '@actual-app/components/block';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
+import { scaledIconSize } from '#style';
+
 import { accountNameStyle } from './Account';
 import { ItemContent } from './ItemContent';
 
@@ -39,15 +41,17 @@ export function SecondaryItem({
   indent = 0,
   dataTestId,
 }: SecondaryItemProps) {
+  const iconSize = scaledIconSize(12);
+
   const content = (
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        height: 16,
+        minHeight: 16,
       }}
     >
-      {Icon && <Icon width={12} height={12} />}
+      {Icon && <Icon style={{ width: iconSize, height: iconSize }} />}
       <Block style={{ marginLeft: Icon ? 8 : 0, color: 'inherit' }}>
         {title}
       </Block>
