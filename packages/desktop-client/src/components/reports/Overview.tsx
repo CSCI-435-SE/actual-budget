@@ -68,6 +68,7 @@ import { MarkdownCard } from './reports/MarkdownCard';
 import { MissingReportCard } from './reports/MissingReportCard';
 import { MonteCarloCard } from './reports/monte-carlo/MonteCarloCard';
 import { NetWorthCard } from './reports/NetWorthCard';
+import { PersonalInflationCard } from './reports/PersonalInflationCard';
 import { SankeyCard } from './reports/SankeyCard';
 import { SpendingCard } from './reports/SpendingCard';
 import { SummaryCard } from './reports/SummaryCard';
@@ -604,6 +605,10 @@ export function Overview({ dashboard }: OverviewProps) {
                               text: t('Age of Money'),
                             },
                             {
+                              name: 'personal-inflation-card' as const,
+                              text: t('Personal inflation'),
+                            },
+                            {
                               name: 'spending-card' as const,
                               text: t('Spending analysis'),
                             },
@@ -836,6 +841,15 @@ export function Overview({ dashboard }: OverviewProps) {
                           />
                         ) : widget.type === 'age-of-money-card' ? (
                           <AgeOfMoneyCard
+                            widgetId={item.i}
+                            isEditing={isEditing}
+                            meta={widget.meta}
+                            onMetaChange={newMeta =>
+                              onMetaChange(item, newMeta)
+                            }
+                          />
+                        ) : widget.type === 'personal-inflation-card' ? (
+                          <PersonalInflationCard
                             widgetId={item.i}
                             isEditing={isEditing}
                             meta={widget.meta}

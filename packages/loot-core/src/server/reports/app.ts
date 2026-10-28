@@ -10,6 +10,11 @@ import { undoable } from '#server/undo';
 import { q } from '#shared/query';
 import type { CustomReportData, CustomReportEntity } from '#types/models';
 
+import {
+  getPersonalInflation,
+  getPersonalInflationSeries,
+} from './personal-inflation';
+
 export const reportModel = {
   validate(
     report: Omit<CustomReportEntity, 'tombstone'>,
@@ -178,6 +183,8 @@ export type ReportsHandlers = {
   'report/create': typeof createReport;
   'report/update': typeof updateReport;
   'report/delete': typeof deleteReport;
+  'reports/personal-inflation': typeof getPersonalInflation;
+  'reports/personal-inflation-series': typeof getPersonalInflationSeries;
 };
 
 // Expose functions to the client
@@ -187,3 +194,5 @@ app.method('report/get', getReports);
 app.method('report/create', mutator(undoable(createReport)));
 app.method('report/update', mutator(undoable(updateReport)));
 app.method('report/delete', mutator(undoable(deleteReport)));
+app.method('reports/personal-inflation', getPersonalInflation);
+app.method('reports/personal-inflation-series', getPersonalInflationSeries);
