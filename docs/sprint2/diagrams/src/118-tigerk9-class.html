@@ -1,0 +1,555 @@
+<!doctype html>
+<!--
+  Source for docs/sprint2/diagrams/118-tigerk9-class.png.
+  Boxes are positioned HTML; connectors and callout leaders are drawn by the
+  script at the bottom from the EDGES / LEADERS lists. Render with
+  docs/sprint2/diagrams/src/render.cjs.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Issue 118 Class Diagram</title>
+    <style>
+      :root {
+        --navy: #1f3864;
+        --green: #0b7a5c;
+        --green-bg: #e3f4ec;
+        --amber: #b7791f;
+        --amber-border: #c9922f;
+        --amber-bg: #fdf6e3;
+        --line: #1f3864;
+        --muted: #5b6475;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #fff;
+        font-family: 'DejaVu Sans', 'Liberation Sans', sans-serif;
+        color: #1b2333;
+      }
+      #canvas {
+        position: relative;
+        width: 2300px;
+        height: 1560px;
+        border: 2px solid #c9ceda;
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .title {
+        height: 74px;
+        background: #f0f1f7;
+        border-bottom: 2px solid #c9ceda;
+        padding: 20px 34px;
+        font-size: 25px;
+        font-weight: bold;
+        color: var(--navy);
+      }
+      .title span {
+        font-weight: normal;
+        color: var(--muted);
+        font-size: 19px;
+        margin-left: 14px;
+      }
+      svg#wires {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .box {
+        position: absolute;
+        background: #fff;
+        border: 2px solid var(--navy);
+        border-radius: 6px;
+        font-family: 'DejaVu Sans Mono', monospace;
+        font-size: 14.5px;
+        z-index: 2;
+      }
+      .box .hdr {
+        background: var(--navy);
+        color: #fff;
+        text-align: center;
+        padding: 7px 14px 8px;
+      }
+      .box .st {
+        font-size: 12.5px;
+        opacity: 0.9;
+      }
+      .box .nm {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 2px;
+      }
+      .box .sec {
+        padding: 8px 14px;
+        border-top: 1.5px solid #c9ceda;
+        line-height: 1.6;
+        white-space: pre;
+      }
+      .box .sec:first-of-type {
+        border-top: none;
+      }
+      .box.mod {
+        border-color: var(--green);
+        box-shadow: 0 0 0 4px var(--green-bg);
+      }
+      .box.mod .hdr {
+        background: var(--green);
+      }
+      .chg {
+        background: var(--green-bg);
+        color: #064e3b;
+        margin: 0 -14px;
+        padding: 0 14px;
+        font-weight: bold;
+      }
+      .note {
+        color: var(--muted);
+      }
+      .callout {
+        position: absolute;
+        background: var(--amber-bg);
+        border: 2px dashed var(--amber-border);
+        border-radius: 8px;
+        padding: 12px 16px 13px;
+        font-size: 14.5px;
+        line-height: 1.45;
+        z-index: 3;
+      }
+      .callout b {
+        display: block;
+        color: var(--amber);
+        font-size: 16.5px;
+        margin-bottom: 4px;
+      }
+      .callout code {
+        font-family: 'DejaVu Sans Mono', monospace;
+        font-size: 13.5px;
+      }
+      .elabel {
+        font-family: 'DejaVu Sans Mono', monospace;
+        font-size: 13px;
+        fill: var(--muted);
+      }
+      .elabel.g {
+        fill: var(--green);
+        font-weight: bold;
+      }
+      .legend {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 120px;
+        border-top: 2px solid #c9ceda;
+        padding: 16px 34px;
+        font-size: 15px;
+        color: #344054;
+      }
+      .legend .row {
+        display: flex;
+        gap: 34px;
+        align-items: center;
+        height: 44px;
+      }
+      .legend .item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+      }
+      .sw {
+        display: inline-block;
+        width: 26px;
+        height: 18px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas">
+      <div class="title">
+        Issue #118 — Pinned sidebar closes context menus — UML Class Diagram
+        <span>packages/desktop-client · fix: SidebarProvider tracks popovers only while floating</span>
+      </div>
+
+      <!-- ===== Sidebar side (left) ===== -->
+      <div class="box" id="ctxValue" style="left: 40px; top: 300px">
+        <div class="hdr">
+          <div class="st">«type»</div>
+          <div class="nm">SidebarContextValue</div>
+        </div>
+        <div class="sec">+ hidden : boolean
++ floating : boolean
++ reflows : boolean</div>
+        <div class="sec">+ setHidden(v : boolean)
++ setHoveringSidebar(v : boolean)
++ onMenuButtonHoverStart()
++ onMenuButtonHoverEnd()</div>
+      </div>
+
+      <div class="box" id="useSidebar" style="left: 40px; top: 720px">
+        <div class="hdr">
+          <div class="st">«hook»</div>
+          <div class="nm">useSidebar</div>
+        </div>
+        <div class="sec">+ useSidebar() : SidebarContextValue</div>
+      </div>
+
+      <div class="box" id="floatable" style="left: 40px; top: 990px">
+        <div class="hdr">
+          <div class="st">«component» sidebar/index.tsx</div>
+          <div class="nm">FloatableSidebar</div>
+        </div>
+        <div class="sec">+ onMouseOver() <span class="note">{only if floating}</span>
++ onMouseLeave() <span class="note">{only if floating}</span>
+<span class="note">slides in/out using hidden</span></div>
+      </div>
+
+      <div class="box" id="titlebar" style="left: 40px; top: 1210px">
+        <div class="hdr">
+          <div class="st">«component»</div>
+          <div class="nm">Titlebar</div>
+        </div>
+        <div class="sec">+ menuButton <span class="note">{rendered only if floating}</span></div>
+      </div>
+
+      <!-- ===== Center ===== -->
+      <div class="box" id="globalPref" style="left: 660px; top: 120px">
+        <div class="hdr">
+          <div class="st">«hook»</div>
+          <div class="nm">useGlobalPref</div>
+        </div>
+        <div class="sec">+ useGlobalPref('floatingSidebar')
+    : [boolean, setter]</div>
+      </div>
+
+      <div class="box" id="responsive" style="left: 1030px; top: 120px">
+        <div class="hdr">
+          <div class="st">«hook»</div>
+          <div class="nm">useResponsive</div>
+        </div>
+        <div class="sec">+ useResponsive() : { width }</div>
+      </div>
+
+      <div class="box mod" id="provider" style="left: 600px; top: 330px">
+        <div class="hdr">
+          <div class="st">«component» · MODIFIED</div>
+          <div class="nm">SidebarProvider</div>
+        </div>
+        <div class="sec">- hidden : boolean
+- hoveringSidebar : boolean
+<span class="chg" id="m-hovPop">- hoveringPopover : boolean   ← reset when pinned</span>
+- hoveringMenuButton : boolean
+- floating : boolean  <span class="note">{= pref || width &lt; 668}</span>
+- HOVER_HIDE_DELAY : 350 ms  <span class="note">{const}</span></div>
+        <div class="sec"><span class="chg" id="m-listen">~ «effect» popover listener [deps: floating]
+    attaches handlePointerOver(e) only if floating</span>
+~ «layoutEffect» schedule hide
+    setHidden(true) after HOVER_HIDE_DELAY
+<span class="chg" id="m-close">~ «effect» close menu when hidden
+    if (floating &amp;&amp; hidden &amp;&amp; !hoveringPopover)</span>
++ render() : SidebarContext.Provider</div>
+      </div>
+
+      <div class="box mod" id="test" style="left: 640px; top: 1010px">
+        <div class="hdr">
+          <div class="st">«test» Vitest · MODIFIED</div>
+          <div class="nm">SidebarProvider.test</div>
+        </div>
+        <div class="sec"><span class="chg">~ 3 popover tests now set floating</span>
+<span class="chg">+ ignores popover hover when pinned</span>
+<span class="chg">+ does not close the menu when pinned</span>
+<span class="chg">+ stops tracking when switched to pinned</span></div>
+      </div>
+
+      <!-- ===== Context menu side (right) ===== -->
+      <div class="box" id="schedRow" style="left: 1880px; top: 120px">
+        <div class="hdr">
+          <div class="st">«component» SchedulesTable.tsx</div>
+          <div class="nm">ScheduleRow</div>
+        </div>
+        <div class="sec">- rowRef : RefObject
++ "…" onPress()
+  <span class="note">fires 'contextmenu' on rowRef</span></div>
+      </div>
+
+      <div class="box" id="useCtx" style="left: 1440px; top: 120px">
+        <div class="hdr">
+          <div class="st">«hook»</div>
+          <div class="nm">useContextMenu</div>
+        </div>
+        <div class="sec">+ triggerRef : RefObject
++ items : ContextMenuItem[]
++ handleContextMenu()</div>
+      </div>
+
+      <div class="box" id="slice" style="left: 1440px; top: 420px">
+        <div class="hdr">
+          <div class="st">«Redux slice»</div>
+          <div class="nm">contextMenuSlice</div>
+        </div>
+        <div class="sec">- isOpen : boolean
+- position : { x, y }
+- items : ContextMenuItem[]</div>
+        <div class="sec">+ addItems(items)
++ setContextMenuPosition(pos)
+<span id="m-closeAction">+ closeContextMenu()</span></div>
+      </div>
+
+      <div class="box" id="ctxMenu" style="left: 1440px; top: 800px">
+        <div class="hdr">
+          <div class="st">«component» mounted once in FinancesApp</div>
+          <div class="nm">ContextMenu</div>
+        </div>
+        <div class="sec">+ handleOpenChange(open : boolean)
++ handleMenuSelect(itemName : string)</div>
+      </div>
+
+      <div class="box" id="popover" style="left: 1440px; top: 1110px">
+        <div class="hdr">
+          <div class="st">«component» component-library</div>
+          <div class="nm">Popover</div>
+        </div>
+        <div class="sec">+ data-popover : DOM attribute
++ isOpen : boolean
++ isNonModal : boolean</div>
+      </div>
+
+      <!-- ===== Callouts ===== -->
+      <div class="callout" id="c1" style="left: 1020px; top: 1230px; width: 390px">
+        <b>① Root cause: hidden DOM coupling</b>
+        SidebarProvider never imports Popover. It finds <i>any</i>
+        <code>[data-popover]</code> through a document-level
+        <code>pointerover</code> listener, so it reacted to menus it didn't
+        open, like a schedule row's "…" menu.
+      </div>
+
+      <div class="callout" id="c2" style="left: 1100px; top: 290px; width: 320px">
+        <b>② Fix: only track while floating</b>
+        A pinned sidebar is always visible, so <code>hidden</code> means
+        nothing there. The listener is attached only when floating, and
+        <code>hoveringPopover</code> resets on a mode switch. Chosen over
+        gating only the close (Option A), which still re-rendered every
+        <code>useSidebar</code> consumer on each popover hover.
+      </div>
+
+      <div class="callout" id="c3" style="left: 1100px; top: 750px; width: 280px">
+        <b>③ Close gate kept as a backstop</b>
+        The close effect also requires <code>floating</code>. Without it,
+        switching floating → pinned while a popover is hovered would fire one
+        stray <code>closeContextMenu()</code>.
+      </div>
+
+      <div class="callout" id="c4" style="left: 1820px; top: 420px; width: 440px">
+        <b>④ One shared menu for the whole app</b>
+        Every context menu goes through one slice and one
+        <code>&lt;ContextMenu&gt;</code>, so <code>closeContextMenu()</code>
+        closes whatever is open. The sidebar can't tell its own menus apart;
+        that floating-mode work is the issue author's follow-up.
+      </div>
+
+      <div class="callout" id="c5" style="left: 40px; top: 120px; width: 470px">
+        <b>⑤ Composition, not just association</b>
+        The provider builds a new SidebarContextValue every render; it can't
+        exist outside the provider. Consumers only reach it through
+        <code>useSidebar()</code>.
+      </div>
+
+      <div class="legend">
+        <div class="row">
+          <div class="item"><svg width="70" height="20"><path d="M2 10 l12 -7 l12 7 l-12 7 z" fill="#1f3864" /><line x1="26" y1="10" x2="68" y2="10" stroke="#1f3864" stroke-width="2" /></svg>Composition</div>
+          <div class="item"><svg width="70" height="20"><line x1="2" y1="10" x2="66" y2="10" stroke="#1f3864" stroke-width="2" /><path d="M54 3 L67 10 L54 17" fill="none" stroke="#1f3864" stroke-width="2" /></svg>Association (navigable)</div>
+          <div class="item"><svg width="70" height="20"><line x1="2" y1="10" x2="66" y2="10" stroke="#1f3864" stroke-width="2" stroke-dasharray="7 5" /><path d="M54 3 L67 10 L54 17" fill="none" stroke="#1f3864" stroke-width="2" /></svg>Dependency («use», «dispatch»)</div>
+          <div class="item"><svg width="70" height="20"><line x1="2" y1="10" x2="66" y2="10" stroke="#0b7a5c" stroke-width="3" stroke-dasharray="7 5" /><path d="M54 3 L67 10 L54 17" fill="none" stroke="#0b7a5c" stroke-width="3" /></svg>Changed relationship</div>
+          <div class="item"><span class="sw" style="background: #1f3864"></span>Existing element</div>
+          <div class="item"><span class="sw" style="background: #0b7a5c"></span>Modified element</div>
+          <div class="item"><span class="sw" style="background: #e3f4ec; border: 1px solid #0b7a5c"></span>Changed / new member</div>
+        </div>
+        <div class="row">
+          <div class="item"><code style="font-family: 'DejaVu Sans Mono'">- / + / ~</code>&nbsp;private state / public / internal effect</div>
+          <div class="item">React function components and hooks are modeled as classes; «effect» rows are anonymous <code style="font-family: 'DejaVu Sans Mono'">useEffect</code> calls, named here by purpose</div>
+          <div class="item" style="color: #b7791f; font-weight: bold">Amber boxes = design decision callouts</div>
+        </div>
+      </div>
+
+      <svg id="wires"></svg>
+    </div>
+
+    <script>
+      // [from, fromSide, to, toSide, kind, label, opts]
+      // kind: comp (diamond at `from`), assoc, dep, depChanged
+      // `straight` lines both ends up on the middle of the boxes' overlap.
+      const EDGES = [
+        ['provider', 'left', 'ctxValue', 'right', 'comp', 'provides', { m1: '1', m2: '1', straight: true, ly: 16 }],
+        ['useSidebar', 'top', 'ctxValue', 'bottom', 'dep', '«reads context»', { straight: true }],
+        ['floatable', 'top', 'useSidebar', 'bottom', 'dep', '«use»', { straight: true }],
+        ['titlebar', 'right', 'useSidebar', 'right', 'dep', '«use»', { via: 'right', pad: 70 }],
+        ['provider', 'top', 'globalPref', 'bottom', 'dep', '«use»', { straight: true }],
+        ['provider', 'top', 'responsive', 'bottom', 'dep', '«use»', { straight: true }],
+        ['provider', 'right', 'slice', 'left', 'depChanged', '«dispatch» closeContextMenu()', { alignTo: 'm-closeAction', lx: 50, ly: -14 }],
+        ['provider', 'right', 'popover', 'left', 'depChanged', '«observes [data-popover]» {only while floating}', { t1: 0.94, t2: 0.3, mid: 1395, lx: -60, ly: 110 }],
+        ['test', 'top', 'provider', 'bottom', 'dep', '«tests»', { straight: true }],
+        ['schedRow', 'left', 'useCtx', 'right', 'dep', '«use»', { m1: '0..*', straight: true }],
+        ['useCtx', 'bottom', 'slice', 'top', 'dep', '«dispatch» addItems()', { straight: true }],
+        ['ctxMenu', 'top', 'slice', 'bottom', 'assoc', 'reads isOpen, items', { m1: '1', m2: '1', straight: true }],
+        ['ctxMenu', 'bottom', 'popover', 'top', 'comp', 'renders', { m1: '1', m2: '1', straight: true }],
+      ];
+
+      // [calloutId, targetElementId]
+      const LEADERS = [
+        ['c1', 'e-provider-popover'],
+        ['c2', 'm-listen'],
+        ['c3', 'm-close'],
+        ['c4', 'm-closeAction'],
+        ['c5', 'e-provider-ctxValue'],
+      ];
+
+      const NS = 'http://www.w3.org/2000/svg';
+      const canvas = document.getElementById('canvas');
+      const svg = document.getElementById('wires');
+      const C = canvas.getBoundingClientRect();
+      svg.setAttribute('width', C.width);
+      svg.setAttribute('height', C.height);
+
+      svg.innerHTML = `
+        <defs>
+          <marker id="arrow" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="14" markerHeight="14" markerUnits="userSpaceOnUse" orient="auto">
+            <path d="M1 1 L13 7 L1 13" fill="none" stroke="#1f3864" stroke-width="2" />
+          </marker>
+          <marker id="arrowG" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="16" markerHeight="16" markerUnits="userSpaceOnUse" orient="auto">
+            <path d="M1 1 L13 7 L1 13" fill="none" stroke="#0b7a5c" stroke-width="2.4" />
+          </marker>
+          <marker id="diamond" viewBox="0 0 26 16" refX="1" refY="8" markerWidth="26" markerHeight="16" markerUnits="userSpaceOnUse" orient="auto">
+            <path d="M1 8 L13 1 L25 8 L13 15 z" fill="#1f3864" />
+          </marker>
+        </defs>`;
+
+      function rect(id) {
+        const r = document.getElementById(id).getBoundingClientRect();
+        return { x: r.left - C.left, y: r.top - C.top, w: r.width, h: r.height };
+      }
+
+      function anchor(r, side, t) {
+        if (side === 'left') return { x: r.x, y: r.y + r.h * t };
+        if (side === 'right') return { x: r.x + r.w, y: r.y + r.h * t };
+        if (side === 'top') return { x: r.x + r.w * t, y: r.y };
+        return { x: r.x + r.w * t, y: r.y + r.h };
+      }
+
+      const horiz = s => s === 'left' || s === 'right';
+
+      function route(p0, s0, p1, s1, opts) {
+        if (opts.via === 'right') {
+          const x = Math.max(p0.x, p1.x) + opts.pad;
+          return [p0, { x, y: p0.y }, { x, y: p1.y }, p1];
+        }
+        if (horiz(s0) && horiz(s1)) {
+          const mx = opts.mid ?? (p0.x + p1.x) / 2;
+          return [p0, { x: mx, y: p0.y }, { x: mx, y: p1.y }, p1];
+        }
+        if (!horiz(s0) && !horiz(s1)) {
+          const my = opts.mid ?? (p0.y + p1.y) / 2;
+          return [p0, { x: p0.x, y: my }, { x: p1.x, y: my }, p1];
+        }
+        if (horiz(s0)) return [p0, { x: p1.x, y: p0.y }, p1];
+        return [p0, { x: p0.x, y: p1.y }, p1];
+      }
+
+      function el(tag, attrs, text) {
+        const e = document.createElementNS(NS, tag);
+        for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+        if (text) e.textContent = text;
+        svg.appendChild(e);
+        return e;
+      }
+
+      function textWithBg(x, y, str, cls, anchorMode = 'middle') {
+        const t = el('text', { x, y, class: 'elabel ' + cls, 'text-anchor': anchorMode, 'dominant-baseline': 'middle' }, str);
+        const b = t.getBBox();
+        const bg = el('rect', { x: b.x - 4, y: b.y - 2, width: b.width + 8, height: b.height + 4, fill: '#fff' });
+        svg.insertBefore(bg, t);
+      }
+
+      for (const [from, s0, to, s1, kind, label, opts] of EDGES) {
+        const a = rect(from);
+        const b = rect(to);
+        const p0 = anchor(a, s0, opts.t1 ?? 0.5);
+        const p1 = anchor(b, s1, opts.t2 ?? 0.5);
+        if (opts.alignTo) {
+          const r = rect(opts.alignTo);
+          p0.y = p1.y = r.y + r.h / 2;
+        } else if (opts.straight && horiz(s0)) {
+          p0.y = p1.y = (Math.max(a.y, b.y) + Math.min(a.y + a.h, b.y + b.h)) / 2;
+        } else if (opts.straight) {
+          p0.x = p1.x = (Math.max(a.x, b.x) + Math.min(a.x + a.w, b.x + b.w)) / 2;
+        }
+        const pts = route(p0, s0, p1, s1, opts);
+        const changed = kind === 'depChanged';
+        const attrs = {
+          id: `e-${from}-${to}`,
+          d: 'M' + pts.map(p => `${p.x} ${p.y}`).join(' L'),
+          fill: 'none',
+          stroke: changed ? '#0b7a5c' : '#1f3864',
+          'stroke-width': changed ? 3 : 2,
+        };
+        if (kind === 'dep' || changed) attrs['stroke-dasharray'] = '8 6';
+        if (kind === 'comp') attrs['marker-start'] = 'url(#diamond)';
+        else attrs['marker-end'] = changed ? 'url(#arrowG)' : 'url(#arrow)';
+        el('path', attrs);
+
+        // Label on the longest segment.
+        let best = 0;
+        for (let i = 1; i < pts.length; i++) {
+          const len = Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+          if (len > best) {
+            best = len;
+            opts._mid = { x: (pts[i].x + pts[i - 1].x) / 2, y: (pts[i].y + pts[i - 1].y) / 2 };
+          }
+        }
+        const lm = opts._mid;
+        textWithBg(lm.x + (opts.lx ?? 0), lm.y + (opts.ly ?? 0), label, changed ? 'g' : '');
+
+        const mult = (p, side, s) => {
+          const off = { left: [-14, -12], right: [14, -12], top: [14, -14], bottom: [14, 16] }[side];
+          el('text', { x: p.x + off[0], y: p.y + off[1], class: 'elabel', 'text-anchor': side === 'left' ? 'end' : 'start' }, s);
+        };
+        if (opts.m1) mult(p0, s0, opts.m1);
+        if (opts.m2) mult(p1, s1, opts.m2);
+      }
+
+      // Callout leaders: dashed amber line from the callout's nearest edge
+      // to the nearest point of the target (an element or an edge path).
+      for (const [cid, target] of LEADERS) {
+        const c = rect(cid);
+        const t = document.getElementById(target);
+        let tp;
+        if (t instanceof SVGPathElement) {
+          const len = t.getTotalLength();
+          let bestD = Infinity;
+          for (let i = 0; i <= 200; i++) {
+            const p = t.getPointAtLength((len * i) / 200);
+            const cx = Math.min(Math.max(p.x, c.x), c.x + c.w);
+            const cy = Math.min(Math.max(p.y, c.y), c.y + c.h);
+            const d = Math.hypot(p.x - cx, p.y - cy);
+            if (d < bestD) {
+              bestD = d;
+              tp = { x: p.x, y: p.y };
+            }
+          }
+        } else {
+          const r = rect(target);
+          const cx = c.x + c.w / 2;
+          tp = { x: cx < r.x ? r.x : cx > r.x + r.w ? r.x + r.w : cx, y: r.y + r.h / 2 };
+        }
+        const sx = Math.min(Math.max(tp.x, c.x), c.x + c.w);
+        const sy = Math.min(Math.max(tp.y, c.y), c.y + c.h);
+        el('line', { x1: sx, y1: sy, x2: tp.x, y2: tp.y, stroke: '#c9922f', 'stroke-width': 2, 'stroke-dasharray': '5 5' });
+        el('circle', { cx: tp.x, cy: tp.y, r: 4, fill: '#c9922f' });
+      }
+      document.body.dataset.ready = '1';
+    </script>
+  </body>
+</html>
