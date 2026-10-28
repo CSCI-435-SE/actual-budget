@@ -1,0 +1,14 @@
+What did you implement so far in the sprint, and what remains?
+- I'm working on issue #100, which is about subcategories in custom reports. So far I've fixed the first half: unchecking a subcategory in the category selector didn't actually remove it from the report. That happened because the reports have a helper that automatically adds every subcategory back in whenever its parent category is selected. That makes sense for a normal filter like "Category is Food", but not when someone deliberately unchecks one subcategory. I changed the helper so a list chosen in the selector is used exactly as picked. Totals now stay correct whichever boxes are checked. What remains is the second half: letting each subcategory show up as its own bar, line or donut slice instead of always being merged into its parent. 
+What is one thing you learned about the codebase or about software engineering practice?
+- I learned how the reports in Actual are put together. The graphs don't calculate anything themselves, but instead, each report has a "spreadsheet" file that fetches the transactions, groups them into rows and works out the totals, and the graph just draws whatever rows it's given. That made the bug much easier to find, because I only had to follow the data through one or two files instead of every graph type. On the practice side, I learned that the same piece of data can mean different things depending on where it came from. The selector and the filter bar both save an identical "category is one of…" condition, but users mean different things by each. 
+What is one thing you would do differently?
+- I'd settle the open questions before I started making changes. The issue had a few undecided points: whether the expanded subcategory view should be the default, and what should happen when a parent is unchecked but some of its subcategories are still checked. I assumed I'd work those out as I went. But even the first fix depended on how we understand "selected", so I ended up rethinking choices I'd already made. A short conversation brainstorming session at the beginning would've given me a clearer target. In general, I frequently have a problem where I start coding before fully understanding how I want to implement something, which often leads me to have to rework architecture and framework midway through.
+
+
+
+
+
+
+
+

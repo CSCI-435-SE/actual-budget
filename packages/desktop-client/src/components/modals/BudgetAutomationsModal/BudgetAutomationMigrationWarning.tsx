@@ -40,7 +40,13 @@ export function BudgetAutomationMigrationWarning({
           </Trans>
         </Text>
         <details>
-          <summary style={{ cursor: 'pointer', fontSize: 'var(--font-size-11)', opacity: 0.85 }}>
+          <summary
+            style={{
+              cursor: 'pointer',
+              fontSize: 'var(--font-size-11)',
+              opacity: 0.85,
+            }}
+          >
             <Trans>Show original templates</Trans>
           </summary>
           <View

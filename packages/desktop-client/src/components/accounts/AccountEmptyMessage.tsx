@@ -48,7 +48,11 @@ export function AccountEmptyMessage({ onAdd }: AccountEmptyMessageProps) {
         </Button>
 
         <View
-          style={{ marginTop: 20, fontSize: 'var(--font-size-13)', color: theme.tableTextLight }}
+          style={{
+            marginTop: 20,
+            fontSize: 'var(--font-size-13)',
+            color: theme.tableTextLight,
+          }}
         >
           <Trans>You can add more accounts at any time from the sidebar.</Trans>
         </View>

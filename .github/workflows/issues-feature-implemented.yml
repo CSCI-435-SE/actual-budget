@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   handle-feature-requests:
-    if: github.event.pull_request.merged == true
+    if: github.repository == 'actualbudget/actual' && (github.event.pull_request.merged == true)
     runs-on: depot-ubuntu-latest
     steps:
       # This is not a security concern because we have approved & merged the PR

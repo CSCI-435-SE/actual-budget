@@ -121,7 +121,12 @@ export function MobileSchedulesPage() {
       header={
         <MobilePageHeader
           title={
-            <Text style={{ ...styles.underlinedText, fontSize: 'var(--font-size-16)' }}>
+            <Text
+              style={{
+                ...styles.underlinedText,
+                fontSize: 'var(--font-size-16)',
+              }}
+            >
               <Trans>Schedules</Trans>
             </Text>
           }

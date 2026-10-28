@@ -72,7 +72,9 @@ export function CleanupAutomation({
 
   return (
     <View style={{ gap: 14 }}>
-      <Text style={{ fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}>
+      <Text
+        style={{ fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}
+      >
         <Trans>
           End of month cleanup is a one-click reallocation of funds. Categories
           you choose to <strong>send leftover</strong> return their surplus to a
@@ -239,7 +241,9 @@ function ScopeCard({
         checked={send}
         onChange={e => onChangeSend(e.target.checked)}
       >
-        <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)' }}>{sendLabel}</span>
+        <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)' }}>
+          {sendLabel}
+        </span>
       </LabeledCheckbox>
 
       <LabeledCheckbox
@@ -247,7 +251,9 @@ function ScopeCard({
         checked={take}
         onChange={e => onChangeTake(e.target.checked)}
       >
-        <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)' }}>{takeLabel}</span>
+        <span style={{ marginLeft: 6, fontSize: 'var(--font-size-12)' }}>
+          {takeLabel}
+        </span>
       </LabeledCheckbox>
 
       {take && (

@@ -9,7 +9,13 @@ type SubLabelProps = {
 
 export function SubLabel({ title }: SubLabelProps) {
   return (
-    <Text style={{ fontSize: 'var(--font-size-13)', marginBottom: 3, color: theme.pageText }}>
+    <Text
+      style={{
+        fontSize: 'var(--font-size-13)',
+        marginBottom: 3,
+        color: theme.pageText,
+      }}
+    >
       {title}
     </Text>
   );

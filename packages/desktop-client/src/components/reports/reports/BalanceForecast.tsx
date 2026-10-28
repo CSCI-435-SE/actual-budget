@@ -659,7 +659,11 @@ function BalanceForecastInner({ widget }: BalanceForecastInnerProps) {
 
         {!errorMessage && !isTrackingBudgetForecast && (
           <div
-            style={{ marginTop: 20, fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}
+            style={{
+              marginTop: 20,
+              fontSize: 'var(--font-size-12)',
+              color: theme.pageTextLight,
+            }}
           >
             {hasFilters ? (
               <Trans>

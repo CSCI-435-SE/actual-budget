@@ -185,7 +185,12 @@ export function BudgetAutomationsBody({
         }}
       >
         <View style={{ minWidth: 0 }}>
-          <Text style={{ fontSize: 'var(--font-size-12)', color: theme.pageTextLight }}>
+          <Text
+            style={{
+              fontSize: 'var(--font-size-12)',
+              color: theme.pageTextLight,
+            }}
+          >
             <Trans>Budget automation</Trans>
           </Text>
           <Text

@@ -1,0 +1,31 @@
+# Fork-only workflow (CSCI-435-SE/actual-budget, issue #101).
+#
+# Fails when a job that can run on our fork asks for a Depot runner
+# (`depot-*`). We have no Depot account, so such jobs would otherwise wait in
+# the queue until GitHub cancels them. Upstream syncs can bring these labels
+# back; see "CI in our fork" in STUDENTS.md for how to fix them.
+name: Fork CI guard
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  runner-labels:
+    name: No Depot runner labels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Check workflow runner labels
+        run: node .github/scripts/fork-ci-runners.mjs

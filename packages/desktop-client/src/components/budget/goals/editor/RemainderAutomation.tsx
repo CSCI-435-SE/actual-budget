@@ -51,7 +51,13 @@ export const RemainderAutomation = ({
           onBlur={commitWeight}
         />
       </FormField>
-      <Text style={{ flex: 2, color: theme.pageTextLight, fontSize: 'var(--font-size-12)' }}>
+      <Text
+        style={{
+          flex: 2,
+          color: theme.pageTextLight,
+          fontSize: 'var(--font-size-12)',
+        }}
+      >
         <Trans>
           Categories with higher weights get a bigger share of the leftover To
           Budget.

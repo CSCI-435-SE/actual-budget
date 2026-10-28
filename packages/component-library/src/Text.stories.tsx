@@ -54,7 +54,9 @@ export const FontSizes: Story = {
       <Text style={{ fontSize: 'var(--font-size-14)' }}>Default (14px)</Text>
       <Text style={{ fontSize: 'var(--font-size-18)' }}>Medium (18px)</Text>
       <Text style={{ fontSize: 'var(--font-size-24)' }}>Large (24px)</Text>
-      <Text style={{ fontSize: 'var(--font-size-32)' }}>Extra Large (32px)</Text>
+      <Text style={{ fontSize: 'var(--font-size-32)' }}>
+        Extra Large (32px)
+      </Text>
     </View>
   ),
   parameters: {

@@ -13,11 +13,11 @@ can explore and experiment with it. Everything runs locally in your browser.
 
 Install these once before you start:
 
-| Tool | Version | Notes |
-| --- | --- | --- |
-| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v` |
-| [Yarn](https://yarnpkg.com/) | **4.9.1+** | Comes with Node via Corepack — see below |
-| [Git](https://git-scm.com/) | any recent | On **Windows**, install "Git for Windows" — it also provides the `sh` and `bash` shells some scripts use |
+| Tool                           | Version         | Notes                                                                                                    |
+| ------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------- |
+| [Node.js](https://nodejs.org/) | **22 or newer** | Check with `node -v`                                                                                     |
+| [Yarn](https://yarnpkg.com/)   | **4.9.1+**      | Comes with Node via Corepack — see below                                                                 |
+| [Git](https://git-scm.com/)    | any recent      | On **Windows**, install "Git for Windows" — it also provides the `sh` and `bash` shells some scripts use |
 
 > 💡 **New to Yarn workspaces?** Actual Budget uses [Yarn workspaces](https://yarnpkg.com/features/workspaces) to manage multiple packages in a single repo. You mostly run commands from the root — but understanding workspaces helps when something goes wrong in a sub-package.
 
@@ -45,7 +45,6 @@ cd actual
 
 yarn install
 ```
-
 
 > ⚠️ Always run `yarn` commands from the **project root** (the folder with this
 > file in it), never from inside a `packages/…` subfolder.
@@ -96,13 +95,13 @@ For simply learning and experimenting, `yarn start` is enough.
 
 Run all of these from the project root:
 
-| Command | What it does |
-| --- | --- |
-| `yarn start` | Start the app in your browser (main command) |
-| `yarn test` | Run the test suite across all packages |
-| `yarn typecheck` | Check for TypeScript errors |
-| `yarn lint` | Check code style and formatting |
-| `yarn lint:fix` | Auto-fix style and formatting issues |
+| Command          | What it does                                 |
+| ---------------- | -------------------------------------------- |
+| `yarn start`     | Start the app in your browser (main command) |
+| `yarn test`      | Run the test suite across all packages       |
+| `yarn typecheck` | Check for TypeScript errors                  |
+| `yarn lint`      | Check code style and formatting              |
+| `yarn lint:fix`  | Auto-fix style and formatting issues         |
 
 If you change code, `yarn typecheck`, `yarn lint`, and `yarn test` are the three
 commands that tell you everything is still healthy.
@@ -186,11 +185,11 @@ After pushing, GitHub shows a **"Compare & pull request"** banner on the reposit
 
 **Branch naming:**
 
-| Prefix | Use for |
-|---|---|
-| `feat/issue-<N>-short-description` | new features |
-| `fix/issue-<N>-short-description` | bug fixes |
-| `chore/short-description` | docs, config, dependency updates |
+| Prefix                             | Use for                          |
+| ---------------------------------- | -------------------------------- |
+| `feat/issue-<N>-short-description` | new features                     |
+| `fix/issue-<N>-short-description`  | bug fixes                        |
+| `chore/short-description`          | docs, config, dependency updates |
 
 > ⚠️ **`main` is protected — direct pushes are blocked.** All changes go through a reviewed PR. If you accidentally commit to `main` locally, move your changes to a branch before pushing:
 >
@@ -216,12 +215,52 @@ git branch -d feat/issue-17-dark-mode
 Actual has its own established contribution processes. They are **not restated here** — you are
 responsible for finding, reading, and following them from the sources below:
 
-| You must take care of | Where to find it |
-| --- | --- |
-| How to use the tool | <https://actualbudget.org/docs> |
-| Code review process | [CODE_REVIEW_GUIDELINES.md](CODE_REVIEW_GUIDELINES.md) + [Contributing docs](https://actualbudget.org/docs/contributing/) |
-| Bug / issue resolution process | [Contributing docs](https://actualbudget.org/docs/contributing/) |
-| Pull request conventions & PR policies | [CONTRIBUTING.md](CONTRIBUTING.md) + [PR and Commit Rules](.github/agents/pr-and-commit-rules.md) |
-| AI policies | [AI Usage Policy](https://actualbudget.org/docs/contributing/ai-usage-policy) + [AGENTS.md](AGENTS.md) |
+| You must take care of                  | Where to find it                                                                                                          |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| How to use the tool                    | <https://actualbudget.org/docs>                                                                                           |
+| Code review process                    | [CODE_REVIEW_GUIDELINES.md](CODE_REVIEW_GUIDELINES.md) + [Contributing docs](https://actualbudget.org/docs/contributing/) |
+| Bug / issue resolution process         | [Contributing docs](https://actualbudget.org/docs/contributing/)                                                          |
+| Pull request conventions & PR policies | [CONTRIBUTING.md](CONTRIBUTING.md) + [PR and Commit Rules](.github/agents/pr-and-commit-rules.md)                         |
+| AI policies                            | [AI Usage Policy](https://actualbudget.org/docs/contributing/ai-usage-policy) + [AGENTS.md](AGENTS.md)                    |
+
+## 9. CI in our fork
+
+Our GitHub Actions workflows (`.github/workflows/`) come from upstream. Upstream runs them on
+**Depot**, a paid runner service (`runs-on: depot-ubuntu-latest`). We don't have Depot, so a job
+that asks for a `depot-*` runner waits in the queue until GitHub cancels it, about 24 hours later
+(issue #101). Our fork changes that in three ways:
+
+- **Checks that run on our PRs use GitHub's free runners** (`ubuntu-latest`). That covers Test
+  (lint, typecheck, unit tests), Build, E2E and visual regression tests, the API browser test, and
+  the Linux Electron build. The macOS and Windows builds are turned off.
+- **Upstream-only workflows are turned off** with `if: github.repository == 'actualbudget/actual'`
+  on each job. They show as "skipped" here. These are publishing and releases (npm, Docker,
+  Netlify, Flathub, Microsoft Store, nightly desktop app), the stale-PR closer, autofix.ci, the
+  release-notes check, `/update-vrt`, the issue bots that point at upstream, and the bot that
+  labels `[AI]` PRs (we review AI-generated PRs by hand).
+- **The `Fork CI guard` check** runs `.github/scripts/fork-ci-runners.mjs` on every PR. It fails
+  if any job that can run here still asks for a Depot runner.
+
+**A red check doesn't block merging.** No check is marked "required", so you can merge a PR with
+a failing check and fix the problem in a later PR. Before you merge, compare the PR's failing
+checks with `master`'s. If they're the same failures, your PR didn't break anything new.
+
+### After merging an upstream release
+
+Upstream edits can bring Depot runners back, either in a merge conflict or silently in a new job.
+
+1. In a merge conflict on a `runs-on:`/`runner:` line or a guard `if:` line, **keep our version**.
+2. Run the checker and let it swap any new Linux Depot labels to GitHub's Linux runners:
+
+   ```bash
+   node .github/scripts/fork-ci-runners.mjs --fix
+   node .github/scripts/fork-ci-runners.mjs   # should print "No unguarded Depot runner labels found."
+   ```
+
+3. If it still reports a **macOS or Windows** label, `--fix` deliberately left it alone, because we
+   run CI on Linux only. Remove that entry from the job's matrix, or turn off the whole job (step 4).
+4. If upstream added a new workflow that **publishes or releases** something, don't swap its
+   runner. Add `if: github.repository == 'actualbudget/actual'` to each of its jobs instead, so it
+   never runs here.
 
 Happy budgeting! 🎉
