@@ -140,8 +140,11 @@ export function getCategoryRows(
 
 // Spending more is shown as the unfavourable direction
 export function getRateColor(rate: number | null) {
-  if (rate === null || rate === 0) {
-    return theme.reportsNumberNeutral;
+  if (rate === null) {
+    return theme.pageTextSubdued;
+  }
+  if (rate === 0) {
+    return theme.tableText;
   }
   return rate > 0 ? theme.reportsNumberNegative : theme.reportsNumberPositive;
 }

@@ -118,6 +118,38 @@ test.describe('Reports', () => {
     });
   });
 
+  test.describe('personal inflation', () => {
+    test.beforeEach(async () => {
+      await reportsPage.addWidget('Personal inflation');
+    });
+
+    test('shows the personal inflation widget on the dashboard', async () => {
+      const card = await reportsPage.getPersonalInflationCard();
+      await expect(card.getByText('Insufficient history')).toBeVisible();
+      await expect(card).toMatchThemeScreenshots();
+    });
+
+    test('flags a comparison that predates the budget history', async () => {
+      // The default compares last year with the year before, which is older
+      // than the demo budget's transactions
+      await reportsPage.goToPersonalInflationPage();
+      await expect(
+        page.getByText('Insufficient history', { exact: true }).first(),
+      ).toBeVisible();
+      await expect(page).toMatchThemeScreenshots();
+    });
+
+    test('compares last month with the previous period', async () => {
+      await reportsPage.goToPersonalInflationPage();
+      await reportsPage.selectDateRangePreset('Last month');
+      await reportsPage.selectInflationComparison('Compare to previous period');
+      await expect(
+        page.getByText('December 2016 compared with November 2016'),
+      ).toBeVisible();
+      await expect(page).toMatchThemeScreenshots();
+    });
+  });
+
   test.describe('custom reports', () => {
     let customReportPage: CustomReportPage;
 

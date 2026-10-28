@@ -91,23 +91,32 @@ export function PersonalInflationCard({
           </View>
           {data && (
             <View style={{ textAlign: 'right' }}>
-              <Block
-                style={{
-                  ...styles.largeText,
-                  ...styles.tnum,
-                  fontWeight: 500,
-                  marginBottom: 5,
-                  color: getRateColor(rate),
-                }}
-              >
-                <PrivacyFilter activationFilters={[!isCardHovered]}>
-                  {data.summary.hasInsufficientHistory
-                    ? t('Insufficient history')
-                    : rate === null
-                      ? t('N/A')
-                      : formatRate(rate, language)}
-                </PrivacyFilter>
-              </Block>
+              {data.summary.hasInsufficientHistory ? (
+                <Block
+                  style={{
+                    ...styles.mediumText,
+                    fontWeight: 500,
+                    marginBottom: 5,
+                    color: theme.warningText,
+                  }}
+                >
+                  <Trans>Insufficient history</Trans>
+                </Block>
+              ) : (
+                <Block
+                  style={{
+                    ...styles.largeText,
+                    ...styles.tnum,
+                    fontWeight: 500,
+                    marginBottom: 5,
+                    color: getRateColor(rate),
+                  }}
+                >
+                  <PrivacyFilter activationFilters={[!isCardHovered]}>
+                    {rate === null ? t('N/A') : formatRate(rate, language)}
+                  </PrivacyFilter>
+                </Block>
+              )}
               <Block
                 style={{
                   fontSize: 'var(--font-size-12)',

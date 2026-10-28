@@ -249,7 +249,9 @@ export function PersonalInflationReport({
               ...styles.tnum,
               fontWeight: 400,
               marginBottom: 5,
-              color: getRateColor(summary.rate),
+              color: summary.hasInsufficientHistory
+                ? theme.warningText
+                : getRateColor(summary.rate),
             }}
           >
             <PrivacyFilter>
