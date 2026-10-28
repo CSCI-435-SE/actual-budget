@@ -191,9 +191,30 @@ describe('showActivity', () => {
       ]);
     });
 
-    it('keeps a report filter on the parent covering its subcategories', () => {
+    it("keeps the report's category selection as written", () => {
       const filters = categoryFilter({
         filters: [{ field: 'category', op: 'is', value: 'food', type: 'id' }],
+      });
+
+      // The selection leaves out the unchecked subcategory, narrowing the
+      // drilldown on the whole family
+      expect(filters).toEqual([
+        { field: 'category', op: 'is', value: 'food', type: 'id' },
+        {
+          field: 'category',
+          op: 'oneOf',
+          value: ['food', 'restaurants'],
+          type: 'id',
+        },
+      ]);
+    });
+
+    it('keeps other report filters on the parent covering its subcategories', () => {
+      const filters = categoryFilter({
+        filters: [
+          { field: 'category', op: 'is', value: 'food', type: 'id' },
+          { field: 'category', op: 'isNot', value: 'rent', type: 'id' },
+        ],
       });
 
       expect(filters).toContainEqual({
