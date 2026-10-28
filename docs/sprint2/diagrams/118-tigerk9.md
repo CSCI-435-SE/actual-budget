@@ -8,7 +8,12 @@
 
 ![Sequence diagram](118-tigerk9-sequence.png)
 
-_Diagram sources (HTML rendered to PNG with Playwright) are in [`src/`](src/); regenerate with `node docs/sprint2/diagrams/src/render.cjs` from the repo root._
+_Diagram sources (HTML rendered to PNG with Playwright) are in [`src/`](src/). To regenerate, run from `docs/sprint2/diagrams/`:_
+
+```sh
+npx playwright screenshot --viewport-size=2300,1560 src/118-tigerk9-class.html 118-tigerk9-class.png
+npx playwright screenshot --viewport-size=2300,1530 src/118-tigerk9-sequence.html 118-tigerk9-sequence.png
+```
 
 ## Q&A
 
