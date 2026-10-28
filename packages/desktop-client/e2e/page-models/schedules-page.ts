@@ -73,6 +73,34 @@ export class SchedulesPage {
     await this.page.getByRole('button', { name: actionName }).click();
   }
 
+  /**
+   * Toggle the selection checkbox of a schedule row.
+   */
+  async toggleRowSelection(row: Locator) {
+    // The checkbox is revealed on hover, so hover first like a real user
+    await row.hover();
+    await row.getByTestId('select').click();
+  }
+
+  /**
+   * Toggle the select-all checkbox in the table header.
+   */
+  async toggleSelectAll() {
+    // The header row is rendered before the table's rows
+    await this.page.getByTestId('row').first().getByTestId('select').click();
+  }
+
+  /**
+   * Run a bulk action on all selected schedules.
+   */
+  async performBulkAction(actionName: string | RegExp) {
+    await this.page.getByTestId('selected-schedules-select-button').click();
+    await this.page
+      .getByTestId('selected-schedules-select-tooltip')
+      .getByRole('button', { name: actionName })
+      .click();
+  }
+
   async rightClickNthSchedule(index: number) {
     await this.getNthScheduleRow(index).click({ button: 'right' });
   }
