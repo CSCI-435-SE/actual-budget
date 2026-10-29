@@ -78,6 +78,7 @@ export function SidebarShell({
       >
         <View
           innerRef={containerRef}
+          data-testid="sidebar"
           className={cx(
             className,
             css({
