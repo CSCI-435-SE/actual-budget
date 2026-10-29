@@ -54,6 +54,8 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
   // sidebar and of any open popover separately, then derive `hidden` from
   // both combined, so the sidebar (and its menu) stay visible while either
   // is being used, and only hide together once neither is hovered anymore.
+  // This only applies while floating: a pinned sidebar is always visible, so
+  // it ignores popovers and never closes context menus opened elsewhere.
   const [hoveringSidebar, setHoveringSidebar] = useState(false);
   const [hoveringPopover, setHoveringPopover] = useState(false);
   const [hoveringMenuButton, setHoveringMenuButton] = useState(false);
@@ -100,13 +102,17 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
   }
 
   useEffect(() => {
+    if (!floating) {
+      setHoveringPopover(false);
+      return;
+    }
     function handlePointerOver(e: PointerEvent) {
       const target = e.target as Element | null;
       setHoveringPopover(!!target?.closest?.('[data-popover]'));
     }
     document.addEventListener('pointerover', handlePointerOver);
     return () => document.removeEventListener('pointerover', handlePointerOver);
-  }, []);
+  }, [floating]);
 
   useLayoutEffect(() => {
     if (hoveringSidebar || hoveringPopover || hoveringMenuButton) {
@@ -118,10 +124,10 @@ export function SidebarProvider({ children }: SidebarProviderProps) {
   }, [hoveringSidebar, hoveringPopover, hoveringMenuButton]);
 
   useEffect(() => {
-    if (hidden && !hoveringPopover) {
+    if (floating && hidden && !hoveringPopover) {
       dispatch(closeContextMenu());
     }
-  }, [hidden, hoveringPopover, dispatch]);
+  }, [floating, hidden, hoveringPopover, dispatch]);
 
   return (
     <SidebarContext.Provider
