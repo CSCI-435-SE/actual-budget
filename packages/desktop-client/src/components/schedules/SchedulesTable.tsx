@@ -11,22 +11,28 @@ import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import { format as monthUtilFormat } from '@actual-app/core/shared/months';
-import { getNormalisedString } from '@actual-app/core/shared/normalisation';
 import { getScheduledAmount } from '@actual-app/core/shared/schedules';
 import type { ScheduleStatuses } from '@actual-app/core/shared/schedules';
 import type { ScheduleEntity } from '@actual-app/core/types/models';
 
 import { FinancialText } from '#components/FinancialText';
 import { PrivacyFilter } from '#components/PrivacyFilter';
-import { Cell, Field, Row, Table, TableHeader } from '#components/table';
+import {
+  Cell,
+  Field,
+  Row,
+  SelectCell,
+  Table,
+  TableHeader,
+} from '#components/table';
 import { DisplayId } from '#components/util/DisplayId';
-import { useAccounts } from '#hooks/useAccounts';
 import { useContextMenu } from '#hooks/useContextMenu';
 import { useDateFormat } from '#hooks/useDateFormat';
 import { useFormat } from '#hooks/useFormat';
-import { usePayees } from '#hooks/usePayees';
+import { useSelectedDispatch, useSelectedItems } from '#hooks/useSelected';
 
 import { StatusBadge } from './StatusBadge';
+import { useFilteredSchedules } from './useFilteredSchedules';
 type SchedulesTableProps = {
   isLoading?: boolean;
   schedules: readonly ScheduleEntity[];
@@ -164,6 +170,12 @@ function ScheduleRow({
 
   const rowRef = useRef(null);
   const buttonRef = useRef(null);
+  const [hovered, setHovered] = useState(false);
+
+  // The minimal table (used by ScheduleLink) has no SelectedProvider
+  const dispatchSelected = useSelectedDispatch();
+  const selectedItems = useSelectedItems();
+  const selected = !minimal && !!selectedItems?.has(schedule.id);
 
   const status = statuses.get(schedule.id);
   useContextMenu({
@@ -213,13 +225,41 @@ function ScheduleRow({
       height={ROW_HEIGHT}
       inset={15}
       onClick={() => onSelect(schedule.id)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         cursor: 'pointer',
-        backgroundColor: theme.tableBackground,
+        zIndex: selected ? 101 : 'auto',
+        borderColor: selected ? theme.tableBorderSelected : 'none',
+        backgroundColor: selected
+          ? theme.tableRowBackgroundHighlight
+          : theme.tableBackground,
         color: theme.tableText,
-        ':hover': { backgroundColor: theme.tableRowBackgroundHover },
+        ':hover': {
+          backgroundColor: selected
+            ? theme.tableRowBackgroundHighlight
+            : theme.tableRowBackgroundHover,
+        },
       }}
     >
+      {!minimal &&
+        (schedule.completed ? (
+          // Completed schedules can't be bulk edited, so they get no checkbox
+          <Field width={20} />
+        ) : (
+          <SelectCell
+            exposed={hovered || selected}
+            focused={false}
+            selected={selected}
+            onSelect={e =>
+              dispatchSelected({
+                type: 'select',
+                id: schedule.id,
+                isRangeSelect: e.shiftKey,
+              })
+            }
+          />
+        ))}
       <Field width="flex" name="name">
         <Text
           style={
@@ -304,50 +344,17 @@ export function SchedulesTable({
   tableStyle,
 }: SchedulesTableProps) {
   const { t } = useTranslation();
-  const format = useFormat();
+  const selectedItems = useSelectedItems();
+  const dispatchSelected = useSelectedDispatch();
 
   const dateFormat = useDateFormat() || 'MM/dd/yyyy';
   const [showCompleted, setShowCompleted] = useState(false);
 
-  const { data: payees } = usePayees();
-  const { data: accounts = [] } = useAccounts();
-
-  const filteredSchedules = useMemo(() => {
-    if (!filter) {
-      return schedules;
-    }
-    const filterIncludes = (str: string) =>
-      str
-        ? getNormalisedString(str).includes(getNormalisedString(filter)) ||
-          getNormalisedString(filter).includes(getNormalisedString(str))
-        : false;
-
-    return schedules.filter(schedule => {
-      const payee = payees.find(p => schedule._payee === p.id);
-      const account = accounts.find(a => schedule._account === a.id);
-      const amount = getScheduledAmount(schedule._amount);
-      let amountStr = '';
-      if (schedule._amountOp === 'isbetween') {
-        amountStr = '±';
-      } else if (schedule._amountOp === 'isapprox') {
-        amountStr = '~';
-      }
-      amountStr +=
-        (amount > 0 ? '+' : '') + format(Math.abs(amount || 0), 'financial');
-      const dateStr = schedule.next_date
-        ? monthUtilFormat(schedule.next_date, dateFormat)
-        : null;
-
-      return (
-        filterIncludes(schedule.name) ||
-        filterIncludes(payee && payee.name) ||
-        filterIncludes(account && account.name) ||
-        filterIncludes(amountStr) ||
-        filterIncludes(statuses.get(schedule.id)) ||
-        filterIncludes(dateStr)
-      );
-    });
-  }, [payees, accounts, schedules, filter, statuses, format, dateFormat]);
+  const filteredSchedules = useFilteredSchedules({
+    schedules,
+    filter,
+    statuses,
+  });
 
   const items: readonly SchedulesTableItem[] = useMemo(() => {
     const unCompletedSchedules = filteredSchedules.filter(s => !s.completed);
@@ -403,6 +410,19 @@ export function SchedulesTable({
   return (
     <View style={{ ...styles.tableContainer, ...tableStyle }}>
       <TableHeader height={ROW_HEIGHT} inset={15}>
+        {!minimal && (
+          <SelectCell
+            exposed
+            focused={false}
+            selected={selectedItems?.size > 0}
+            onSelect={e =>
+              dispatchSelected({
+                type: 'select-all',
+                isRangeSelect: e.shiftKey,
+              })
+            }
+          />
+        )}
         <Field width="flex">
           <Trans>Name</Trans>
         </Field>
