@@ -34,9 +34,11 @@ import { filterHiddenItems } from './filterHiddenItems';
 import { recalculate } from './recalculate';
 import { sortData } from './sortData';
 import {
-  expandSubcategoryConditions,
+  expandReportConditions,
   getNestedSubcategoryIds,
   getRolledUpCategoryIds,
+  getRolledUpSubcategoryIdsByParent,
+  getSelectedCategoryIds,
   getSubcategoryIdsByParent,
 } from './subcategories';
 import {
@@ -97,13 +99,16 @@ export function createCustomSpreadsheet({
     groupByLabel: 'category' | 'categoryGroup' | 'payee' | 'account',
   ] = groupBySelections(groupBy, categoryList, categoryGroup, payees, accounts);
 
-  // By category, a parent's row includes its subcategories, which then get
-  // no row of their own. Every amount lands in exactly one row, so the
-  // graphs and totals built from these rows never count a subcategory
+  // By category, a parent's row includes its selected subcategories, which
+  // then get no row of their own. Every amount lands in exactly one row, so
+  // the graphs and totals built from these rows never count a subcategory
   // twice.
   const subcategoryIdsByParent =
     groupByLabel === 'category'
-      ? getSubcategoryIdsByParent(categories.grouped)
+      ? getRolledUpSubcategoryIdsByParent(
+          getSubcategoryIdsByParent(categories.grouped),
+          getSelectedCategoryIds(conditions, categories.list),
+        )
       : new Map<string, string[]>();
   const nestedSubcategoryIds = getNestedSubcategoryIds(subcategoryIdsByParent);
   const rowItems = groupByList.filter(
@@ -131,7 +136,7 @@ export function createCustomSpreadsheet({
       return;
     }
 
-    const reportConditions = expandSubcategoryConditions(
+    const reportConditions = expandReportConditions(
       conditions,
       categories.grouped,
     );

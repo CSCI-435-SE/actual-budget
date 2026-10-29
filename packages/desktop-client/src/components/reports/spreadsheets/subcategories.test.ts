@@ -16,11 +16,15 @@ import { createBudgetAnalysisSpreadsheet } from './budget-analysis-spreadsheet';
 import { createCustomSpreadsheet } from './custom-spreadsheet';
 import { createGroupedSpreadsheet } from './grouped-spreadsheet';
 import {
+  expandReportConditions,
   expandSubcategoryConditions,
   getNestedSubcategoryIds,
   getRolledUpCategoryIds,
+  getRolledUpSubcategoryIdsByParent,
+  getSelectedCategoryIds,
   getSubcategoryIdsByParent,
   hideSubcategoriesOfHiddenParents,
+  isComplexCategoryCondition,
 } from './subcategories';
 
 vi.mock('@actual-app/core/platform/client/connection', () => ({
@@ -133,6 +137,7 @@ async function runGrouped(
 async function runCustom(
   categories: ReturnType<typeof makeCategories>,
   balanceTypeOp: 'totalDebts' | 'totalBudgeted' = 'totalDebts',
+  conditions: RuleConditionEntity[] = [],
 ) {
   let result: DataEntity | undefined;
   await createCustomSpreadsheet({
@@ -140,6 +145,7 @@ async function runCustom(
     categories,
     groupBy: 'Category',
     balanceTypeOp,
+    conditions,
   })(spreadsheet, data => (result = data));
   return result;
 }
@@ -177,6 +183,22 @@ describe('subcategory helpers', () => {
 
     expect(getSubcategoryIdsByParent(grouped)).toEqual(
       new Map([['food', ['groceries']]]),
+    );
+  });
+
+  it('rolls a subcategory into its parent only when both are selected', () => {
+    const map = getSubcategoryIdsByParent(makeCategories().grouped);
+
+    expect(getRolledUpSubcategoryIdsByParent(map, undefined)).toEqual(map);
+    expect(
+      getRolledUpSubcategoryIdsByParent(map, new Set(['food', 'groceries'])),
+    ).toEqual(new Map([['food', ['groceries']]]));
+    // Without its parent, a subcategory is reported on its own
+    expect(
+      getRolledUpSubcategoryIdsByParent(map, new Set(['restaurants'])),
+    ).toEqual(new Map());
+    expect(getRolledUpSubcategoryIdsByParent(map, new Set(['food']))).toEqual(
+      new Map(),
     );
   });
 
@@ -305,6 +327,90 @@ describe('reports with subcategories', () => {
 
     expect(data?.totalDebts).toBe(-10000);
     expect(data?.data?.map(c => c.id)).toEqual(['rent']);
+  });
+});
+
+describe('reports with some subcategories unchecked', () => {
+  // The transactions the query returns for the checked categories
+  function spendingIn(ids: string[]) {
+    vi.mocked(aqlQuery).mockImplementation((async (type: unknown) => ({
+      data:
+        type === 'debts' ? spending.filter(r => ids.includes(r.category)) : [],
+    })) as typeof aqlQuery);
+  }
+
+  function checked(ids: string[]): RuleConditionEntity[] {
+    return [{ field: 'category', op: 'oneOf', value: ids, type: 'id' }];
+  }
+
+  beforeEach(() => {
+    vi.mocked(send).mockImplementation((async (name: string) =>
+      name === 'make-filters-from-conditions'
+        ? { filters: [] }
+        : undefined) as typeof send);
+  });
+
+  it('queries only the checked categories', async () => {
+    spendingIn([]);
+
+    await runCustom(makeCategories(), 'totalDebts', checked(['food']));
+
+    expect(send).toHaveBeenCalledWith('make-filters-from-conditions', {
+      conditions: checked(['food']),
+    });
+  });
+
+  it('leaves an unchecked subcategory out of its parent', async () => {
+    const conditions = checked(['food', 'groceries']);
+    spendingIn(['food', 'groceries']);
+
+    const data = await runCustom(makeCategories(), 'totalDebts', conditions);
+
+    expect(data?.data?.map(c => [c.id, c.totalDebts])).toEqual([
+      ['food', -6000],
+    ]);
+    expect(data?.totalDebts).toBe(-6000);
+    const [month] = data?.intervalData ?? [];
+    expect(month.totalDebts).toBe(-6000);
+    expect(month).toMatchObject({ food: 6000 });
+    expect(month).not.toHaveProperty('groceries');
+
+    const [foodGroup] = await runGrouped(
+      makeCategories(),
+      'totalDebts',
+      conditions,
+    );
+    const foodRow = byId(foodGroup.categories, 'food');
+    expect(foodGroup.totalDebts).toBe(-6000);
+    expect(foodRow?.totalDebts).toBe(-6000);
+    expect(foodRow?.subcategories?.map(c => [c.name, c.totalDebts])).toEqual([
+      ['Groceries', -5000],
+      ['Not in a subcategory', -1000],
+    ]);
+  });
+
+  it('reports a subcategory checked without its parent on its own', async () => {
+    const conditions = checked(['restaurants']);
+    spendingIn(['restaurants']);
+
+    const data = await runCustom(makeCategories(), 'totalDebts', conditions);
+
+    expect(data?.data?.map(c => [c.id, c.totalDebts])).toEqual([
+      ['restaurants', -3000],
+    ]);
+    expect(data?.totalDebts).toBe(-3000);
+    const [month] = data?.intervalData ?? [];
+    expect(month).toMatchObject({ restaurants: 3000, food: 0 });
+
+    const [foodGroup] = await runGrouped(
+      makeCategories(),
+      'totalDebts',
+      conditions,
+    );
+    expect(foodGroup.totalDebts).toBe(-3000);
+    expect(foodGroup.categories?.map(c => [c.id, c.totalDebts])).toEqual([
+      ['restaurants', -3000],
+    ]);
   });
 });
 
@@ -437,7 +543,7 @@ describe('filters on a parent category', () => {
     });
   });
 
-  it('filters spending reports on the whole family', async () => {
+  it("applies the custom report's category selection as written", async () => {
     vi.mocked(send).mockImplementation((async (name: string) =>
       name === 'make-filters-from-conditions'
         ? { filters: [] }
@@ -451,13 +557,11 @@ describe('filters on a parent category', () => {
     ]);
 
     expect(send).toHaveBeenCalledWith('make-filters-from-conditions', {
-      conditions: [
-        { field: 'category', op: 'oneOf', value: family, type: 'id' },
-      ],
+      conditions: [{ field: 'category', op: 'is', value: 'food', type: 'id' }],
     });
   });
 
-  it('keeps the subcategories in a Budgeted report filtered on the parent', async () => {
+  it('leaves unchecked subcategories out of a Budgeted report', async () => {
     vi.mocked(send).mockImplementation((async (name: string) => {
       if (name === 'make-filters-from-conditions') {
         return { filters: [] };
@@ -471,15 +575,21 @@ describe('filters on a parent category', () => {
     }) as typeof send);
 
     const groups = await runGrouped(makeCategories(), 'totalBudgeted', [
-      { field: 'category', op: 'is', value: 'food', type: 'id' },
+      {
+        field: 'category',
+        op: 'oneOf',
+        value: ['food', 'groceries'],
+        type: 'id',
+      },
     ]);
 
+    // Food and Groceries, but not Restaurants
     expect(groups.map(g => [g.name, g.totalBudgeted])).toEqual([
-      ['Food', 40000],
+      ['Food', 25000],
     ]);
     expect(
       byId(groups[0].categories, 'food')?.subcategories?.map(c => c.name),
-    ).toEqual(['Restaurants', 'Groceries', 'Unallocated']);
+    ).toEqual(['Groceries', 'Unallocated']);
   });
 
   it('keeps the subcategories in Budget Analysis filtered on the parent', async () => {
@@ -504,5 +614,78 @@ describe('filters on a parent category', () => {
 
     // Food, Restaurants and Groceries, but not Rent
     expect(result).toMatchObject({ totalBudgeted: 30000, totalSpent: -12000 });
+  });
+});
+
+describe("the custom report's category selection", () => {
+  const { grouped, list } = makeCategories();
+  const family = ['food', 'restaurants', 'groceries'];
+  const isFood = {
+    field: 'category',
+    op: 'is',
+    value: 'food',
+    type: 'id',
+  } satisfies RuleConditionEntity;
+
+  it.each([
+    [[isFood], false],
+    [[{ ...isFood, op: 'contains', value: 'Fo', type: 'string' }], true],
+    [[isFood, { ...isFood, value: 'rent' }], true],
+    [[isFood, { ...isFood, field: 'category_group', value: 'g-food' }], true],
+    [[{ ...isFood, field: 'payee' }], false],
+  ] as Array<[RuleConditionEntity[], boolean]>)(
+    'tells when %j is too complex for the selector',
+    (conditions, expected) => {
+      expect(isComplexCategoryCondition(conditions)).toBe(expected);
+    },
+  );
+
+  it.each([
+    ['is', 'food', ['food']],
+    ['isNot', 'food', ['restaurants', 'groceries', 'rent']],
+    ['oneOf', ['food', 'groceries'], ['food', 'groceries']],
+    ['notOneOf', ['restaurants'], ['food', 'groceries', 'rent']],
+  ] as const)('reads the checked categories from "%s"', (op, value, ids) => {
+    expect(
+      getSelectedCategoryIds(
+        [{ field: 'category', op, value, type: 'id' } as RuleConditionEntity],
+        list,
+      ),
+    ).toEqual(new Set(ids));
+  });
+
+  it('treats every category as checked without a selector filter', () => {
+    expect(getSelectedCategoryIds([], list)).toBeUndefined();
+    expect(
+      getSelectedCategoryIds([isFood, { ...isFood, value: 'rent' }], list),
+    ).toBeUndefined();
+  });
+
+  it('keeps the selection as written and expands other filters', () => {
+    const payee = {
+      field: 'payee',
+      op: 'is',
+      value: 'shop',
+      type: 'id',
+    } satisfies RuleConditionEntity;
+    const selection = {
+      field: 'category',
+      op: 'oneOf',
+      value: ['food'],
+      type: 'id',
+    } satisfies RuleConditionEntity;
+
+    const expanded = expandReportConditions([payee, selection], grouped);
+    expect(expanded[0]).toBe(payee);
+    expect(expanded[1]).toBe(selection);
+  });
+
+  it('expands a parent when the filter is too complex for the selector', () => {
+    const notRent = { ...isFood, op: 'isNot', value: 'rent' } as const;
+
+    expect(expandReportConditions([isFood, notRent], grouped)).toEqual([
+      { ...isFood, op: 'oneOf', value: family },
+      notRent,
+    ]);
   });
 });

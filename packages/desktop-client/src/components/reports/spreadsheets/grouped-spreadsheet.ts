@@ -19,8 +19,10 @@ import { filterEmptyRows } from './filterEmptyRows';
 import { recalculate } from './recalculate';
 import { sortData } from './sortData';
 import {
-  expandSubcategoryConditions,
+  expandReportConditions,
   getNestedSubcategoryIds,
+  getRolledUpSubcategoryIdsByParent,
+  getSelectedCategoryIds,
   getSubcategoryIdsByParent,
 } from './subcategories';
 import {
@@ -46,7 +48,10 @@ export function createGroupedSpreadsheet({
   firstDayOfWeekIdx,
 }: createCustomSpreadsheetProps) {
   const [categoryList, categoryGroup] = categoryLists(categories);
-  const subcategoryIdsByParent = getSubcategoryIdsByParent(categories.grouped);
+  const subcategoryIdsByParent = getRolledUpSubcategoryIdsByParent(
+    getSubcategoryIdsByParent(categories.grouped),
+    getSelectedCategoryIds(conditions, categories.list),
+  );
   const nestedSubcategoryIds = getNestedSubcategoryIds(subcategoryIdsByParent);
 
   return async (
@@ -58,7 +63,7 @@ export function createGroupedSpreadsheet({
       return;
     }
 
-    const reportConditions = expandSubcategoryConditions(
+    const reportConditions = expandReportConditions(
       conditions,
       categories.grouped,
     );
@@ -140,9 +145,11 @@ export function createGroupedSpreadsheet({
           });
 
         // Only top-level categories go in `categories`, each parent with
-        // its subcategories rolled into it, so adding up `categories`
-        // never counts a subcategory twice. The rows shown under a parent
-        // go in its `subcategories`, which nothing adds up.
+        // its selected subcategories rolled into it, so adding up
+        // `categories` never counts a subcategory twice. A subcategory
+        // selected without its parent is a top-level row of its own. The
+        // rows shown under a parent go in its `subcategories`, which
+        // nothing adds up.
         const stackedCategories =
           group.categories &&
           group.categories
