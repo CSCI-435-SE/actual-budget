@@ -1,9 +1,10 @@
-import type { ChangeEvent, ReactNode } from 'react';
+import { useContext, useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   ColorPicker as AriaColorPicker,
+  ColorPickerStateContext,
   ColorSwatch as AriaColorSwatch,
   ColorSwatchPicker as AriaColorSwatchPicker,
-  ColorField,
   ColorSwatchPickerItem,
   Dialog,
   DialogTrigger,
@@ -16,8 +17,11 @@ import type {
 
 import { css } from '@emotion/css';
 
+import { ColorPreview } from './ColorPreview';
 import { Input } from './Input';
 import { Popover } from './Popover';
+import { theme } from './theme';
+import { View } from './View';
 
 function ColorSwatch(props: ColorSwatchProps) {
   return (
@@ -141,7 +145,63 @@ function ColorSwatchPicker({
 
   return pickers;
 }
-const isColor = (value: string) => /^#[0-9a-fA-F]{6}$/.test(value);
+const isHexDigits = (value: string) => /^[0-9a-fA-F]{6}$/.test(value);
+
+function HexColorField() {
+  const state = useContext(ColorPickerStateContext);
+  const currentDigits = state?.color.toString('hex').slice(1) ?? '';
+  const [digits, setDigits] = useState(currentDigits);
+  const [syncedDigits, setSyncedDigits] = useState(currentDigits);
+
+  // Pick up changes made outside this field, e.g. clicking a swatch
+  if (currentDigits !== syncedDigits) {
+    setSyncedDigits(currentDigits);
+    if (currentDigits.toLowerCase() !== digits.toLowerCase()) {
+      setDigits(currentDigits);
+    }
+  }
+
+  const onChangeValue = (value: string) => {
+    const nextDigits = value.replace(/[^0-9a-fA-F]/g, '').slice(0, 6);
+    setDigits(nextDigits);
+
+    if (isHexDigits(nextDigits)) {
+      const color = parseColor(`#${nextDigits}`);
+      if (color) {
+        state?.setColor(color);
+      }
+    }
+  };
+
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View style={{ position: 'relative' }}>
+        <span
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            left: 6,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: theme.formInputTextPlaceholder,
+            pointerEvents: 'none',
+          }}
+        >
+          #
+        </span>
+        <Input
+          aria-label="Hex color"
+          placeholder="RRGGBB"
+          value={digits}
+          onChangeValue={onChangeValue}
+          onBlur={() => setDigits(currentDigits)}
+          style={{ width: 100, paddingLeft: 16 }}
+        />
+      </View>
+      <ColorPreview color={isHexDigits(digits) ? `#${digits}` : null} />
+    </View>
+  );
+}
 
 type ColorPickerProps = {
   children?: ReactNode;
@@ -155,17 +215,6 @@ export function ColorPicker({
   colorset,
   ...props
 }: ColorPickerProps) {
-  const onInput = (value: string) => {
-    if (!isColor(value)) {
-      return;
-    }
-
-    const color = parseColor(value);
-    if (color) {
-      props.onChange?.(color);
-    }
-  };
-
   return (
     <AriaColorPicker defaultValue={props.defaultValue ?? '#690CB0'} {...props}>
       <DialogTrigger>
@@ -185,13 +234,7 @@ export function ColorPicker({
             }}
           >
             <ColorSwatchPicker columns={columns} colorset={colorset} />
-            <ColorField
-              onInput={({ target: { value } }: ChangeEvent<HTMLInputElement>) =>
-                onInput(value)
-              }
-            >
-              <Input placeholder="#RRGGBB" style={{ width: '100px' }} />
-            </ColorField>
+            <HexColorField />
           </Dialog>
         </Popover>
       </DialogTrigger>
