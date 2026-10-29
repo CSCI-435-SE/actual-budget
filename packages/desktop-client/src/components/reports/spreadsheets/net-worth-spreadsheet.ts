@@ -495,6 +495,19 @@ function recalculate(
     balances.some(b => b !== 0),
   );
 
+  const totalChange = endNetWorth - startNetWorth;
+  // Divide by the absolute starting value so the sign always follows the
+  // change (a decrease is negative even when net worth started below zero).
+  let totalChangePercent: number | null;
+  if (totalChange === 0) {
+    totalChangePercent = 0;
+  } else if (startNetWorth === 0) {
+    // Any change from a zero starting point has no meaningful percentage
+    totalChangePercent = null;
+  } else {
+    totalChangePercent = (totalChange / Math.abs(startNetWorth)) * 100;
+  }
+
   return {
     graphData: {
       data: graphData,
@@ -503,7 +516,8 @@ function recalculate(
       end: endDate,
     },
     netWorth: endNetWorth,
-    totalChange: endNetWorth - startNetWorth,
+    totalChange,
+    totalChangePercent,
     lowestNetWorth,
     highestNetWorth,
     accounts: data

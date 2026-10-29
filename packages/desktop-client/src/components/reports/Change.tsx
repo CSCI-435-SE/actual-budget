@@ -10,12 +10,22 @@ import { useFormat } from '#hooks/useFormat';
 
 export function Change({
   amount,
+  percent,
   style,
 }: {
   amount: number;
+  // Omit to hide the percentage; null renders a placeholder
+  percent?: number | null;
   style?: CSSProperties;
 }) {
   const format = useFormat();
+
+  let percentText = '';
+  if (percent === null) {
+    percentText = ' (--)';
+  } else if (percent !== undefined) {
+    percentText = ` (${percent > 0 ? '+' : ''}${percent.toFixed(1)}%)`;
+  }
 
   return (
     <FinancialText
@@ -32,6 +42,7 @@ export function Change({
       }}
     >
       {format(amount, 'financial-with-sign')}
+      {percentText}
     </FinancialText>
   );
 }
