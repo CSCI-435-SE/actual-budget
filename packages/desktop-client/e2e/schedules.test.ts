@@ -322,6 +322,41 @@ test.describe('Schedules', () => {
     await expect(appleRow).toHaveCount(1);
   });
 
+  test('bulk posts transactions for selected schedules', async () => {
+    const selectButton = page.getByTestId('selected-schedules-select-button');
+    const rows = schedulesPage.schedulesTableRow;
+    const homeDepotRow = rows.filter({ hasText: 'Home Depot' });
+    const appleRow = rows.filter({ hasText: 'Apple' });
+
+    for (const payee of ['Home Depot', 'Apple']) {
+      const scheduleEditModal = await schedulesPage.addNewSchedule();
+      await scheduleEditModal.fill({ payee, account: 'HSBC', amount: 25 });
+      await scheduleEditModal.add();
+    }
+    await expect(homeDepotRow.getByTestId('status')).toHaveText('Due');
+    await expect(appleRow.getByTestId('status')).toHaveText('Due');
+
+    await schedulesPage.toggleRowSelection(homeDepotRow);
+    await schedulesPage.toggleRowSelection(appleRow);
+    // Anchored so it doesn't also match "Post transaction today"
+    await schedulesPage.performBulkAction(/^Post transaction$/);
+    await expect(homeDepotRow.getByTestId('status')).toHaveText('Paid');
+    await expect(appleRow.getByTestId('status')).toHaveText('Paid');
+    // The selection is kept so the action can be repeated
+    await expect(selectButton).toHaveText('2 schedules');
+
+    const accountPage = await navigation.goToAccountPage('HSBC');
+    for (const payee of ['Home Depot', 'Apple']) {
+      const transaction = accountPage.transactionTableRow.filter({
+        has: page.getByTestId('schedule-icon'),
+        hasText: payee,
+      });
+      await expect(transaction).toHaveCount(1);
+      await expect(transaction.getByTestId('date')).toHaveText('01/01/2017');
+      await expect(transaction.getByTestId('debit')).toHaveText('25.00');
+    }
+  });
+
   test('clicking a selectable row still opens the schedule editor', async () => {
     await schedulesPage.getNthScheduleRow(0).click();
     await expect(page.getByTestId('schedule-edit-modal')).toBeVisible();
