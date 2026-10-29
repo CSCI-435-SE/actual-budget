@@ -16,6 +16,7 @@ import { View } from '@actual-app/components/view';
 import type { AccountEntity } from '@actual-app/core/types/models';
 import { css, cx } from '@emotion/css';
 
+import { AccountName } from '#components/accounts/AccountName';
 import { useAccounts } from '#hooks/useAccounts';
 
 import { Autocomplete } from './Autocomplete';
@@ -295,7 +296,9 @@ function AccountItem({
       data-highlighted={highlighted || undefined}
       {...props}
     >
-      <TextOneLine>{item.name}</TextOneLine>
+      <TextOneLine>
+        <AccountName account={item} compact />
+      </TextOneLine>
     </button>
   );
 }

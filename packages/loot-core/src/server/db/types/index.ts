@@ -36,6 +36,8 @@ export type DbAccount = {
     | 'account-missing'
     | null;
   account_group_id?: DbAccountGroup['id'] | null;
+  color?: string | null;
+  description?: string | null;
 };
 
 export type DbAccountGroup = {
