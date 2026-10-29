@@ -16,6 +16,7 @@ import * as monthUtils from '@actual-app/core/shared/months';
 import { Link } from '#components/common/Link';
 import { useLocale } from '#hooks/useLocale';
 import { useResizeObserver } from '#hooks/useResizeObserver';
+import { scaledIconSize } from '#style';
 
 import type { MonthBounds } from './MonthsContext';
 
@@ -36,6 +37,7 @@ export const MonthPicker = ({
 }: MonthPickerProps) => {
   const locale = useLocale();
   const { t } = useTranslation();
+  const calendarIconSize = scaledIconSize(20);
   const [hoverId, setHoverId] = useState(null);
   const [targetMonthCount, setTargetMonthCount] = useState(12);
 
@@ -102,8 +104,8 @@ export const MonthPicker = ({
           <View title={t('Today')}>
             <SvgCalendar
               style={{
-                width: 20,
-                height: 20,
+                width: calendarIconSize,
+                height: calendarIconSize,
               }}
             />
           </View>

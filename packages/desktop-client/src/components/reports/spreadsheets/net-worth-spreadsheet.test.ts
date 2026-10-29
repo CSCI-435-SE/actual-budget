@@ -375,3 +375,83 @@ describe('net worth transfers', () => {
     },
   );
 });
+
+describe('net worth percentage change', () => {
+  it.each([
+    {
+      description: 'an increase as a positive percentage',
+      starting: 100_000,
+      change: 25_000,
+      expected: 25,
+    },
+    {
+      description: 'a decrease as a negative percentage',
+      starting: 100_000,
+      change: -10_000,
+      expected: -10,
+    },
+    {
+      description: 'an improvement from a negative net worth as positive',
+      starting: -100_000,
+      change: 50_000,
+      expected: 50,
+    },
+    {
+      description: 'a decline from a negative net worth as negative',
+      starting: -100_000,
+      change: -50_000,
+      expected: -50,
+    },
+  ])('reports $description', async ({ starting, change, expected }) => {
+    const report = await runReport({
+      accounts: [accounts[0]],
+      accountQueryResults: [starting, [{ date: '2026-08', amount: change }]],
+    });
+
+    expect(report.totalChange).toBe(change);
+    expect(report.totalChangePercent).toBeCloseTo(expected);
+  });
+
+  it('combines balances across accounts', async () => {
+    const report = await runReport({
+      accounts,
+      accountQueryResults: [
+        60_000,
+        [{ date: '2026-08', amount: 20_000 }],
+        40_000,
+        [{ date: '2026-08', amount: -5_000 }],
+      ],
+    });
+
+    expect(report.totalChange).toBe(15_000);
+    expect(report.totalChangePercent).toBeCloseTo(15);
+  });
+
+  it('reports 0% when net worth does not change', async () => {
+    const report = await runReport({
+      accounts: [accounts[0]],
+      accountQueryResults: [100_000, []],
+    });
+
+    expect(report.totalChangePercent).toBe(0);
+  });
+
+  it('reports 0% when net worth stays at zero', async () => {
+    const report = await runReport({
+      accounts: [accounts[0]],
+      accountQueryResults: [0, []],
+    });
+
+    expect(report.totalChangePercent).toBe(0);
+  });
+
+  it('reports null when net worth changes from zero', async () => {
+    const report = await runReport({
+      accounts: [accounts[0]],
+      accountQueryResults: [0, [{ date: '2026-08', amount: 10_000 }]],
+    });
+
+    expect(report.totalChange).toBe(10_000);
+    expect(report.totalChangePercent).toBeNull();
+  });
+});

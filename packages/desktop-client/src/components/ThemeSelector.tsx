@@ -14,7 +14,7 @@ import { Popover } from '@actual-app/components/popover';
 import { Tooltip } from '@actual-app/components/tooltip';
 import type { Theme } from '@actual-app/core/types/prefs';
 
-import { themeOptions, useTheme } from '#style';
+import { scaledIconSize, themeOptions, useTheme } from '#style';
 
 type ThemeSelectorProps = {
   style?: CSSProperties;
@@ -27,6 +27,7 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
 
   const { isNarrowWidth } = useResponsive();
   const { t } = useTranslation();
+  const iconSize = scaledIconSize(13);
 
   const themeIcons = {
     light: SvgSun,
@@ -62,7 +63,9 @@ export function ThemeSelector({ style }: ThemeSelectorProps) {
           onPress={() => setMenuOpen(true)}
           style={style}
         >
-          <Icon style={{ width: 13, height: 13, color: 'inherit' }} />
+          <Icon
+            style={{ width: iconSize, height: iconSize, color: 'inherit' }}
+          />
         </Button>
       </Tooltip>
 

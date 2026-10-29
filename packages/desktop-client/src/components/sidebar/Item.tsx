@@ -13,6 +13,8 @@ import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 
+import { scaledIconSize } from '#style';
+
 import { ItemContent } from './ItemContent';
 
 type ItemProps = {
@@ -44,15 +46,17 @@ export function Item({
     backgroundColor: theme.sidebarItemBackgroundHover,
   };
 
+  const iconSize = scaledIconSize(15);
+
   const content = (
     <View
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        height: 20,
+        minHeight: 20,
       }}
     >
-      <Icon width={15} height={15} />
+      <Icon style={{ width: iconSize, height: iconSize }} />
       <Block style={{ marginLeft: 8 }}>{title}</Block>
       <View style={{ flex: 1 }} />
     </View>

@@ -84,6 +84,7 @@ describe('SidebarProvider', () => {
   });
 
   it('keeps the sidebar visible while a dropdown menu opened from it is hovered', () => {
+    (useGlobalPref as unknown as Mock).mockReturnValue([true, vi.fn()]);
     const { result } = renderSidebar();
 
     act(() => {
@@ -112,6 +113,7 @@ describe('SidebarProvider', () => {
   });
 
   it('hides and closes the context menu once the mouse leaves the dropdown too', () => {
+    (useGlobalPref as unknown as Mock).mockReturnValue([true, vi.fn()]);
     const { result } = renderSidebar();
 
     act(() => {
@@ -154,6 +156,7 @@ describe('SidebarProvider', () => {
   });
 
   it('does not close the context menu while the dropdown is still hovered', () => {
+    (useGlobalPref as unknown as Mock).mockReturnValue([true, vi.fn()]);
     const { result } = renderSidebar();
 
     act(() => {
@@ -176,6 +179,71 @@ describe('SidebarProvider', () => {
       vi.advanceTimersByTime(1000);
     });
 
+    expect(mockDispatch).not.toHaveBeenCalledWith(closeContextMenu());
+  });
+
+  it('ignores popover hover when the sidebar is pinned', () => {
+    const { result } = renderSidebar();
+
+    const popover = document.createElement('div');
+    popover.setAttribute('data-popover', '');
+    document.body.appendChild(popover);
+
+    act(() => {
+      dispatchPointerOver(popover);
+    });
+
+    expect(result.current.hidden).toBe(true);
+  });
+
+  it('does not close the context menu when the sidebar is pinned', () => {
+    renderSidebar();
+
+    const popover = document.createElement('div');
+    popover.setAttribute('data-popover', '');
+    document.body.appendChild(popover);
+
+    act(() => {
+      dispatchPointerOver(popover);
+    });
+    mockDispatch.mockClear();
+
+    const elsewhere = document.createElement('div');
+    document.body.appendChild(elsewhere);
+
+    // e.g. a schedule row's menu, opened just before the hide delay ends.
+    act(() => {
+      dispatchPointerOver(elsewhere);
+    });
+    act(() => {
+      vi.advanceTimersByTime(350);
+    });
+
+    expect(mockDispatch).not.toHaveBeenCalledWith(closeContextMenu());
+  });
+
+  it('stops tracking popover hover when the sidebar is pinned while one is hovered', () => {
+    (useGlobalPref as unknown as Mock).mockReturnValue([true, vi.fn()]);
+    const { result, rerender } = renderSidebar();
+
+    const popover = document.createElement('div');
+    popover.setAttribute('data-popover', '');
+    document.body.appendChild(popover);
+
+    act(() => {
+      dispatchPointerOver(popover);
+    });
+
+    expect(result.current.hidden).toBe(false);
+    mockDispatch.mockClear();
+
+    (useGlobalPref as unknown as Mock).mockReturnValue([false, vi.fn()]);
+    rerender();
+    act(() => {
+      vi.advanceTimersByTime(350);
+    });
+
+    expect(result.current.hidden).toBe(true);
     expect(mockDispatch).not.toHaveBeenCalledWith(closeContextMenu());
   });
 

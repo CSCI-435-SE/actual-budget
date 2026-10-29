@@ -52,6 +52,7 @@ import { useLocalPref } from '#hooks/useLocalPref';
 import { useSplitsExpanded } from '#hooks/useSplitsExpanded';
 import { useSyncedPref } from '#hooks/useSyncedPref';
 import { useSyncServerStatus } from '#hooks/useSyncServerStatus';
+import { scaledIconSize } from '#style';
 
 import type { TableRef } from './Account';
 import { AccountColorButton } from './AccountColorButton';
@@ -208,6 +209,10 @@ export function AccountHeader({
 
   const dateFormat = useDateFormat() || 'MM/dd/yyyy';
   const locale = useLocale();
+  const importIconSize = scaledIconSize(13);
+  const addIconSize = scaledIconSize(10);
+  const toolbarIconSize = scaledIconSize(14);
+  const menuIconSize = scaledIconSize(15);
 
   let canSync = !!(account?.account_id && isUsingServer);
   if (!account) {
@@ -380,9 +385,11 @@ export function AccountHeader({
           {account && !account.closed && (
             <Button variant="bare" onPress={onImport}>
               <SvgDownloadThickBottom
-                width={13}
-                height={13}
-                style={{ marginRight: 4 }}
+                style={{
+                  width: importIconSize,
+                  height: importIconSize,
+                  marginRight: 4,
+                }}
               />{' '}
               <Trans>Import</Trans>
             </Button>
@@ -390,7 +397,13 @@ export function AccountHeader({
 
           {!showEmptyMessage && (
             <Button variant="bare" onPress={onAddTransaction}>
-              <SvgAdd width={10} height={10} style={{ marginRight: 3 }} />
+              <SvgAdd
+                style={{
+                  width: addIconSize,
+                  height: addIconSize,
+                  marginRight: 3,
+                }}
+              />
               <Trans>Add New</Trans>
             </Button>
           )}
@@ -471,7 +484,12 @@ export function AccountHeader({
                   }}
                 >
                   <View>
-                    <SvgLockClosed width={14} height={14} />
+                    <SvgLockClosed
+                      style={{
+                        width: toolbarIconSize,
+                        height: toolbarIconSize,
+                      }}
+                    />
                   </View>
                 </Button>
                 <Popover
@@ -508,9 +526,13 @@ export function AccountHeader({
               }
             >
               {splitsExpanded.state.mode === 'collapse' ? (
-                <SvgArrowsShrink3 style={{ width: 14, height: 14 }} />
+                <SvgArrowsShrink3
+                  style={{ width: toolbarIconSize, height: toolbarIconSize }}
+                />
               ) : (
-                <SvgArrowsExpand3 style={{ width: 14, height: 14 }} />
+                <SvgArrowsExpand3
+                  style={{ width: toolbarIconSize, height: toolbarIconSize }}
+                />
               )}
             </View>
           </Button>
@@ -519,9 +541,11 @@ export function AccountHeader({
               <DialogTrigger>
                 <Button variant="bare" aria-label={t('Account menu')}>
                   <SvgDotsHorizontalTriple
-                    width={15}
-                    height={15}
-                    style={{ transform: 'rotateZ(90deg)' }}
+                    style={{
+                      width: menuIconSize,
+                      height: menuIconSize,
+                      transform: 'rotateZ(90deg)',
+                    }}
                   />
                 </Button>
 
@@ -544,9 +568,11 @@ export function AccountHeader({
               <DialogTrigger>
                 <Button variant="bare" aria-label={t('Account menu')}>
                   <SvgDotsHorizontalTriple
-                    width={15}
-                    height={15}
-                    style={{ transform: 'rotateZ(90deg)' }}
+                    style={{
+                      width: menuIconSize,
+                      height: menuIconSize,
+                      transform: 'rotateZ(90deg)',
+                    }}
                   />
                 </Button>
 
