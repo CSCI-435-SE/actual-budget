@@ -236,7 +236,8 @@ const ALWAYS_FLOATS_BELOW = 668;
 const MOBILE_BELOW = 512;
 // The narrowest width at which the demo budget still fits next to the pinned
 // sidebar at its default width. Between this and ALWAYS_FLOATS_BELOW the
-// budgeted amounts get cut off (known issue).
+// budgeted amounts get cut off (known issue). Measured on Windows; Linux fonts
+// render slightly narrower, so CI fits a little below this too.
 const MIN_PINNED_WIDTH = 750;
 const VIEWPORT_HEIGHT = 900;
 
@@ -516,13 +517,16 @@ test.describe('Budget responsive layout', () => {
     expect(failures).toEqual({});
   });
 
-  test(`budget fits with the sidebar pinned just below ${MIN_PINNED_WIDTH}px`, async () => {
+  test(`budget fits with the sidebar pinned at ${ALWAYS_FLOATS_BELOW}px`, async () => {
     // Known issue: between MIN_PINNED_WIDTH and ALWAYS_FLOATS_BELOW the pinned
     // sidebar leaves too little room and budgeted amounts get cut off. Remove
     // `test.fail()` and lower MIN_PINNED_WIDTH once that is handled.
+    // This checks the narrowest pinnable width rather than a width just below
+    // MIN_PINNED_WIDTH: the exact point where amounts start to get cut off
+    // depends on font rendering and differs between platforms.
     test.fail();
 
-    await setWidth(MIN_PINNED_WIDTH - 10);
+    await setWidth(ALWAYS_FLOATS_BELOW);
     await expect(sidebar()).toBeVisible();
     await moveMouseToContent();
     await waitForBudgetLayout();
