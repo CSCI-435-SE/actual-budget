@@ -238,6 +238,7 @@ export function ColorPicker({
           >
             <ColorSwatchPicker columns={columns} colorset={colorset} />
             <HexColorField />
+            {footer}
           </Dialog>
         </Popover>
       </DialogTrigger>

@@ -138,6 +138,7 @@ import { getPayeesById } from '#payees';
 import { aqlQuery } from '#queries/aqlQuery';
 import { useDispatch } from '#redux';
 import { scaledIconSize } from '#style';
+import { isHexColor } from '#util/colorPill';
 import { getStatusLabel } from '#util/schedule';
 import {
   calculateFutureTransactionInfo,
