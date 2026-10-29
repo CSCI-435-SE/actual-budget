@@ -16,6 +16,7 @@ import { Formula } from './reports/Formula';
 import { GoalReport } from './reports/GoalReport';
 import { MonteCarlo } from './reports/monte-carlo/MonteCarlo';
 import { NetWorth } from './reports/NetWorth';
+import { PersonalInflation } from './reports/PersonalInflation';
 import { Sankey } from './reports/Sankey';
 import { Spending } from './reports/Spending';
 import { Summary } from './reports/Summary';
@@ -91,6 +92,22 @@ export function ReportRouter() {
         element={
           <ReportBoundary>
             <AgeOfMoney />
+          </ReportBoundary>
+        }
+      />
+      <Route
+        path="/personal-inflation"
+        element={
+          <ReportBoundary>
+            <PersonalInflation />
+          </ReportBoundary>
+        }
+      />
+      <Route
+        path="/personal-inflation/:id"
+        element={
+          <ReportBoundary>
+            <PersonalInflation />
           </ReportBoundary>
         }
       />

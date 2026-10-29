@@ -343,6 +343,15 @@ export type AgeOfMoneyWidget = AbstractWidget<
   } | null
 >;
 
+export type PersonalInflationWidget = AbstractWidget<
+  'personal-inflation-card',
+  {
+    name?: string;
+    timeFrame?: TimeFrame;
+    comparison?: 'previous-period' | 'previous-year';
+  } | null
+>;
+
 type SpecializedWidget =
   | NetWorthWidget
   | CashFlowWidget
@@ -357,6 +366,7 @@ type SpecializedWidget =
   | FormulaWidget
   | SankeyWidget
   | AgeOfMoneyWidget
+  | PersonalInflationWidget
   | BalanceForecastWidget;
 export type DashboardWidgetEntity = SpecializedWidget | CustomReportWidget;
 export type NewDashboardWidgetEntity = Omit<
