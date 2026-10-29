@@ -16,6 +16,7 @@ import { useLocalPref } from '#hooks/useLocalPref';
 import { useMetadataPref } from '#hooks/useMetadataPref';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
+import { scaledIconSize } from '#style';
 
 import { useBudgetMonthCount } from './BudgetMonthCountContext';
 import {
@@ -80,6 +81,7 @@ export function BudgetExportMenu() {
   const dispatch = useDispatch();
   const locale = useLocale();
   const format = useFormat();
+  const iconSize = scaledIconSize(13);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [monthBounds, setMonthBounds] = useState<MonthBounds | null>(null);
@@ -195,7 +197,7 @@ export function BudgetExportMenu() {
         onPress={() => void onOpen()}
         style={{ display: 'flex', alignItems: 'center', gap: 4 }}
       >
-        <SvgDownloadThickBottom width={13} height={13} />
+        <SvgDownloadThickBottom style={{ width: iconSize, height: iconSize }} />
         <Trans>Export</Trans>
       </Button>
 

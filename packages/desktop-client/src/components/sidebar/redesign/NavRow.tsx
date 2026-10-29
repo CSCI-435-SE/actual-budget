@@ -7,6 +7,7 @@ import { radius, spacing } from '@actual-app/components/tokens';
 import { View } from '@actual-app/components/view';
 
 import { Link } from '#components/common/Link';
+import { scaledIconSize } from '#style';
 
 type NavRowProps = {
   title: string;
@@ -17,6 +18,8 @@ type NavRowProps = {
 };
 
 export function NavRow({ title, Icon, to }: NavRowProps) {
+  const iconSize = scaledIconSize(15);
+
   return (
     <View style={{ flexShrink: 0 }}>
       <Link
@@ -42,7 +45,7 @@ export function NavRow({ title, Icon, to }: NavRowProps) {
           fontWeight: 600,
         }}
       >
-        <Icon width={15} height={15} style={{ flexShrink: 0 }} />
+        <Icon style={{ width: iconSize, height: iconSize, flexShrink: 0 }} />
         <Text style={styles.ellipsisText}>{title}</Text>
       </Link>
     </View>

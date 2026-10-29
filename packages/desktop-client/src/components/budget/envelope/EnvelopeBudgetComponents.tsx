@@ -35,6 +35,7 @@ import { useSheetValue } from '#hooks/useSheetValue';
 import { useUndo } from '#hooks/useUndo';
 import type { Binding, SheetFields } from '#spreadsheet';
 import { envelopeBudget } from '#spreadsheet/bindings';
+import { scaledIconSize } from '#style';
 
 import { BalanceMovementMenu } from './BalanceMovementMenu';
 import { BudgetMenu } from './BudgetMenu';
@@ -253,6 +254,7 @@ export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
   const { showUndoNotification } = useUndo();
 
   const navigate = useNavigate();
+  const scheduleIconSize = scaledIconSize(12);
 
   const { schedule, scheduleStatus, isScheduleRecurring, description } =
     useCategoryScheduleGoalTemplateIndicator({
@@ -477,9 +479,19 @@ export const ExpenseCategoryMonth = memo(function ExpenseCategoryMonth({
                 }
               >
                 {isScheduleRecurring ? (
-                  <SvgArrowsSynchronize style={{ width: 12, height: 12 }} />
+                  <SvgArrowsSynchronize
+                    style={{
+                      width: scheduleIconSize,
+                      height: scheduleIconSize,
+                    }}
+                  />
                 ) : (
-                  <SvgCalendar3 style={{ width: 12, height: 12 }} />
+                  <SvgCalendar3
+                    style={{
+                      width: scheduleIconSize,
+                      height: scheduleIconSize,
+                    }}
+                  />
                 )}
               </Button>
             </View>

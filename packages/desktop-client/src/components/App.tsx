@@ -30,6 +30,7 @@ import {
   CustomThemeStyle,
   FontSizeStyle,
   hasHiddenScrollbars,
+  IconSizeStyle,
   ThemeStyle,
   useTheme,
 } from '#style';
@@ -239,6 +240,7 @@ export function App() {
                       <ThemeStyle />
                       <CustomThemeStyle />
                       <FontSizeStyle />
+                      <IconSizeStyle />
                       <ErrorBoundary FallbackComponent={FatalError}>
                         <Modals />
                       </ErrorBoundary>
