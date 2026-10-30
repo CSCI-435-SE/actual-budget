@@ -228,7 +228,7 @@ function LiveTransactionTable(props: LiveTransactionTableProps) {
                   loadMoreTransactions={vi.fn()}
                   // @ts-expect-error TODO: fix me
                   commonPayees={[]}
-                  payees={payees}
+                  payees={props.payees}
                   addNotification={console.log}
                   onSave={onSave}
                   onSplit={onSplit}
@@ -627,6 +627,87 @@ describe('Transactions', () => {
         );
       }
     });
+  });
+
+  test('colored account shows a pill and still opens the account dropdown', async () => {
+    const { container } = renderTransactions({
+      accounts: [{ ...accounts[0], color: '#1E88E5' }],
+    });
+
+    const field = queryField(container, 'account', '', 0);
+    expect(field.textContent).toBe(accounts[0].name);
+    const pill = field.querySelector('[data-testid="account-color-pill"]');
+    expect(pill).not.toBeNull();
+
+    await userEvent.click(pill!);
+    expectToBeEditingField(container, 'account', 0);
+  });
+
+  test('accounts without a color render as plain text', () => {
+    const { container } = renderTransactions();
+
+    expect(
+      queryField(container, 'account', '', 0).querySelector(
+        '[data-testid="account-color-pill"]',
+      ),
+    ).toBeNull();
+  });
+
+  test('account not in the account list leaves the account empty', () => {
+    const transactions = generateTransactions(1);
+    transactions[0].account = 'missing-account';
+    const { container } = renderTransactions({ transactions });
+
+    expect(queryField(container, 'account', 'div', 0).textContent).toBe('');
+  });
+
+  test('transfer to a colored account shows a pill in the payee column', () => {
+    const coloredAccount = { ...generateAccount('Savings'), color: '#1E88E5' };
+    const transferPayee: PayeeEntity = {
+      id: 'transfer-savings',
+      name: '',
+      transfer_acct: coloredAccount.id,
+    };
+    const transactions = generateTransactions(1);
+    transactions[0].payee = transferPayee.id;
+    const { container } = renderTransactions({
+      transactions,
+      payees: [...payees, transferPayee],
+      accounts: [...accounts, coloredAccount],
+    });
+
+    const pill = queryField(container, 'payee', '', 0).querySelector(
+      '[data-testid="account-color-pill"]',
+    );
+    expect(pill?.textContent).toBe('Savings');
+  });
+
+  test('regular transaction without a payee leaves the payee empty', () => {
+    const transactions = generateTransactions(1);
+    transactions[0].payee = null;
+    const { container } = renderTransactions({ transactions });
+
+    expect(queryField(container, 'payee', 'div', 0).textContent).toBe('');
+  });
+
+  test('preview transaction without a payee shows (No payee)', () => {
+    const previewTransaction: TransactionEntity = {
+      id: 'preview/schedule-1/2017-01-01',
+      account: accounts[0].id,
+      amount: -1000,
+      date: '2017-01-01',
+      payee: null,
+      schedule: 'schedule-1',
+      cleared: false,
+      reconciled: false,
+    };
+    const { container } = renderTransactions({
+      transactions: [previewTransaction],
+    });
+
+    expect(queryField(container, 'payee', 'div', 0).textContent).toBe(
+      '(No payee)',
+    );
   });
 
   describe('Group column', () => {

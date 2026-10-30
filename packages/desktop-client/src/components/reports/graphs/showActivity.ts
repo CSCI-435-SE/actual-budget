@@ -11,7 +11,7 @@ import type {
 
 import { ReportOptions } from '#components/reports/ReportOptions';
 import {
-  expandSubcategoryConditions,
+  expandReportConditions,
   getSubcategoryIdsByParent,
   getSubcategoryIdsOfHiddenParents,
 } from '#components/reports/spreadsheets/subcategories';
@@ -100,8 +100,11 @@ export function showActivity({
           };
 
   const filterConditions = [
-    // A filter on a parent covers its subcategories, as in the report
-    ...expandSubcategoryConditions(filters, categories.grouped),
+    // Filters apply as they do in the report: the category selector's
+    // filter as written, any other filter on a parent covering its
+    // subcategories. Together with the drilldown on the parent's whole
+    // family, this leaves out subcategories that were unchecked.
+    ...expandReportConditions(filters, categories.grouped),
     drilldownFilter,
     {
       field: 'date',

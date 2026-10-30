@@ -21,6 +21,7 @@ import type { AccountEntity } from '@actual-app/core/types/models';
 import { css, cx } from '@emotion/css';
 
 import { useReopenAccountMutation, useUpdateAccountMutation } from '#accounts';
+import { AccountName } from '#components/accounts/AccountName';
 import { BalanceHistoryGraph } from '#components/accounts/BalanceHistoryGraph';
 import { CharacterCounter } from '#components/common/CharacterCounter';
 import { Link } from '#components/common/Link';
@@ -261,6 +262,8 @@ export function Account<FieldName extends SheetFields<'account'>>({
                       defaultValue={name}
                     />
                   </InitialFocus>
+                ) : account ? (
+                  <AccountName account={account} compact />
                 ) : (
                   name
                 )

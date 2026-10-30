@@ -272,4 +272,93 @@ test.describe('Schedules', () => {
     await expect(menu).toBeVisible();
     await expect(menu.getByRole('button', { name: 'Complete' })).toBeVisible();
   });
+
+  test('bulk skips, completes and deletes selected schedules', async () => {
+    const selectButton = page.getByTestId('selected-schedules-select-button');
+    const rows = schedulesPage.schedulesTableRow;
+    const homeDepotRow = rows.filter({ hasText: 'Home Depot' });
+    const appleRow = rows.filter({ hasText: 'Apple' });
+
+    for (const payee of ['Home Depot', 'Apple']) {
+      const scheduleEditModal = await schedulesPage.addNewSchedule();
+      await scheduleEditModal.fill({ payee, account: 'HSBC', amount: 25 });
+      await scheduleEditModal.add();
+    }
+    await expect(rows).toHaveCount(6);
+    await expect(page.getByTestId('schedule-edit-modal')).toHaveCount(0);
+
+    // Clicking the checkbox selects the row without opening the editor
+    await schedulesPage.toggleRowSelection(homeDepotRow);
+    await expect(selectButton).toHaveText('1 schedule');
+    await schedulesPage.toggleRowSelection(appleRow);
+    await expect(page.getByTestId('schedule-edit-modal')).toHaveCount(0);
+    await expect(selectButton).toHaveText('2 schedules');
+
+    await schedulesPage.performBulkAction('Skip next scheduled date');
+    await expect(homeDepotRow.getByTestId('date')).toHaveText('02/01/2017');
+    await expect(appleRow.getByTestId('date')).toHaveText('02/01/2017');
+    // The selection is kept so the action can be repeated
+    await expect(selectButton).toHaveText('2 schedules');
+
+    await schedulesPage.performBulkAction('Complete');
+    await expect(selectButton).toHaveCount(0);
+    await expect(rows.last()).toHaveText('Show completed schedules');
+
+    // Completed schedules have no checkbox and are skipped by select-all
+    await rows.last().click();
+    await expect(rows).toHaveCount(6);
+    await expect(homeDepotRow.getByTestId('status')).toHaveText('Completed');
+    await expect(homeDepotRow.getByTestId('select')).toHaveCount(0);
+    await expect(appleRow.getByTestId('select')).toHaveCount(0);
+
+    await schedulesPage.toggleSelectAll();
+    await expect(selectButton).toHaveText('4 schedules');
+
+    // Deletes the four active schedules, leaving the completed ones
+    await schedulesPage.performBulkAction('Delete');
+    await expect(selectButton).toHaveCount(0);
+    await expect(rows).toHaveCount(2);
+    await expect(homeDepotRow).toHaveCount(1);
+    await expect(appleRow).toHaveCount(1);
+  });
+
+  test('bulk posts transactions for selected schedules', async () => {
+    const selectButton = page.getByTestId('selected-schedules-select-button');
+    const rows = schedulesPage.schedulesTableRow;
+    const homeDepotRow = rows.filter({ hasText: 'Home Depot' });
+    const appleRow = rows.filter({ hasText: 'Apple' });
+
+    for (const payee of ['Home Depot', 'Apple']) {
+      const scheduleEditModal = await schedulesPage.addNewSchedule();
+      await scheduleEditModal.fill({ payee, account: 'HSBC', amount: 25 });
+      await scheduleEditModal.add();
+    }
+    await expect(homeDepotRow.getByTestId('status')).toHaveText('Due');
+    await expect(appleRow.getByTestId('status')).toHaveText('Due');
+
+    await schedulesPage.toggleRowSelection(homeDepotRow);
+    await schedulesPage.toggleRowSelection(appleRow);
+    // Anchored so it doesn't also match "Post transaction today"
+    await schedulesPage.performBulkAction(/^Post transaction$/);
+    await expect(homeDepotRow.getByTestId('status')).toHaveText('Paid');
+    await expect(appleRow.getByTestId('status')).toHaveText('Paid');
+    // The selection is kept so the action can be repeated
+    await expect(selectButton).toHaveText('2 schedules');
+
+    const accountPage = await navigation.goToAccountPage('HSBC');
+    for (const payee of ['Home Depot', 'Apple']) {
+      const transaction = accountPage.transactionTableRow.filter({
+        has: page.getByTestId('schedule-icon'),
+        hasText: payee,
+      });
+      await expect(transaction).toHaveCount(1);
+      await expect(transaction.getByTestId('date')).toHaveText('01/01/2017');
+      await expect(transaction.getByTestId('debit')).toHaveText('25.00');
+    }
+  });
+
+  test('clicking a selectable row still opens the schedule editor', async () => {
+    await schedulesPage.getNthScheduleRow(0).click();
+    await expect(page.getByTestId('schedule-edit-modal')).toBeVisible();
+  });
 });

@@ -77,6 +77,7 @@ import type {
 import { format as formatDate, parseISO } from 'date-fns';
 
 import { getAccountsById } from '#accounts/accountsSlice';
+import { AccountName } from '#components/accounts/AccountName';
 import { AccountAutocomplete } from '#components/autocomplete/AccountAutocomplete';
 import { CategoryAutocomplete } from '#components/autocomplete/CategoryAutocomplete';
 import { PayeeAutocomplete } from '#components/autocomplete/PayeeAutocomplete';
@@ -137,6 +138,7 @@ import { getPayeesById } from '#payees';
 import { aqlQuery } from '#queries/aqlQuery';
 import { useDispatch } from '#redux';
 import { scaledIconSize } from '#style';
+import { isHexColor } from '#util/colorPill';
 import { getStatusLabel } from '#util/schedule';
 import {
   calculateFutureTransactionInfo,
@@ -799,6 +801,9 @@ function PayeeCell({
       formatter={() => {
         if (!displayPayee && isPreview) {
           return t('(No payee)');
+        }
+        if (transferAccount && isHexColor(transferAccount.color)) {
+          return <AccountName account={transferAccount} />;
         }
         return displayPayee;
       }}
@@ -1689,7 +1694,7 @@ const Transaction = memo(function Transaction({
             formatter={acctId => {
               const acct = acctId && getAccountsById(accounts)[acctId];
               if (acct) {
-                return acct.name;
+                return <AccountName account={acct} />;
               }
               return '';
             }}

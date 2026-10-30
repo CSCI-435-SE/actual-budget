@@ -24,6 +24,8 @@ export function generateAccount(
     tombstone: 0,
     closed: 0,
     account_group_id: null,
+    color: null,
+    description: null,
     ...emptySyncFields(),
   };
 

@@ -103,6 +103,52 @@ export class ReportsPage {
       .waitFor({ state: 'visible' });
   }
 
+  // New widgets are added at the end of the grid, and cards only render
+  // their content once scrolled into view.
+  async getPersonalInflationCard() {
+    const card = this.pageContent.locator('.react-grid-item').last();
+    await card.scrollIntoViewIfNeeded();
+    await card
+      .getByRole('heading', { name: 'Personal Inflation' })
+      .waitFor({ state: 'visible' });
+    return card;
+  }
+
+  async goToPersonalInflationPage() {
+    const card = await this.getPersonalInflationCard();
+    await Promise.all([
+      this.page.waitForURL(/\/reports\/personal-inflation\//),
+      card.getByRole('button', { name: /^Personal Inflation/ }).click(),
+    ]);
+
+    await this.pageContent
+      .getByText('What is personal inflation?')
+      .waitFor({ state: 'visible' });
+
+    return new ReportsPage(this.page);
+  }
+
+  async selectDateRangePreset(preset: string) {
+    await this.page.getByTestId('date-range-picker-trigger').click();
+    await this.page
+      .locator('[data-popover]')
+      .getByRole('button', { name: preset, exact: true })
+      .click();
+    // The picker applies the range when it closes
+    await this.page.keyboard.press('Escape');
+  }
+
+  async selectInflationComparison(comparison: string) {
+    await this.pageContent
+      .getByRole('button', { name: 'Change comparison period' })
+      .click();
+    await this.page.getByRole('button', { name: comparison }).click();
+    await this.pageContent
+      .getByRole('button', { name: 'Change comparison period' })
+      .filter({ hasText: comparison })
+      .waitFor({ state: 'visible' });
+  }
+
   async addWidget(widgetName: string) {
     await this.pageContent
       .getByRole('button', { name: 'Add new widget' })

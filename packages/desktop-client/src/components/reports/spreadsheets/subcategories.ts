@@ -1,6 +1,7 @@
 import { send } from '@actual-app/core/platform/client/connection';
 import { nestCategories } from '@actual-app/core/shared/categories';
 import type {
+  CategoryEntity,
   CategoryGroupEntity,
   RuleConditionEntity,
 } from '@actual-app/core/types/models';
@@ -27,9 +28,37 @@ export function getSubcategoryIdsByParent(
   return subcategoryIds;
 }
 
+// Narrows getSubcategoryIdsByParent to the subcategories that are reported
+// inside their parent's row. With a category filter, a subcategory only
+// rolls into its parent when both are selected; one selected without its
+// parent gets a row of its own instead of showing under a parent that was
+// left out. `selectedCategoryIds` is undefined when every category is
+// selected.
+export function getRolledUpSubcategoryIdsByParent(
+  subcategoryIdsByParent: Map<string, string[]>,
+  selectedCategoryIds: Set<string> | undefined,
+): Map<string, string[]> {
+  if (!selectedCategoryIds) {
+    return subcategoryIdsByParent;
+  }
+  const rolledUp = new Map<string, string[]>();
+  for (const [parentId, subcategoryIds] of subcategoryIdsByParent) {
+    if (!selectedCategoryIds.has(parentId)) {
+      continue;
+    }
+    const selectedSubcategoryIds = subcategoryIds.filter(id =>
+      selectedCategoryIds.has(id),
+    );
+    if (selectedSubcategoryIds.length > 0) {
+      rolledUp.set(parentId, selectedSubcategoryIds);
+    }
+  }
+  return rolledUp;
+}
+
 // The categories a report row adds up. A parent's row includes everything
-// its subcategories hold, so it covers its own id and theirs. Other rows
-// get undefined and match on their own id as usual.
+// its rolled-up subcategories hold, so it covers its own id and theirs.
+// Other rows get undefined and match on their own id as usual.
 export function getRolledUpCategoryIds(
   id: string | undefined,
   subcategoryIdsByParent: Map<string, string[]>,
@@ -122,6 +151,82 @@ export function expandSubcategoryConditions(
       value: withSubcategories(ids),
     };
   });
+}
+
+// Category filters the custom report's category selector can't show:
+// several category conditions, a category group condition, or a category
+// condition matching on names or tags.
+export function isComplexCategoryCondition(
+  conditions: RuleConditionEntity[],
+): boolean {
+  return (
+    conditions.some(
+      ({ field, op }) =>
+        field === 'category' &&
+        [
+          'contains',
+          'doesNotContain',
+          'matches',
+          'hasTags',
+          'hasAnyTag',
+        ].includes(op),
+    ) ||
+    conditions.filter(({ field }) => field === 'category').length >= 2 ||
+    conditions.some(({ field }) => field === 'category_group')
+  );
+}
+
+// The category condition the custom report's category selector shows as
+// checkboxes, if there is one.
+export function getSelectorCategoryCondition(
+  conditions: RuleConditionEntity[],
+): RuleConditionEntity | undefined {
+  if (isComplexCategoryCondition(conditions)) {
+    return undefined;
+  }
+  return conditions.find(
+    cond =>
+      cond.field === 'category' &&
+      ['is', 'isNot', 'oneOf', 'notOneOf'].includes(cond.op),
+  );
+}
+
+// The categories checked in the custom report's category selector, or
+// undefined when every category is.
+export function getSelectedCategoryIds(
+  conditions: RuleConditionEntity[],
+  categories: Pick<CategoryEntity, 'id'>[],
+): Set<string> | undefined {
+  const cond = getSelectorCategoryCondition(conditions);
+  if (!cond) {
+    return undefined;
+  }
+  const ids = new Set<unknown>(
+    Array.isArray(cond.value) ? cond.value : [cond.value],
+  );
+  const excludes = cond.op === 'isNot' || cond.op === 'notOneOf';
+  return new Set(
+    categories.map(({ id }) => id).filter(id => ids.has(id) !== excludes),
+  );
+}
+
+// expandSubcategoryConditions for custom reports. The selector's condition
+// lists exactly the categories that are checked, subcategories included,
+// so it's left as it is; expanding it would add back subcategories that
+// were unchecked. Any other category filter covers the whole family.
+export function expandReportConditions(
+  conditions: RuleConditionEntity[],
+  categoryGroups: Pick<CategoryGroupEntity, 'categories'>[],
+): RuleConditionEntity[] {
+  const selectorCondition = getSelectorCategoryCondition(conditions);
+  if (!selectorCondition) {
+    return expandSubcategoryConditions(conditions, categoryGroups);
+  }
+  return conditions.map(cond =>
+    cond === selectorCondition
+      ? cond
+      : expandSubcategoryConditions([cond], categoryGroups)[0],
+  );
 }
 
 // expandSubcategoryConditions for reports that don't already have the
