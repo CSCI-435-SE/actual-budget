@@ -1,6 +1,7 @@
-import { useContext, useState } from 'react';
+import { useContext, useId, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
+  Button as AriaButton,
   ColorPicker as AriaColorPicker,
   ColorPickerStateContext,
   ColorSwatch as AriaColorSwatch,
@@ -12,15 +13,19 @@ import {
 } from 'react-aria-components';
 import type {
   ColorPickerProps as AriaColorPickerProps,
+  Color,
   ColorSwatchProps,
 } from 'react-aria-components';
 
 import { css } from '@emotion/css';
 
 import { ColorPreview } from './ColorPreview';
+import { CustomColorPicker } from './CustomColorPicker';
+import { SvgCheveronDown } from './icons/v1';
 import { Input } from './Input';
 import { Popover } from './Popover';
 import { theme } from './theme';
+import { Tooltip } from './Tooltip';
 import { View } from './View';
 
 function ColorSwatch(props: ColorSwatchProps) {
@@ -84,11 +89,13 @@ const DEFAULT_COLOR_SET = [
 type ColorSwatchPickerProps = {
   columns?: number;
   colorset?: string[];
+  onChange?: (color: Color) => void;
 };
 
 function ColorSwatchPicker({
   columns = 5,
   colorset = DEFAULT_COLOR_SET,
+  onChange,
 }: ColorSwatchPickerProps) {
   const pickers = [];
 
@@ -132,6 +139,7 @@ function ColorSwatchPicker({
     pickers.push(
       <AriaColorSwatchPicker
         key={`colorset-${l}`}
+        onChange={onChange}
         style={{
           display: 'flex',
           gap: '8px',
@@ -147,7 +155,56 @@ function ColorSwatchPicker({
 }
 const isHexDigits = (value: string) => /^[0-9a-fA-F]{6}$/.test(value);
 
-function HexColorField() {
+const CUSTOM_COLOR_LABEL = 'Pick a custom color';
+
+// Sized and bordered like the hex input beside it, so the preview reads as a
+// control that opens something rather than a static swatch
+const previewButtonClassName = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4,
+  padding: 3,
+  paddingRight: 5,
+  border: `1px solid ${theme.formInputBorder}`,
+  borderRadius: 4,
+  backgroundColor: theme.tableBackground,
+  color: theme.formInputText,
+  cursor: 'pointer',
+  outline: 'none',
+  '&[data-hovered]': {
+    backgroundColor: theme.buttonBareBackgroundHover,
+  },
+  '&[aria-expanded="true"]': {
+    borderColor: theme.formInputBorderSelected,
+  },
+  '&[data-focus-visible]': {
+    outline: `2px solid ${theme.formInputBorderSelected}`,
+    outlineOffset: 2,
+  },
+  '& svg': {
+    transition: 'transform 150ms cubic-bezier(0.16, 1, 0.3, 1)',
+  },
+  '&[aria-expanded="true"] svg': {
+    transform: 'rotate(180deg)',
+  },
+  '@media (prefers-reduced-motion: reduce)': {
+    '& svg': { transition: 'none' },
+  },
+});
+
+type HexColorFieldProps = {
+  isCustomPickerOpen: boolean;
+  customPickerId: string;
+  onToggleCustomPicker: () => void;
+  onCommit?: (color: Color) => void;
+};
+
+function HexColorField({
+  isCustomPickerOpen,
+  customPickerId,
+  onToggleCustomPicker,
+  onCommit,
+}: HexColorFieldProps) {
   const state = useContext(ColorPickerStateContext);
   const currentDigits = state?.color.toString('hex').slice(1) ?? '';
   const [digits, setDigits] = useState(currentDigits);
@@ -169,12 +226,21 @@ function HexColorField() {
       const color = parseColor(`#${nextDigits}`);
       if (color) {
         state?.setColor(color);
+        onCommit?.(color);
       }
     }
   };
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 8,
+        marginTop: 4,
+      }}
+    >
       <View style={{ position: 'relative' }}>
         <span
           aria-hidden="true"
@@ -198,8 +264,56 @@ function HexColorField() {
           style={{ width: 100, paddingLeft: 16 }}
         />
       </View>
-      <ColorPreview color={isHexDigits(digits) ? `#${digits}` : null} />
+      <Tooltip content={CUSTOM_COLOR_LABEL} placement="bottom">
+        <AriaButton
+          aria-label={CUSTOM_COLOR_LABEL}
+          aria-expanded={isCustomPickerOpen}
+          aria-controls={isCustomPickerOpen ? customPickerId : undefined}
+          className={previewButtonClassName}
+          onPress={onToggleCustomPicker}
+        >
+          <ColorPreview
+            color={isHexDigits(digits) ? `#${digits}` : null}
+            style={{ width: 20, height: 20, borderRadius: 2 }}
+          />
+          <SvgCheveronDown aria-hidden="true" width={10} height={10} />
+        </AriaButton>
+      </Tooltip>
     </View>
+  );
+}
+
+type ColorPickerContentProps = {
+  columns?: number;
+  colorset?: string[];
+  onChangeEnd?: (color: Color) => void;
+};
+
+function ColorPickerContent({
+  columns,
+  colorset,
+  onChangeEnd,
+}: ColorPickerContentProps) {
+  const customPickerId = useId();
+  const [isCustomPickerOpen, setIsCustomPickerOpen] = useState(false);
+
+  return (
+    <>
+      <ColorSwatchPicker
+        columns={columns}
+        colorset={colorset}
+        onChange={onChangeEnd}
+      />
+      <HexColorField
+        isCustomPickerOpen={isCustomPickerOpen}
+        customPickerId={customPickerId}
+        onToggleCustomPicker={() => setIsCustomPickerOpen(open => !open)}
+        onCommit={onChangeEnd}
+      />
+      {isCustomPickerOpen && (
+        <CustomColorPicker id={customPickerId} onChangeEnd={onChangeEnd} />
+      )}
+    </>
   );
 }
 
@@ -207,19 +321,40 @@ type ColorPickerProps = {
   children?: ReactNode;
   columns?: number;
   colorset?: string[];
-  /** Optional content at the bottom of the popover, e.g. a "Remove color" button */
-  footer?: ReactNode;
+  // Fires once a change is settled (a swatch or complete hex value is picked,
+  // or a drag or held key on the custom picker ends), while onChange also
+  // fires mid-drag
+  onChangeEnd?: (color: Color) => void;
 } & AriaColorPickerProps;
 
 export function ColorPicker({
   children,
   columns,
   colorset,
-  footer,
+  onChangeEnd,
   ...props
 }: ColorPickerProps) {
+  // A controlled value is usually stored as hex, which drops hue and
+  // saturation for grays, so keep using the last emitted color while it
+  // still matches that hex to stop the custom picker's thumbs jumping
+  const [lastColor, setLastColor] = useState<Color | null>(null);
+  const value =
+    lastColor &&
+    typeof props.value === 'string' &&
+    props.value.toUpperCase() === lastColor.toString('hex')
+      ? lastColor
+      : props.value;
+
   return (
-    <AriaColorPicker defaultValue={props.defaultValue ?? '#690CB0'} {...props}>
+    <AriaColorPicker
+      defaultValue={props.defaultValue ?? '#690CB0'}
+      {...props}
+      value={value}
+      onChange={color => {
+        setLastColor(color);
+        props.onChange?.(color);
+      }}
+    >
       <DialogTrigger>
         {children}
         <Popover>
@@ -236,9 +371,11 @@ export function ColorPicker({
               overflow: 'auto',
             }}
           >
-            <ColorSwatchPicker columns={columns} colorset={colorset} />
-            <HexColorField />
-            {footer}
+            <ColorPickerContent
+              columns={columns}
+              colorset={colorset}
+              onChangeEnd={onChangeEnd}
+            />
           </Dialog>
         </Popover>
       </DialogTrigger>
