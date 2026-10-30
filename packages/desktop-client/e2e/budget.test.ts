@@ -3,6 +3,7 @@ import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import type { BudgetPage } from './page-models/budget-page';
 import { ConfigurationPage } from './page-models/configuration-page';
+import { Navigation } from './page-models/navigation';
 
 test.describe('Budget', () => {
   let page: Page;
@@ -225,5 +226,341 @@ test.describe('Budget subcategories', () => {
     ).toHaveCount(0);
     expect(await budgetPage.getBudgetedForCategory('Dining Out')).toBe(5000);
     expect(await budgetPage.getBudgetedForCategory('Food')).toBe(15000);
+  });
+});
+
+// Below this width the sidebar always floats and cannot be pinned
+// (see `alwaysFloats` in SidebarProvider).
+const ALWAYS_FLOATS_BELOW = 668;
+// Below this width the app switches to the mobile pages.
+const MOBILE_BELOW = 512;
+// The narrowest width at which the demo budget still fits next to the pinned
+// sidebar at its default width. Between this and ALWAYS_FLOATS_BELOW the
+// budgeted amounts get cut off (known issue). Measured on Windows; Linux fonts
+// render slightly narrower, so CI fits a little below this too.
+const MIN_PINNED_WIDTH = 750;
+const VIEWPORT_HEIGHT = 900;
+
+type LayoutProblems = {
+  pageScrollsHorizontally: boolean;
+  offscreen: string[];
+  clippedAmounts: string[];
+};
+
+async function getLayoutProblems(page: Page): Promise<LayoutProblems> {
+  return page.evaluate(() => {
+    const viewportWidth = document.documentElement.clientWidth;
+    const describe = (el: Element) => {
+      const testId = el.getAttribute('data-testid');
+      const text = (el.textContent ?? '').trim().slice(0, 30);
+      return `${el.tagName.toLowerCase()}${testId ? `[${testId}]` : ''} ${text}`;
+    };
+    const isRendered = (el: Element) => {
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.width > 0 &&
+        rect.height > 0 &&
+        getComputedStyle(el).visibility !== 'hidden'
+      );
+    };
+
+    // Only the part of an element left visible by ancestors that hide
+    // overflow counts; e.g. the budget summary keeps the neighbouring months
+    // rendered but clipped out of view.
+    const offscreen = [...document.querySelectorAll('body *')]
+      .filter(isRendered)
+      .filter(el => {
+        const rect = el.getBoundingClientRect();
+        let visibleLeft = rect.left;
+        let visibleRight = rect.right;
+        for (
+          let ancestor = el.parentElement;
+          ancestor && ancestor !== document.body;
+          ancestor = ancestor.parentElement
+        ) {
+          if (getComputedStyle(ancestor).overflowX !== 'visible') {
+            const clip = ancestor.getBoundingClientRect();
+            visibleLeft = Math.max(visibleLeft, clip.left);
+            visibleRight = Math.min(visibleRight, clip.right);
+          }
+        }
+        return visibleRight > visibleLeft && visibleRight > viewportWidth + 1;
+      })
+      .map(describe);
+
+    // An amount is clipped when its text doesn't fit inside its own cell or
+    // inside any element that hides overflow, whether that element wraps the
+    // cell or sits inside it. Text that spills out of its cell overlaps the
+    // next one, and clipped text hides digits (even with an ellipsis).
+    const clippedAmounts = [...document.querySelectorAll('[data-cellname]')]
+      .filter(isRendered)
+      .filter(el => {
+        const ancestors: Element[] = [];
+        for (
+          let ancestor = el.parentElement;
+          ancestor && ancestor !== document.body;
+          ancestor = ancestor.parentElement
+        ) {
+          if (getComputedStyle(ancestor).overflowX !== 'visible') {
+            ancestors.push(ancestor);
+          }
+        }
+        const cell = el.getBoundingClientRect();
+        // Skip cells that are clipped out of view entirely, such as the
+        // budget summary's neighbouring months.
+        const isInView = ancestors.every(ancestor => {
+          const clip = ancestor.getBoundingClientRect();
+          return cell.right > clip.left && cell.left < clip.right;
+        });
+        if (!isInView) {
+          return false;
+        }
+
+        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          const text = range.getBoundingClientRect();
+          if (!node.textContent?.trim() || text.width === 0) {
+            continue;
+          }
+          const clips: Element[] = [el, ...ancestors];
+          for (
+            let parent = node.parentElement;
+            parent && parent !== el;
+            parent = parent.parentElement
+          ) {
+            if (getComputedStyle(parent).overflowX !== 'visible') {
+              clips.push(parent);
+            }
+          }
+          const isClipped = clips.some(clip => {
+            const bounds = clip.getBoundingClientRect();
+            return text.left < bounds.left - 1 || text.right > bounds.right + 1;
+          });
+          if (isClipped) {
+            return true;
+          }
+        }
+        return false;
+      })
+      .map(describe);
+
+    return {
+      pageScrollsHorizontally:
+        document.documentElement.scrollWidth > viewportWidth,
+      offscreen,
+      clippedAmounts,
+    };
+  });
+}
+
+function hasLayoutProblems(problems: LayoutProblems) {
+  return (
+    problems.pageScrollsHorizontally ||
+    problems.offscreen.length > 0 ||
+    problems.clippedAmounts.length > 0
+  );
+}
+
+test.describe('Budget responsive layout', () => {
+  let page: Page;
+  let configurationPage: ConfigurationPage;
+  let budgetPage: BudgetPage;
+
+  const sidebar = () => page.getByTestId('sidebar');
+
+  async function setWidth(width: number) {
+    await page.setViewportSize({ width, height: VIEWPORT_HEIGHT });
+  }
+
+  // Keep the mouse off the sidebar so a floating sidebar stays hidden and
+  // nothing in the budget table renders a hover state.
+  async function moveMouseToContent() {
+    const viewport = page.viewportSize();
+    if (viewport) {
+      await page.mouse.move(viewport.width - 1, viewport.height - 1);
+    }
+  }
+
+  async function expectSidebarHidden() {
+    await expect
+      .poll(async () => {
+        const box = await sidebar().boundingBox();
+        return box ? box.x + box.width : 0;
+      })
+      .toBeLessThanOrEqual(0);
+  }
+
+  async function unpinSidebar() {
+    // The pin button only becomes visible while the sidebar is hovered.
+    await page.getByTestId('budget-name').hover();
+    await page.getByRole('button', { name: 'Unpin sidebar' }).click();
+    await moveMouseToContent();
+    await expectSidebarHidden();
+  }
+
+  async function waitForBudgetLayout() {
+    await budgetPage.waitFor();
+    // Let the sidebar transition and the AutoSizer settle.
+    await page.waitForTimeout(600);
+  }
+
+  test.beforeEach(async ({ browser }) => {
+    page = await browser.newPage();
+    configurationPage = new ConfigurationPage(page);
+
+    await page.goto('/');
+    budgetPage = await configurationPage.createTestFile();
+    await page.mouse.move(0, 0);
+  });
+
+  test.afterEach(async () => {
+    await page?.close();
+  });
+
+  for (const width of [1440, 1024, 768]) {
+    for (const sidebarState of ['pinned', 'unpinned'] as const) {
+      test(`budget fits at ${width}px with the sidebar ${sidebarState}`, async () => {
+        await setWidth(width);
+        if (sidebarState === 'unpinned') {
+          await unpinSidebar();
+        } else {
+          await expect(sidebar()).toBeVisible();
+          await moveMouseToContent();
+        }
+        await waitForBudgetLayout();
+
+        expect(await getLayoutProblems(page)).toEqual({
+          pageScrollsHorizontally: false,
+          offscreen: [],
+          clippedAmounts: [],
+        });
+        await expect(page).toMatchThemeScreenshots();
+      });
+    }
+  }
+
+  test('budget fits at 600px where the sidebar always floats', async () => {
+    const pinButton = page.getByRole('button', {
+      name: /^(Pin|Unpin) sidebar$/,
+    });
+    await setWidth(ALWAYS_FLOATS_BELOW);
+    await expect(pinButton).toHaveCount(1);
+    await setWidth(ALWAYS_FLOATS_BELOW - 1);
+    await expect(pinButton).toHaveCount(0);
+
+    await setWidth(600);
+    await moveMouseToContent();
+    await expectSidebarHidden();
+    await waitForBudgetLayout();
+
+    expect(await getLayoutProblems(page)).toEqual({
+      pageScrollsHorizontally: false,
+      offscreen: [],
+      clippedAmounts: [],
+    });
+    await expect(page).toMatchThemeScreenshots();
+  });
+
+  test('switches to the mobile layout below the small breakpoint', async () => {
+    await setWidth(MOBILE_BELOW);
+    await expect(budgetPage.budgetTable).toBeVisible();
+    await expect(sidebar()).toHaveCount(1);
+
+    await setWidth(MOBILE_BELOW - 1);
+    await expect(sidebar()).toHaveCount(0);
+    await expect(budgetPage.budgetTable).toHaveCount(0);
+  });
+
+  test('pinned sidebar is clamped to a third of the viewport after the window shrinks', async () => {
+    await setWidth(1440);
+    const box = await sidebar().boundingBox();
+    if (!box) {
+      throw new Error('Sidebar is not rendered');
+    }
+
+    // Drag the resize handle on the sidebar's right edge as far as it goes.
+    const handleY = box.y + box.height / 2;
+    await page.mouse.move(box.x + box.width - 2, handleY);
+    await page.mouse.down();
+    await page.mouse.move(1200, handleY, { steps: 10 });
+    await page.mouse.up();
+    await expect
+      .poll(async () => (await sidebar().boundingBox())?.width ?? 0)
+      .toBeGreaterThanOrEqual(1440 / 3 - 1);
+
+    await setWidth(900);
+    await expect
+      .poll(async () => (await sidebar().boundingBox())?.width ?? Infinity)
+      .toBeLessThanOrEqual(900 / 3 + 1);
+  });
+
+  test(`budget fits with the sidebar pinned at every width down to ${MIN_PINNED_WIDTH}px`, async () => {
+    const widths: number[] = [];
+    for (let width = 1100; width > MIN_PINNED_WIDTH; width -= 20) {
+      widths.push(width);
+    }
+    widths.push(MIN_PINNED_WIDTH);
+
+    const failures: Record<number, LayoutProblems> = {};
+    for (const width of widths) {
+      await setWidth(width);
+      await moveMouseToContent();
+      await waitForBudgetLayout();
+      const problems = await getLayoutProblems(page);
+      if (hasLayoutProblems(problems)) {
+        failures[width] = problems;
+      }
+    }
+
+    expect(failures).toEqual({});
+  });
+
+  test(`budget fits with the sidebar pinned at ${ALWAYS_FLOATS_BELOW}px`, async () => {
+    // Known issue: between MIN_PINNED_WIDTH and ALWAYS_FLOATS_BELOW the pinned
+    // sidebar leaves too little room and budgeted amounts get cut off. Remove
+    // `test.fail()` and lower MIN_PINNED_WIDTH once that is handled.
+    // This checks the narrowest pinnable width rather than a width just below
+    // MIN_PINNED_WIDTH: the exact point where amounts start to get cut off
+    // depends on font rendering and differs between platforms.
+    test.fail();
+
+    await setWidth(ALWAYS_FLOATS_BELOW);
+    await expect(sidebar()).toBeVisible();
+    await moveMouseToContent();
+    await waitForBudgetLayout();
+
+    expect((await getLayoutProblems(page)).clippedAmounts).toEqual([]);
+  });
+
+  test('amounts with a long currency symbol fit next to the pinned sidebar', async () => {
+    // Known issue: with a long prefix such as "Arg$", amounts in the budget
+    // table spill into the next column or get cut off even at widths where
+    // the default currency fits. Remove `test.fail()` once the table handles
+    // long amounts.
+    test.fail();
+
+    const settingsPage = await new Navigation(page).goToSettingsPage();
+    await settingsPage.waitFor();
+    await settingsPage.settings
+      .getByRole('button', { name: 'None', exact: true })
+      .first()
+      .click();
+    await page
+      .getByRole('button', { name: 'ARS - Argentinian Peso (Arg$)' })
+      .click();
+    await page.getByRole('link', { name: 'Budget', exact: true }).click();
+
+    // Tablet portrait, which fits with the default currency.
+    await setWidth(768);
+    await expect(sidebar()).toBeVisible();
+    await moveMouseToContent();
+    await waitForBudgetLayout();
+    await expect(
+      budgetPage.budgetTableTotals.getByTestId(/total-budgeted$/).first(),
+    ).toContainText('Arg$');
+
+    expect((await getLayoutProblems(page)).clippedAmounts).toEqual([]);
   });
 });
