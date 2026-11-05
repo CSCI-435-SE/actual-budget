@@ -41,6 +41,24 @@ function ControlledHexPicker({ initialColor }: { initialColor: string }) {
 }
 
 describe('ColorPicker', () => {
+  it('renders the footer below the picker', () => {
+    render(
+      <ColorPicker
+        defaultValue="#690CB0"
+        footer={<Button slot="close">Remove color</Button>}
+      >
+        <Button>Pick a color</Button>
+      </ColorPicker>,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Pick a color' }));
+
+    const remove = screen.getByRole('button', { name: 'Remove color' });
+    const toggle = screen.getByRole('button', { name: 'Pick a custom color' });
+    expect(
+      toggle.compareDocumentPosition(remove) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it('shows the current color without "#" in the editable text', () => {
     const { input, preview } = renderOpenPicker('#690CB0');
 

@@ -321,9 +321,11 @@ type ColorPickerProps = {
   children?: ReactNode;
   columns?: number;
   colorset?: string[];
+  /** Optional content at the bottom of the popover, e.g. a "Remove color" button */
+  footer?: ReactNode;
   // Fires once a change is settled (a swatch or complete hex value is picked,
   // or a drag or held key on the custom picker ends), while onChange also
-  // fires mid-drag
+  // fires mid-drag. Save from here rather than onChange.
   onChangeEnd?: (color: Color) => void;
 } & AriaColorPickerProps;
 
@@ -331,6 +333,7 @@ export function ColorPicker({
   children,
   columns,
   colorset,
+  footer,
   onChangeEnd,
   ...props
 }: ColorPickerProps) {
@@ -376,6 +379,7 @@ export function ColorPicker({
               colorset={colorset}
               onChangeEnd={onChangeEnd}
             />
+            {footer}
           </Dialog>
         </Popover>
       </DialogTrigger>
