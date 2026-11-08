@@ -6,8 +6,9 @@ import { SvgColorPalette } from '@actual-app/components/icons/v1';
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import type { AccountEntity } from '@actual-app/core/types/models';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { useUpdateAccountMutation } from '#accounts';
+import { accountQueries, useUpdateAccountMutation } from '#accounts';
 import { isHexColor } from '#util/colorPill';
 
 type AccountColorButtonProps = {
@@ -16,20 +17,31 @@ type AccountColorButtonProps = {
 
 export function AccountColorButton({ account }: AccountColorButtonProps) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const { mutate: updateAccount } = useUpdateAccountMutation();
   const color = isHexColor(account.color) ? account.color : null;
 
+  // Not skipped when the color matches account.color, because the live
+  // preview below has already written the new color into the cache
   const saveColor = (newColor: string | null) => {
-    if (newColor === account.color) {
-      return;
-    }
     updateAccount({ account: { id: account.id, color: newColor } });
   };
 
   return (
     <ColorPicker
       value={color ?? undefined}
-      onChange={newColor => saveColor(newColor.toString('hex'))}
+      onChange={newColor => {
+        // Preview the color everywhere the account shows without saving it,
+        // since dragging the custom picker fires this many times per second
+        const { queryKey } = accountQueries.list();
+        void queryClient.cancelQueries({ queryKey });
+        queryClient.setQueryData(queryKey, accounts =>
+          accounts?.map(a =>
+            a.id === account.id ? { ...a, color: newColor.toString('hex') } : a,
+          ),
+        );
+      }}
+      onChangeEnd={newColor => saveColor(newColor.toString('hex'))}
       footer={
         color && (
           <Button variant="bare" slot="close" onPress={() => saveColor(null)}>
