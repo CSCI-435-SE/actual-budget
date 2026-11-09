@@ -110,7 +110,8 @@ jobs:
           2. Leave **Use workflow from** on \`master\` and enter \`$PR_NUMBER\` as the **PR number**.
           $files_step
           4. Click **Run workflow**. When it finishes, it has committed the new screenshots to this PR's branch and started the E2E tests on that commit. The run's summary links to both.
-          5. Run \`git pull\` before you push again, so you have the bot's commit.
+          5. If this PR then says **workflows awaiting approval**, click **Approve and run workflows** so the bot's commit gets all its checks.
+          6. Run \`git pull\` before you push again, so you have the bot's commit.
 
           Before merging, look at the new screenshots in the bot's commit and check that they show what you expect.
 

@@ -4,6 +4,8 @@
 # (`depot-*`). We have no Depot account, so such jobs would otherwise wait in
 # the queue until GitHub cancels them. Upstream syncs can bring these labels
 # back; see "CI in our fork" in STUDENTS.md for how to fix them.
+#
+# Also runs the tests for the fork's CI scripts in .github/scripts (#153).
 name: Fork CI guard
 
 on:
@@ -29,3 +31,18 @@ jobs:
           persist-credentials: false
       - name: Check workflow runner labels
         run: node .github/scripts/fork-ci-runners.mjs
+
+  script-tests:
+    name: Fork CI script tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Set up environment
+        uses: ./.github/actions/setup
+        with:
+          download-translations: 'false'
+      # Tests for the fork's CI scripts and update-vrt.yml (issue #153)
+      - name: Run tests
+        run: yarn vitest run --root .github/scripts

@@ -266,6 +266,9 @@ VRT Comment bot posts these steps with your PR number and the failed test files 
    If nothing changed, it pushes nothing and the run summary says so.
 5. Check the run summary. It links to the commit and the E2E run, which should pass. Open the
    commit's changed PNGs and make sure they show what you meant to change.
+   - Your PR may also say **"workflows awaiting approval"**. GitHub holds the other checks on a
+     commit pushed by the bot until a person allows them. Click **Approve and run workflows** so
+     the new commit gets all its checks.
 6. Run `git pull` before you push again, so you have the bot's commit.
 
 The run fails without pushing anything, and says why, if the PR is closed, its branch is in another
