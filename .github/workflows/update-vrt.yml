@@ -162,6 +162,11 @@ jobs:
     # anywhere else don't match CI's.
     container:
       image: mcr.microsoft.com/playwright:v1.61.1-jammy
+    # Steps in a container run with `sh` unless told otherwise, and these
+    # scripts use bash features (pipefail, [[ ]], <<<)
+    defaults:
+      run:
+        shell: bash
     env:
       E2E_USE_BUILD: '1'
     steps:
