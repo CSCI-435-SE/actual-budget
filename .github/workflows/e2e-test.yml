@@ -13,6 +13,9 @@ on:
       - '!packages/docs/**' # Docs changes don't affect E2E tests
       - '!packages/eslint-plugin-actual/**' # Eslint plugin changes don't affect E2E tests
   merge_group:
+  # Fork-only (issue #153): lets update-vrt.yml run the checks on the
+  # screenshot commit it pushes, which wouldn't start them on its own
+  workflow_dispatch:
 
 env:
   GITHUB_PR_NUMBER: ${{github.event.pull_request.number}}

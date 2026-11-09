@@ -1,0 +1,356 @@
+# Fork-only workflow (CSCI-435-SE/actual-budget, issue #153).
+#
+# Regenerates a PR's browser VRT screenshots in the same container, and with
+# the same build, as the `vrt` job in e2e-test.yml. It commits the changed
+# PNGs to the PR's branch, then starts E2E Tests on that commit (a push made
+# with GITHUB_TOKEN doesn't start workflows by itself, but a dispatch does).
+# Upstream's `/update-vrt` comment bot (vrt-update-*.yml) can't run here; see
+# "Updating VRT screenshots" in STUDENTS.md.
+#
+# Security: build-web and generate build and run the PR's code, so they only
+# get a read-only token. The commit job is the only one that can write, and
+# it never runs code from the PR: it re-checks the PNGs, copies them and
+# pushes.
+name: Update VRT screenshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number'
+        required: true
+        type: number
+      test_files:
+        description: 'Test files to update, separated by spaces (e.g. e2e/budget.test.ts). Leave blank to update all.'
+        required: false
+        type: string
+        default: ''
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.pr_number }}
+  cancel-in-progress: false
+
+env:
+  # Every file the run may change: a PNG in an e2e `*-snapshots` folder
+  SNAPSHOT_PATH: '^packages/desktop-client/e2e/[A-Za-z0-9._-]+-snapshots/[A-Za-z0-9._-]+\.png$'
+
+jobs:
+  get-pr:
+    name: Check the PR
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      head_sha: ${{ steps.pr.outputs.head_sha }}
+      head_ref: ${{ steps.pr.outputs.head_ref }}
+      test_files: ${{ steps.pr.outputs.test_files }}
+      shards: ${{ steps.pr.outputs.shards }}
+    steps:
+      - name: Look up the PR and check the inputs
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          TEST_FILES: ${{ inputs.test_files }}
+        run: |
+          set -euo pipefail
+
+          if ! pr=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER"); then
+            echo "::error::Couldn't find PR #$PR_NUMBER in $GITHUB_REPOSITORY. Check the PR number."
+            exit 1
+          fi
+
+          state=$(jq -r '.state' <<< "$pr")
+          head_repo=$(jq -r '.head.repo.full_name // "a deleted repository"' <<< "$pr")
+          head_ref=$(jq -r '.head.ref' <<< "$pr")
+          head_sha=$(jq -r '.head.sha' <<< "$pr")
+
+          if [ "$state" != "open" ]; then
+            echo "::error::PR #$PR_NUMBER is $state. Only open PRs can be updated; nothing was pushed."
+            exit 1
+          fi
+          if [ "$head_repo" != "$GITHUB_REPOSITORY" ]; then
+            echo "::error::PR #$PR_NUMBER's branch is in $head_repo, not $GITHUB_REPOSITORY. This workflow can only push to branches in this repository; nothing was pushed."
+            exit 1
+          fi
+
+          # Accept `budget.test.ts`, `e2e/budget.test.ts` or
+          # `packages/desktop-client/e2e/budget.test.ts`, and pass them to
+          # Playwright as `e2e/<file>`.
+          files=()
+          for file in $TEST_FILES; do
+            file="${file#packages/desktop-client/}"
+            file="${file#e2e/}"
+            if ! [[ "$file" =~ ^[A-Za-z0-9_.-]+(/[A-Za-z0-9_.-]+)*\.test\.tsx?$ ]] || [[ "/$file/" == */../* ]]; then
+              echo "::error::'$file' isn't an e2e test file. Use paths like e2e/budget.test.ts, separated by spaces."
+              exit 1
+            fi
+            files+=("e2e/$file")
+          done
+
+          if [ ${#files[@]} -eq 0 ]; then
+            # All VRT tests, split into 3 shards like the CI VRT job
+            echo "shards=[1, 2, 3]" >> "$GITHUB_OUTPUT"
+            echo "test_files=" >> "$GITHUB_OUTPUT"
+            which_tests="all VRT tests"
+          else
+            # A few files run in one job, so no shard ends up with no tests
+            echo "shards=[1]" >> "$GITHUB_OUTPUT"
+            echo "test_files=${files[*]}" >> "$GITHUB_OUTPUT"
+            which_tests="\`${files[*]}\`"
+          fi
+          {
+            echo "head_sha=$head_sha"
+            echo "head_ref=$head_ref"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "### Updating VRT screenshots for #$PR_NUMBER" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch \`$head_ref\` at \`$head_sha\`, $which_tests." >> "$GITHUB_STEP_SUMMARY"
+
+  build-web:
+    name: Build web bundle
+    runs-on: ubuntu-latest
+    needs: get-pr
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.get-pr.outputs.head_sha }}
+          persist-credentials: false
+      - name: Check the test files exist
+        if: needs.get-pr.outputs.test_files != ''
+        env:
+          TEST_FILES: ${{ needs.get-pr.outputs.test_files }}
+        run: |
+          for file in $TEST_FILES; do
+            if [ ! -f "packages/desktop-client/$file" ]; then
+              echo "::error::packages/desktop-client/$file doesn't exist on the PR's branch."
+              exit 1
+            fi
+          done
+      - name: Set up environment
+        uses: ./.github/actions/setup
+        with:
+          download-translations: 'false'
+      - name: Build browser bundle
+        # Same as the build-web job in e2e-test.yml; see the notes there.
+        env:
+          REACT_APP_NETLIFY: 'true'
+        run: yarn build:browser --skip-translations
+      - name: Upload build artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: desktop-client-build
+          path: packages/desktop-client/build/
+          retention-days: 1
+          overwrite: true
+
+  generate:
+    name: Generate screenshots (shard ${{ matrix.shard }}/${{ strategy.job-total }})
+    runs-on: ubuntu-latest
+    needs: [get-pr, build-web]
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJson(needs.get-pr.outputs.shards) }}
+    # Same container as the vrt job in e2e-test.yml; screenshots made
+    # anywhere else don't match CI's.
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-jammy
+    env:
+      E2E_USE_BUILD: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.get-pr.outputs.head_sha }}
+          persist-credentials: false
+      - name: Set up environment
+        uses: ./.github/actions/setup
+        with:
+          download-translations: 'false'
+      - name: Trust the repository directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Download web build
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: desktop-client-build
+          path: packages/desktop-client/build/
+      - name: Set E2E port
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: echo "E2E_PORT=$((3000 + SHARD))" >> "$GITHUB_ENV"
+      - name: Regenerate changed screenshots
+        id: vrt
+        env:
+          SHARD: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ strategy.job-total }}
+          TEST_FILES: ${{ needs.get-pr.outputs.test_files }}
+        # With --update-snapshots=changed, a screenshot that differs is
+        # rewritten and its check passes, so a failing test here broke for
+        # another reason. Keep going so the other screenshots are still
+        # updated, and report the failure in the summary.
+        run: |
+          set +e
+          # shellcheck disable=SC2086 # TEST_FILES is a checked, space-separated list
+          yarn vrt --update-snapshots=changed --shard="$SHARD/$SHARD_TOTAL" $TEST_FILES
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+      - name: Check that only screenshots changed
+        id: changes
+        run: |
+          set -euo pipefail
+
+          deleted=$(git ls-files --deleted)
+          changed=$(git ls-files --modified --others --exclude-standard | sort -u)
+          not_screenshots=$(grep -vE "$SNAPSHOT_PATH" <<< "$changed" || true)
+
+          if [ -n "$deleted" ] || [ -n "$not_screenshots" ]; then
+            echo "::error::The VRT run changed files that aren't PNG screenshots in an e2e *-snapshots folder, so nothing was pushed."
+            printf 'Deleted:\n%s\nNot screenshots:\n%s\n' "$deleted" "$not_screenshots"
+            exit 1
+          fi
+
+          if [ -z "$changed" ]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "No screenshots changed in this shard."
+            exit 0
+          fi
+
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          mkdir -p "$RUNNER_TEMP/vrt-shard"
+          while IFS= read -r file; do
+            cp --parents "$file" "$RUNNER_TEMP/vrt-shard/"
+          done <<< "$changed"
+          echo "Changed screenshots:"
+          echo "$changed"
+      - name: Upload changed screenshots
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: vrt-shard-${{ matrix.shard }}
+          path: ${{ runner.temp }}/vrt-shard/
+          retention-days: 1
+          overwrite: true
+      - name: Report failing tests
+        if: steps.vrt.outputs.exit_code != '0'
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          echo "::warning::Some VRT tests in shard $SHARD failed for a reason other than a screenshot difference. Their screenshots weren't updated. See the 'vrt-test-results-$SHARD' artifact."
+          echo "⚠️ Shard $SHARD: some tests failed for a reason other than a screenshot difference, so their screenshots weren't updated. See the \`vrt-test-results-$SHARD\` artifact." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload test results
+        if: steps.vrt.outputs.exit_code != '0'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: vrt-test-results-${{ matrix.shard }}
+          path: packages/desktop-client/test-results/
+          retention-days: 7
+          overwrite: true
+
+  commit:
+    name: Commit screenshots
+    runs-on: ubuntu-latest
+    needs: [get-pr, generate]
+    permissions:
+      contents: write # push the screenshots to the PR's branch
+      actions: write # start E2E Tests on the new commit
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.get-pr.outputs.head_sha }}
+          persist-credentials: false
+      - name: Find the changed screenshots
+        id: artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          count=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" \
+            --jq '[.artifacts[] | select(.name | startswith("vrt-shard-"))] | length')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+      - name: Download the changed screenshots
+        if: steps.artifacts.outputs.count != '0'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: vrt-shard-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/vrt-shards
+      - name: Commit and push
+        id: push
+        if: steps.artifacts.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ needs.get-pr.outputs.head_ref }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          shards="$RUNNER_TEMP/vrt-shards"
+
+          # These files came from jobs that ran the PR's code, so check them
+          # again before anything is written: only regular PNG files at
+          # screenshot paths.
+          not_screenshots=$(find "$shards" -mindepth 1 ! -type d -printf '%P\n' | grep -vE "$SNAPSHOT_PATH" || true)
+          not_files=$(find "$shards" -mindepth 1 ! -type d ! -type f -printf '%P\n')
+          if [ -n "$not_screenshots" ] || [ -n "$not_files" ]; then
+            echo "::error::The screenshot artifacts contain files that aren't PNG screenshots, so nothing was pushed."
+            printf '%s\n' "$not_screenshots" "$not_files"
+            exit 1
+          fi
+
+          cp -r "$shards/." .
+          git add -- 'packages/desktop-client/e2e/*-snapshots/*.png'
+
+          if git diff --staged --quiet; then
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit --quiet -m "Update VRT screenshots" -m "Generated by $RUN_URL for #$PR_NUMBER."
+
+          # Final guard: the commit only changes screenshots
+          not_screenshots=$(git diff --name-only HEAD~1 HEAD | grep -vE "$SNAPSHOT_PATH" || true)
+          if [ -n "$not_screenshots" ]; then
+            echo "::error::The commit would change files that aren't screenshots, so nothing was pushed: $not_screenshots"
+            exit 1
+          fi
+
+          # A plain push (no force), so it fails if someone pushed to the
+          # branch after this run started
+          if ! git push --quiet "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${HEAD_REF}"; then
+            echo "::error::Couldn't push to $HEAD_REF. If someone pushed to it after this run started, run the workflow again; nothing was pushed."
+            exit 1
+          fi
+
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "### ✅ Pushed $(git diff --name-only HEAD~1 HEAD | wc -l) updated screenshots to \`$HEAD_REF\`"
+            echo "Commit: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$(git rev-parse HEAD)"
+            echo
+            git diff --name-only HEAD~1 HEAD | while IFS= read -r file; do echo "- \`$file\`"; done
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Report no changes
+        if: steps.artifacts.outputs.count == '0' || steps.push.outputs.pushed == 'false'
+        run: |
+          echo "No screenshots differ from the ones on the branch, so nothing was pushed."
+          echo "### No screenshots changed, so nothing was pushed." >> "$GITHUB_STEP_SUMMARY"
+      - name: Start E2E Tests on the new commit
+        if: steps.push.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ needs.get-pr.outputs.head_ref }}
+        run: |
+          runs_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/workflows/e2e-test.yml?query=branch%3A$(jq -rn --arg ref "$HEAD_REF" '$ref | @uri')"
+          if gh workflow run e2e-test.yml --repo "$GITHUB_REPOSITORY" --ref "$HEAD_REF"; then
+            echo "E2E Tests (including VRT) started on the new commit: [runs on \`$HEAD_REF\`]($runs_url)." >> "$GITHUB_STEP_SUMMARY"
+          else
+            # Branches made before this workflow was added have an older
+            # e2e-test.yml without the workflow_dispatch trigger
+            echo "::warning::Couldn't start E2E Tests on $HEAD_REF, probably because the branch is older than this workflow. Merge master into the branch (or push any commit) to run the checks on the new screenshots."
+            echo "⚠️ Couldn't start E2E Tests on \`$HEAD_REF\`. Merge \`master\` into the branch (or push any commit) to run the checks on the new screenshots." >> "$GITHUB_STEP_SUMMARY"
+          fi
