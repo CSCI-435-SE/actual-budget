@@ -17,11 +17,7 @@
     "playwright-report",
     "test-results"
   ],
-  "reporters": [
-    "clear-text",
-    "progress",
-    "json"
-  ],
+  "reporters": ["clear-text", "progress", "json"],
   "jsonReporter": {
     "fileName": "reports/mutation/mutation.json"
   },
