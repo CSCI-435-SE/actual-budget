@@ -108,4 +108,4 @@ All tests added from this analysis, and the gaps they close:
      - **Wrong "equivalent" call.** Its first analysis called all five Spending line-68 mutants equivalent. While writing this table it found that four of them were real gaps (a live single-month comparison's second month was never tested), added a test, and checked by hand that the test fails against that mutant.
      - **Timeouts.** It noticed that timeouts in the before run were hiding the `widgetModified.ts:39` survivor, and changed the after run so that mutant shows as Killed rather than Timeout.
      - **Before report.** It told me the original first-run report had been deleted, and the before report was regenerated from that same code instead.
-     - **Still for me to check before submitting:** that the mutants in the tables show the stated status in both JSON reports, that the scores match the reports, and that I agree with each Equivalent/Gap verdict.
+     - **I personally re-ran the mutation tests before and after to verify AI did not hallucinate**
