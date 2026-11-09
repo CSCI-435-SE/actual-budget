@@ -1,0 +1,31 @@
+{
+  "$schema": "../../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "testRunner": "command",
+  "testRunner_comment": "The Vitest runner (@stryker-mutator/vitest-runner 10.0.0) reports every mutant as surviving with Vitest 5: its initial run works, but no tests run for any mutant. The command runner starts Vitest once per mutant and switches the mutant on through __STRYKER_ACTIVE_MUTANT__.",
+  "commandRunner": {
+    "command": "npx vitest --run --config vitest.stryker.config.mts --bail 1 --maxWorkers 1"
+  },
+  "coverageAnalysis": "off",
+  "mutate": [
+    "src/components/reports/widgetModified.ts",
+    "src/components/reports/reports/*WidgetSettings.ts"
+  ],
+  "ignorePatterns": [
+    "build",
+    "build-stats",
+    "e2e",
+    "playwright-report",
+    "test-results"
+  ],
+  "reporters": [
+    "clear-text",
+    "progress",
+    "json"
+  ],
+  "jsonReporter": {
+    "fileName": "reports/mutation/mutation.json"
+  },
+  "concurrency": 4,
+  "timeoutMS": 60000,
+  "tempDirName": ".stryker-tmp"
+}

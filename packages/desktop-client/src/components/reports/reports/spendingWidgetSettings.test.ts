@@ -115,6 +115,18 @@ describe('Spending widget settings', () => {
     expect(isModified(saved, openedState(saved))).toBe(false);
   });
 
+  it('notices a change to the second month of a live single-month comparison', () => {
+    const saved: Partial<Meta> = {
+      compare: '2016-06',
+      compareTo: '2016-03',
+      isLive: true,
+      mode: 'single-month',
+    };
+    expect(
+      isModified(saved, { ...openedState(saved), compareTo: '2016-04' }),
+    ).toBe(true);
+  });
+
   it('treats an unsupported average range as the default', () => {
     expect(
       isModified(
