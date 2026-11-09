@@ -81,6 +81,7 @@ jobs:
         if: steps.metadata.outputs.should_comment == 'true'
         env:
           ARTIFACT_URL: ${{ steps.metadata.outputs.artifact_url }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/update-vrt.yml
         run: |
@@ -107,7 +108,7 @@ jobs:
           **If the screenshot changes are expected** (you changed the UI on purpose), update the screenshots with the **Update VRT screenshots** workflow:
 
           1. Open [Actions → Update VRT screenshots]($WORKFLOW_URL) and click **Run workflow**.
-          2. Leave **Use workflow from** on \`master\` and enter \`$PR_NUMBER\` as the **PR number**.
+          2. Leave **Use workflow from** on \`$DEFAULT_BRANCH\` and enter \`$PR_NUMBER\` as the **PR number**.
           $files_step
           4. Click **Run workflow**. When it finishes, it has committed the new screenshots to this PR's branch and started the E2E tests on that commit. The run's summary links to both.
           5. If this PR then says **workflows awaiting approval**, click **Approve and run workflows** so the bot's commit gets all its checks.
