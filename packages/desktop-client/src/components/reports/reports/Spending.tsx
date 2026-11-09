@@ -23,7 +23,6 @@ import type {
 } from '@actual-app/core/types/models';
 import * as d from 'date-fns';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { AppliedFilters } from '#components/filters/AppliedFilters';
 import { FilterButton } from '#components/filters/FiltersMenu';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
@@ -33,6 +32,7 @@ import { SpendingGraph } from '#components/reports/graphs/SpendingGraph';
 import { LegendItem } from '#components/reports/LegendItem';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateSpendingReportTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import {
   getSpendingAverageRangeLabel,
   getSpendingAverageRangeOptions,
@@ -44,6 +44,7 @@ import {
 import { createSpendingSpreadsheet } from '#components/reports/spreadsheets/spending-spreadsheet';
 import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useFormat } from '#hooks/useFormat';
 import { useLocale } from '#hooks/useLocale';
@@ -53,6 +54,11 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+import {
+  buildSpendingWidgetSettings,
+  toComparableSpendingSettings,
+} from './spendingWidgetSettings';
 
 export function Spending() {
   const params = useParams();
@@ -167,6 +173,24 @@ function SpendingInternal({ widget }: SpendingInternalProps) {
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
 
+  const currentSettings = buildSpendingWidgetSettings({
+    conditions,
+    conditionsOp,
+    compare,
+    compareTo,
+    averageRange,
+    isLive,
+    reportMode,
+  });
+  // Every setting is read from the widget on the first render, so there is
+  // nothing to wait for before comparing.
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: true,
+    saved: toComparableSpendingSettings(widget?.meta),
+    current: toComparableSpendingSettings(currentSettings),
+  });
+
   async function onSaveWidget() {
     if (!widget) {
       throw new Error('No widget that could be saved.');
@@ -178,13 +202,7 @@ function SpendingInternal({ widget }: SpendingInternalProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            conditions,
-            conditionsOp,
-            compare,
-            compareTo,
-            averageRange,
-            isLive,
-            mode: reportMode,
+            ...currentSettings,
           },
         },
       },
@@ -269,7 +287,7 @@ function SpendingInternal({ widget }: SpendingInternalProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -277,14 +295,11 @@ function SpendingInternal({ widget }: SpendingInternalProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

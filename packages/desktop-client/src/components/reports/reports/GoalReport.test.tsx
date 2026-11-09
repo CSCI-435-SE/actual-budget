@@ -148,6 +148,10 @@ type ServerOptions = {
   earliest?: { date: string } | null;
   latest?: { date: string } | null;
   isWidgetQueryPending?: boolean;
+  /** Store saved widgets so the report reloads what was saved. */
+  persistUpdates?: boolean;
+  /** Make every widget save fail. */
+  failUpdates?: boolean;
 };
 
 function setUpServer({
@@ -155,8 +159,21 @@ function setUpServer({
   earliest = { date: '2024-01-05' },
   latest = { date: '2024-06-20' },
   isWidgetQueryPending = false,
+  persistUpdates = false,
+  failUpdates = false,
 }: ServerOptions = {}) {
-  const updateWidget = vi.fn(async (_widget: unknown) => undefined);
+  const updateWidget = vi.fn(async (update: unknown) => {
+    if (failUpdates) {
+      throw new Error('Save failed');
+    }
+    if (persistUpdates) {
+      const { id, meta } = update as Pick<GoalCardWidget, 'id' | 'meta'>;
+      widgets = widgets.map(widget =>
+        widget.id === id ? { ...widget, meta } : widget,
+      );
+    }
+    return undefined;
+  });
   initServer({
     query: () =>
       isWidgetQueryPending
@@ -629,6 +646,116 @@ describe('GoalReport', () => {
         '2025-01-01 2025-03-31 static',
       );
       expect(screen.getByText('Jan 2025 - Mar 2025')).toBeInTheDocument();
+    });
+  });
+
+  describe('unsaved changes', () => {
+    async function openSavedGoal(
+      serverOptions: Pick<ServerOptions, 'persistUpdates' | 'failUpdates'>,
+    ) {
+      const user = userEvent.setup();
+      const result = renderGoalReport({
+        meta: {
+          name: 'Vacation',
+          targetAmount: 1000000,
+          timeFrame: STATIC_TIME_FRAME,
+        },
+        ...serverOptions,
+      });
+      await waitForReport();
+      await waitFor(() =>
+        expect(screen.getByTestId('header-range')).toHaveTextContent(
+          '2024-01-01 2024-06-30 static',
+        ),
+      );
+      return { user, ...result };
+    }
+
+    it('shows no label when nothing has changed', async () => {
+      await openSavedGoal({});
+
+      expect(screen.queryByText('(modified)')).not.toBeInTheDocument();
+    });
+
+    it('shows the label after a setting changes', async () => {
+      const { user } = await openSavedGoal({});
+
+      await user.click(screen.getByRole('button', { name: 'Change dates' }));
+
+      expect(screen.getByText('(modified)')).toBeInTheDocument();
+    });
+
+    it('removes the label after the widget is saved', async () => {
+      const { user } = await openSavedGoal({ persistUpdates: true });
+      await user.click(screen.getByRole('button', { name: 'Add filter' }));
+      expect(screen.getByText('(modified)')).toBeInTheDocument();
+
+      await user.click(screen.getByRole('button', { name: 'Save widget' }));
+
+      await waitFor(() =>
+        expect(screen.queryByText('(modified)')).not.toBeInTheDocument(),
+      );
+    });
+
+    it('keeps the label when saving fails', async () => {
+      // The failed save is logged; keep the test output quiet.
+      const consoleError = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+      const { user, store } = await openSavedGoal({ failUpdates: true });
+      await user.click(screen.getByRole('button', { name: 'Add filter' }));
+
+      await user.click(screen.getByRole('button', { name: 'Save widget' }));
+
+      await waitFor(() =>
+        expect(store.getState().notifications.notifications).toMatchObject([
+          { type: 'error' },
+        ]),
+      );
+      expect(screen.getByText('(modified)')).toBeInTheDocument();
+      consoleError.mockRestore();
+    });
+
+    it('shows no label when only the name is changed', async () => {
+      const { user, updateWidget } = await openSavedGoal({
+        persistUpdates: true,
+      });
+
+      await user.click(
+        within(screen.getByText('Vacation')).getByRole('button'),
+      );
+      const input = screen.getByDisplayValue('Vacation');
+      await user.clear(input);
+      await user.type(input, 'Trip to Japan{Enter}');
+      await waitFor(() => expect(updateWidget).toHaveBeenCalled());
+
+      expect(await screen.findByText('Trip to Japan')).toBeInTheDocument();
+      expect(screen.queryByText('(modified)')).not.toBeInTheDocument();
+    });
+
+    it('keeps the label when renaming with unsaved changes', async () => {
+      const { user } = await openSavedGoal({ persistUpdates: true });
+      await user.click(screen.getByRole('button', { name: 'Change dates' }));
+
+      await user.click(
+        within(screen.getByText('Vacation')).getByRole('button'),
+      );
+      const input = screen.getByDisplayValue('Vacation');
+      await user.clear(input);
+      await user.type(input, 'Trip to Japan{Enter}');
+
+      expect(await screen.findByText('Trip to Japan')).toBeInTheDocument();
+      expect(screen.getByText('(modified)')).toBeInTheDocument();
+    });
+
+    it('never shows the label without a widget', async () => {
+      const user = userEvent.setup();
+      renderGoalReport({ path: '/reports/goal' });
+      await waitForReport();
+
+      await user.click(screen.getByRole('button', { name: 'Change dates' }));
+
+      expect(screen.queryByText('(modified)')).not.toBeInTheDocument();
     });
   });
 

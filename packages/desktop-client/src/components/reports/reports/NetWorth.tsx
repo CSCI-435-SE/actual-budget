@@ -22,7 +22,6 @@ import * as monthUtils from '@actual-app/core/shared/months';
 import type { NetWorthWidget, TimeFrame } from '@actual-app/core/types/models';
 import * as d from 'date-fns';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { FinancialText } from '#components/FinancialText';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
@@ -33,9 +32,11 @@ import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { ReportOptions } from '#components/reports/ReportOptions';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import { createSpreadsheet as netWorthSpreadsheet } from '#components/reports/spreadsheets/net-worth-spreadsheet';
 import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useAccounts } from '#hooks/useAccounts';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useDateFormat } from '#hooks/useDateFormat';
@@ -47,6 +48,12 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+import {
+  buildNetWorthWidgetSettings,
+  getDefaultNetWorthInterval,
+  toComparableNetWorthSettings,
+} from './netWorthWidgetSettings';
 
 export function NetWorth() {
   const params = useParams();
@@ -72,16 +79,6 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
   const { t } = useTranslation();
   const format = useFormat();
 
-  const getDefaultIntervalForMode = useCallback(
-    (mode: TimeFrame['mode']): 'Daily' | 'Weekly' | 'Monthly' | 'Yearly' => {
-      if (mode === 'lastMonth') {
-        return 'Weekly'; // For a single month, weekly interval provides better granularity than a single monthly data point
-      }
-      return 'Monthly';
-    },
-    [],
-  );
-
   const { data: accounts = [] } = useAccounts();
   const {
     conditions,
@@ -104,7 +101,7 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
   const [end, setEnd] = useState(monthUtils.currentMonth());
   const [mode, setMode] = useState<TimeFrame['mode']>('sliding-window');
   const [interval, setInterval] = useState(
-    widget?.meta?.interval || getDefaultIntervalForMode(mode),
+    widget?.meta?.interval || getDefaultNetWorthInterval(mode),
   );
   const [graphMode, setGraphMode] = useState<'trend' | 'stacked'>(
     widget?.meta?.mode || 'trend',
@@ -114,13 +111,15 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
     (newMode: TimeFrame['mode']) => {
       setMode(newMode);
       if (!widget?.meta?.interval) {
-        setInterval(getDefaultIntervalForMode(newMode));
+        setInterval(getDefaultNetWorthInterval(newMode));
       }
     },
-    [widget?.meta?.interval, getDefaultIntervalForMode],
+    [widget?.meta?.interval],
   );
 
   const [latestTransaction, setLatestTransaction] = useState('');
+  // The date range is placeholder state until the saved one is applied.
+  const [isRangeReady, setIsRangeReady] = useState(false);
 
   const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
   const firstDayOfWeekIdx = _firstDayOfWeekIdx || '0';
@@ -214,6 +213,7 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
       setStart(initialStart);
       setEnd(initialEnd);
       setModeAndInterval(initialMode);
+      setIsRangeReady(true);
     }
   }, [latestTransaction, widget?.meta?.timeFrame, setModeAndInterval]);
 
@@ -224,6 +224,22 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
   }
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
+
+  const currentSettings = buildNetWorthWidgetSettings({
+    conditions,
+    conditionsOp,
+    interval,
+    graphMode,
+    start,
+    end,
+    mode,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: isRangeReady,
+    saved: toComparableNetWorthSettings(widget?.meta),
+    current: toComparableNetWorthSettings(currentSettings),
+  });
 
   async function onSaveWidget() {
     if (!widget) {
@@ -236,15 +252,7 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            conditions,
-            conditionsOp,
-            interval,
-            mode: graphMode,
-            timeFrame: {
-              start,
-              end,
-              mode,
-            },
+            ...currentSettings,
           },
         },
       },
@@ -295,7 +303,7 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -303,14 +311,11 @@ function NetWorthInner({ widget }: NetWorthInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )
