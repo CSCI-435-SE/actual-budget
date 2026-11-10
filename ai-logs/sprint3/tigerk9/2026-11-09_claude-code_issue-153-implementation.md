@@ -8693,11 +8693,1187 @@ The log is clean, but it's incomplete: it stops at my reply with the sync comman
 
 </details></think>
 
-_**Agent (claude-opus-5-5 2026-11-10 00:21:07Z)**_
+_**Agent (claude-opus-5-5 2026-11-10 00:21:16Z)**_
 
 <tool-use data-tool-type="shell" data-tool-name="Bash"><details>
 <summary>Tool use: **Bash**</summary>
 Re-sync session, recopy log, verify it includes latest messages
 
 `/app/.specstory/bin/specstory sync claude -s d17d3690-1933-4315-a769-4cfd8685b89d --no-cloud-sync 2>&1 | tail -2; H=.specstory/history/2026-11-09_21-08-14Z-let-s-start-working.md; L=ai-logs/sprint3/tigerk9/2026-11-09_claude-code_issue-153-implementation.md; ls -l $H; cp $H $L; grep -c "" $L; grep -n "is this warning ok\|Can you commit everything we need" $L | cut -c1-120; grep -nEo "gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-ant-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY" $L | head; echo "secret scan done"`
+
+```text
+Processing session d17d3690-1933-4315-a769-4cfd8685b89d... updated
+
+-rw-r--r-- 1 root root 423073 Nov 10 00:21 .specstory/history/2026-11-09_21-08-14Z-let-s-start-working.md
+8703
+8582:is this warning ok?
+8607:`f=".specstory/history/$(ls -t .specstory/history | head -1)"; echo "$f"; ls -l "$f"; grep -c "" "$f"; grep -m1 -n 
+8644:Ok the AI logs are now in. Can you commit everything we need to and push the branch to the team repo so I can open 
+8692:The log is clean, but it's incomplete: it stops at my reply with the sync command and lacks the "is this warning ok
+8702:`/app/.specstory/bin/specstory sync claude -s d17d3690-1933-4315-a769-4cfd8685b89d --no-cloud-sync 2>&1 | tail -2; 
+secret scan done
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:21:18Z)**_
+
+<think><details><summary>Thought Process</summary>
+The session log now covers everything, including your warning question and this request, and the secret scan is clean. I'm committing only the log, then checking that master hasn't moved before pushing.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:21:22Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Commit the AI log and check branch against team master
+
+```bash
+git add ai-logs/sprint3/tigerk9/2026-11-09_claude-code_issue-153-implementation.md && git commit -q -F - <<'EOF'
+[AI] docs: add AI log for issue 153 implementation (tigerk9)
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+EOF
+git fetch -q origin && echo "master commits not in branch: $(git rev-list --count HEAD..origin/master)"; git log --oneline origin/master..HEAD; git status --short
+```
+
+```text
+master commits not in branch: 0
+e8ea00ef5 [AI] docs: add AI log for issue 153 implementation (tigerk9)
+e7bcacfe8 [AI] test: cover the VRT comment text (#153)
+ba21ee7f4 [AI] fix: name the repo's default branch in the VRT comment (#153)
+d4d4d697f [AI] test: add integration tests for the VRT update workflow (#153)
+81fa53728 [AI] fix: run the VRT update container steps with bash (#153)
+5c3584bf2 [AI] feat: add Update VRT screenshots workflow (#153)
+?? issue-96-rescope.md
+?? issues-60-61-pdf-export-explained.md
+?? pr-153-drafts.md
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:21:26Z)**_
+
+<think><details><summary>Thought Process</summary>
+The branch is up to date with master, and I'm amending the unpushed commit to put the issue number at the end as (#153) in the course's format.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:21:31Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Amend log commit message; rerun script tests and guard
+
+```bash
+git commit -q --amend -F - <<'EOF'
+[AI] docs: add AI log for the issue 153 implementation (#153)
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+EOF
+git log --oneline -1; yarn vitest run --root .github/scripts 2>&1 | grep "Tests "; node .github/scripts/fork-ci-runners.mjs
+```
+
+```text
+829c0a895 [AI] docs: add AI log for the issue 153 implementation (#153)
+      Tests  37 passed (37)
+No unguarded Depot runner labels found.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:21:32Z)**_
+
+Final checks pass: 37/37 tests, and the Fork CI guard is clean. Pushing the branch to the team repo. `-u origin` also moves its tracking from your fork back to the team repo.
+
+_**Agent (claude-opus-5-5 2026-11-10 00:21:45Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Push the feature branch to the team repo
+
+`git push -u origin feat/issue-153-update-vrt-workflow 2>&1 | tail -6; git status -sb | head -1`
+
+```text
+remote: GitHub found 181 vulnerabilities on CSCI-435-SE/actual-budget's default branch (8 critical, 80 high, 74 moderate, 19 low). To find out more, visit:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
+remote: 
+To https://github.com/CSCI-435-SE/actual-budget.git
+ * [new branch]          feat/issue-153-update-vrt-workflow -> feat/issue-153-update-vrt-workflow
+branch 'feat/issue-153-update-vrt-workflow' set up to track 'origin/feat/issue-153-update-vrt-workflow'.
+## feat/issue-153-update-vrt-workflow...origin/feat/issue-153-update-vrt-workflow
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:21:55Z)**_
+
+The branch is on the team repo with 6 commits, and it now tracks `origin`, not your fork. I committed only the AI log. The PR drafts and your two notes are still untracked and not pushed.
+
+**The AI log:** the copy you made stopped before the "is this warning ok?" exchange, so I synced the session again and copied it over. It now runs from your first message through your request to commit and push. A scan for tokens and keys found nothing.
+
+**The push message about "181 vulnerabilities":** that's Dependabot's count for the team's `master`, and it was there before this branch. The only new dependency here is `yaml` 2.9.0, which was already installed.
+
+## Open the PR
+1. Go to https://github.com/CSCI-435-SE/actual-budget/compare/master...feat/issue-153-update-vrt-workflow?expand=1
+2. **Title:** `[AI] feat: add Update VRT screenshots workflow (#153)`
+3. **Body:** section 2 of [pr-153-drafts.md](pr-153-drafts.md), rewritten in your own words, with the **[Liam]** spots filled in.
+4. **Milestone:** Sprint 3, once someone has created it. **Reviewer:** a teammate. Then ping them on Zulip.
+
+## Right after opening it
+- **Post the spec-change comment** (draft section 1) on #153, and ask icsasso to update AC 3 and AC 5 in the issue body.
+- **Post the AI Assistance comment** (draft section 3). Until the PR merges, link to the branch copy of the log: `https://github.com/CSCI-435-SE/actual-budget/blob/feat/issue-153-update-vrt-workflow/ai-logs/sprint3/tigerk9/2026-11-09_claude-code_issue-153-implementation.md`. After the merge, edit the comment to use the `master` link from the draft, because the branch gets deleted.
+- **File the bug for `budget.test.ts:466`** (draft section 4), and put its number in Tech Debt "Encountered".
+- **Fill in the CI results** once the checks finish. Functional shard 2 may fail on that same test. The Tech Debt entry explains it, so the reviewer can see it's a known problem.
+
+**Cleanup:** after the merge, follow section 5 of the draft: reset or delete the fork, and remove the `fork` remote and the test branch.
+
+---
+
+_**User (2026-11-10 00:23:55Z)**_
+
+We changed package.json and yarn.lock?...
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-10 00:23:58Z)**_
+
+Yes, in one commit (`d4d4d697f`, the integration tests). I mentioned it at the time, but only briefly, so here it is properly:
+
+_**Agent (claude-opus-5-5 2026-11-10 00:23:59Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show package.json and yarn.lock changes and their users
+
+`git diff origin/master..HEAD -- package.json yarn.lock; git log --oneline origin/master..HEAD -- package.json yarn.lock; grep -rln "from 'yaml'" .github/scripts`
+
+```text
+diff --git a/package.json b/package.json
+index 86b7dda7b..27d20248d 100644
+--- a/package.json
++++ b/package.json
+@@ -90,7 +90,8 @@
+     "p-limit": "^7.3.0",
+     "prompts": "^2.4.2",
+     "typescript": "^6.0.3",
+-    "vitest": "^5.0.0"
++    "vitest": "^5.0.0",
++    "yaml": "^2.9.0"
+   },
+   "dependenciesMeta": {
+     "argon2": {
+diff --git a/yarn.lock b/yarn.lock
+index a67aaad2b..1fc9904cb 100644
+--- a/yarn.lock
++++ b/yarn.lock
+@@ -10716,6 +10716,7 @@ __metadata:
+     prompts: "npm:^2.4.2"
+     typescript: "npm:^6.0.3"
+     vitest: "npm:^5.0.0"
++    yaml: "npm:^2.9.0"
+   dependenciesMeta:
+     argon2:
+       built: true
+d4d4d697f [AI] test: add integration tests for the VRT update workflow (#153)
+.github/scripts/update-vrt-workflow.test.mjs
+.github/scripts/vrt-comment-workflow.test.mjs
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:24:09Z)**_
+
+<think><details><summary>Thought Process</summary>
+Adding `yaml` as a root dev dependency is a two-line change in `package.json` and `yarn.lock`, and nothing new gets downloaded. I'm adding it to the Tech Debt "Introduced" section of the PR draft next.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:24:49Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file /workspaces/actual-budget/pr-153-drafts.md has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:24:51Z)**_
+
+I added it to Tech Debt "Introduced" in [pr-153-drafts.md](pr-153-drafts.md).
+
+The alternative is to remove the dependency and have the tests pull the scripts out of the YAML with a small hand-written parser. That avoids touching `package.json`, but a hand-written parser can break silently whenever the workflow's formatting changes, so I'd keep `yaml`. If you'd rather not change `package.json` in this PR, tell me before you open it. The change would be a new commit on the branch you just pushed.
+
+---
+
+_**User (2026-11-10 00:25:24Z)**_
+
+Can you check the course requirements one more time? What about design decisions, or is that handled by the issue itself?
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-10 00:25:35Z)**_
+
+Design decisions are graded **per person** (D3, 5 points), so the issue's Design section probably doesn't count for you. Here's what your context file says:
+
+> **Design decision (at least one non-trivial decision per issue)**: in a `## Design` section of the issue body, an issue comment, **or the PR description**. Fields: **Decision** · **Alternatives considered (at least 2 concrete options, strictly graded)** · **Rationale** · **Consequences** (what becomes easier, and what becomes harder).
+
+#153's Design section ("a new `workflow_dispatch` workflow instead of adapting `/update-vrt`") was written by **icsasso**, the issue's author, so it most likely counts for them. You made your own real decisions during implementation, and the PR description is an allowed place for them. My draft doesn't have any yet, so I'm adding two:
+1. **How CI runs on the bot's commit.** This is your decision from the start of the session, and it's the strongest one.
+2. **Splitting the read-only and write jobs.** This is the main security decision.
+
+_**Agent (claude-opus-5-5 2026-11-10 00:26:24Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file /workspaces/actual-budget/pr-153-drafts.md has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:26:26Z)**_
+
+<think><details><summary>Thought Process</summary>
+That covers the design decisions; next I'm checking whether the issue's milestone, labels, assignee, or the PR have changed since my last look.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:26:40Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Check issue 153 labels, milestone, assignee and PR state
+
+`curl -s https://api.github.com/repos/CSCI-435-SE/actual-budget/issues/153 | python3 -c "import json,sys; d=json.load(sys.stdin); print('labels:', [l['name'] for l in d['labels']], '| milestone:', (d['milestone'] or {}).get('title'), '| assignees:', [a['login'] for a in d['assignees']], '| comments:', d['comments'])"; curl -s "https://api.github.com/repos/CSCI-435-SE/actual-budget/milestones?state=all" | python3 -c "import json,sys; print('milestones:', [(m['title'], m['state']) for m in json.load(sys.stdin)])"; curl -s "https://api.github.com/repos/CSCI-435-SE/actual-budget/labels?per_page=100" | python3 -c "import json,sys; print('scope/type labels:', [l['name'] for l in json.load(sys.stdin) if l['name'].startswith(('scope','type'))])"; curl -s "https://api.github.com/repos/CSCI-435-SE/actual-budget/pulls?head=CSCI-435-SE:feat/issue-153-update-vrt-workflow&state=all" | python3 -c "import json,sys; print('PRs for branch:', [(p['number'], p['state']) for p in json.load(sys.stdin)])"`
+
+```text
+labels: [] | milestone: None | assignees: ['TigerK9'] | comments: 1
+milestones: [('Sprint 1', 'closed'), ('Sprint 2', 'open')]
+scope/type labels: ['scope: large', 'scope: medium', 'scope: small', 'scope: xl']
+PRs for branch: []
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:26:51Z)**_
+
+I added both decisions to the PR draft, in a new "Design decisions" section just above "Related issue(s)". Each one has a Decision, at least 2 concrete alternatives, a Rationale, and Consequences (easier and harder).
+
+- **Decision 1, how the checks run on the bot's commit:** 3 alternatives. I'd point the grader to this one, since you made it at the start of the session.
+- **Decision 2, which job gets write access:** 2 alternatives.
+
+Rewrite these in your own words like the rest of the draft; they're graded strictly.
+
+## Full re-check against your context files
+
+**Done**
+- **Branch and commits:** one branch, cut from an up-to-date `master`, named `feat/issue-153-…`. All 6 commits use `[AI] <type>: … (#153)`. Nothing was pushed to `master`.
+- **Assignee:** you're assigned on #153, and the spec-review comment is posted.
+- **Code and tests:** all 5 ACs are implemented. There are tests for every behavior change (37 tests), and they now also run in CI through the Fork CI guard. The release note is in.
+- **Checks run locally:** `yarn lint`, `yarn typecheck`, actionlint and zizmor all pass.
+- **PR draft:** `Closes #153`, what and why, design decisions, both Tech Debt fields, a Test Evidence table with one row per AC, "Not tested automatically", AI-written tests with how they were checked, hardening evidence before and after, the fork note, how to review, and the command results.
+- **AI log:** committed at `ai-logs/sprint3/tigerk9/` with the correct name, and it covers the whole session. The AI Assistance comment is drafted.
+
+**Still open**
+
+| Item | Who |
+|---|---|
+| Rewrite the draft in your own words and fill the **[Liam]** spots | you |
+| **Labels:** #153 has none. Add `scope: medium` (the issue claims Medium). The course also lists `type: …` labels, but the repo doesn't have any yet, so someone would need to create them, for example `type: improvement`. | you / team |
+| **Sprint 3 milestone:** still doesn't exist. Create it, then attach #153 and the PR. | team |
+| Open the PR; post the spec-change comment; have icsasso update AC 3 and AC 5 | you + icsasso |
+| Post the AI Assistance comment, linking the branch copy until the merge | you |
+| File the bug for `budget.test.ts:466` and add its number to Tech Debt | you |
+| Fill in the CI results once the checks finish | you |
+| Teammate rubric review on the first pass, and approval on the latest commit; no self-merge | reviewer |
+| **D7 check-in (Nov 12):** link this PR, open and ready for review, in `docs/sprint3/checkin/tigerk9.md` | you |
+
+**Two individual items outside this PR:**
+- **D2 specs:** spec credit likely goes to an issue's author, and #153's author is icsasso. Make sure you've written your own specs elsewhere this sprint.
+- **D6 mutation testing (optional fit):** this PR changes source and tests together. You could run Stryker (Vitest runner) on `.github/scripts/vrt-failed-files.mjs`. Stryker can't mutate the YAML workflow itself.
+
+---
+
+_**User (2026-11-10 00:31:16Z)**_
+
+<ide_selection>The user selected the lines 39 to 209 from /workspaces/actual-budget/pr-153-drafts.md:
+### Description
+
+Upstream's `/update-vrt` comment bot can't run in our fork (its jobs are limited to
+`actualbudget/actual` and need Depot runners), and screenshots made in our arm64 dev containers
+don't match CI. The only working way to update VRT screenshots was copying a temporary workflow
+into the PR (#116). This PR adds a permanent **Update VRT screenshots** workflow that anyone can
+start from the Actions tab with a PR number.
+
+- **`.github/workflows/update-vrt.yml` (new).** Checks the PR is open and from this repo, builds it
+  and runs VRT with `--update-snapshots=changed` in CI's container (`playwright:v1.61.1-jammy`,
+  same build steps as `e2e-test.yml`), then pushes one commit with only the changed PNGs and starts
+  E2E Tests on it. Optional "Test files" input runs only those files in one shard. The jobs that run
+  the PR's code only get a read-only token; the job that pushes never runs PR code and re-checks
+  that every file is a PNG in a `*-snapshots` folder.
+- **`e2e-test.yml`:** `workflow_dispatch` trigger, so the workflow can start the checks on its commit.
+- **`e2e-vrt-comment.yml`:** replaces "comment `/update-vrt`" with step-by-step instructions and
+  the failed test files, read from the VRT JUnit reports by `.github/scripts/vrt-failed-files.mjs`.
+- **`fork-ci-guard.yml`:** also runs the tests in `.github/scripts` (lage only runs workspace tests).
+- **`STUDENTS.md`:** new "Updating VRT screenshots" section.
+- `yaml` devDependency (tests read the workflow file); release note.
+
+AI disclosure: written with Claude Code (Claude Opus 5.5); see the AI Assistance comment for the log.
+**[Liam]** add what you reviewed/changed yourself.
+
+### Design decisions
+
+The issue's Design section (icsasso) chose a new `workflow_dispatch` workflow over adapting
+upstream's `/update-vrt`. These are the decisions I made while implementing it.
+
+**1. How the checks run on the bot's screenshot commit**
+
+- **Decision:** after pushing, the workflow starts E2E Tests on the PR branch itself with
+  `workflow_dispatch`, which needed a `workflow_dispatch:` trigger in `e2e-test.yml`.
+- **Alternatives considered:**
+  1. _Re-run the old VRT check by hand_ (the issue's original AC 3). Doesn't work: a re-run tests
+     the same commit as the original run, so it tests the old screenshots.
+  2. _Push an empty commit or close and reopen the PR by hand._ Works and changes no upstream file,
+     but every person has to remember an extra step after each update.
+  3. _A personal access token secret_ so the bot's push starts CI. Needs a repo admin to create
+     and rotate a token tied to one person's account.
+- **Rationale:** `workflow_dispatch` is the one event GitHub lets `GITHUB_TOKEN` start, so it needs
+  no secret and no manual step. The cost is three lines in one upstream file.
+- **Consequences:** _Easier:_ the checks start on their own after an update. _Harder:_ one more
+  upstream edit that can conflict at syncs; branches made before this merges can't be started this
+  way (the workflow warns and says to merge `master`); and GitHub still holds the other PR checks
+  for approval, so E2E can run twice.
+
+**2. Which job gets write access**
+
+- **Decision:** split the workflow so the jobs that build and run the PR's code (`build-web`,
+  `generate`) have a read-only token, and only the `commit` job can push. It never runs PR code: it
+  re-checks the downloaded files are PNG screenshots, then commits and pushes.
+- **Alternatives considered:**
+  1. _One job that runs the tests and pushes_ (like #116's temporary workflow). Simpler, but the
+     PR's code would run with a token that can push to any branch.
+  2. _Upstream's two-workflow design_ (generate a patch, then a separate `workflow_run` workflow
+     applies it). Same separation, but two files, and `workflow_run` workflows can only be tested
+     after they're on `master`.
+- **Rationale:** keeps the separation upstream uses, in one file that could be tested on a fork
+  before merging.
+- **Consequences:** _Easier:_ a broken or malicious test can't push anything but screenshots.
+  _Harder:_ screenshots move between jobs as artifacts, and the PNG check runs in two places.
+
+### Related issue(s)
+
+Closes #153
+
+### Tech Debt
+
+**Introduced:**
+
+- Two upstream workflow files are edited (`e2e-test.yml` trigger, `e2e-vrt-comment.yml` message and
+  steps). They can conflict at upstream syncs; the edits are marked "Fork-only (issue #153)".
+- After a bot commit, E2E runs twice: once started by the workflow, once when someone approves the
+  held PR checks.
+- Screenshots are made from the PR branch as it is, while PR checks test the branch merged with
+  `master`. If `master` changed screenshots in the meantime they can differ; `STUDENTS.md` says to
+  merge `master` first.
+- An E2E run started by the workflow doesn't get a VRT Comment if it fails (the comment only runs
+  for `pull_request` runs). The red check is still visible on the PR.
+- The `.github/scripts` tests add a job (~1–2 min) to the Fork CI guard workflow.
+- `package.json` / `yarn.lock`: `yaml` is now a root devDependency (one line each). The tests use it
+  to read the workflow files. It was already installed through other packages at the same version,
+  so nothing new is downloaded, but this is one more line that can conflict at upstream syncs.
+
+**Encountered:**
+
+- Upstream's `/update-vrt` workflows can't run here; replaced rather than adapted (issue Design).
+- `budget.test.ts:466` ("switches to the mobile layout below the small breakpoint") failed in
+  Functional shard 2 on the bot's commit in both E2E runs, but passed one commit earlier. The bot's
+  commit only changed 3 PNGs, which Functional tests don't read (`toMatchThemeScreenshots` is a
+  no-op without `VRT`). Not changed here; reported as #___ **[Liam: file the bug and fill in]**.
+- Pre-existing shellcheck notes in `e2e-test.yml` / the comment's "Extract metadata" step left as is.
+
+### Test Evidence
+
+#### Where the manual tests ran: a separate fork
+
+All manual runs below were on my personal fork,
+[TigerK9/actual-budget](https://github.com/TigerK9/actual-budget), not on this repository.
+
+- **Why a fork:** GitHub only lets you start a `workflow_dispatch` workflow from the Actions tab
+  once the workflow file is on the repository's **default branch**. Testing here would have meant
+  merging untested code into our `master` first. The fork let me run the real workflow on GitHub
+  without touching this repository.
+- **Setup:** forked this repo, turned on Actions, pushed this PR's branch, and made it the fork's
+  default branch (agents in this repo aren't allowed to push to any `master`, so the branch stood
+  in for it).
+- **Test PR:** [TigerK9/actual-budget#1](https://github.com/TigerK9/actual-budget/pull/1) (never
+  merged), from the throwaway branch `test/issue-153-vrt-ui-change`. It changes one shortcut label
+  in the Help menu's keyboard-shortcuts modal so VRT fails. A later throwaway commit makes a VRT
+  test write `e2e/stray-output.txt`, to test the non-PNG refusal.
+- **How close it is to this repo:** same workflow files, same runners (`ubuntu-latest`) and same
+  Playwright container. Two differences: the default branch was the PR branch, not `master`, and
+  the fork's Actions settings are GitHub's defaults, so whether this repo also holds the bot's
+  commit for approval will be confirmed on the first real use here.
+
+| Acceptance criterion                                                                                                                | Test(s)                                                                                                                                                                                                                                                                                                                                                                                | Level                       | Source of expected value                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 1. "Update VRT screenshots" can be started from Actions with a PR number; GitHub-hosted runners; same container and build as CI VRT | Manual: Actions → Update VRT screenshots → Run workflow (PR 1, `e2e/help-menu.test.ts`) → succeeded on `ubuntu-latest` in `playwright:v1.61.1-jammy` ([run](https://github.com/TigerK9/actual-budget/actions/runs/42712996451))                                                                                                                                                        | manual                      | AC + other: "same as CI" means the `vrt` job in `e2e-test.yml` (image and build steps compared line by line)                       |
+| 2a. Differences → one commit changing only `*-snapshots/*.png`                                                                      | Manual: same run → bot commit [`fe41fcec5`](https://github.com/TigerK9/actual-budget/commit/fe41fcec5) changes exactly 3 PNGs (Help menu shortcuts 7–9) · `update-vrt-workflow.test.mjs` › Commit and push › "pushes one commit that changes only the screenshots"; › Check that only screenshots changed › "collects changed and new screenshots, ignoring gitignored files"          | manual + integration        | AC + other: the changed label only shows in the "Global" list, which `help-menu.test.ts` screenshots once per theme (3)            |
+| 2b. No differences → no commit, summary says so                                                                                     | Manual: re-ran on PR 1 with blank test files → success, "No screenshots changed, so nothing was pushed", branch head unchanged ([run](https://github.com/TigerK9/actual-budget/actions/runs/42718501734)) · integration: "reports no changes when the run changed nothing", "pushes nothing when the screenshots match the branch's"                                                   | manual + integration        | AC                                                                                                                                 |
+| 3. VRT passes on the bot's commit _(amended, see issue comment)_                                                                    | Manual: E2E started by the workflow ([run](https://github.com/TigerK9/actual-budget/actions/runs/42713789212)) and the approved PR run ([run](https://github.com/TigerK9/actual-budget/actions/runs/42713797001)) → Visual regression 3/3 shards pass on `fe41fcec5`; before the commit, VRT shard 2 failed ([run](https://github.com/TigerK9/actual-budget/actions/runs/42709845331)) | manual                      | AC (as amended in the issue discussion)                                                                                            |
+| 4a. Closed PR → fails, nothing pushed, clear message                                                                                | Manual: closed PR 1, ran → "PR #1 is closed. Only open PRs can be updated; nothing was pushed.", other jobs skipped ([run](https://github.com/TigerK9/actual-budget/actions/runs/42719754705)) · integration: Check the PR › "refuses { state: 'closed' }"                                                                                                                             | manual + integration        | AC                                                                                                                                 |
+| 4b. Branch in another repository → fails, nothing pushed                                                                            | integration: "refuses { repo: 'someone/actual-budget' }", "refuses { repo: null }" (deleted fork)                                                                                                                                                                                                                                                                                      | integration                 | AC                                                                                                                                 |
+| 4c. Non-PNG change → fails, nothing pushed                                                                                          | Manual: test PR whose VRT test writes `e2e/stray-output.txt` → Generate failed at "Check that only screenshots changed", commit job skipped ([run](https://github.com/TigerK9/actual-budget/actions/runs/42721010128)) · integration: 4 "fails and collects nothing when the run left …" cases, 3 "refuses artifacts containing …" cases                                               | manual + integration        | AC                                                                                                                                 |
+| 5a. VRT Comment points to the new workflow                                                                                          | Manual: bot comment on the test PR lists the steps and `e2e/help-menu.test.ts` ([comment](https://github.com/TigerK9/actual-budget/pull/1#issuecomment-6753064475)) · `vrt-comment-workflow.test.mjs` (6 tests: links the workflow, no "comment `/update-vrt`", PR number, failed files, fallback, approval step) · `vrt-failed-files.test.mjs` (7 tests)                              | manual + integration + unit | AC; the failed file is the one whose VRT failed in that run; JUnit format from a real Playwright 1.61.1 report (upstream behavior) |
+| 5b. `STUDENTS.md` explains running it and the re-run                                                                                | Manual: read "Updating VRT screenshots" in `STUDENTS.md`                                                                                                                                                                                                                                                                                                                               | manual                      | AC                                                                                                                                 |
+| 5c. Fork CI guard passes                                                                                                            | Fork CI guard passed on `fe41fcec5` in the approved checks; `node .github/scripts/fork-ci-runners.mjs` → "No unguarded Depot runner labels found."                                                                                                                                                                                                                                     | manual                      | AC                                                                                                                                 |
+
+**Not tested automatically, and why:** starting a workflow from the Actions tab, pushing with
+`GITHUB_TOKEN`, starting E2E Tests, and posting the comment only happen on GitHub, so they were
+checked with the manual runs above. The integration tests run each step's real script with the
+shell GitHub uses, with a stub `gh` and local git repos. The "branch in another repository" case
+wasn't run on GitHub (it needs a PR from a second fork); it's covered by the integration tests.
+
+**AI-written tests:** all 37 tests in `.github/scripts/` (`vrt-failed-files.test.mjs`,
+`update-vrt-workflow.test.mjs`, `vrt-comment-workflow.test.mjs`) were written by Claude Code.
+Expected values come from the ACs, upstream's old comment wording, and a JUnit report generated
+with the repo's Playwright 1.61.1, not from our code's output. Each file was checked by breaking the
+code on purpose: counting every suite as failed → 5 tests fail; removing `shell: bash` (the bug
+found in the first real run) → 7 fail; accepting any path instead of only screenshots → 5 fail;
+putting back "comment `/update-vrt`" → 1 fails. One AI-written assertion was wrong ("no
+`/update-vrt` anywhere" also matched the new link, `.../update-vrt.yml`) and was narrowed to
+upstream's exact wording. **[Liam]** say which tests you ran and read.
+
+### Hardening evidence (CI fix: runs before and after)
+
+- **Before:** `/update-vrt` runs skipped in our repo ([Oct 30](https://github.com/CSCI-435-SE/actual-budget/actions/runs/40995490314), [Oct 30](https://github.com/CSCI-435-SE/actual-budget/actions/runs/40995947533), [Nov 7](https://github.com/CSCI-435-SE/actual-budget/actions/runs/42389549446)); the only way was a temporary workflow per PR (#116).
+- **After** (on the test fork, see Test Evidence): VRT failed on the test PR ([run](https://github.com/TigerK9/actual-budget/actions/runs/42709845331)) → [Update VRT screenshots run](https://github.com/TigerK9/actual-budget/actions/runs/42712996451) → [bot commit](https://github.com/TigerK9/actual-budget/commit/fe41fcec5) → VRT passed ([run](https://github.com/TigerK9/actual-budget/actions/runs/42713789212)). Refusals: [closed PR](https://github.com/TigerK9/actual-budget/actions/runs/42719754705), [non-PNG change](https://github.com/TigerK9/actual-budget/actions/runs/42721010128).
+- Also found by a real run: the first attempt failed because container steps run under `sh` ([run](https://github.com/TigerK9/actual-budget/actions/runs/42711745218), nothing pushed), fixed in `81fa53728` with a regression test.
+
+### How to review
+
+- `yarn vitest run --root .github/scripts` (37 tests, ~2 s; needs `bash` and `git`).
+- Read `update-vrt.yml` job by job: which jobs get a write token, and what the `commit` job runs.
+- Optional: the runs above are on my fork; the workflow can only be run from Actions in this repo
+  after it merges, because `workflow_dispatch` workflows must be on the default branch.
+
+### CI / commands
+
+- `yarn typecheck` — pass (7 succeeded, 3 skipped; no TypeScript changed)
+- `yarn lint` — pass
+- `yarn vitest run --root .github/scripts` — 37 passed
+- actionlint 1.7.7 (with shellcheck) — no new findings; zizmor 1.16.0 — no findings
+- `node .github/scripts/fork-ci-runners.mjs` — pass
+- CI on this PR: **[Liam]** fill in after the checks run
+
+### Checklist
+
+**[Liam]** tick these yourself.
+
+This may or may not be related to the current task.</ide_selection>
+
+https://github.com/CSCI-435-SE/actual-budget/actions/runs/42728828900/job/129541324847?pr=164
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-10 00:31:18Z)**_
+
+That's a job from PR #164. I'll look up which workflow it belongs to and what failed.
+
+_**Agent (claude-opus-5-5 2026-11-10 00:31:24Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Inspect the PR 164 run, job steps and annotations
+
+```bash
+R=42728828900; J=129541324847; curl -s https://api.github.com/repos/CSCI-435-SE/actual-budget/actions/runs/$R | python3 -c "import json,sys; r=json.load(sys.stdin); print(r['name'],'|',r['event'],'|',r['head_branch'],r['head_sha'][:9],'|',r['status'],r['conclusion'])"; curl -s https://api.github.com/repos/CSCI-435-SE/actual-budget/actions/jobs/$J | python3 -c "
+import json,sys
+j=json.load(sys.stdin); print('JOB:', j['name'], j['conclusion'])
+for s in j['steps']: print('  ', s['number'], s['name'], '->', s['conclusion'])"; curl -s "https://api.github.com/repos/CSCI-435-SE/actual-budget/check-runs/$J/annotations" | python3 -c "
+import json,sys
+for a in json.load(sys.stdin): print(a['annotation_level'],'|',a['path'],a['start_line'],'|',a['message'][:600])"
+```
+
+```text
+Dependency Review | pull_request | feat/issue-153-update-vrt-workflow 829c0a895 | completed failure
+JOB: Dependency Review failure
+   1 Set up job -> success
+   2 Checkout repository -> success
+   3 Dependency Review -> failure
+   6 Post Checkout repository -> success
+   7 Complete job -> success
+failure | .github 7 | Dependency review is not supported on this repository. Please ensure that Dependency graph is enabled, see https://github.com/CSCI-435-SE/actual-budget/settings/security_analysis
+notice | .github 1 | "The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026. For more information, see https://github.com/actions/runner-images/issues/14748"
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:31:27Z)**_
+
+<think><details><summary>Thought Process</summary>
+The Dependency Review check failed on a repo without Dependency graph enabled, not because of the yaml change itself. I'm checking when this workflow last passed in the team repo.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:31:32Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Read dependency-review workflow and its run history
+
+```bash
+sed -n '1,40p' .github/workflows/dependency-review.yml; curl -s "https://api.github.com/repos/CSCI-435-SE/actual-budget/actions/workflows/dependency-review.yml/runs?per_page=10" | python3 -c "
+import json,sys
+d=json.load(sys.stdin); print('total runs:', d['total_count'])
+for r in d['workflow_runs']: print(' ', r['created_at'][:10], r['head_branch'][:40], r['conclusion'])"
+```
+
+```text
+name: Dependency Review
+
+on:
+  pull_request:
+    paths:
+      - 'yarn.lock'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+permissions:
+  contents: read
+  pull-requests: write # allow the action to post a summary comment
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: moderate
+          comment-summary-in-pr: always
+total runs: 7
+  2026-11-10 feat/issue-153-update-vrt-workflow failure
+  2026-10-16 chore/sync-upstream-v26.10.0 cancelled
+  2026-10-12 chore/stryker-setup cancelled
+  2026-10-10 feat/add-strykerjs cancelled
+  2026-10-10 feat/add-strykerjs cancelled
+  2026-10-09 feat/add-strykerjs cancelled
+  2026-10-04 feat/issue-61-pdf-export-menu cancelled
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:31:43Z)**_
+
+<think><details><summary>Thought Process</summary>
+This check has only ever run here once before, since its earlier six runs were cancelled after CI moved off Depot. The error says the dependency graph is disabled, which is odd given the Dependabot alerts reported on master, so I'm querying the API the check uses directly.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:31:56Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Query the dependency-graph compare and SBOM APIs
+
+`curl -s -w '\nHTTP %{http_code}\n' "https://api.github.com/repos/CSCI-435-SE/actual-budget/dependency-graph/compare/master...feat/issue-153-update-vrt-workflow" | head -c 600; echo; curl -s -w '\nHTTP %{http_code}\n' "https://api.github.com/repos/CSCI-435-SE/actual-budget/dependency-graph/sbom" | head -c 300`
+
+```text
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest",
+  "status": "404"
+}
+HTTP 404
+
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest",
+  "status": "404"
+}
+
+HTTP 404
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:32:05Z)**_
+
+<think><details><summary>Thought Process</summary>
+The dependency graph APIs return 404 for this repo, so Dependency Review fails on any PR touching yarn.lock, not because of your code. I'll record it in the draft PR, and an admin needs to enable Dependency graph in the repo settings before re-running.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:33:08Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The user doesn't want to proceed with this tool use. The tool use was rejected (eg. if it was a file edit, the new_string was NOT written to the file). The user provided the following reason for the rejection:  Do I really need to make the yarn.lock changes? Can I just remove the changes so this test passes...?
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:33:12Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file /workspaces/actual-budget/pr-153-drafts.md has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:33:27Z)**_
+
+No, you don't need it. And yes, removing it makes this check go away. Dependency Review only runs when a PR changes `yarn.lock`, so with no `yarn.lock` change it won't run on your PR at all.
+
+Two things to know first:
+- **The two files go together.** CI installs with `yarn --immutable`, which fails if `package.json` and `yarn.lock` disagree. Either both change or neither does.
+- **Removing the line alone isn't enough.** The two test files `import { parse } from 'yaml'`, so they need a replacement.
+
+## Two ways to remove it
+
+| Option | What changes | Downside |
+|---|---|---|
+| **A. Tests read the YAML without a library** (recommended) | Swap `yaml` for a ~30-line helper in the tests that finds a step's `run: \|` script and the job's shell in our own workflow files. Revert `package.json` and `yarn.lock` to `master`'s. | A small hand-written parser. If the workflow's formatting changes in a way it doesn't handle, the tests **fail loudly** (an empty script can't pass), so they can't silently pass. |
+| **B. Keep importing `yaml` without declaring it** | Only revert `package.json` and `yarn.lock`. | It only works because other packages happen to install `yaml`. If they stop, the tests break for reasons unrelated to them. I wouldn't do this. |
+
+Either way, it's one new commit on the branch. PR #164 updates automatically, and the Tech Debt line about `yaml` comes out of the draft.
+
+**One thing removing it doesn't fix:** Dependency Review is still broken for the whole repo. The next PR that touches `yarn.lock` will fail the same way. That's not yours to fix in #153, but tell the team, or whoever manages the repo settings, that **Dependency graph** needs to be enabled.
+
+**About the draft:** you rejected my first edit, the Tech Debt entry about this failure, so it isn't in the draft. The second edit did go in: a CI note saying Dependency Review fails. If we remove the dependency, I'll take that note back out.
+
+Should I go with option A?
+
+---
+
+_**User (2026-11-10 00:35:00Z)**_
+
+<ide_opened_file>The user opened the file /workspaces/actual-budget/pr-153-drafts.md in the IDE. This may or may not be related to the current task.</ide_opened_file>
+
+Go with option A, then commit this change, as well as updating specstory
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-10 00:35:18Z)**_
+
+Going with option A. The plan:
+1. Revert `package.json` and `yarn.lock` to exactly `master`'s.
+2. Add a small helper that both test files share, in place of `yaml`.
+3. Before switching, **check the helper against the real `yaml` library**, which is still installed, on every step of both workflows, so the replacement is proven to read them identically.
+4. Commit, push, and re-sync SpecStory.
+
+First, the revert. Then I'll check the lockfile still matches what CI's `yarn --immutable` expects.
+
+_**Agent (claude-opus-5-5 2026-11-10 00:35:40Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Restore package.json and yarn.lock from master, verify lockfile
+
+`git checkout origin/master -- package.json yarn.lock && git diff --stat origin/master -- package.json yarn.lock; echo "diff vs master: $(git diff origin/master --name-only -- package.json yarn.lock | wc -l) files"; yarn install --immutable 2>&1 | tail -2`
+
+```text
+diff vs master: 0 files
+➤ YN0000: └ Completed in 3s 38ms
+➤ YN0000: · Done with warnings in 5s 745ms
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:35:43Z)**_
+
+<think><details><summary>Thought Process</summary>
+Both files now match `master` and `yarn install --immutable` passes. Next I'll write the helper, which reads our workflow files and returns the shape the tests already use.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:35:59Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Write"><details>
+<summary>Tool use: **Write**</summary>
+
+```mjs
+// Test helper for the .github/scripts tests (issue #153): reads the parts of
+// one of our workflow files that the tests run, without a YAML library.
+//
+// It understands only the layout our workflows use (2-space indents): top-level
+// `env:` and `defaults:`, and under `jobs:` each job's `container:`,
+// `defaults: run: shell:` and `steps:` (`- id/name/shell/run`). `run: |`
+// blocks are returned like YAML's literal blocks: indentation removed, one
+// trailing newline. Anything it doesn't understand is skipped, so a step it
+// can't read comes back without a `run` and the tests that use it fail.
+//
+// Returns { env, defaults, jobs: { <id>: { container, defaults, steps } } }.
+
+import { readFileSync } from 'node:fs';
+
+const KEY_VALUE = /^(\s*)(- )?([\w-]+):(?:\s+(.*))?$/;
+
+function indentOf(line) {
+  return line.length - line.trimStart().length;
+}
+
+// Plain, 'single-quoted' or "double-quoted" scalar (no escapes in ours
+// except '' in single quotes)
+function scalar(text) {
+  const value = text.replace(/\s+#.*$/, '').trim();
+  if (value.startsWith("'") && value.endsWith("'")) {
+    return value.slice(1, -1).replaceAll("''", "'");
+  }
+  if (value.startsWith('"') && value.endsWith('"')) {
+    return value.slice(1, -1);
+  }
+  return value;
+}
+
+// Reads the `|` block that starts after line `start`, for a key at `keyIndent`
+function readBlock(lines, start, keyIndent) {
+  const block = [];
+  let i = start + 1;
+  for (; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.trim() !== '' && indentOf(line) <= keyIndent) {
+      break;
+    }
+    block.push(line);
+  }
+  while (block.length > 0 && block.at(-1).trim() === '') {
+    block.pop();
+  }
+  const blockIndent = Math.min(
+    ...block.filter(line => line.trim() !== '').map(indentOf),
+  );
+  const text = block.map(line => line.slice(blockIndent)).join('\n');
+  return { text: `${text}\n`, next: i };
+}
+
+export function readWorkflow(url) {
+  const lines = readFileSync(url, 'utf8').split('\n');
+  const workflow = { env: {}, defaults: {}, jobs: {} };
+  let section = null; // top-level key we're in
+  let job = null;
+  let jobKey = null; // job-level key we're in (defaults, steps, ...)
+  let step = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.trim() === '' || line.trimStart().startsWith('#')) {
+      continue;
+    }
+    const match = line.match(KEY_VALUE);
+    if (!match) {
+      continue;
+    }
+    const [, spaces, dash, key, value = ''] = match;
+    const indent = spaces.length;
+
+    if (indent === 0) {
+      section = key;
+      continue;
+    }
+
+    if (section === 'env' && indent === 2) {
+      workflow.env[key] = scalar(value);
+    } else if (section === 'defaults' && key === 'shell') {
+      workflow.defaults.run = { shell: scalar(value) };
+    } else if (section === 'jobs' && indent === 2) {
+      job = { container: undefined, defaults: {}, steps: [] };
+      workflow.jobs[key] = job;
+      jobKey = null;
+    } else if (section === 'jobs' && job && indent === 4) {
+      jobKey = key;
+      if (key === 'container') {
+        job.container = value === '' ? {} : scalar(value);
+      }
+    } else if (jobKey === 'defaults' && key === 'shell') {
+      job.defaults.run = { shell: scalar(value) };
+    } else if (jobKey === 'steps' && indent === 6 && dash) {
+      step = {};
+      job.steps.push(step);
+      setStepKey(step, key, value, lines, i, indent + 2);
+    } else if (jobKey === 'steps' && step && indent === 8 && !dash) {
+      const next = setStepKey(step, key, value, lines, i, indent);
+      if (next !== undefined) {
+        i = next - 1;
+      }
+    }
+  }
+  return workflow;
+}
+
+// Sets one of a step's keys; returns the next line to read after a `|` block
+function setStepKey(step, key, value, lines, index, keyIndent) {
+  if (!['id', 'name', 'shell', 'run'].includes(key)) {
+    return undefined;
+  }
+  if (key === 'run' && value.trim() === '|') {
+    const { text, next } = readBlock(lines, index, keyIndent);
+    step.run = text;
+    return next;
+  }
+  step[key] = scalar(value);
+  return undefined;
+}
+
+```
+
+```text
+File created successfully at: /workspaces/actual-budget/.github/scripts/read-workflow.mjs (file state is current in your context — no need to Read it back)
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:36:06Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Compare the new helper with the yaml library on 5 workflows
+
+```bash
+cat > /tmp/claude-0/-workspaces-actual-budget/d17d3690-1933-4315-a769-4cfd8685b89d/scratchpad/compare-parsers.mjs <<'EOF'
+// Compare read-workflow.mjs with the real `yaml` library on the fields the tests use
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+const require = createRequire('/workspaces/actual-budget/package.json');
+const { parse } = require('yaml');
+const { readWorkflow } = await import('/workspaces/actual-budget/.github/scripts/read-workflow.mjs');
+let problems = 0, checked = 0;
+for (const file of ['update-vrt.yml', 'e2e-vrt-comment.yml', 'e2e-test.yml', 'fork-ci-guard.yml', 'vrt-update-generate.yml']) {
+  const path = `/workspaces/actual-budget/.github/workflows/${file}`;
+  const real = parse(readFileSync(path, 'utf8'));
+  const mine = readWorkflow(path);
+  const eq = (what, a, b) => { checked++; if (JSON.stringify(a) !== JSON.stringify(b)) { problems++; console.log(`DIFF ${file} ${what}\n  yaml: ${JSON.stringify(a)?.slice(0,200)}\n  mine: ${JSON.stringify(b)?.slice(0,200)}`); } };
+  for (const [k, v] of Object.entries(real.env ?? {})) eq(`env.${k}`, String(v), mine.env[k]);
+  eq('defaults.shell', real.defaults?.run?.shell, mine.defaults?.run?.shell);
+  eq('job ids', Object.keys(real.jobs), Object.keys(mine.jobs));
+  for (const [id, job] of Object.entries(real.jobs)) {
+    const m = mine.jobs[id] ?? { steps: [] };
+    eq(`${id}.container?`, Boolean(job.container), Boolean(m.container));
+    eq(`${id}.defaults.shell`, job.defaults?.run?.shell, m.defaults?.run?.shell);
+    eq(`${id}.step count`, (job.steps ?? []).length, m.steps.length);
+    (job.steps ?? []).forEach((s, n) => {
+      for (const key of ['id', 'name', 'shell', 'run']) eq(`${id}.steps[${n}].${key}`, s[key], m.steps[n]?.[key]);
+    });
+  }
+}
+console.log(`${checked} fields compared, ${problems} differences`);
+EOF
+node /tmp/claude-0/-workspaces-actual-budget/d17d3690-1933-4315-a769-4cfd8685b89d/scratchpad/compare-parsers.mjs
+```
+
+```text
+457 fields compared, 0 differences
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:36:09Z)**_
+
+<think><details><summary>Thought Process</summary>
+The helper matches the real yaml library on all 457 fields across 5 workflows, including 3 upstream ones it was never written for. I'm swapping it into both test files next.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:36:10Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Find yaml usage in the two test files
+
+`cd /workspaces/actual-budget/.github/scripts && grep -n "yaml\|parse(\|workflows/" update-vrt-workflow.test.mjs vrt-comment-workflow.test.mjs`
+
+```text
+vrt-comment-workflow.test.mjs:2:// .github/workflows/e2e-vrt-comment.yml (issue #153).
+vrt-comment-workflow.test.mjs:24:import { parse } from 'yaml';
+vrt-comment-workflow.test.mjs:27:const workflow = parse(
+vrt-comment-workflow.test.mjs:29:    new URL('../workflows/e2e-vrt-comment.yml', import.meta.url),
+vrt-comment-workflow.test.mjs:42:  'https://github.com/CSCI-435-SE/actual-budget/actions/workflows/update-vrt.yml';
+update-vrt-workflow.test.mjs:1:// Integration tests for .github/workflows/update-vrt.yml (issue #153).
+update-vrt-workflow.test.mjs:23:import { parse } from 'yaml';
+update-vrt-workflow.test.mjs:25:const workflow = parse(
+update-vrt-workflow.test.mjs:26:  readFileSync(new URL('../workflows/update-vrt.yml', import.meta.url), 'utf8'),
+update-vrt-workflow.test.mjs:370:    ['a workflow file', { '.github/workflows/evil.yml': '' }],
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:36:12Z)**_
+
+<tool-use data-tool-type="read" data-tool-name="Read"><details>
+<summary>Tool use: **Read**</summary>
+ `./.github/scripts/vrt-comment-workflow.test.mjs`
+
+```text
+20	import { join } from 'node:path';
+21	import { fileURLToPath } from 'node:url';
+22	
+23	import { afterEach, describe, expect, it } from 'vitest';
+24	import { parse } from 'yaml';
+25	
+26	const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
+27	const workflow = parse(
+28	  readFileSync(
+29	    new URL('../workflows/e2e-vrt-comment.yml', import.meta.url),
+30	    'utf8',
+31	  ),
+32	);
+33	const script = workflow.jobs.comment.steps.find(
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:36:13Z)**_
+
+<tool-use data-tool-type="read" data-tool-name="Read"><details>
+<summary>Tool use: **Read**</summary>
+ `./.github/scripts/update-vrt-workflow.test.mjs`
+
+```text
+20	import { dirname, join } from 'node:path';
+21	
+22	import { describe, expect, it } from 'vitest';
+23	import { parse } from 'yaml';
+24	
+25	const workflow = parse(
+26	  readFileSync(new URL('../workflows/update-vrt.yml', import.meta.url), 'utf8'),
+27	);
+28	const REPO = 'CSCI-435-SE/actual-budget';
+29	const BRANCH = 'feat/issue-1-example';
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:36:39Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file /workspaces/actual-budget/.github/scripts/vrt-comment-workflow.test.mjs has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:36:42Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file /workspaces/actual-budget/.github/scripts/update-vrt-workflow.test.mjs has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:06Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Confirm no yaml imports remain, run tests and lint
+
+`cd /workspaces/actual-budget && grep -rn "from 'yaml'\|require('yaml')" .github/scripts; yarn vitest run --root .github/scripts 2>&1 | grep -E "Tests |×|Error"; yarn lint 2>&1 | tail -4`
+
+```text
+      Tests  37 passed (37)
+Checking formatting...
+
+All matched files use the correct format.
+Finished in 3270ms on 2674 files using 12 threads.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:10Z)**_
+
+<think><details><summary>Thought Process</summary>
+No `yaml` imports remain and lint is clean with 37/37 tests passing; I'm rerunning the deliberate-breakage checks, since the tests now read the workflows differently.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:31Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Re-run the three deliberate breakages with the new helper
+
+```bash
+S=/tmp/claude-0/-workspaces-actual-budget/d17d3690-1933-4315-a769-4cfd8685b89d/scratchpad; W=.github/workflows/update-vrt.yml; C=.github/workflows/e2e-vrt-comment.yml; cp $W $S/uv2.bak; cp $C $S/vc2.bak
+python3 - <<'EOF'
+p='/workspaces/actual-budget/.github/workflows/update-vrt.yml'
+s=open(p).read(); open(p,'w').write(s.replace("    defaults:\n      run:\n        shell: bash\n",""))
+EOF
+echo "remove shell: bash →"; yarn vitest run --root .github/scripts 2>&1 | grep "Tests "; cp $S/uv2.bak $W
+sed -i "s|^  SNAPSHOT_PATH: .*|  SNAPSHOT_PATH: '.*'|" $W; echo "loosen PNG check →"; yarn vitest run --root .github/scripts 2>&1 | grep "Tests "; cp $S/uv2.bak $W
+python3 - <<'EOF'
+p='/workspaces/actual-budget/.github/workflows/e2e-vrt-comment.yml'
+s=open(p).read(); open(p,'w').write(s.replace('click **Run workflow**.\n','click **Run workflow**. Or comment \\`/update-vrt\\` on this PR.\n',1))
+EOF
+echo "old /update-vrt wording →"; yarn vitest run --root .github/scripts 2>&1 | grep "Tests "; cp $S/vc2.bak $C
+git diff --quiet origin/feat/issue-153-update-vrt-workflow -- $W $C && echo "workflows restored"; yarn vitest run --root .github/scripts 2>&1 | grep "Tests "
+```
+
+```text
+remove shell: bash →
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  7 failed | 30 passed (37)
+loosen PNG check →
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  5 failed | 32 passed (37)
+old /update-vrt wording →
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+      Tests  1 failed | 36 passed (37)
+workflows restored
+      Tests  37 passed (37)
+[This command modified 2 files you've previously read: .github/workflows/e2e-vrt-comment.yml, .github/workflows/update-vrt.yml. Call Read before editing.]
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:34Z)**_
+
+<think><details><summary>Thought Process</summary>
+The earlier checks still show 7, 5 and 1 failures, and with the workflows restored the suite passes 37/37. I'm now removing the three leftover mentions of the `yaml` dependency from the PR draft.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:34Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Find yaml and Dependency Review mentions in the draft
+
+`grep -n "yaml\|Dependency Review\|devDependency" pr-153-drafts.md`
+
+```text
+58:- `yaml` devDependency (tests read the workflow file); release note.
+120:- `package.json` / `yarn.lock`: `yaml` is now a root devDependency (one line each). The tests use it
+205:- CI on this PR: **[Liam]** fill in after the checks run. Known: Dependency Review fails because
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:36Z)**_
+
+<tool-use data-tool-type="read" data-tool-name="Read"><details>
+<summary>Tool use: **Read**</summary>
+ `./pr-153-drafts.md`
+
+```text
+118	  for `pull_request` runs). The red check is still visible on the PR.
+119	- The `.github/scripts` tests add a job (~1–2 min) to the Fork CI guard workflow.
+120	- `package.json` / `yarn.lock`: `yaml` is now a root devDependency (one line each). The tests use it
+121	  to read the workflow files. It was already installed through other packages at the same version,
+122	  so nothing new is downloaded, but this is one more line that can conflict at upstream syncs.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:36Z)**_
+
+<tool-use data-tool-type="read" data-tool-name="Read"><details>
+<summary>Tool use: **Read**</summary>
+ `./pr-153-drafts.md`
+
+```text
+204	- `node .github/scripts/fork-ci-runners.mjs` — pass
+205	- CI on this PR: **[Liam]** fill in after the checks run
+206
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:40Z)**_
+
+<think><details><summary>Thought Process</summary>
+The Read output doesn't match the earlier grep for line 205, so the file may have changed in the editor; I'll re-check it before editing.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:40Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Recheck the CI line and file modification time
+
+`grep -n "Dependency Review\|CI on this PR" pr-153-drafts.md; ls -l --time-style=+%T pr-153-drafts.md`
+
+```text
+205:- CI on this PR: **[Liam]** fill in after the checks run
+-rw-r--r-- 1 root root 22632 00:37:36 pr-153-drafts.md
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:37:42Z)**_
+
+The Dependency Review note is no longer in the file; you probably removed it in your editor. Either way, there's nothing to undo on line 205. Only the two `yaml` mentions are left to remove:
+
+_**Agent (claude-opus-5-5 2026-11-10 00:39:55Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file /workspaces/actual-budget/pr-153-drafts.md has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:39:58Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file /workspaces/actual-budget/pr-153-drafts.md has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:40:01Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Commit the helper, test updates and reverted package files
+
+```bash
+git status --short && git add .github/scripts/read-workflow.mjs .github/scripts/update-vrt-workflow.test.mjs .github/scripts/vrt-comment-workflow.test.mjs package.json yarn.lock && git commit -q -F - <<'EOF'
+[AI] test: read workflows without the yaml dependency (#153)
+
+Replace the yaml devDependency with a small helper that reads the
+step scripts, shells and env from our workflow files, and revert
+package.json and yarn.lock to master. Changing yarn.lock starts the
+Dependency Review check, which fails here because Dependency graph is
+not enabled for the repository. The helper matches the yaml library
+on all 457 fields it reads across five workflows.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+EOF
+git log --oneline -1; git diff --stat origin/master -- package.json yarn.lock | tail -1; echo "(empty = same as master)"
+```
+
+```text
+ M .github/scripts/update-vrt-workflow.test.mjs
+ M .github/scripts/vrt-comment-workflow.test.mjs
+M  package.json
+M  yarn.lock
+?? .github/scripts/read-workflow.mjs
+?? issue-96-rescope.md
+?? issues-60-61-pdf-export-explained.md
+?? pr-153-drafts.md
+cf3bcbf01 [AI] test: read workflows without the yaml dependency (#153)
+(empty = same as master)
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:40:03Z)**_
+
+<think><details><summary>Thought Process</summary>
+The commit `cf3bcbf01` is in, with package.json and yarn.lock matching master. Next I'll re-sync the SpecStory session, copy it into ai-logs/, rescan for secrets, and commit.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-10 00:40:07Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Re-sync SpecStory, update the AI log, scan, and commit
+
+```bash
+/app/.specstory/bin/specstory sync claude -s d17d3690-1933-4315-a769-4cfd8685b89d --no-cloud-sync 2>&1 | tail -1; H=.specstory/history/2026-11-09_21-08-14Z-let-s-start-working.md; L=ai-logs/sprint3/tigerk9/2026-11-09_claude-code_issue-153-implementation.md; cp $H $L; grep -c "" $L; grep -n "Go with option A" $L | cut -c1-80; grep -nEo "gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-ant-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY" $L | head; echo "secret scan done"; git add $L && git commit -q -F - <<'EOF'
+[AI] docs: update the AI log for issue 153 (#153)
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+EOF
+git log --oneline -2
+```
 </details></tool-use>
