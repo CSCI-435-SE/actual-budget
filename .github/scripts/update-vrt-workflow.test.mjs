@@ -20,10 +20,11 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
-import { parse } from 'yaml';
 
-const workflow = parse(
-  readFileSync(new URL('../workflows/update-vrt.yml', import.meta.url), 'utf8'),
+import { readWorkflow } from './read-workflow.mjs';
+
+const workflow = readWorkflow(
+  new URL('../workflows/update-vrt.yml', import.meta.url),
 );
 const REPO = 'CSCI-435-SE/actual-budget';
 const BRANCH = 'feat/issue-1-example';

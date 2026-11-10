@@ -21,14 +21,12 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { afterEach, describe, expect, it } from 'vitest';
-import { parse } from 'yaml';
+
+import { readWorkflow } from './read-workflow.mjs';
 
 const repoRoot = fileURLToPath(new URL('../..', import.meta.url));
-const workflow = parse(
-  readFileSync(
-    new URL('../workflows/e2e-vrt-comment.yml', import.meta.url),
-    'utf8',
-  ),
+const workflow = readWorkflow(
+  new URL('../workflows/e2e-vrt-comment.yml', import.meta.url),
 );
 const script = workflow.jobs.comment.steps.find(
   step => step.name === 'Write the comment',

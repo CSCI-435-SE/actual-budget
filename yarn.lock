@@ -10716,7 +10716,6 @@ __metadata:
     prompts: "npm:^2.4.2"
     typescript: "npm:^6.0.3"
     vitest: "npm:^5.0.0"
-    yaml: "npm:^2.9.0"
   dependenciesMeta:
     argon2:
       built: true
