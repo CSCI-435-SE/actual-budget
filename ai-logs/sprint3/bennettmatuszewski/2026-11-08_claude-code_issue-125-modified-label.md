@@ -22952,3 +22952,2367 @@ I've written the D6 deliverable and committed it locally on the feature branch, 
 - **Your review.** The Q3 answer describes the AI use and ends with a "Still for me to check" line. Verify those items yourself before submitting.
 
 **Where to push:** the deliverable's commit and config links only work once the commits are on GitHub. I can push all three to PR #163, or move the write-up and reports into their own docs PR. Which do you want?
+
+---
+
+_**User (2026-11-09 18:33:08Z)**_
+
+This session is being continued from a previous conversation that ran out of context. The summary below covers the earlier portion of the conversation.
+
+<system-reminder>
+<tools-used-before-summary>Agent, AskUserQuestion, Bash, Edit, ExitPlanMode, Glob, Grep, Read, Skill, TaskStop, ToolSearch, Write</tools-used-before-summary>
+</system-reminder>
+Summary:
+1. **Primary Request and Intent**
+   - **Plan issue #125.** The user asked for a plan to implement GitHub issue #125 ("(modified)" label on 8 report widgets: Net Worth, Cash Flow, Spending, Summary, Crossover, Age of Money, Calendar, Goal), prompting for clarification and noting design decisions. The plan was approved and implemented.
+   - **Mutation testing.** "for each of the new unit tests lets srun StykerJS on each of them and fix and mutants that survive". Done: 100%.
+   - **PR.** "Make a PR for this code change". Done: PR #163.
+   - **PR description.** Asked for a copy-paste PR description in their format (Description / Related issue(s) Closes # / Testing / Design decisions / Scope / Tests / Tech Debt Introduced/Existing / Checklist). It was first written in Chinese per the repo rule, then the user said "Ignore the repo rules for this one case and write in english". Done.
+   - **D6 deliverable (most recent).** "Create this deliverable": the D6 Mutation Testing assignment.
+     - Run StrykerJS (the Vitest runner is required for TS/Vitest) on the source files changed by the PR.
+     - Analyze every surviving mutant (≥10 if more than 10), classifying each as equivalent or test gap.
+     - Add or strengthen at least one test that kills a gap mutant, then re-run.
+     - Commit the before/after JSON reports as `docs/sprint3/mutation/reports/<issue#>-<username>-before.json` / `-after.json`.
+     - Commit the config used.
+     - Write `docs/sprint3/mutation/<issue#>-<username>.md` from the template:
+       - Header: PR(s), Tool, Config, Command, Reports, Mutation score before → after.
+       - Surviving mutants table.
+       - New or strengthened test (Commit / Test / Kills).
+       - Questions 1–3.
+     - Scores must match the reports, and the killed mutant must show as Killed in the "after" report.
+
+2. **Key Technical Concepts**
+   - Actual Budget monorepo: Yarn 4, Vitest 5.0.0, React Compiler, TanStack Query v5.
+   - `#components/*` imports map: `.tsx` is wildcard-mapped; `.ts` files need explicit entries in `packages/desktop-client/package.json`.
+   - Dashboard widgets: `useDashboardWidget`, and `useUpdateDashboardWidgetMutation`, which invalidates queries only on success, so the saved baseline is the fetched `widget.meta`.
+   - `calculateTimeRange` re-resolves relative modes. Comparison normalizes timeFrames:
+     - `static` → `{mode, start, end}`
+     - `sliding-window` → `{mode, shape, width}`
+     - other modes → `{mode}`
+   - StrykerJS 10.0.0:
+     - `@stryker-mutator/vitest-runner` 10.0.0 is broken with Vitest 5: the dry run works, but no tests run per mutant, so everything survives. This was confirmed on the loot-core setup too.
+     - Workaround: the `command` test runner, which activates mutants via the `__STRYKER_ACTIVE_MUTANT__` env var, with `coverageAnalysis: "off"`.
+   - The full `vite.config.mts` stages public assets on load, giving EPERM under parallel workers, hence the standalone vitest config.
+   - In tests, `global.IS_TESTING = true` pins `currentMonth()` to `'2017-01'`.
+
+3. **Files and Code Sections**
+
+   **Feature (commit `74854f42c`, PR #163)**
+   - **`packages/desktop-client/src/components/reports/widgetModified.ts`**
+     - `toComparableTimeFrame(timeFrame?, defaultTimeFrame?)`.
+     - `toComparableConditions(conditions?, conditionsOp?)` → `{conditions ?? [], conditionsOp ?? 'and'}`.
+     - `isWidgetModified({hasWidget, isReady, saved, current})` returns false if `!hasWidget || !isReady`; otherwise `!isEqual(toSavedShape(saved), toSavedShape(current))`. `toSavedShape` is a JSON round-trip that returns undefined for undefined. `isEqual` comes from `es-toolkit`.
+   - **Label components.**
+     - `ModifiedLabel.tsx`: `<Text style={style}><Trans>(modified)</Trans></Text>`.
+     - `ReportWidgetTitle.tsx` (title, optional `onSave` → `EditablePageHeaderTitle`, `isModified` → subdued label). Used in the `PageHeader` and `MobilePageHeader` of all 8 pages.
+     - `SaveReport.tsx` reuses `ModifiedLabel`.
+   - **Settings modules** (`reports/*WidgetSettings.ts`, 8 of them). Each has `build…WidgetSettings(state)` and `toComparable…Settings(meta, ctx?)`.
+     - Crossover also exports `defaultTimeFrame`, `adjustCrossoverRange`, `resolveCrossoverTimeFrame`, plus `CrossoverComparisonContext {categories, accounts, range?}`.
+     - Summary exports `parseSummaryContent`.
+     - CashFlow exports `defaultTimeFrame`.
+   - **Pages** (NetWorth, CashFlow, Spending, Summary, Crossover, AgeOfMoney, Calendar, GoalReport):
+     - `onSaveWidget` writes `{...widget.meta, ...currentSettings}`.
+     - Each has an `isRangeReady` state set in the range init effect.
+     - Summary's rename saves only the name.
+   - **Cards:** `CashFlowCard.tsx` and `CrossoverCard.tsx` now import `defaultTimeFrame` from the settings modules.
+   - **Tests:** `GoalReport.test.tsx` gains an "unsaved changes" describe, with `persistUpdates`/`failUpdates` server options; new `NetWorth.test.tsx`; 9 unit test files.
+   - **Release note:** `upcoming-release-notes/report-widget-modified-label.md` (category Enhancements, authors `[bennettmatuszewski]`).
+
+   **Mutation-testing fixes (also in `74854f42c`)**
+   - Spending: removed `compareTo: isLive && mode !== 'single-month' ? undefined : compareTo` (now plain `compareTo`, with a comment).
+   - Crossover: `const savedCategoryIds = meta?.expenseCategoryIds;` with `savedCategoryIds.includes`, and the expense `.sort()` removed. The income sort is kept.
+   - Tests added:
+     - widgetModified: mixed day/month window; undefined saved/current.
+     - Summary: kinds-of-totals switch, divisor ignored for non-percentage, missing type, missing allTime; a `parseSummaryContent` describe covering no logging for missing content and logging on invalid JSON with `expect.any(SyntaxError)`.
+     - Crossover: income order, default opens on all time, compare without range, and an `adjustCrossoverRange` describe.
+
+   **Commit `87dc81a36`** (config + Spending test)
+   - `packages/desktop-client/stryker.config.json`:
+     ```json
+     { "$schema": "../../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+       "testRunner": "command",
+       "testRunner_comment": "The Vitest runner (@stryker-mutator/vitest-runner 10.0.0) reports every mutant as surviving with Vitest 5: ...",
+       "commandRunner": { "command": "npx vitest --run --config vitest.stryker.config.mts --bail 1 --maxWorkers 1" },
+       "coverageAnalysis": "off",
+       "mutate": ["src/components/reports/widgetModified.ts", "src/components/reports/reports/*WidgetSettings.ts"],
+       "ignorePatterns": ["build","build-stats","e2e","playwright-report","test-results"],
+       "reporters": ["clear-text","progress","json"],
+       "jsonReporter": { "fileName": "reports/mutation/mutation.json" },
+       "concurrency": 4, "timeoutMS": 60000, "tempDirName": ".stryker-tmp" }
+     ```
+   - `vitest.stryker.config.mts`: standalone `defineConfig` with resolve conditions `['electron-renderer','module','browser','default']`, `tsconfigPaths: true`, the 9 unit test files in `include`, environment `node`, `globals: true`, `setupFiles: ['./vitest.stryker.setup.ts']`.
+   - `vitest.stryker.setup.ts`: `global.IS_TESTING = true;`
+   - `packages/desktop-client/.gitignore`: appends `.stryker-tmp` and `reports/mutation`.
+   - `spendingWidgetSettings.test.ts`: new test `'notices a change to the second month of a live single-month comparison'` (saved `{compare:'2016-06', compareTo:'2016-03', isLive:true, mode:'single-month'}` vs `{...openedState(saved), compareTo:'2016-04'}` → true).
+
+   **Commit `65c12dee9`** (D6 docs)
+   - `docs/sprint3/mutation/reports/125-bennettmatuszewski-before.json`: Killed 210, Survived 28, Timeout 8; 88.62%.
+   - `docs/sprint3/mutation/reports/125-bennettmatuszewski-after.json`: Killed 237; 100%.
+   - `docs/sprint3/mutation/125-bennettmatuszewski.md`:
+     - Header (PR #163; StrykerJS 10.0.0 command runner; config permalinks at commit `87dc81a369ee959b8ac3c8825f97319fad854e67`; Command `cd packages/desktop-client && npx stryker run`; before 88.62% → after 100.00%).
+     - Scope note: only the 9 logic modules, page wiring excluded.
+     - Setup notes: Vitest runner broken with evidence, needs TA OK; standalone config; before report regenerated from the reconstructed pre-fix state because the original was deleted; timeouts and `--maxWorkers 1`.
+     - A 28-row survivor table:
+       - crossover: 14, 17, 34, 43×3, 50×2, 161, 171 are gaps; 154 and 160 are equivalent.
+       - spending 68: the `false` mutant is equivalent; the other 4 are gaps.
+       - summary 28×2, 33, 34, 65×2, 68×3, 79: gaps.
+       - widgetModified 77: gap.
+     - A timeouts note.
+     - New-test section: headline test `summaryWidgetSettings.test.ts › Summary widget settings › ignores divisor filters when the total is not a percentage` kills summary:65, plus a table of all added tests.
+     - Q1–Q3. Q3 describes Claude Code use and ends with "Still for me to check before submitting: ...".
+
+4. **Errors and fixes**
+   - **Import map:** `.ts` files are not resolved by the `#components/*` wildcard. Fixed with an explicit entry, and CrossoverCard switched to a relative import.
+   - **Line endings:** `yarn lint:fix` converted ~500 files to LF. Restored with git checkout, then formatted only changed files (`yarn oxfmt <files>`, `yarn oxlint --type-aware <files>`). Saved memory `lint-fix-line-endings.md`.
+   - **Stryker EPERM:** loading the full vite config staged `public/sql-wasm.wasm` concurrently. Fixed with the standalone vitest config.
+   - **False survivors:** the Stryker Vitest runner gave 14% with `testsCompleted 0`. Setting `related: false`, coverage off, and the setupFiles workaround all failed. The loot-core setup shows the same bug. Switched to the command runner.
+   - **Timeouts:** under the command runner, caused by CPU contention. Added `--maxWorkers 1` and raised `timeoutMS` to 60000.
+   - **Bash hooks:**
+     - Blocked yarn run from a child directory, so commands were split.
+     - Blocked a push in a command containing "master", so the push and `gh pr create` were split.
+     - Blocks `git config`.
+   - **Wrong function in hand-applied mutant:** the first attempt hit `buildSpendingWidgetSettings` ("mode is not defined"); fixed by targeting the unique toComparable occurrence. The file was restored via `git checkout`.
+   - **Misclassification:** the Spending line-68 mutants were first all called equivalent; 4 were actually gaps, so a test was added. Corrected in the doc.
+   - **Deleted report:** the original first-run report was deleted during cleanup, so the before report was regenerated from the reconstructed pre-fix state (disclosed in the doc).
+   - **Chinese rule:** the user overrode the repo rule for the PR description ("Ignore the repo rules for this one case and write in english").
+
+5. **Problem Solving**
+   - All feature and unit tests pass (report tests: 15 files, 338 tests, plus the new Spending test, which gives 14 passing in that file). Typecheck and lint pass; one intentional warning (`5 as 6`) remains in the Spending test.
+   - Mutation score is 100% on all 9 modules in the after run.
+   - Known, unfixed existing issues:
+     - `isPending` routes without an id may hang.
+     - Crossover sliding-window drift.
+     - Calendar shows two error toasts on failure.
+   - The manual app check has not been done.
+
+6. **All user messages**
+   - "Create a plan to implement this issue. Prompt for clarification and note design decisions along the way." (with the issue #125 text pasted)
+   - AskUserQuestion answers:
+     - Compare the range setting (Recommended).
+     - Leave Save enabled.
+     - Show on desktop and mobile.
+     - Calendar drill-in: yes, show (modified).
+     - Summary rename saves only the name.
+   - (Plan approved via ExitPlanMode.)
+   - "for each of the new unit tests lets srun StykerJS on each of them and fix and mutants that survive"
+   - "continue" (several times), "status", "contine running the mutation testing"
+   - "Make a PR for this code change"
+   - "Create a PR description in markdown that I can copy in paste in this similar format ..." (Description / Related issue(s) Closes #115 / Testing / Design decisions / Scope: / Tests: / Tech Debt Introduced: Existing: / Checklist)
+   - "Ignore the repo rules for this one case and write in english"
+   - "Create this deliverable" (the D6 Mutation Testing assignment text pasted)
+
+   Standing repo constraints, from CLAUDE.md, AGENTS.md and `.github/agents/pr-and-commit-rules.md`:
+   - **Titles and messages:** every commit message and PR title starts with `[AI]`. Commits end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
+   - **PR body:** the unmodified PR template, unless a human explicitly asks for it to be filled in (then in Chinese). The user overrode the Chinese requirement once.
+   - **GitHub:** never create GitHub issues; prefix GitHub comments with 🤖.
+   - **Git safety:** never push to main/master; never skip hooks; `git config` is forbidden; commit or push only when the user asks.
+   - **Yarn:** run yarn from the repo root.
+
+7. **Pending Tasks**
+   - The D6 deliverable is created and committed locally (`87dc81a36`, `65c12dee9` on `feat/issue-125-modified-label`) but not pushed. The doc's config links (permalinks to commit `87dc81a36`) only resolve after a push.
+   - The user still needs to review the doc. Its "Still for me to check" line covers verifying the verdicts and scores. They also need to get TA approval for using the command runner instead of the Vitest runner.
+
+8. **Current Work**
+   Just committed the D6 deliverable:
+   - `git log`: `65c12dee9 [AI] Add D6 mutation testing report for issue #125`, `87dc81a36 [AI] Add StrykerJS setup for the report widget settings and a Spending test`, `74854f42c [AI] Show "(modified)" ...`.
+   - The working tree is clean.
+   - The report tallies were verified: before `{"Killed":210,"Survived":28,"Timeout":8}`, after `{"Killed":237}`.
+   - The final summary message to the user had not yet been written.
+
+9. **Optional Next Step**
+   Give the user a text summary of the completed D6 deliverable:
+   - files created and the before→after scores (88.62% → 100%);
+   - the Vitest-runner deviation, which needs the TA's OK;
+   - the regenerated before report;
+   - the corrected Spending analysis;
+   - that the commits are local and unpushed.
+
+   Then ask whether to push the two new commits to `feat/issue-125-modified-label` (updating PR #163) or move the docs commit to a separate docs branch/PR. Do not push without the user's confirmation, since pushing is outward-facing.
+
+If you need specific details from before compaction (like exact code snippets, error messages, or content you generated), read the full transcript at: C:\Users\Kirby\.claude\projects\c--Actual-Budget\ff8ccefc-bffd-4af0-bfc3-cade8c8c9df6.jsonl
+Continue the conversation from where it left off without asking the user any further questions. Resume directly — do not acknowledge the summary, do not recap what was happening, do not preface with "I'll continue" or similar. Pick up the last task as if the break never happened.
+
+The messages after this summary are the most recent messages from before compaction, kept verbatim. The summary was written without seeing them, so something it says has not happened yet may already have happened in them.
+
+---
+
+_**User (2026-11-09 19:28:06Z)**_
+
+<ide_opened_file>The user opened the file c:\Actual Budget\docs\sprint3\mutation\125-bennettmatuszewski.md in the IDE. This may or may not be related to the current task.</ide_opened_file>
+
+commit and push my changes
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-09 19:28:11Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show working tree changes and untracked AI logs
+
+`cd "/c/Actual Budget" && git status --short && git diff --stat && ls -la ai-logs/sprint3/bennettmatuszewski/ && cat .github/agents/pr-and-commit-rules.md | head -20`
+
+```text
+ M docs/sprint3/mutation/125-bennettmatuszewski.md
+?? ai-logs/sprint3/bennettmatuszewski/
+warning: in the working copy of 'docs/sprint3/mutation/125-bennettmatuszewski.md', LF will be replaced by CRLF the next time Git touches it
+ docs/sprint3/mutation/125-bennettmatuszewski.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+total 896
+drwxr-xr-x 1 Kirby 197609      0 Nov  9 14:27 .
+drwxr-xr-x 1 Kirby 197609      0 Nov  9 14:26 ..
+-rw-r--r-- 1 Kirby 197609 913448 Nov  9 12:38 2026-11-09_claude-code_issue-125-modified-label.md
+# PR and Commit Rules for AI Agents
+
+This file lists the PR and commit rules you have to apply yourself.
+
+## Pull Request Rules
+
+### `[AI]` prefix on PR titles
+
+**ALL pull request titles MUST be prefixed with `[AI]`** — you have to apply it
+yourself.
+
+**Examples:**
+
+- `[AI] Fix type error in account validation`
+- `Fix type error in account validation` (MISSING PREFIX — NOT ALLOWED)
+
+### Do not fill in the PR template
+
+- **NEVER fill in the PR template** (`.github/PULL_REQUEST_TEMPLATE.md`). Create
+  the PR with that template as the body, unmodified — leave all blank spaces and
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:28:17Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show doc diff, existing ai-logs, and scan log for secrets
+
+`cd "/c/Actual Budget" && git diff docs/ && git ls-files ai-logs | head && head -c 600 ai-logs/sprint3/bennettmatuszewski/*.md && echo && grep -inE "api[_-]?key|token=|password|secret|ghp_|sk-ant" ai-logs/sprint3/bennettmatuszewski/*.md | head`
+
+```text
+warning: in the working copy of 'docs/sprint3/mutation/125-bennettmatuszewski.md', LF will be replaced by CRLF the next time Git touches it
+diff --git a/docs/sprint3/mutation/125-bennettmatuszewski.md b/docs/sprint3/mutation/125-bennettmatuszewski.md
+index 5a96bee23..e70aa9511 100644
+--- a/docs/sprint3/mutation/125-bennettmatuszewski.md
++++ b/docs/sprint3/mutation/125-bennettmatuszewski.md
+@@ -108,4 +108,4 @@ All tests added from this analysis, and the gaps they close:
+      - **Wrong "equivalent" call.** Its first analysis called all five Spending line-68 mutants equivalent. While writing this table it found that four of them were real gaps (a live single-month comparison's second month was never tested), added a test, and checked by hand that the test fails against that mutant.
+      - **Timeouts.** It noticed that timeouts in the before run were hiding the `widgetModified.ts:39` survivor, and changed the after run so that mutant shows as Killed rather than Timeout.
+      - **Before report.** It told me the original first-run report had been deleted, and the before report was regenerated from that same code instead.
+-     - **Still for me to check before submitting:** that the mutants in the tables show the stated status in both JSON reports, that the scores match the reports, and that I agree with each Equivalent/Gap verdict.
++     - **I personally re-ran the mutation tests before and after to verify AI did not hallucinate**
+ai-logs/README.md
+ai-logs/sprint0/.gitkeep
+ai-logs/sprint0/RaccoonSwarm/2026-09-10_claude-code_issue-22-description.md
+ai-logs/sprint0/RaccoonSwarm/2026-09-11_claude-code_issue-9-understanding-and-implementation.md
+ai-logs/sprint0/RaccoonSwarm/2026-09-14_claude-code_issue-16-understanding-implementation-testing.md
+ai-logs/sprint0/RaccoonSwarm/2026-09-15_claude-code_git-commit-troubleshooting.md
+ai-logs/sprint0/bennettmatuszewski/2026-09-03_claude-code_installation-debugging.md
+ai-logs/sprint0/bennettmatuszewski/2026-09-03_claude-web_standards-and-guidelines-setup copy.md
+ai-logs/sprint0/bennettmatuszewski/2026-09-04_claude-web_backlog-issue-generation-help.md
+ai-logs/sprint0/bennettmatuszewski/2026-09-10_claude-code_issue-25-calendar-icon.md
+<!-- Generated by SpecStory, Markdown v2.1.0 -->
+
+# 2026-11-08 18:52:41Z
+
+<!-- Claude Code Session ff8ccefc-bffd-4af0-bfc3-cade8c8c9df6 (2026-11-08 18:52:41Z) -->
+
+_**User (2026-11-08 18:52:41Z)**_
+
+<ide_opened_file>The user opened the file c:\Actual Budget\packages\component-library\src\Tooltip.tsx in the IDE. This may or may not be related to the current task.</ide_opened_file>
+
+Create a plan to implement this issue. Prompt for clarification and note design decisions along the way.
+
+<pasted_content id="92b0">
+ummary
+Add a shared way for a report to tell whether its current settings differ fr
+15216: M packages/docs/docs/troubleshooting/reset_password.md
+15362: M upcoming-release-notes/support-file-mounted-secrets.md
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:28:19Z)**_
+
+The AI log follows the repo's existing `ai-logs/sprint*/<user>/` convention, and a scan turned up no secrets. I'm committing it together with your edit to the write-up.
+
+_**Agent (claude-opus-5-5 2026-11-09 19:28:23Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Commit the doc edit and AI log
+
+```bash
+cd "/c/Actual Budget" && git add docs/sprint3/mutation/125-bennettmatuszewski.md ai-logs/sprint3/bennettmatuszewski/ && git commit -q -F - <<'EOF'
+[AI] Add sprint 3 AI log and update D6 mutation report reflection
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+EOF
+git log --oneline -4 && git status --short
+```
+
+```text
+warning: in the working copy of 'docs/sprint3/mutation/125-bennettmatuszewski.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'ai-logs/sprint3/bennettmatuszewski/2026-11-09_claude-code_issue-125-modified-label.md', LF will be replaced by CRLF the next time Git touches it
+2456145f1 [AI] Add sprint 3 AI log and update D6 mutation report reflection
+65c12dee9 [AI] Add D6 mutation testing report for issue #125
+87dc81a36 [AI] Add StrykerJS setup for the report widget settings and a Spending test
+74854f42c [AI] Show "(modified)" on eight report widgets with unsaved changes
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:28:37Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Push the feature branch to origin
+
+`cd "/c/Actual Budget" && git push origin feat/issue-125-modified-label 2>&1 | tail -5`
+
+```text
+remote: GitHub found 181 vulnerabilities on CSCI-435-SE/actual-budget's default branch (8 critical, 80 high, 74 moderate, 19 low). To find out more, visit:        
+remote:      https://github.com/CSCI-435-SE/actual-budget/security/dependabot        
+remote: 
+To https://github.com/CSCI-435-SE/actual-budget.git
+   74854f42c..2456145f1  feat/issue-125-modified-label -> feat/issue-125-modified-label
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:28:41Z)**_
+
+I committed your changes and pushed `feat/issue-125-modified-label`. That pushed three commits, and PR #163 now includes all of them:
+
+- `87dc81a36`: the StrykerJS config and the new Spending test.
+- `65c12dee9`: the D6 write-up and the before/after JSON reports.
+- `2456145f1`: your edit to the Q3 reflection line, plus the sprint 3 AI log in `ai-logs/sprint3/bennettmatuszewski/`. The log follows the same folder layout as your earlier sprint logs, and I scanned it for secrets before committing; there were none.
+
+The write-up's links to the config at commit `87dc81a36` should work on GitHub now that it's pushed.
+
+PR #163 now carries the mutation-testing setup and docs alongside the feature. If you'd rather keep the D6 files out of that PR, I can move them to a separate branch.
+
+---
+
+_**User (2026-11-09 19:34:07Z)**_
+
+<ide_opened_file>The user opened the file c:\Actual Budget\docs\sprint2\checkin\bamatuszewski.md in the IDE. This may or may not be related to the current task.</ide_opened_file>
+
+yarn lint and knip fail. Please fix
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-09 19:34:26Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Run repo lint
+
+`cd "/c/Actual Budget" && yarn lint 2>&1 | tail -40`
+
+```text
+upcoming-release-notes/fix-tips-tricks-documentation.md (25ms)
+upcoming-release-notes/forecast-widget-granularity.md (13ms)
+upcoming-release-notes/highlight-overspent-category-balance-yellow.md (14ms)
+upcoming-release-notes/keep-posted-schedules-paid-today.md (12ms)
+upcoming-release-notes/limit-account-name-length.md (8ms)
+upcoming-release-notes/merge-duplicate-themes-directories.md (16ms)
+upcoming-release-notes/migrate-create-folders-to-typescript.md (25ms)
+upcoming-release-notes/monte-carlo-avoid-resimulating.md (9ms)
+upcoming-release-notes/monte-carlo-cashflow-chart.md (21ms)
+upcoming-release-notes/monte-carlo-contribution-income-cap-hint.md (14ms)
+upcoming-release-notes/monte-carlo-custom-allocation-mix.md (17ms)
+upcoming-release-notes/monte-carlo-historical-inflation.md (13ms)
+upcoming-release-notes/monte-carlo-income-streams.md (11ms)
+upcoming-release-notes/monte-carlo-linked-account-polish.md (16ms)
+upcoming-release-notes/monte-carlo-rule-explanations.md (12ms)
+upcoming-release-notes/notes-character-limit.md (15ms)
+upcoming-release-notes/personal-inflation-calculation.md (16ms)
+upcoming-release-notes/release-cut-prs.md (17ms)
+upcoming-release-notes/reorganize-docs-sidebar.md (86ms)
+upcoming-release-notes/resize-content-with-floating-sidebar.md (11ms)
+upcoming-release-notes/retry-weblate-lock-conflicts.md (11ms)
+upcoming-release-notes/run-ci-on-github-hosted-runners.md (103ms)
+upcoming-release-notes/sankey-add-transfers.md (58ms)
+upcoming-release-notes/sankey-bugfix-no-budget-exists.md (112ms)
+upcoming-release-notes/schedules-bulk-actions.md (109ms)
+upcoming-release-notes/show-subcategories-in-reports.md (98ms)
+upcoming-release-notes/sidebar-feedback.md (390ms)
+upcoming-release-notes/skip-running-balance-query.md (974ms)
+upcoming-release-notes/split-parent-formula-context.md (1030ms)
+upcoming-release-notes/stop-welcome.md (678ms)
+upcoming-release-notes/support-file-mounted-secrets.md (829ms)
+upcoming-release-notes/sync-timestamp-counter-overflow.md (481ms)
+upcoming-release-notes/tag-color-picker-custom-color.md (761ms)
+upcoming-release-notes/tag-color-picker-hex-preview.md (733ms)
+upcoming-release-notes/update-vrt-screenshots-for-ui-changes.md (412ms)
+upcoming-release-notes/whats-new-feed.md (374ms)
+yarn.config.cjs (9ms)
+
+Format issues found in above 499 files. Run without `--check` to fix.
+Finished in 7031ms on 2689 files using 16 threads.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:34:26Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Find knip script and config
+
+`cd "/c/Actual Budget" && grep -n "knip" package.json; ls knip* .knip* 2>/dev/null`
+
+```text
+Exit code 2
+63:    "knip": "knip",
+82:    "knip": "^6.27.0",
+knip.json
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:34:29Z)**_
+
+Locally, 499 files are flagged, which matches the Windows CRLF line-ending issue I noted before. I'll check what CI actually reports and look at only the files this branch changed.
+
+_**Agent (claude-opus-5-5 2026-11-09 19:34:35Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show CI check status for PR 163
+
+`cd "/c/Actual Budget" && gh pr checks 163 2>&1 | head -30`
+
+```text
+no checks reported on the 'jlongster-fix-react-error-overlay' branch
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:34:36Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+List files changed on this branch
+
+`cd "/c/Actual Budget" && git diff --name-only master...HEAD`
+
+```text
+ai-logs/sprint3/bennettmatuszewski/2026-11-09_claude-code_issue-125-modified-label.md
+docs/sprint3/mutation/125-bennettmatuszewski.md
+docs/sprint3/mutation/reports/125-bennettmatuszewski-after.json
+docs/sprint3/mutation/reports/125-bennettmatuszewski-before.json
+packages/desktop-client/.gitignore
+packages/desktop-client/package.json
+packages/desktop-client/src/components/reports/ModifiedLabel.tsx
+packages/desktop-client/src/components/reports/ReportWidgetTitle.tsx
+packages/desktop-client/src/components/reports/SaveReport.tsx
+packages/desktop-client/src/components/reports/reports/AgeOfMoney.tsx
+packages/desktop-client/src/components/reports/reports/Calendar.tsx
+packages/desktop-client/src/components/reports/reports/CashFlow.tsx
+packages/desktop-client/src/components/reports/reports/CashFlowCard.tsx
+packages/desktop-client/src/components/reports/reports/Crossover.tsx
+packages/desktop-client/src/components/reports/reports/CrossoverCard.tsx
+packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx
+packages/desktop-client/src/components/reports/reports/GoalReport.tsx
+packages/desktop-client/src/components/reports/reports/NetWorth.test.tsx
+packages/desktop-client/src/components/reports/reports/NetWorth.tsx
+packages/desktop-client/src/components/reports/reports/Spending.tsx
+packages/desktop-client/src/components/reports/reports/Summary.tsx
+packages/desktop-client/src/components/reports/reports/ageOfMoneyWidgetSettings.test.ts
+packages/desktop-client/src/components/reports/reports/ageOfMoneyWidgetSettings.ts
+packages/desktop-client/src/components/reports/reports/calendarWidgetSettings.test.ts
+packages/desktop-client/src/components/reports/reports/calendarWidgetSettings.ts
+packages/desktop-client/src/components/reports/reports/cashFlowWidgetSettings.test.ts
+packages/desktop-client/src/components/reports/reports/cashFlowWidgetSettings.ts
+packages/desktop-client/src/components/reports/reports/crossoverWidgetSettings.test.ts
+packages/desktop-client/src/components/reports/reports/crossoverWidgetSettings.ts
+packages/desktop-client/src/components/reports/reports/goalWidgetSettings.test.ts
+packages/desktop-client/src/components/reports/reports/goalWidgetSettings.ts
+packages/desktop-client/src/components/reports/reports/netWorthWidgetSettings.test.ts
+packages/desktop-client/src/components/reports/reports/netWorthWidgetSettings.ts
+packages/desktop-client/src/components/reports/reports/spendingWidgetSettings.test.ts
+packages/desktop-client/src/components/reports/reports/spendingWidgetSettings.ts
+packages/desktop-client/src/components/reports/reports/summaryWidgetSettings.test.ts
+packages/desktop-client/src/components/reports/reports/summaryWidgetSettings.ts
+packages/desktop-client/src/components/reports/widgetModified.test.ts
+packages/desktop-client/src/components/reports/widgetModified.ts
+packages/desktop-client/stryker.config.json
+packages/desktop-client/vitest.stryker.config.mts
+packages/desktop-client/vitest.stryker.setup.ts
+upcoming-release-notes/report-widget-modified-label.md
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:34:43Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Check formatting of branch-changed files
+
+`cd "/c/Actual Budget" && yarn oxfmt --check $(git diff --name-only master...HEAD) 2>&1 | tail -20`
+
+```text
+Checking formatting...
+
+packages/desktop-client/stryker.config.json (1ms)
+
+Format issues found in above 1 files. Run without `--check` to fix.
+Finished in 340ms on 38 files using 16 threads.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:35:10Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Run knip
+
+`cd "/c/Actual Budget" && yarn knip 2>&1 | tail -40`
+
+```text
+computing gzip size...
+packages/loot-core/lib-dist/browser/kcab.worker.7oKMBz5-.js  3,603.99 kB │ gzip: 789.41 kB │ map: 10,031.88 kB
+
+✓ built in 1.55s
+Unused files (2)
+packages/desktop-client/vitest.stryker.config.mts
+packages/desktop-client/vitest.stryker.setup.ts  
+Unused devDependencies (1)
+nano-staged  package.json:85:6
+Unlisted binaries (3)
+install      .husky/post-checkout
+install      .husky/post-merge   
+nano-staged  .husky/pre-commit   
+Configuration hints (39)
+.agents/**                                                      knip.json                     Remove from ignore        
+android/app/src/main/assets/**       packages/mobile-client     knip.json                     Remove from ignore        
+ios/App/App/public/**                packages/mobile-client     knip.json                     Remove from ignore        
+ios/DerivedData/**                   packages/mobile-client     knip.json                     Remove from ignore        
+playwright.config.d.ts               packages/desktop-client    knip.json                     Remove from ignore        
+better-sqlite3                       packages/api               knip.json                     Remove from ignoreDepende…
+@jlongster/sql.js                    packages/api               knip.json                     Remove from ignoreDepende…
+browserify-zlib                      packages/loot-core         knip.json                     Remove from ignoreDepende…
+crypto-browserify                    packages/loot-core         knip.json                     Remove from ignoreDepende…
+path-browserify                      packages/loot-core         knip.json                     Remove from ignoreDepende…
+stream-browserify                    packages/loot-core         knip.json                     Remove from ignoreDepende…
+timers-browserify                    packages/loot-core         knip.json                     Remove from ignoreDepende…
+bin/update-client                    packages/desktop-electron  knip.json                     Remove from ignoreBinaries
+bin/tsx                              packages/ci-actions        knip.json                     Remove from ignoreBinaries
+[bin/*]                              packages/mobile-client     knip.json                     Refine entry pattern (no …
+./src/util/title/index.js                                       …es/sync-server/package.json  Package entry file not fo…
+…ponents/reports/numberFormatter.ts                             …desktop-client/package.json  Package entry file not fo…
+./src/client/accounts/**/*.ts                                   …ages/loot-core/package.json  Package entry file not fo…
+./src/client/app/**/*.ts                                        …ages/loot-core/package.json  Package entry file not fo…
+./src/client/budgets/**/*.ts                                    …ages/loot-core/package.json  Package entry file not fo…
+…rc/client/data-hooks/schedules.tsx                             …ages/loot-core/package.json  Package entry file not fo…
+./src/client/data-hooks/**/*.ts                                 …ages/loot-core/package.json  Package entry file not fo…
+./src/client/modals/**/*.ts                                     …ages/loot-core/package.json  Package entry file not fo…
+./src/client/notifications/**/*.ts                              …ages/loot-core/package.json  Package entry file not fo…
+./src/client/prefs/**/*.ts                                      …ages/loot-core/package.json  Package entry file not fo…
+...14 more similar hints
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:35:13Z)**_
+
+Knip flags the two Stryker Vitest files as unused. The `nano-staged`/husky items look unrelated to this branch, so I'll check `knip.json` and how the existing loot-core Stryker setup is handled.
+
+_**Agent (claude-opus-5-5 2026-11-09 19:35:15Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show knip config and loot-core stryker files
+
+`cd "/c/Actual Budget" && cat knip.json; ls packages/loot-core | grep -i stryker; git log --oneline -3 master -- knip.json`
+
+```text
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "rules": {
+    "exports": "off",
+    "types": "off",
+    "nsExports": "off",
+    "nsTypes": "off",
+    "duplicates": "off"
+  },
+  "ignoreBinaries": ["electron-rebuild"],
+  "workspaces": {
+    ".": {
+      "entry": ["bin/*.mts"],
+      "ignore": ["lage.config.js", ".claude/**", ".agents/**"]
+    },
+    "packages/api": {
+      "entry": ["index.browser.ts", "browser-worker.ts", "e2e/**/*.{ts,mjs}"],
+      "ignore": ["typings.ts"],
+      "ignoreDependencies": [
+        "@actual-app/crdt",
+        "better-sqlite3",
+        "uuid",
+        "@jlongster/sql.js"
+      ]
+    },
+    "packages/ci-actions": {
+      "entry": ["bin/*.ts"],
+      "ignoreBinaries": ["bin/tsx"],
+      "ignoreDependencies": ["extensionless"]
+    },
+    "packages/component-library": {
+      "entry": ["src/icons/index-template.ts", "src/icons/template.ts"],
+      "ignore": ["src/icons/.svgrrc.js", "src/icons/add-attribute.ts"],
+      "ignoreDependencies": [
+        "@babel/template",
+        "@babel/traverse",
+        "@babel/types",
+        "@svgr/babel-plugin-add-jsx-attribute"
+      ]
+    },
+    "packages/crdt": {
+      "ignore": ["src/proto/**"],
+      "ignoreDependencies": ["@bufbuild/protoc-gen-es"]
+    },
+    "packages/desktop-client": {
+      "entry": [
+        "bin/*.mjs",
+        "globals.ts",
+        "src/globals.ts",
+        "src/build-shims.js"
+      ],
+      "ignore": ["playwright.config.d.ts"],
+      "ignoreDependencies": ["plugins-service"]
+    },
+    "packages/desktop-electron": {
+      "entry": [
+        "preload.ts",
+        "server.ts",
+        "afterSignHook.ts",
+        "beforePackHook.ts"
+      ],
+      "ignoreBinaries": ["bin/update-client"],
+      "ignoreDependencies": ["better-sqlite3"]
+    },
+    "packages/docs": {
+      "entry": [
+        "src/theme/**/*.{ts,tsx,js,jsx}",
+        "src/components/**/*.{ts,tsx,js,jsx}",
+        "docs/**/*.{js,jsx}"
+      ],
+      "ignore": ["docusaurus.netlify-config.js"]
+    },
+    "packages/loot-core": {
+      "entry": ["src/**/index-types.ts", "src/mocks/**"],
+      "ignoreDependencies": [
+        "assert",
+        "browserify-zlib",
+        "buffer",
+        "crypto-browserify",
+        "path-browserify",
+        "stream-browserify",
+        "timers-browserify",
+        "util"
+      ]
+    },
+    "packages/mobile-client": {
+      "entry": ["bin/*"],
+      "ignore": [
+        "android/app/src/main/assets/**",
+        "ios/App/App/public/**",
+        "ios/DerivedData/**"
+      ],
+      "ignoreDependencies": ["@capacitor/splash-screen"]
+    },
+    "packages/plugins-service": {
+      "entry": ["src/plugin-service-worker.ts"]
+    },
+    "packages/sync-server": {
+      "entry": [
+        "app.ts",
+        "src/app.ts",
+        "bin/**/*.js",
+        "src/scripts/**/*.{js,ts}",
+        "src/app-*/app-*.{ts,js}"
+      ]
+    }
+  }
+}
+stryker.config.json
+c922f61c2 Ignore babel type dependencies used by ignored add-attribute plugin in knip
+3ac0d7309 [AI] Migrate health-check script to TypeScript (#8599)
+841f29a59 Update build configuration to support mobile app (#8388)
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:35:21Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Inspect husky hooks and knip CI usage
+
+`cd "/c/Actual Budget" && for f in .husky/*; do echo "== $f"; cat "$f"; done; git log --oneline -3 -- .husky; git status --short .husky; grep -rn "knip" .github/workflows | head`
+
+```text
+== .husky/post-checkout
+#!/bin/sh
+# Run yarn install when switching branches (if yarn.lock changed)
+# or when creating a new worktree (node_modules won't exist yet)
+
+# $3 is 1 for branch checkout, 0 for file checkout
+if [ "$3" != "1" ]; then
+  exit 0
+fi
+
+# Worktree creation: node_modules doesn't exist yet, always install
+if [ ! -d "node_modules" ]; then
+  echo "New worktree detected — running yarn install..."
+  yarn install || exit 1
+  exit 0
+fi
+
+# Check if yarn.lock changed between the old and new HEAD
+if git diff --name-only "$1" "$2" | grep -q "^yarn.lock$"; then
+  echo "yarn.lock changed — running yarn install..."
+  yarn install
+fi
+== .husky/post-merge
+#!/bin/sh
+# Run yarn install after pulling/merging (if yarn.lock changed)
+
+if git diff --name-only ORIG_HEAD HEAD | grep -q "^yarn.lock$"; then
+  echo "yarn.lock changed — running yarn install..."
+  yarn install
+fi
+== .husky/pre-commit
+yarn nano-staged
+328417f8d [AI] Consolidate agent tooling and simplify developer guidance (#8089)
+e322b0319 Update pre-commit hook configuration (#7461)
+799db6c49 [AI] Improve post-checkout hook to handle git worktree creation (#7393)
+.github/workflows/check.yml:58:  knip:
+.github/workflows/check.yml:72:        run: yarn knip
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:35:27Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Check line endings of husky hook and stryker config
+
+`cd "/c/Actual Budget" && file .husky/pre-commit packages/desktop-client/stryker.config.json && git ls-files --eol .husky/pre-commit packages/desktop-client/stryker.config.json`
+
+```text
+.husky/pre-commit:                           ASCII text, with CRLF line terminators
+packages/desktop-client/stryker.config.json: JSON text data
+i/lf    w/crlf  attr/text=auto        	.husky/pre-commit
+i/lf    w/crlf  attr/text=auto        	packages/desktop-client/stryker.config.json
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:35:31Z)**_
+
+<think><details><summary>Thought Process</summary>
+The husky and nano-staged knip warnings only appear locally, since Windows checks hooks out with CRLF endings. Next I'm fixing the stryker.config.json formatting and the two Stryker Vitest files knip flags as unused.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:35:36Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Format stryker config and show diff
+
+`cd "/c/Actual Budget" && yarn oxfmt packages/desktop-client/stryker.config.json >/dev/null && git diff packages/desktop-client/stryker.config.json`
+
+```text
+warning: in the working copy of 'packages/desktop-client/stryker.config.json', LF will be replaced by CRLF the next time Git touches it
+diff --git a/packages/desktop-client/stryker.config.json b/packages/desktop-client/stryker.config.json
+index cd139d7e7..25accfd73 100644
+--- a/packages/desktop-client/stryker.config.json
++++ b/packages/desktop-client/stryker.config.json
+@@ -17,11 +17,7 @@
+     "playwright-report",
+     "test-results"
+   ],
+-  "reporters": [
+-    "clear-text",
+-    "progress",
+-    "json"
+-  ],
++  "reporters": ["clear-text", "progress", "json"],
+   "jsonReporter": {
+     "fileName": "reports/mutation/mutation.json"
+   },
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:35:40Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file C:\Actual Budget\knip.json has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:36:01Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Rerun knip and format check on changed files
+
+`cd "/c/Actual Budget" && yarn knip 2>&1 | grep -vE "^\S+\s+\S*\s+knip.json|Package entry|similar hints|gzip|built in|computing" | tail -20; yarn oxfmt --check knip.json $(git diff --name-only master...HEAD) 2>&1 | tail -3`
+
+```text
+vite v8.1.5 building client environment for production...
+[2Ktransforming...[plugin rolldown:vite-resolve] Module "vm" has been externalized for browser compatibility, imported by "C:/Actual Budget/node_modules/asn1.js/lib/asn1/api.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 2086 modules transformed.
+rendering chunks...
+
+vite v8.1.5 building client environment for production...
+[2Ktransforming...[plugin rolldown:vite-resolve] Module "vm" has been externalized for browser compatibility, imported by "C:/Actual Budget/node_modules/asn1.js/lib/asn1/api.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 2086 modules transformed.
+rendering chunks...
+
+Unused devDependencies (1)
+nano-staged  package.json:85:6
+Unlisted binaries (3)
+install      .husky/post-checkout
+install      .husky/post-merge   
+nano-staged  .husky/pre-commit   
+Configuration hints (39)
+
+All matched files use the correct format.
+Finished in 339ms on 39 files using 16 threads.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:36:05Z)**_
+
+<think><details><summary>Thought Process</summary>
+Knip no longer flags the unused files, so I'm converting the three hooks to LF (matching git, so no diff) and linting the changed files to confirm the remaining items are just line-ending noise.
+
+</details></think>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:36:35Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Normalize hook line endings, rerun knip, lint changed files
+
+`cd "/c/Actual Budget" && sed -i 's/\r$//' .husky/pre-commit .husky/post-checkout .husky/post-merge && git status --short .husky && yarn knip 2>&1 | grep -E "^(Unused|Unlisted)" ; echo "knip exit: ${PIPESTATUS[0]}"; yarn oxlint --type-aware knip.json $(git diff --name-only master...HEAD -- '*.ts' '*.tsx' '*.mts') 2>&1 | tail -4`
+
+```text
+ M .husky/post-checkout
+ M .husky/post-merge
+ M .husky/pre-commit
+knip exit: 0
+packages/desktop-client/src/components/reports/reports/NetWorth.test.tsx:184:6: warning typescript(no-unsafe-type-assertion): Unsafe type assertion: type 'Mock' is more narrow than the original type.
+packages/desktop-client/src/components/reports/reports/NetWorth.test.tsx:228:6: warning typescript(no-unsafe-type-assertion): Unsafe type assertion: type 'Mock' is more narrow than the original type.
+packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx:334:8: warning typescript(no-unsafe-type-assertion): Unsafe type assertion: type 'Mock' is more narrow than the original type.
+packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx:827:27: warning typescript(no-unsafe-type-assertion): Unsafe type assertion: type 'GoalCardWidget' is more narrow than the original type.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:36:37Z)**_
+
+Knip now exits 0. Lint shows only warnings. Git marks the hooks as modified, though, so I'll check what changed before restoring them.
+
+_**Agent (claude-opus-5-5 2026-11-09 19:36:48Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Restore hooks and summarize lint result
+
+`cd "/c/Actual Budget" && git diff --stat .husky; git checkout -- .husky && git status --short; yarn oxlint --type-aware $(git diff --name-only master...HEAD -- '*.ts' '*.tsx' '*.mts') 2>&1 | grep -E "Found|error" | tail -3`
+
+```text
+warning: in the working copy of '.husky/post-checkout', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.husky/post-merge', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.husky/pre-commit', LF will be replaced by CRLF the next time Git touches it
+ M knip.json
+ M packages/desktop-client/stryker.config.json
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:36:59Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show lint summary and knip config diff
+
+`cd "/c/Actual Budget" && yarn oxlint --type-aware $(git diff --name-only master...HEAD -- '*.ts' '*.tsx' '*.mts') 2>&1 | tail -2; git diff knip.json`
+
+```text
+packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx:334:8: warning typescript(no-unsafe-type-assertion): Unsafe type assertion: type 'Mock' is more narrow than the original type.
+packages/desktop-client/src/components/reports/reports/GoalReport.test.tsx:827:27: warning typescript(no-unsafe-type-assertion): Unsafe type assertion: type 'GoalCardWidget' is more narrow than the original type.
+warning: in the working copy of 'knip.json', LF will be replaced by CRLF the next time Git touches it
+diff --git a/knip.json b/knip.json
+index f1e3ce083..6514fd798 100644
+--- a/knip.json
++++ b/knip.json
+@@ -47,7 +47,9 @@
+         "bin/*.mjs",
+         "globals.ts",
+         "src/globals.ts",
+-        "src/build-shims.js"
++        "src/build-shims.js",
++        "vitest.stryker.config.mts",
++        "vitest.stryker.setup.ts"
+       ],
+       "ignore": ["playwright.config.d.ts"],
+       "ignoreDependencies": ["plugins-service"]
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:37:04Z)**_
+
+I fixed both failures; the changes aren't committed yet.
+
+- **`yarn lint`:** `packages/desktop-client/stryker.config.json` wasn't formatted the way the repo's formatter expects (the `reporters` list needed to be on one line). I ran the formatter on it. All 39 files this branch changes now pass the format check, and oxlint reports no errors on them, only a few existing warnings in the test files.
+- **`yarn knip`:** knip listed `vitest.stryker.config.mts` and `vitest.stryker.setup.ts` as unused, because they're only loaded by the Stryker command. I added both as entry files for `packages/desktop-client` in `knip.json`, and knip now exits cleanly.
+
+Running `yarn lint` across the whole repo on your machine will still flag about 500 files. That's because Windows checks files out with CRLF line endings; the copies in git use LF, so CI on Linux won't see it. The same thing caused knip's `nano-staged` and `install` warnings about the `.husky` hooks. To confirm, I converted the hooks to LF locally: knip passed, and I then restored them.
+
+Do you want me to commit and push these two files to PR #163?
+
+---
+
+_**User (2026-11-09 19:37:18Z)**_
+
+yes
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-09 19:37:24Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Commit lint/knip fixes and push branch
+
+```bash
+cd "/c/Actual Budget" && git add knip.json packages/desktop-client/stryker.config.json && git commit -q -F - <<'EOF'
+[AI] Fix lint and knip failures for the Stryker setup
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+EOF
+git log --oneline -1 && git status --short && git push origin feat/issue-125-modified-label 2>&1 | tail -1
+```
+
+```text
+warning: in the working copy of 'knip.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'packages/desktop-client/stryker.config.json', LF will be replaced by CRLF the next time Git touches it
+e2aac2adc [AI] Fix lint and knip failures for the Stryker setup
+   2456145f1..e2aac2adc  feat/issue-125-modified-label -> feat/issue-125-modified-label
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-09 19:37:25Z)**_
+
+I committed the lint and knip fixes as `e2aac2adc` and pushed them to `feat/issue-125-modified-label`, so they're now part of PR #163. Your working tree is clean, and CI should run its lint and knip checks on the new commit.
+
+---
+
+_**User (2026-11-12 02:54:58Z)**_
+
+<ide_opened_file>The user opened the file c:\Actual Budget\docs\sprint2\checkin\bamatuszewski.md in the IDE. This may or may not be related to the current task.</ide_opened_file>
+
+Update the PR based on these comments
+
+<pasted_content id="92b0">
+Criterion	Score (1–10)	Notes
+Correctness — does the change do what the issue asked?	9	All six ACs work on the eight reports, and I confirmed them by hand. Building both the saved settings and the comparison from one function means the label only reacts to settings "Save widget" actually writes.
+Test coverage — are tests present and meaningful?	9	Every report has unit tests for each saved setting, and the Goal and Net Worth page tests cover save success and failure, rename-only, and opening without a widget. The other six reports have no page-level tests, which the PR already notes as tech debt.
+Code quality — consistent style, clear naming, no unnecessary duplication	9	The structure is consistent across all eight reports, and the shared Crossover and Summary helpers remove real duplication. Small nits: useCallback in AgeOfMoney.tsx now does nothing because currentSettings changes every render, and DEFAULT_SUMMARY_CONTENT uses as where the repo prefers satisfies.
+Documentation — inline comments and PR description are clear	7	The comments and the description are clear, but the design decisions don't name at least two alternatives and the Tech Debt section says "Existing" instead of "Encountered". The body also says the Stryker config isn't committed and gives 26 survivors, while the branch has the config and the write-up says 28.
+AI transparency — if AI was used, is there evidence of human verification?	9	The AI log is a real SpecStory export, and the mutation write-up shows real verification, such as catching the fake 14% score and correcting a wrong "equivalent" call. The log's filename should use the session start date (2026-11-08), and the AI Assistance comment linking it still needs to be posted.
+Test evidence — does every AC have a test? Are the expected values justified? Which tests did you run locally?	7	Each AC has a test with expected values taken mostly from the ACs, but the PR body still needs the Test Evidence table and the "AI-written tests" section. I ran these locally on e2aac2adc: the report tests (41 files, 692 passed), yarn test:debug (9/9 workspaces passed), yarn typecheck and yarn lint, all passing.
+Overall — would you merge this as-is?	8	The code is ready to merge as-is. I'll approve the latest commit once the PR description has the Test Evidence table, the design alternatives, and the Sprint 3 milestone.
+Requested before approval (PR body only, no code changes needed for these):
+
+Add the Test Evidence table for ACs 1–6 and the "AI-written tests" section.
+Rename the Tech Debt "Existing" section to "Encountered", and say how each item was handled.
+Add a design decision with at least 2 alternatives, rationale and consequences to the PR description (or a comment on Show a "(modified)" label on the standard report widgets #125).
+Post an AI Assistance comment linking the log, and fix the log's filename date.
+Make the survivor count in the PR body match the write-up (26 vs. 28), and remove the "config isn't committed" line.
+</pasted_content id="92b0">
+
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:11Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show PR 163 title, body and milestone
+
+`cd "/c/Actual Budget" && gh pr view 163 --json title,body,milestone,url -q '.title, .url, .milestone, "-----", .body'`
+
+```text
+Force react-error-overlay to 6.0.9 to fix error
+https://github.com/actualbudget/actual/pull/163
+
+-----
+This PR https://github.com/actualbudget/actual/pull/132 replaced `jwl-dev-utils` with `react-dev-utils` and used a much greater major version. This broke the react error overlay feature; when developing and something goes wrong, instead of seeing the error overlay you don't see anything, and the app feels "locked up" but there's really a transparent div covering the whole screen.
+
+There's an error in the console: `process in not defined`. After some research, looks like we need to lock `react-error-overlay` to a specific version. This fixed it for me. I don't love it, but maybe we can move off this whole build stack at some point.
+
+r? @TomAFrench
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:12Z)**_
+
+<tool-use data-tool-type="search" data-tool-name="Grep"><details>
+<summary>Tool use: **Grep**</summary>
+ path `./` pattern `Test Evidence|AI-written tests|AI Assistance|Encountered`
+
+```text
+Found 1 file
+docs\sprint2\report.md
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:13Z)**_
+
+`gh` defaulted to the upstream repo, so I'm switching to the course fork.
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:18Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show PR 163 on the course fork
+
+`cd "/c/Actual Budget" && gh pr view 163 -R CSCI-435-SE/actual-budget --json title,body,milestone,url,comments -q '.title, .url, (.milestone|tostring), "-----", .body, "----- COMMENTS", (.comments[]|.author.login + ": " + .body[0:400])'`
+
+```text
+[AI] Show "(modified)" on eight report widgets with unsaved changes
+https://github.com/CSCI-435-SE/actual-budget/pull/163
+null
+-----
+## Description
+
+Adds a "(modified)" label to eight dashboard reports: Net Worth, Cash Flow, Spending, Summary, Crossover, Age of Money, Calendar and Goal. The label appears next to the widget name whenever the report's current settings differ from the saved widget, matching the label Custom Reports already show. It disappears when the user changes the settings back, or after "Save widget" succeeds.
+
+- Adds a shared change-check helper, `widgetModified.ts`, plus the label components `ModifiedLabel.tsx` and `ReportWidgetTitle.tsx`. Custom Reports now reuse the same label component.
+- Each report gets a `*WidgetSettings.ts` module. What "Save widget" writes and what gets compared come from the same function, so the label only reacts to settings that are actually saved.
+- AI tools (Claude Code) wrote a significant part of this change.
+
+## Related issue(s)
+
+Closes #125
+
+## Testing
+
+- New unit test files for the shared helper and each of the eight reports. Each report's test pins the list of settings "Save widget" writes, checks that changing each one shows the label, and checks that renaming does not.
+- Page tests:
+  - Goal (extended existing tests): the label appears, disappears after a successful save, stays after a failed save, doesn't appear for a rename alone, and never appears without a widget.
+  - Net Worth (new `NetWorth.test.tsx`): walks through the issue's user scenario, plus the mobile header.
+- Ran StrykerJS mutation testing on the nine new modules. 26 mutants survived the first run. After adding tests and removing code that had no effect, all nine modules score 100%, with every mutant killed by a test failure rather than a timeout.
+- `yarn typecheck` and lint pass, and all report tests pass (15 files, 338 tests).
+- Manual testing: checked by me and confirmed the behavior works locally
+
+## Design decisions
+
+- Show that changes are unsaved instead of blocking the user from leaving (the decision from #96). No changes to `App.tsx` or the router.
+- Relative date ranges compare the range *setting*, not the dates it currently resolves to:
+  - Sliding windows compare their length.
+  - "All time" and named ranges such as "last month" or "year to date" compare only the mode.
+  - Fixed ranges compare the exact dates.
+  - So a widget saved as "last 6 months" won't show as modified when opened next month.
+- The baseline is the saved widget fetched from the server. A successful save refreshes it, so the label disappears; a failed save doesn't, so the label stays.
+- Each page waits until its saved settings have loaded before comparing, so the label doesn't flash during loading.
+- On Calendar, the date filter added by clicking a day on the dashboard card counts as a change, because "Save widget" would save it.
+- Renaming a Summary widget now saves only the name. Previously it also saved any unsaved "Show as" changes. This matches the other seven reports.
+- "Save widget" stays enabled even when nothing has changed.
+- Crossover adjusts the saved range when it opens: sliding windows move back a month, and ranges are fitted to the months that have data. That logic moved into `crossoverWidgetSettings.ts` so the page and the comparison share it.
+
+## Scope:
+
+- Included: the eight reports listed above, in both the desktop and mobile headers.
+- Not included: Formula and the experimental reports (#126), Custom Reports (they already have the label), any prompt when leaving the page, and any change to `App.tsx` or the router.
+
+## Tests:
+
+- `widgetModified.test.ts`: time-range comparison (each mode, day vs month windows, defaults), filter defaults, and when `isWidgetModified` returns early.
+- `*WidgetSettings.test.ts` (one per report):
+  - Compared settings match saved settings, each setting's change is detected, the name is ignored, and empty settings match the defaults.
+  - Report-specific cases: Spending's live comparisons, Summary's "Show as" content, and Crossover's range adjustment and category/account order.
+- `GoalReport.test.tsx`, `NetWorth.test.tsx`: the page-level behaviour described above.
+
+## Tech Debt
+
+### Introduced:
+
+- Eight small settings modules. Some defaults (for example Crossover's and Spending's) exist both in the page's setup code and in the comparison, so changing one means updating the other.
+- Each page has a new `isRangeReady` state to wait for the saved date range to load.
+- Only Goal and Net Worth have page-level tests; the other six reports have unit tests only.
+
+### Existing:
+
+- Cash Flow, Spending, Summary, Crossover and Calendar may stay stuck on the loading indicator when opened without a widget id (for example `/reports/cash-flow`). Not verified, and not fixed here.
+- Crossover's sliding window drifts back a month each time it is saved and reopened.
+- Calendar shows two error messages when a save fails.
+- StrykerJS's Vitest runner doesn't work with this repo's Vitest 5 on Windows, so mutation testing had to use Stryker's command runner instead. The mutation-testing config isn't committed.
+
+## Checklist
+
+- [x] Release notes added (see link above)
+- [x] No obvious regressions in affected areas
+- [x] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
+
+<!--- actual-bot-sections --->
+<hr />
+
+<!--- bundlestats-action-comment key:combined start --->
+### Bundle Stats
+
+Bundle | Files count | Total bundle size | % Changed
+------ | ----------- | ----------------- | ---------
+desktop-client | 45 → 44 | 15.33 MB → 15.17 MB (-159.94 kB) | -1.02%
+loot-core | 1 | 4.67 MB | 0%
+api | 2 | 3.88 MB | 0%
+cli | 1 | 8.02 MB | 0%
+crdt | 1 | 11.16 kB | 0%
+
+<details>
+<summary>View detailed bundle stats</summary>
+
+#### desktop-client
+
+**Total**
+Files count | Total bundle size | % Changed
+----------- | ----------------- | ---------
+45 → 44 | 15.33 MB → 15.17 MB (-159.94 kB) | -1.02%
+
+<details>
+<summary>Changeset</summary>
+
+File | Δ | Size
+---- | - | ----
+`src/components/reports/reports/crossoverWidgetSettings.ts` | 🆕 +2.75 kB | 0 B → 2.75 kB
+`src/components/reports/reports/summaryWidgetSettings.ts` | 🆕 +1.41 kB | 0 B → 1.41 kB
+`src/components/reports/widgetModified.ts` | 🆕 +1.14 kB | 0 B → 1.14 kB
+`src/components/reports/ReportWidgetTitle.tsx` | 🆕 +1.03 kB | 0 B → 1.03 kB
+`src/components/reports/reports/netWorthWidgetSettings.ts` | 🆕 +714 B | 0 B → 714 B
+`src/components/reports/reports/spendingWidgetSettings.ts` | 🆕 +713 B | 0 B → 713 B
+`src/components/reports/reports/cashFlowWidgetSettings.ts` | 🆕 +629 B | 0 B → 629 B
+`src/components/reports/reports/goalWidgetSettings.ts` | 🆕 +601 B | 0 B → 601 B
+`src/components/reports/ModifiedLabel.tsx` | 🆕 +532 B | 0 B → 532 B
+`src/components/reports/reports/ageOfMoneyWidgetSettings.ts` | 🆕 +520 B | 0 B → 520 B
+`src/components/reports/reports/calendarWidgetSettings.ts` | 🆕 +457 B | 0 B → 457 B
+`src/components/reports/Container.tsx` | 📈 +106 B (+14.76%) | 718 B → 824 B
+`src/components/reports/reports/GoalReport.tsx` | 📈 +934 B (+5.45%) | 16.72 kB → 17.63 kB
+`src/components/reports/reports/AgeOfMoney.tsx` | 📈 +819 B (+4.40%) | 18.18 kB → 18.98 kB
+`src/components/reports/reports/CashFlow.tsx` | 📈 +357 B (+3.80%) | 9.19 kB → 9.53 kB
+`src/components/reports/reports/Spending.tsx` | 📈 +666 B (+2.64%) | 24.61 kB → 25.26 kB
+`src/components/reports/reports/NetWorth.tsx` | 📈 +253 B (+1.72%) | 14.33 kB → 14.58 kB
+`src/components/reports/reports/Calendar.tsx` | 📈 +459 B (+1.62%) | 27.7 kB → 28.15 kB
+`src/components/reports/reports/Summary.tsx` | 📈 +348 B (+1.22%) | 27.88 kB → 28.22 kB
+`package.json` | 📈 +85 B (+0.75%) | 11.06 kB → 11.14 kB
+`locale/en.json` | 📈 +2.12 kB (+0.74%) | 286.37 kB → 288.49 kB
+`src/components/reports/SaveReport.tsx` | 📈 +7 B (+0.09%) | 7.48 kB → 7.49 kB
+`locale/es.json` | 📉 -242 B (-0.13%) | 182.58 kB → 182.34 kB
+`locale/uk.json` | 📉 -285 B (-0.13%) | 207.53 kB → 207.25 kB
+`locale/pt-BR.json` | 📉 -235 B (-0.14%) | 169.87 kB → 169.64 kB
+`locale/de.json` | 📉 -249 B (-0.14%) | 178.49 kB → 178.25 kB
+`locale/ru.json` | 📉 -283 B (-0.14%) | 198.41 kB → 198.14 kB
+`locale/fr.json` | 📉 -251 B (-0.14%) | 175.38 kB → 175.13 kB
+`locale/ca.json` | 📉 -233 B (-0.14%) | 162.44 kB → 162.21 kB
+`locale/it.json` | 📉 -240 B (-0.16%) | 147.9 kB → 147.66 kB
+`locale/pl.json` | 📉 -232 B (-0.16%) | 141.43 kB → 141.21 kB
+`locale/nl.json` | 📉 -238 B (-0.16%) | 143.38 kB → 143.15 kB
+`locale/zh-Hant.json` | 📉 -214 B (-0.16%) | 128.24 kB → 128.04 kB
+`locale/nb-NO.json` | 📉 -225 B (-0.17%) | 130.71 kB → 130.49 kB
+`src/components/reports/reports/Crossover.tsx` | 📉 -574 B (-1.66%) | 33.82 kB → 33.26 kB
+`src/components/EditablePageHeaderTitle.tsx` | 📉 -106 B (-3.78%) | 2.74 kB → 2.64 kB
+</details>
+
+<details>
+<summary>View detailed bundle breakdown</summary>
+<div>
+
+**Added**
+No assets were added
+
+**Removed**
+Asset | File Size | % Changed
+----- | --------- | ---------
+static/js/TransactionList2.js | 168.36 kB → 0 B (-168.36 kB) | -100%
+
+**Bigger**
+Asset | File Size | % Changed
+----- | --------- | ---------
+static/js/ReportRouter.js | 1.57 MB → 1.58 MB (+13.6 kB) | +0.84%
+static/js/en.js | 286.37 kB → 288.49 kB (+2.12 kB) | +0.74%
+static/js/index.js | 2.58 MB → 2.58 MB (+85 B) | +0.00%
+
+**Smaller**
+Asset | File Size | % Changed
+----- | --------- | ---------
+static/js/wide.js | 291.89 kB → 287.37 kB (-4.52 kB) | -1.55%
+static/js/uk.js | 207.53 kB → 207.25 kB (-285 B) | -0.13%
+static/js/ru.js | 198.41 kB → 198.14 kB (-283 B) | -0.14%
+static/js/fr.js | 175.38 kB → 175.13 kB (-251 B) | -0.14%
+static/js/de.js | 178.49 kB → 178.25 kB (-249 B) | -0.14%
+static/js/es.js | 182.58 kB → 182.34 kB (-242 B) | -0.13%
+static/js/it.js | 147.9 kB → 147.66 kB (-240 B) | -0.16%
+static/js/nl.js | 143.38 kB → 143.15 kB (-238 B) | -0.16%
+static/js/pt-BR.js | 169.87 kB → 169.64 kB (-235 B) | -0.14%
+static/js/ca.js | 162.44 kB → 162.21 kB (-233 B) | -0.14%
+static/js/pl.js | 141.43 kB → 141.21 kB (-232 B) | -0.16%
+static/js/nb-NO.js | 130.71 kB → 130.49 kB (-225 B) | -0.17%
+static/js/zh-Hant.js | 128.24 kB → 128.04 kB (-214 B) | -0.16%
+
+**Unchanged**
+Asset | File Size | % Changed
+----- | --------- | ---------
+static/js/BackgroundImage.js | 121.09 kB | 0%
+static/js/DateSelect.js | 2.38 MB | 0%
+static/js/FormulaEditor.js | 767.27 kB | 0%
+static/js/NotesTagFormatter.js | 25.94 kB | 0%
+static/js/PayeeRuleCountLabel.js | 12.81 kB | 0%
+static/js/TourHost.js | 169.22 kB | 0%
+static/js/TransactionEdit.js | 221.13 kB | 0%
+static/js/TransactionList.js | 79.38 kB | 0%
+static/js/Value.js | 1.8 MB | 0%
+static/js/bootstrapHyperFormula.js | 302 B | 0%
+static/js/build-shims.js | 140 B | 0%
+static/js/columns.js | 673.3 kB | 0%
+static/js/en-GB.js | 13.69 kB | 0%
+static/js/html2canvas.js | 319.9 kB | 0%
+static/js/index.es.js | 310.54 kB | 0%
+static/js/indexeddb-main-thread-worker-e59fee74.js | 13.46 kB | 0%
+static/js/jspdf.es.min.js | 589.55 kB | 0%
+static/js/jspdf.plugin.autotable.js | 57.62 kB | 0%
+static/js/months.js | 580.36 kB | 0%
+static/js/narrow.js | 291.59 kB | 0%
+static/js/preload-helper.js | 2.09 kB | 0%
+static/js/purify.es.js | 63.78 kB | 0%
+static/js/rolldown-runtime.js | 2 kB | 0%
+static/js/theme.js | 29.74 kB | 0%
+static/js/typeof.js | 404 B | 0%
+static/js/useLocalPref.js | 97.2 kB | 0%
+static/js/useReducedMotion.js | 594 B | 0%
+static/js/workbox-window.prod.es5.js | 7.21 kB | 0%
+</div>
+</details>
+
+---
+
+#### loot-core
+
+**Total**
+Files count | Total bundle size | % Changed
+----------- | ----------------- | ---------
+1 | 4.67 MB | 0%
+
+<details>
+<summary>View detailed bundle breakdown</summary>
+<div>
+
+**Added**
+No assets were added
+
+**Removed**
+No assets were removed
+
+**Bigger**
+No assets were bigger
+
+**Smaller**
+No assets were smaller
+
+**Unchanged**
+Asset | File Size | % Changed
+----- | --------- | ---------
+kcab.worker.7oKMBz5-.js | 4.67 MB | 0%
+</div>
+</details>
+
+---
+
+#### api
+
+**Total**
+Files count | Total bundle size | % Changed
+----------- | ----------------- | ---------
+2 | 3.88 MB | 0%
+
+<details>
+<summary>View detailed bundle breakdown</summary>
+<div>
+
+**Added**
+No assets were added
+
+**Removed**
+No assets were removed
+
+**Bigger**
+No assets were bigger
+
+**Smaller**
+No assets were smaller
+
+**Unchanged**
+Asset | File Size | % Changed
+----- | --------- | ---------
+index.js | 3.88 MB | 0%
+models.js | 0 B | 0%
+</div>
+</details>
+
+---
+
+#### cli
+
+**Total**
+Files count | Total bundle size | % Changed
+----------- | ----------------- | ---------
+1 | 8.02 MB | 0%
+
+<details>
+<summary>View detailed bundle breakdown</summary>
+<div>
+
+**Added**
+No assets were added
+
+**Removed**
+No assets were removed
+
+**Bigger**
+No assets were bigger
+
+**Smaller**
+No assets were smaller
+
+**Unchanged**
+Asset | File Size | % Changed
+----- | --------- | ---------
+cli.js | 8.02 MB | 0%
+</div>
+</details>
+
+---
+
+#### crdt
+
+**Total**
+Files count | Total bundle size | % Changed
+----------- | ----------------- | ---------
+1 | 11.16 kB | 0%
+
+<details>
+<summary>View detailed bundle breakdown</summary>
+<div>
+
+**Added**
+No assets were added
+
+**Removed**
+No assets were removed
+
+**Bigger**
+No assets were bigger
+
+**Smaller**
+No assets were smaller
+
+**Unchanged**
+Asset | File Size | % Changed
+----- | --------- | ---------
+index.js | 11.16 kB | 0%
+</div>
+</details>
+</details>
+
+<!--- bundlestats-action-comment key:combined end --->
+----- COMMENTS
+TigerK9: ## Code Review
+
+| Criterion | Score (1–10) | Notes |
+|---|---|---|
+| Correctness — does the change do what the issue asked? | 9 | All six ACs work on the eight reports, and I confirmed them by hand. Building both the saved settings and the comparison from one function means the label only reacts to settings "Save widget" actually writes. |
+| Test coverage — are tests present and meaningful? |
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:19Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Find course expectations in sprint2 report
+
+`cd "/c/Actual Budget" && grep -n -i -B2 -A25 "Test Evidence\|AI-written tests\|AI Assistance\|Encountered" docs/sprint2/report.md | head -150`
+
+```text
+61-- **Specs and estimates.** The issue creator still writes the first spec and estimate. The assignee then adds anything missing before coding. Estimating as a full team took too long in Sprint 1, so the creator now estimates on their own.
+62-- **Design decisions name alternatives.** Decisions now list the options we considered and explain why one was chosen (see [Requirements & Design](#requirements--design)).
+63:- **Tech debt is tracked.** 13 of the 15 Sprint 2 PR descriptions have a Tech Debt section (Introduced / Encountered).
+64-- **Reviews are more substantive.** Reviewers requested changes on PRs [#84](https://github.com/CSCI-435-SE/actual-budget/pull/84), [#124](https://github.com/CSCI-435-SE/actual-budget/pull/124), [#128](https://github.com/CSCI-435-SE/actual-budget/pull/128), [#129](https://github.com/CSCI-435-SE/actual-budget/pull/129) and [#144](https://github.com/CSCI-435-SE/actual-budget/pull/144) before approving.
+65-- **New deliverables:** UML diagrams with Q&A (D6) and the mid-sprint check-in (D7).
+66-
+67-## Sprint Backlog
+68-
+69-**Milestone:** [Sprint 2 milestone](https://github.com/CSCI-435-SE/actual-budget/milestone/2)
+70-
+71-**How we read the columns.** _Owner_ is the person who created the issue and wrote its scope, requirements and estimate. _Assigned to_ is the person who implemented it. If the spec was missing details, the assignee added them before coding.
+72-
+73-**Story points.** We use a 1–10 scale: 1–2 is small, 3–7 is medium and 8–10 is large. We started by estimating as a team, as in Sprint 1, but it took too long, so each issue's owner estimated it. A few issues were scoped by the whole team.
+74-
+75-**Backlog rationale.**
+76-
+77-- **Sprint 1 carryovers first.** Unfinished Sprint 1 work (#53, #24, #70) went into the backlog before any new work.
+78-- **Scope minimum.** Each member then took at least 2 medium issues (or the equivalent in small issues). We wrote 4 new medium issues so there were enough to go around.
+79-- **CI and maintenance issues were added mid-sprint.** Once CI was running, failures on master blocked every feature PR, so we added and fixed them: #101, #118, #119, #120, #94/#98 and #95. #119 and #120 were created after their PRs, to document CI fixes that were already in progress.
+80-
+81-| Issue                                                                                                                              | Owner                | Assigned to        | Points   | Scope     | PR                                                            | Status                   |
+82-| :--------------------------------------------------------------------------------------------------------------------------------- | :------------------- | :----------------- | :------- | :-------- | :------------------------------------------------------------ | :----------------------- |
+83-| Add the ability to increase icon sizes ([#53](https://github.com/CSCI-435-SE/actual-budget/issues/53))                             | RaccoonSwarm         | sgstrick           | 5        | Medium    | [#84](https://github.com/CSCI-435-SE/actual-budget/pull/84)   | Merged                   |
+84-| Verify layout across viewport sizes and document narrow-screen behavior ([#70](https://github.com/CSCI-435-SE/actual-budget/issues/70)) | icsasso         | sgstrick           | 3 | Medium    | [#140](https://github.com/CSCI-435-SE/actual-budget/pull/140) | Merged                   |
+85-| Allow color customization for accounts ([#24](https://github.com/CSCI-435-SE/actual-budget/issues/24))                             | sgstrick             | bennettmatuszewski | 4        | Medium    | [#112](https://github.com/CSCI-435-SE/actual-budget/pull/112) | Merged                   |
+86-| Sync our project with upstream v26.10.0 ([#95](https://github.com/CSCI-435-SE/actual-budget/issues/95))                           | TigerK9              | bennettmatuszewski | 1        | Small     | [#99](https://github.com/CSCI-435-SE/actual-budget/pull/99)   | Merged                   |
+87-| 6 tests fail in `mutations.test.tsx` ([#94](https://github.com/CSCI-435-SE/actual-budget/issues/94)) and failing tests on Windows ([#98](https://github.com/CSCI-435-SE/actual-budget/issues/98)) | TigerK9 / sgstrick | bennettmatuszewski | 3 (both) | 2 × Small | [#104](https://github.com/CSCI-435-SE/actual-budget/pull/104) | Merged |
+88-| CI jobs never run on PRs ([#101](https://github.com/CSCI-435-SE/actual-budget/issues/101))                                         | jamesleonard3rd      | TigerK9            | 3        | Medium    | [#113](https://github.com/CSCI-435-SE/actual-budget/pull/113) | Merged                   |
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:21Z)**_
+
+I need the course's expected formats, so I'm looking for examples in other sprint 3 PRs and docs.
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:25Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Find PRs with Test Evidence sections and sprint3 docs
+
+`cd "/c/Actual Budget" && gh pr list -R CSCI-435-SE/actual-budget --state all --limit 30 --json number,title,body,milestone -q '.[] | select(.body|test("Test Evidence";"i")) | "#\(.number) \(.title) milestone=\(.milestone.title)"'; ls docs/sprint3 docs/sprint3/* 2>/dev/null | head -30`
+
+```text
+#166 [AI] Add end-to-end and vrt for the Manage Tags page milestone=null
+#164 [AI] feat: add Update VRT screenshots workflow (#153) milestone=null
+docs/sprint3:
+mutation
+
+docs/sprint3/mutation:
+125-bennettmatuszewski.md
+reports
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:30Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show example PR bodies with Test Evidence
+
+`cd "/c/Actual Budget" && gh pr view 166 -R CSCI-435-SE/actual-budget --json body,comments -q '.body | split("<!--- actual-bot-sections")[0]'; echo ======; gh pr view 164 -R CSCI-435-SE/actual-budget --json body -q '.body | split("<!--- actual-bot-sections")[0]' | sed -n '/Test Evidence/,$p' | head -60`
+
+```text
+<!-- Thank you for submitting a pull request! Make sure to follow the instructions to write release notes for your PR — it should only take a minute or two: https://actualbudget.org/docs/contributing/#writing-good-release-notes. Try running yarn generate:release-notes *before* pushing your PR for an interactive experience. -->
+
+## Description
+
+<!-- What does this PR do? Why is it needed? Please give context on the "why?": why do we need this change? What problem is it solving for you?-->
+
+Adds end-to-end and visual regression tests for the Manage Tags page (`/tags`). They cover creating a tag and editing its color, including the hex field and color preview from #66 (PR #136) and the custom color picker from #67 (PR #144). Regressions in these flows will now be caught in CI.
+
+Only tested code changes. There are no production changes:
+
+- **New page model:** `e2e/page-models/tags-page.ts` (`TagsPage`), in the same style as `payees-page.ts` and `rules-page.ts`.
+- **Navigation:** `goToTagsPage()` in `navigation.ts` opens the Tags page from the sidebar, expanding "More" first if needed.
+- **Tests:** `e2e/tags.test.ts` with 8 tests, plus 6 screenshots in `e2e/tags.test.ts-snapshots/` (2 states × 3 themes).
+- **Temporary workflow:** `.github/workflows/temp-update-vrt.yml` generates the screenshots in CI's Playwright container, as in PR #116. It will be removed before merge.
+
+**Bug found while testing (not fixed here):** pressing Enter in the new tag's description field creates the tag before the description is saved, so the description is lost. `createTag()` submits with the "Add" button instead, and a code comment explains why.
+
+<!-- If AI tools wrote a significant part of this change, please disclose it here and name the tool you used. See https://actualbudget.org/docs/contributing/ai-usage-policy -->
+
+**AI disclosure:** most of the test code, the page model and the temporary workflow were written with Claude Code (Claude Opus 5.5).
+
+## Related issue(s)
+
+<!-- e.g. Fixes #123, Relates to #456 -->
+
+Closes #157
+
+## Test Evidence
+
+| Acceptance criterion | Test(s) | Level | Source of expected value |
+|---|---|---|---|
+| AC1: `TagsPage` page model with `createTag`, `getTagRow`, `openColorPicker`, `setHexColor`, `openCustomColorPicker` | Used by every test in `tags.test.ts` | e2e (infrastructure) | Existing page models `payees-page.ts` and `rules-page.ts` |
+| AC2: `goToTagsPage()` reaches `/tags` through the sidebar | `beforeEach` of every test | e2e | "Tags" link under "More" in the sidebar (`PrimaryButtons.tsx`) |
+| AC3: Creating a tag with "Add New" shows its name and description | `creates a tag with a description` | e2e | The name `pet-supplies` and the description the test types |
+| AC4: Entering a 6-digit hex value changes the tag's color in the list | `recolors a tag from the hex field` | e2e | The entered hex value as `rgb()`. The tag's background is that color unchanged (`util/colorPill.ts`) |
+| AC5: A value starting with `#` doesn't produce `##` or an invalid color | `drops a leading # pasted into the hex field`, `drops a leading # typed into the hex field` | e2e | The field keeps only hex characters (`HexColorField` in `ColorPicker.tsx`) |
+| AC6: "Pick a custom color" shows and hides the color area and hue slider and sets `aria-expanded` | `expands and collapses the custom color picker` | e2e | The button's `aria-expanded`, plus react-aria's default names "Hue" and "Color picker" for the two controls |
+| AC7: Changing the hue with the keyboard recolors the tag, and the color survives a reload | `recolors a tag with the hue slider and keeps it after a reload` | e2e | The new hex value shown in the field after the arrow keys. If `onChangeEnd` didn't save, the reload would bring back the start color `#3b82f6` and the test would fail |
+| AC8: Picking a swatch recolors the tag, and the color survives a reload | `recolors a tag from a swatch and keeps it after a reload` | e2e | Swatch 6 in `DEFAULT_COLOR_SET` is `#1976D2` (`ColorPicker.tsx`) |
+| AC9: Screenshots of the default popover and with the custom picker expanded, from a fixed starting color | `checks the color picker visuals` | VRT | Snapshots generated in CI's Playwright container. Starting color fixed at `#3b82f6`, viewport fixed at 1280×900 |
+| AC10: Snapshots generated in the CI container, added only under `e2e/tags.test.ts-snapshots/`, no existing snapshots changed | Temporary workflow `temp-update-vrt.yml` | CI | Runs `--update-snapshots=missing` on `e2e/tags.test.ts` only |
+| AC11: New tests pass in CI, and `yarn typecheck` and `yarn lint` pass | All | CI / local | Pass locally in Chromium, and typecheck, oxlint and oxfmt pass. CI result: [TODO] |
+
+**Not tested automatically, and why:**
+
+- **Mouse drags on the color area or hue slider:** out of scope for #157. Keyboard input goes through the same `onChange`/`onChangeEnd` path and is more reliable.
+- **Faster steps while an arrow key is held:** already unit tested in `ColorPicker.web.test.tsx`.
+- **The tag's color while the popover is open:** while the popover is open, the tag button stays in its pressed state (`data-pressed`), which darkens its background. The tests check the color after the popover closes.
+- **Mobile, renaming, hiding, deleting, bulk actions, filtering and `AccountColorButton`:** out of scope for #157.
+- **Description lost when pressing Enter:** a production bug that needs its own issue. The tests submit with the "Add" button instead.
+
+**AI-written tests:** Claude Code wrote all 8 tests in `tags.test.ts` and the `tags-page.ts` page model. The expected values were checked like this:
+
+- **Traced to source:** each expected value was compared with the source listed in the table above. For example, `colorPill.ts` uses the chosen color unchanged as the tag's background, and swatch 6 in `DEFAULT_COLOR_SET` is `#1976D2`.
+- **Run locally:** each test was run in Chromium, and some failed first for real reasons, which shows they can fail. The description test exposed the Enter bug. The first color check exposed the darker pressed style.
+- **Screenshots reviewed:** a throwaway local set was generated and looked at by hand. It showed the swatch grid, the hex field, the preview button and the expanded picker, with no tooltip covering anything. Repeat runs matched exactly.
+- The tests were also reviewed manually.
+
+## Checklist
+
+- [x] Release notes added (see link above)
+- [ ] No obvious regressions in affected areas
+- [ ] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
+
+
+======
+### Test Evidence
+
+#### Where the manual tests ran: a separate fork
+
+All manual runs below were on my personal fork,
+[TigerK9/actual-budget](https://github.com/TigerK9/actual-budget), not on this repository.
+
+- **Why a fork:** GitHub only lets you start a `workflow_dispatch` workflow from the Actions tab
+  once the workflow file is on the repository's **default branch**. Testing here would have meant
+  merging untested code into our `master` first. The fork let me run the real workflow on GitHub
+  without touching this repository.
+- **Setup:** forked this repo, turned on Actions, pushed this PR's branch, and made it the fork's
+  default branch (agents in this repo aren't allowed to push to any `master`, so the branch stood
+  in for it).
+- **Test PR:** [TigerK9/actual-budget#1](https://github.com/TigerK9/actual-budget/pull/1) (never
+  merged), from the throwaway branch `test/issue-153-vrt-ui-change`. It changes one shortcut label
+  in the Help menu's keyboard-shortcuts modal so VRT fails. A later throwaway commit makes a VRT
+  test write `e2e/stray-output.txt`, to test the non-PNG refusal.
+- **How close it is to this repo:** same workflow files, same runners (`ubuntu-latest`) and same
+  Playwright container. Two differences: the default branch was the PR branch, not `master`, and
+  the fork's Actions settings are GitHub's defaults, so whether this repo also holds the bot's
+  commit for approval will be confirmed on the first real use here.
+
+| Acceptance criterion                                                                                                                | Test(s)                                                                                                                                                                                                                                                                                                                                                                                | Level                       | Source of expected value                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 1. "Update VRT screenshots" can be started from Actions with a PR number; GitHub-hosted runners; same container and build as CI VRT | Manual: Actions → Update VRT screenshots → Run workflow (PR 1, `e2e/help-menu.test.ts`) → succeeded on `ubuntu-latest` in `playwright:v1.61.1-jammy` ([run](https://github.com/TigerK9/actual-budget/actions/runs/42712996451))                                                                                                                                                        | manual                      | AC + other: "same as CI" means the `vrt` job in `e2e-test.yml` (image and build steps compared line by line)                       |
+| 2a. Differences → one commit changing only `*-snapshots/*.png`                                                                      | Manual: same run → bot commit [`fe41fcec5`](https://github.com/TigerK9/actual-budget/commit/fe41fcec5) changes exactly 3 PNGs (Help menu shortcuts 7–9) · `update-vrt-workflow.test.mjs` › Commit and push › "pushes one commit that changes only the screenshots"; › Check that only screenshots changed › "collects changed and new screenshots, ignoring gitignored files"          | manual + integration        | AC + other: the changed label only shows in the "Global" list, which `help-menu.test.ts` screenshots once per theme (3)            |
+| 2b. No differences → no commit, summary says so                                                                                     | Manual: re-ran on PR 1 with blank test files → success, "No screenshots changed, so nothing was pushed", branch head unchanged ([run](https://github.com/TigerK9/actual-budget/actions/runs/42718501734)) · integration: "reports no changes when the run changed nothing", "pushes nothing when the screenshots match the branch's"                                                   | manual + integration        | AC                                                                                                                                 |
+| 3. VRT passes on the bot's commit _(amended, see issue comment)_                                                                    | Manual: E2E started by the workflow ([run](https://github.com/TigerK9/actual-budget/actions/runs/42713789212)) and the approved PR run ([run](https://github.com/TigerK9/actual-budget/actions/runs/42713797001)) → Visual regression 3/3 shards pass on `fe41fcec5`; before the commit, VRT shard 2 failed ([run](https://github.com/TigerK9/actual-budget/actions/runs/42709845331)) | manual                      | AC (as amended in the issue discussion)                                                                                            |
+| 4a. Closed PR → fails, nothing pushed, clear message                                                                                | Manual: closed PR 1, ran → "PR #1 is closed. Only open PRs can be updated; nothing was pushed.", other jobs skipped ([run](https://github.com/TigerK9/actual-budget/actions/runs/42719754705)) · integration: Check the PR › "refuses { state: 'closed' }"                                                                                                                             | manual + integration        | AC                                                                                                                                 |
+| 4b. Branch in another repository → fails, nothing pushed                                                                            | integration: "refuses { repo: 'someone/actual-budget' }", "refuses { repo: null }" (deleted fork)                                                                                                                                                                                                                                                                                      | integration                 | AC                                                                                                                                 |
+| 4c. Non-PNG change → fails, nothing pushed                                                                                          | Manual: test PR whose VRT test writes `e2e/stray-output.txt` → Generate failed at "Check that only screenshots changed", commit job skipped ([run](https://github.com/TigerK9/actual-budget/actions/runs/42721010128)) · integration: 4 "fails and collects nothing when the run left …" cases, 3 "refuses artifacts containing …" cases                                               | manual + integration        | AC                                                                                                                                 |
+| 5a. VRT Comment points to the new workflow                                                                                          | Manual: bot comment on the test PR lists the steps and `e2e/help-menu.test.ts` ([comment](https://github.com/TigerK9/actual-budget/pull/1#issuecomment-6753064475)) · `vrt-comment-workflow.test.mjs` (6 tests: links the workflow, no "comment `/update-vrt`", PR number, failed files, fallback, approval step) · `vrt-failed-files.test.mjs` (7 tests)                              | manual + integration + unit | AC; the failed file is the one whose VRT failed in that run; JUnit format from a real Playwright 1.61.1 report (upstream behavior) |
+| 5b. `STUDENTS.md` explains running it and the re-run                                                                                | Manual: read "Updating VRT screenshots" in `STUDENTS.md`                                                                                                                                                                                                                                                                                                                               | manual                      | AC                                                                                                                                 |
+| 5c. Fork CI guard passes                                                                                                            | Fork CI guard passed on `fe41fcec5` in the approved checks; `node .github/scripts/fork-ci-runners.mjs` → "No unguarded Depot runner labels found."                                                                                                                                                                                                                                     | manual                      | AC                                                                                                                                 |
+
+**Not tested automatically, and why:** starting a workflow from the Actions tab, pushing with
+`GITHUB_TOKEN`, starting E2E Tests, and posting the comment only happen on GitHub, so they were
+checked with the manual runs above. The integration tests run each step's real script with the
+shell GitHub uses, with a stub `gh` and local git repos. The "branch in another repository" case
+wasn't run on GitHub (it needs a PR from a second fork); it's covered by the integration tests.
+
+**AI-written tests:** all 37 tests in `.github/scripts/` (`vrt-failed-files.test.mjs`,
+`update-vrt-workflow.test.mjs`, `vrt-comment-workflow.test.mjs`) were written by Claude Code.
+Expected values come from the ACs, upstream's old comment wording, and a JUnit report generated
+with the repo's Playwright 1.61.1, not from our code's output. Each file was checked by breaking the
+code on purpose: counting every suite as failed → 5 tests fail; removing `shell: bash` (the bug
+found in the first real run) → 7 fail; accepting any path instead of only screenshots → 5 fail;
+putting back "comment `/update-vrt`" → 1 fails. One AI-written assertion was wrong ("no
+`/update-vrt` anywhere" also matched the new link, `.../update-vrt.yml`) and was narrowed to
+upstream's exact wording. 
+
+### Hardening evidence (CI fix: runs before and after)
+
+- **Before:** `/update-vrt` runs skipped in our repo ([Oct 30](https://github.com/CSCI-435-SE/actual-budget/actions/runs/40995490314), [Oct 30](https://github.com/CSCI-435-SE/actual-budget/actions/runs/40995947533), [Nov 7](https://github.com/CSCI-435-SE/actual-budget/actions/runs/42389549446)); the only way was a temporary workflow per PR (#116).
+- **After** (on the test fork, see Test Evidence): VRT failed on the test PR ([run](https://github.com/TigerK9/actual-budget/actions/runs/42709845331)) → [Update VRT screenshots run](https://github.com/TigerK9/actual-budget/actions/runs/42712996451) → [bot commit](https://github.com/TigerK9/actual-budget/commit/fe41fcec5) → VRT passed ([run](https://github.com/TigerK9/actual-budget/actions/runs/42713789212)). Refusals: [closed PR](https://github.com/TigerK9/actual-budget/actions/runs/42719754705), [non-PNG change](https://github.com/TigerK9/actual-budget/actions/runs/42721010128).
+- Also found by a real run: the first attempt failed because container steps run under `sh` ([run](https://github.com/TigerK9/actual-budget/actions/runs/42711745218), nothing pushed), fixed in `81fa53728` with a regression test.
+
+### How to review
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:32Z)**_
+
+Next I'll fetch issue #125's acceptance criteria and find an example of an "AI Assistance" comment.
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:37Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show issue 125 body and milestone
+
+`cd "/c/Actual Budget" && gh issue view 125 -R CSCI-435-SE/actual-budget --json body,milestone,comments -q '.body, "MILESTONE: \(.milestone.title)", (.comments[]|"--- \(.author.login): \(.body[0:600])")'`
+
+```text
+### Summary
+
+Add a shared way for a report to tell whether its current settings differ from the saved widget, and a "(modified)" label that matches the one Custom Reports use. Wire both into eight reports: Net Worth, Cash Flow, Spending, Summary, Crossover, Age of Money, Calendar and Goal.
+
+### User Story
+
+As a user who edits Net Worth, Cash Flow, Spending, Summary, Crossover, Age of Money, Calendar or Goal widgets, I want to see a "(modified)" label when my changes aren't saved so that I know to press **Save widget** before leaving.
+
+### User Scenario
+
+1. On the dashboard, the user opens a Net Worth widget.
+2. They change the date range. "(modified)" appears next to the widget name.
+3. They change the date range back to the saved value. The label disappears.
+4. They add an account filter. The label reappears. They press **Save widget**, and the label disappears again.
+
+### Acceptance Criteria
+
+1. **Given** any of the eight reports opened from a widget, **when** the user changes a setting that **Save widget** would save, **then** "(modified)" appears next to the widget name.
+2. **Given** a report showing "(modified)", **when** the user presses **Save widget** and the save succeeds, **then** the label disappears. If the save fails, the label stays.
+3. **Given** a report showing "(modified)", **when** the user changes every setting back to its saved value, **then** the label disappears.
+4. **Given** a report opened without a widget (for example `/reports/net-worth`, which has no **Save widget** button), **then** the label never appears.
+5. **Given** the Goal report, **when** the user only renames the widget with the inline name editor (which saves right away), **then** the label does not appear.
+6. Each of the eight reports has a unit test showing that the settings checked for changes are exactly the settings **Save widget** writes.
+
+### Out of Scope
+
+- The Formula and experimental reports (#126).
+- Custom Reports, which already have this label.
+- Any dialog or prompt when leaving the page, and any change to `App.tsx` or the router (see the Design section in #96).
+
+### Open Questions
+
+- Spending and Calendar can use relative date ranges such as "this month". Should a widget saved as "this month" show as modified next month, when the actual dates have moved? (Proposed: no. Compare the saved range setting, not the dates it resolves to.)
+- Should **Save widget** be disabled when there are no changes? (Proposed: no. Leave it as it is, to keep this change small and unsurprising.)
+
+### Scope
+
+Medium: building the shared helper and label is a small part of the work. Most of it is reworking each of the eight reports so the same function builds both what **Save widget** saves and what gets compared, plus a test per report.
+
+### Source
+
+Split out of #96.
+
+### Design
+
+_Owner: record at least one non-trivial decision, with at least two alternatives, the rationale and the consequences. For example, how to detect changes: compare the current settings against the saved widget, or set a "touched" flag whenever a setting changes._
+MILESTONE: Sprint 3
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:41Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Find AI Assistance comment examples and milestones
+
+`cd "/c/Actual Budget" && for n in 166 164 136 144; do gh pr view $n -R CSCI-435-SE/actual-budget --json comments -q '.comments[] | select(.body|test("AI Assistance|ai-logs";"i")) | "#'$n' \(.author.login):\n\(.body)\n"'; done 2>/dev/null | head -60; gh api repos/CSCI-435-SE/actual-budget/milestones -q '.[] | "\(.number) \(.title) \(.state)"'`
+
+```text
+#164 TigerK9:
+### AI Assistance — @TigerK9
+
+**Role in this issue:** Implementation
+
+| # | Tool | Log | What AI helped with |
+|---|---|---|---|
+| 1 | claude-code | [link](https://github.com/CSCI-435-SE/actual-budget/blob/master/ai-logs/sprint3/tigerk9/2026-11-09_claude-code_issue-153-implementation.md) | Designing and writing the workflow, tests and docs; testing in a fork; drafting the PR |
+
+**Attachments:** None
+
+#136 bennettmatuszewski:
+### AI Assistance — @bennettmatuszewski 
+
+**Role in this issue:** Reviewing
+
+| # | Tool | Log | What AI helped with |
+|---|---|---|---|
+| 1 | claude-code | [link](https://github.com/CSCI-435-SE/actual-budget/blob/master/ai-logs/sprint2/bennettmatuszewski/2026-10-29_claude_code_review-pr-136.md) | Help reviewing the PR |
+
+**Attachments:** None
+
+3 Sprint 3 open
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:54Z)**_
+
+I'll rename the log, fix the PR body, set the milestone and post the AI Assistance comment. For the Test Evidence table I need the exact test names and the write-up's numbers.
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:58Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+List page and settings test names
+
+`cd "/c/Actual Budget/packages/desktop-client/src/components/reports" && grep -nE "^\s*(describe|it|it\.each|test)\(" reports/GoalReport.test.tsx reports/NetWorth.test.tsx | sed -n '1,200p'; grep -nE "^\s*(describe|it|it\.each)(\(|\.each)" widgetModified.test.ts reports/*WidgetSettings.test.ts | grep -E "exactly|notices a change|ignores the name|renam" `
+
+```text
+reports/GoalReport.test.tsx:233:describe('GoalReport', () => {
+reports/GoalReport.test.tsx:249:  describe('loading', () => {
+reports/GoalReport.test.tsx:250:    it('shows a loading indicator while the widget is being fetched', () => {
+reports/GoalReport.test.tsx:259:  describe('title', () => {
+reports/GoalReport.test.tsx:260:    it('shows the goal name from the widget', async () => {
+reports/GoalReport.test.tsx:267:    it('falls back to a default name when none is set', async () => {
+reports/GoalReport.test.tsx:274:    it('saves a renamed goal and keeps the rest of the widget', async () => {
+reports/GoalReport.test.tsx:296:    it('saves the default name when the title is cleared', async () => {
+reports/GoalReport.test.tsx:319:  describe('without a widget', () => {
+reports/GoalReport.test.tsx:320:    it('shows a read-only title and no save button', async () => {
+reports/GoalReport.test.tsx:332:  describe('mobile', () => {
+reports/GoalReport.test.tsx:339:    it('shows the goal name in the mobile header', async () => {
+reports/GoalReport.test.tsx:346:    it('goes back to the reports page from the back button', async () => {
+reports/GoalReport.test.tsx:357:  describe('amounts and progress', () => {
+reports/GoalReport.test.tsx:358:    it('shows the computed current amount and the target amount', async () => {
+reports/GoalReport.test.tsx:369:    it.each([
+reports/GoalReport.test.tsx:408:    it('treats a widget with no meta as an empty goal', async () => {
+reports/GoalReport.test.tsx:416:    it('updates the progress when the goal amount is edited', async () => {
+reports/GoalReport.test.tsx:433:    it('shows no progress when no tag is linked', async () => {
+reports/GoalReport.test.tsx:442:    it('sums tagged transactions using the saved filters and time frame', async () => {
+reports/GoalReport.test.tsx:467:    it('recalculates from unsaved tag, filter and date changes', async () => {
+reports/GoalReport.test.tsx:490:  describe('linked tag', () => {
+reports/GoalReport.test.tsx:491:    it('describes the transactions for the linked tag', async () => {
+reports/GoalReport.test.tsx:500:    it('prompts to link a tag when none is linked', async () => {
+reports/GoalReport.test.tsx:507:    it('updates the description when a tag is chosen', async () => {
+reports/GoalReport.test.tsx:520:  describe('matching transactions', () => {
+reports/GoalReport.test.tsx:527:    it('lists the transactions for the saved tag, filters and time frame', async () => {
+reports/GoalReport.test.tsx:549:    it('updates the list from unsaved tag, filter and date changes', async () => {
+reports/GoalReport.test.tsx:569:    it('shows no list until a tag is linked', async () => {
+reports/GoalReport.test.tsx:577:  describe('date range', () => {
+reports/GoalReport.test.tsx:578:    it('loads the transaction date bounds for the header', async () => {
+reports/GoalReport.test.tsx:589:    it('lists every month from the earliest transaction to now, newest first', async () => {
+reports/GoalReport.test.tsx:604:    it('shows at least a year of months when there are no transactions', async () => {
+reports/GoalReport.test.tsx:621:    it('starts from the saved time frame', async () => {
+reports/GoalReport.test.tsx:633:    it('updates the range when new dates are picked', async () => {
+reports/GoalReport.test.tsx:652:  describe('unsaved changes', () => {
+reports/GoalReport.test.tsx:674:    it('shows no label when nothing has changed', async () => {
+reports/GoalReport.test.tsx:680:    it('shows the label after a setting changes', async () => {
+reports/GoalReport.test.tsx:688:    it('removes the label after the widget is saved', async () => {
+reports/GoalReport.test.tsx:700:    it('keeps the label when saving fails', async () => {
+reports/GoalReport.test.tsx:719:    it('shows no label when only the name is changed', async () => {
+reports/GoalReport.test.tsx:736:    it('keeps the label when renaming with unsaved changes', async () => {
+reports/GoalReport.test.tsx:751:    it('never shows the label without a widget', async () => {
+reports/GoalReport.test.tsx:762:  describe('saving the widget', () => {
+reports/GoalReport.test.tsx:763:    it('saves the goal amount, tag, filters and time frame', async () => {
+reports/GoalReport.test.tsx:811:    it('removes the linked tag when "No tag" is chosen', async () => {
+reports/GoalReport.test.tsx:832:    it('does not save a goal without a positive amount', async () => {
+reports/NetWorth.test.tsx:173:describe('NetWorth', () => {
+reports/NetWorth.test.tsx:193:  it('shows "(modified)" only while the settings differ from the saved widget', async () => {
+reports/NetWorth.test.tsx:227:  it('shows the label in the mobile header too', async () => {
+reports/NetWorth.test.tsx:240:  it('never shows the label without a widget', async () => {
+reports/ageOfMoneyWidgetSettings.test.ts:61:  it('checks exactly the settings "Save widget" writes', () => {
+reports/ageOfMoneyWidgetSettings.test.ts:69:  it.each(Object.entries(CHANGES))('notices a change to %s', (key, value) => {
+reports/ageOfMoneyWidgetSettings.test.ts:73:  it('ignores the name, which is saved separately', () => {
+reports/calendarWidgetSettings.test.ts:58:  it('checks exactly the settings "Save widget" writes', () => {
+reports/calendarWidgetSettings.test.ts:66:  it.each(Object.entries(CHANGES))('notices a change to %s', (key, value) => {
+reports/calendarWidgetSettings.test.ts:70:  it('ignores the name, which is saved separately', () => {
+reports/cashFlowWidgetSettings.test.ts:61:  it('checks exactly the settings "Save widget" writes', () => {
+reports/cashFlowWidgetSettings.test.ts:69:  it.each(Object.entries(CHANGES))('notices a change to %s', (key, value) => {
+reports/cashFlowWidgetSettings.test.ts:73:  it('ignores the name, which is saved separately', () => {
+reports/crossoverWidgetSettings.test.ts:88:  it('checks exactly the settings "Save widget" writes', () => {
+reports/crossoverWidgetSettings.test.ts:96:  it.each(Object.entries(CHANGES))('notices a change to %s', (key, value) => {
+reports/crossoverWidgetSettings.test.ts:118:  it('ignores the name, which is saved separately', () => {
+reports/goalWidgetSettings.test.ts:62:  it('checks exactly the settings "Save widget" writes', () => {
+reports/goalWidgetSettings.test.ts:70:  it.each(Object.entries(CHANGES))('notices a change to %s', (key, value) => {
+reports/goalWidgetSettings.test.ts:80:  it('ignores the name, which the title editor saves right away', () => {
+reports/netWorthWidgetSettings.test.ts:64:  it('checks exactly the settings "Save widget" writes', () => {
+reports/netWorthWidgetSettings.test.ts:72:  it.each(Object.entries(CHANGES))('notices a change to %s', (key, value) => {
+reports/netWorthWidgetSettings.test.ts:76:  it('ignores the name, which is saved separately', () => {
+reports/spendingWidgetSettings.test.ts:84:  it('checks exactly the settings "Save" writes', () => {
+reports/spendingWidgetSettings.test.ts:93:  it.each(Object.entries(CHANGES))('notices a change to %s', (key, value) => {
+reports/spendingWidgetSettings.test.ts:97:  it('ignores the name, which is saved separately', () => {
+reports/spendingWidgetSettings.test.ts:118:  it('notices a change to the second month of a live single-month comparison', () => {
+reports/summaryWidgetSettings.test.ts:76:  it('checks exactly the settings "Save widget" writes', () => {
+reports/summaryWidgetSettings.test.ts:84:  it.each(Object.entries(CHANGES))('notices a change to %s', (key, value) => {
+reports/summaryWidgetSettings.test.ts:88:  it('notices a change to the divisor filters', () => {
+reports/summaryWidgetSettings.test.ts:97:  it('notices a change to how the total is shown', () => {
+reports/summaryWidgetSettings.test.ts:106:  it('ignores the name, which is saved separately', () => {
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:55:58Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Read write-up header and equivalent notes
+
+`cd "/c/Actual Budget" && sed -n '1,40p' docs/sprint3/mutation/125-bennettmatuszewski.md; grep -n -i "equivalent\|removed\|deleted" docs/sprint3/mutation/125-bennettmatuszewski.md | head -20`
+
+```text
+# Mutation testing: Issue #125 -- Show a "(modified)" label on the standard report widgets
+
+**PR(s):** #163  **Tool:** StrykerJS 10.0.0 (command runner; see [Setup notes](#setup-notes))  **Config:** [`packages/desktop-client/stryker.config.json`](https://github.com/CSCI-435-SE/actual-budget/blob/87dc81a369ee959b8ac3c8825f97319fad854e67/packages/desktop-client/stryker.config.json) and [`vitest.stryker.config.mts`](https://github.com/CSCI-435-SE/actual-budget/blob/87dc81a369ee959b8ac3c8825f97319fad854e67/packages/desktop-client/vitest.stryker.config.mts), based on my loot-core setup from #91  **Command:** `cd packages/desktop-client && npx stryker run`
+**Reports:** [before](reports/125-bennettmatuszewski-before.json) · [after](reports/125-bennettmatuszewski-after.json)
+**Mutation score:** before 88.62% → after 100.00%
+
+| | Mutants | Killed | Timed out | Survived | Score |
+|---|---|---|---|---|---|
+| Before | 246 | 210 | 8 | 28 | 88.62% |
+| After | 237 | 237 | 0 | 0 | 100.00% |
+
+Stryker counts timed-out mutants as detected, so the before score is (210 + 8) / 246. The after run has 9 fewer mutants because I deleted code that three of the survivors showed had no effect (see the Spending and Crossover rows below).
+
+**What was mutated.** The PR's change-detection logic: `widgetModified.ts` (shared helper) and the eight `*WidgetSettings.ts` modules, one per report. The PR's edits to the report pages (`NetWorth.tsx`, `CashFlow.tsx`, ...) only wire those modules into the pages. Mutating whole page files would mutate thousands of lines the PR didn't touch, so I left them out.
+
+## Setup notes
+
+- **Vitest runner.** The required Vitest runner (`@stryker-mutator/vitest-runner` 10.0.0) does not work with the Vitest 5.0.0 the repo moved to in the 2026-10-16 upstream merge. Its initial test run passes (118 tests), but no tests run for any mutant, so every mutant is reported as surviving (14% on my files). I checked this was not my config:
+  - I ran my loot-core setup from #91 on `sort-categories.ts`, and the `asc`/`desc` mutants "survived" even though `sort-categories.test.ts` tests both directions.
+  - When I switched a mutant on by hand (`__STRYKER_ACTIVE_MUTANT__=239`), the tests killed it.
+- **Command runner instead.** I used Stryker's command runner, which starts Vitest once per mutant. It is still StrykerJS, but it is not the Vitest runner, so this deviation needs the TA's OK.
+- **Standalone Vitest config.** `vitest.stryker.config.mts` runs only the 9 unit test files for these modules. The full `vite.config.mts` copies `public/` assets on every load, which fails with EPERM when Stryker's parallel workers load it at once.
+- **Before report.** I deleted the report from my first run during clean-up. So `-before.json` is a second run of that same state: I temporarily undid the 3 code simplifications and removed the tests added after the first run. Its survivors match the first run's, plus three Crossover mutants at line 43 that the first run did not list as surviving.
+- **Timeouts.** The before run's 8 timeouts (`widgetModified.ts` lines 37–45) were the machine being overloaded: four Vitest processes, each with several workers. One of them, 39:7 `&&`→`||`, survived in my first run. For the after run I added `--maxWorkers 1` to the Vitest command, and all mutants were killed without timeouts.
+
+## Surviving mutants
+
+All 28 survivors are in lines the PR added. "Gap" = a test was missing; "Equivalent" = no test can tell the mutant from the original.
+
+| Location (file:line) | Mutation | Equivalent or test gap? | Why |
+|---|---|---|---|
+| crossoverWidgetSettings.ts:14 | `defaultTimeFrame` → `{}` | Gap | The only test of a widget with no saved range resolved both sides through the same default, so changing the default changed both. Nothing checked that such a widget opens on "all time". |
+| crossoverWidgetSettings.ts:17 | `mode: 'full'` → `''` | Gap | Same gap as line 14. |
+| crossoverWidgetSettings.ts:34 | `isAfter(month, latestMonth)` → `false` | Gap | No test used a month after the last month with data, so clamping it was never checked. |
+| crossoverWidgetSettings.ts:43 | `mode === 'full'` → `false` | Gap | No test called `adjustCrossoverRange` with "all time", which should span every month with data. |
+| crossoverWidgetSettings.ts:43 | `'full'` → `''` | Gap | Same gap as the row above. |
+| crossoverWidgetSettings.ts:43 | `full` branch body → `{}` | Gap | Same gap as the row above. |
+| crossoverWidgetSettings.ts:50 | `isBefore(end, start)` → `false` | Gap | No test had an end month before the start month. |
+| crossoverWidgetSettings.ts:50 | fix-up body → `{}` | Gap | Same gap as the row above. |
+| crossoverWidgetSettings.ts:154 | `meta.expenseCategoryIds?.includes` → `.includes` | Equivalent | This sits inside `meta?.expenseCategoryIds !== undefined ? ...`, so the `?.` can never short-circuit. I removed it by reading the list into a local variable first. |
+12:Stryker counts timed-out mutants as detected, so the before score is (210 + 8) / 246. The after run has 9 fewer mutants because I deleted code that three of the survivors showed had no effect (see the Spending and Crossover rows below).
+23:- **Before report.** I deleted the report from my first run during clean-up. So `-before.json` is a second run of that same state: I temporarily undid the 3 code simplifications and removed the tests added after the first run. Its survivors match the first run's, plus three Crossover mutants at line 43 that the first run did not list as surviving.
+28:All 28 survivors are in lines the PR added. "Gap" = a test was missing; "Equivalent" = no test can tell the mutant from the original.
+30:| Location (file:line) | Mutation | Equivalent or test gap? | Why |
+40:| crossoverWidgetSettings.ts:154 | `meta.expenseCategoryIds?.includes` → `.includes` | Equivalent | This sits inside `meta?.expenseCategoryIds !== undefined ? ...`, so the `?.` can never short-circuit. I removed it by reading the list into a local variable first. |
+41:| crossoverWidgetSettings.ts:160 | remove `.sort()` on expense category ids | Equivalent | Both sides are built with `categories.filter(...)`, so they are already in category-list order. I removed the sort. |
+44:| spendingWidgetSettings.ts:68 | condition → `false` (always keep `compareTo`) | Equivalent | `calculateSpendingReportTimeRange` already sets `compareTo` to `compare` for live budget/average comparisons, on both sides, so dropping it did nothing. I removed the branch. |
+45:| spendingWidgetSettings.ts:68 | `isLive && mode !== ...` → `isLive \|\| mode !== ...` | Gap | This mutant also ignores the second month of a *live single-month* comparison, and no test changed that month while live. My first pass wrongly called all five line-68 mutants equivalent; this row and the next three are the correction. |
+85:| `spendingWidgetSettings.test.ts › … › notices a change to the second month of a live single-month comparison` | the line-68 gap (code since removed; I checked by putting the `\|\|` mutant back by hand: this test fails and the rest pass) |
+93:   - **Dead code.** Three survivors showed code that did nothing (a redundant branch, a redundant sort, an unreachable `?.`). I deleted that code instead of testing it.
+108:     - **Wrong "equivalent" call.** Its first analysis called all five Spending line-68 mutants equivalent. While writing this table it found that four of them were real gaps (a live single-month comparison's second month was never tested), added a test, and checked by hand that the test fails against that mutant.
+110:     - **Before report.** It told me the original first-run report had been deleted, and the before report was regenerated from that same code instead.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:56:00Z)**_
+
+Renaming the log to the session's start date (2026-11-08) and checking for references to the old name:
+
+_**Agent (claude-opus-5-5 2026-11-12 02:58:03Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Rename AI log to session start date, commit, push
+
+```bash
+cd "/c/Actual Budget" && grep -rln "2026-11-09_claude-code_issue-125" --exclude-dir=node_modules --exclude-dir=ai-logs . 2>/dev/null; git mv ai-logs/sprint3/bennettmatuszewski/2026-11-09_claude-code_issue-125-modified-label.md ai-logs/sprint3/bennettmatuszewski/2026-11-08_claude-code_issue-125-modified-label.md && git commit -q -F - <<'EOF'
+[AI] Date the issue #125 AI log by its session start
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+EOF
+git log --oneline -1 && git push origin feat/issue-125-modified-label 2>&1 | tail -1
+```
+
+```text
+Command did not complete within its 120s timeout and was moved to the background (ID: bf1tlnlfu). Output is being written to: C:\Users\Kirby\AppData\Local\Temp\claude\27e9af139dc6c5c1\ff8ccefc-bffd-4af0-bfc3-cade8c8c9df6\tasks\bf1tlnlfu.output. You will be notified when it completes. It is running now: do not start a second copy while it runs. If it is no longer needed, stop it with TaskStop. No output had been read from it when it was moved. A program that buffers its output, or a pipe into one such as tail, can keep the output file empty until the command finishes. To check interim output, use Read on that file path.
+Session cwd remains c:\Actual Budget\packages\desktop-client\src\components\reports; directory changes made by the backgrounded command do not apply to subsequent commands.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:58:16Z)**_
+
+While the rename commit runs in the background, I'll pull the remaining test details for the evidence table.
+
+_**Agent (claude-opus-5-5 2026-11-12 02:58:19Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Read NetWorth scenario test and widgetModified test names
+
+`cd "/c/Actual Budget/packages/desktop-client/src/components/reports" && sed -n 193,255p reports/NetWorth.test.tsx; grep -nE "^\s*(describe|it)(\(|\.each)" widgetModified.test.ts`
+
+```text
+  it('shows "(modified)" only while the settings differ from the saved widget', async () => {
+    const user = userEvent.setup();
+    const { updateWidget } = renderNetWorth();
+    await waitForSavedRange();
+    expect(screen.queryByText('(modified)')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Change dates' }));
+    expect(screen.getByText('(modified)')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Restore dates' }));
+    expect(screen.queryByText('(modified)')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Add filter' }));
+    expect(screen.getByText('(modified)')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Save widget' }));
+    await waitFor(() =>
+      expect(updateWidget).toHaveBeenCalledWith({
+        id: WIDGET_ID,
+        meta: {
+          name: 'My net worth',
+          conditions: [ACCOUNT_FILTER],
+          conditionsOp: 'and',
+          interval: 'Monthly',
+          mode: 'trend',
+          timeFrame: SAVED_TIME_FRAME,
+        },
+      }),
+    );
+    await waitFor(() =>
+      expect(screen.queryByText('(modified)')).not.toBeInTheDocument(),
+    );
+  });
+
+  it('shows the label in the mobile header too', async () => {
+    (useResponsive as unknown as Mock).mockReturnValue({
+      isNarrowWidth: true,
+    });
+    const user = userEvent.setup();
+    renderNetWorth();
+    await waitForSavedRange();
+
+    await user.click(screen.getByRole('button', { name: 'Change dates' }));
+
+    expect(screen.getByText('(modified)')).toBeInTheDocument();
+  });
+
+  it('never shows the label without a widget', async () => {
+    const user = userEvent.setup();
+    renderNetWorth({ path: '/reports/net-worth' });
+    await screen.findByTestId('header-range');
+
+    await user.click(screen.getByRole('button', { name: 'Change dates' }));
+
+    expect(screen.queryByText('(modified)')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Save widget' }),
+    ).not.toBeInTheDocument();
+  });
+});
+12:describe('toComparableTimeFrame', () => {
+13:  it('compares a static range by its dates', () => {
+23:  it('compares a month sliding window by its width, not its dates', () => {
+43:  it('compares a day sliding window by its width in days', () => {
+53:  it('tells month and day sliding windows apart', () => {
+69:  it('treats a window with only one day-shaped bound as month-shaped', () => {
+81:  it.each([
+97:  it('uses the default time frame when none is saved', () => {
+110:describe('toComparableConditions', () => {
+111:  it('treats missing conditions as no filters joined with "and"', () => {
+119:describe('isWidgetModified', () => {
+126:  it('is false without a widget', () => {
+137:  it('is false until the report is ready', () => {
+148:  it('is true when a setting differs', () => {
+159:  it('compares settings that are entirely missing', () => {
+178:  it('ignores keys that are undefined, as saving does', () => {
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:58:24Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Check rename commit and push result
+
+`cd "/c/Actual Budget" && cat "C:/Users/Kirby/AppData/Local/Temp/claude/27e9af139dc6c5c1/ff8ccefc-bffd-4af0-bfc3-cade8c8c9df6/tasks/bf1tlnlfu.output"; git log --oneline -2; git status --short; git rev-parse HEAD origin/feat/issue-125-modified-label`
+
+```text
+./.git/index
+./.specstory/history/2026-11-08_18-51-48Z-create-a-plan-to.md
+4f8956b31 [AI] Date the issue #125 AI log by its session start
+   e2aac2adc..4f8956b31  feat/issue-125-modified-label -> feat/issue-125-modified-label
+
+[exited with code 0]
+4f8956b31 [AI] Date the issue #125 AI log by its session start
+e2aac2adc [AI] Fix lint and knip failures for the Stryker setup
+4f8956b31a7f1cfa2d98551b87e7df20dd4a912e
+4f8956b31a7f1cfa2d98551b87e7df20dd4a912e
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 02:58:26Z)**_
+
+The rename is pushed as `4f8956b31`. I'll run the report tests on this commit so the PR body cites numbers I actually got.
+
+_**Agent (claude-opus-5-5 2026-11-12 03:01:31Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Run the report tests in desktop-client
+
+`cd "/c/Actual Budget" && yarn workspace @actual-app/web run test src/components/reports 2>&1 | grep -E "Test Files|Tests |FAIL" | tail -5`
+
+```text
+ Test Files  41 passed (41)
+      Tests  692 passed (692)
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:01:34Z)**_
+
+41 files and 692 tests passed, the same as the reviewer's run. Now I'll write the new PR body. The bot's bundle-stats section is kept as it is.
+
+_**Agent (claude-opus-5-5 2026-11-12 03:02:11Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Write"><details>
+<summary>Tool use: **Write**</summary>
+
+```markdown
+## Description
+
+Adds a "(modified)" label to eight dashboard reports: Net Worth, Cash Flow, Spending, Summary, Crossover, Age of Money, Calendar and Goal. The label appears next to the widget name whenever the report's current settings differ from the saved widget, matching the label Custom Reports already show. It disappears when the user changes the settings back, or after "Save widget" succeeds.
+
+- Adds a shared change-check helper, `widgetModified.ts`, plus the label components `ModifiedLabel.tsx` and `ReportWidgetTitle.tsx`. Custom Reports now reuse the same label component.
+- Each report gets a `*WidgetSettings.ts` module. What "Save widget" writes and what gets compared come from the same function, so the label only reacts to settings that are actually saved.
+- Also adds the StrykerJS setup used for the D6 mutation testing (`packages/desktop-client/stryker.config.json`, `vitest.stryker.config.mts`, `vitest.stryker.setup.ts`) and the write-up in `docs/sprint3/mutation/125-bennettmatuszewski.md`.
+- AI tools (Claude Code) wrote a significant part of this change. The log is linked in the AI Assistance comment below.
+
+## Related issue(s)
+
+Closes #125
+
+## Testing
+
+- New unit test files for the shared helper and each of the eight reports. Each report's test pins the list of settings "Save widget" writes, checks that changing each one shows the label, and checks that renaming does not.
+- Page tests:
+  - Goal (extended existing tests): the label appears, disappears after a successful save, stays after a failed save, doesn't appear for a rename alone, and never appears without a widget.
+  - Net Worth (new `NetWorth.test.tsx`): walks through the issue's user scenario, plus the mobile header.
+- Ran StrykerJS mutation testing on the nine new modules. 28 mutants survived the first run: 25 were missing tests and 3 were code that had no effect. After adding tests and deleting that code, all nine modules score 100% (88.62% → 100%), with every mutant killed by a test failure rather than a timeout. Details: `docs/sprint3/mutation/125-bennettmatuszewski.md`.
+- Ran locally on `4f8956b31`:
+  - `yarn workspace @actual-app/web run test src/components/reports`: 41 files, 692 tests passed.
+  - `yarn typecheck`, `yarn lint` and `yarn knip` pass.
+- Manual testing: checked by me and confirmed the behavior works locally.
+
+## Test Evidence
+
+| Acceptance criterion | Test(s) | Level | Source of expected value |
+|---|---|---|---|
+| AC1: Changing a setting "Save widget" would save shows "(modified)" on all eight reports | `notices a change to %s` (one case per saved setting) in each of the 8 `*WidgetSettings.test.ts` files · `NetWorth.test.tsx` › `shows "(modified)" only while the settings differ from the saved widget` · `GoalReport.test.tsx` › unsaved changes › `shows the label after a setting changes` · `NetWorth.test.tsx` › `shows the label in the mobile header too` | unit + component | AC1. The list of settings is the keys `build…WidgetSettings` returns, which is exactly what `onSaveWidget` writes |
+| AC2: The label disappears after a successful save and stays after a failed one | `GoalReport.test.tsx` › `removes the label after the widget is saved`, `keeps the label when saving fails` · `NetWorth.test.tsx` scenario (last step: Save widget → label gone, and the saved meta is checked) | component | AC2 and step 4 of the issue's user scenario. The saved widget is only refetched when `dashboard-update-widget` succeeds (`useUpdateDashboardWidgetMutation`), so a rejected save keeps the old baseline |
+| AC3: Changing every setting back removes the label | `NetWorth.test.tsx` scenario (Change dates → label, Restore dates → no label) · `is unchanged right after opening the widget` in each settings test · `widgetModified.test.ts` › `compares a month sliding window by its width, not its dates`, `uses the default time frame when none is saved` | unit + component | AC3 and steps 2–3 of the user scenario. A relative range compares its setting, not its dates (issue's Open Question 1, proposed answer) |
+| AC4: A report opened without a widget never shows the label | `NetWorth.test.tsx` › `never shows the label without a widget` (`/reports/net-worth`) · `GoalReport.test.tsx` › `never shows the label without a widget` · `widgetModified.test.ts` › `is false without a widget` | unit + component | AC4, using its own example route `/reports/net-worth` |
+| AC5: Renaming the Goal widget alone doesn't show the label | `GoalReport.test.tsx` › `shows no label when only the name is changed`, `keeps the label when renaming with unsaved changes` · `goalWidgetSettings.test.ts` › `ignores the name, which the title editor saves right away` | unit + component | AC5. The rename saves `{...widget.meta, name}`, so it never changes the compared settings |
+| AC6: Each report has a unit test showing the compared settings are exactly what "Save widget" writes | `checks exactly the settings "Save widget" writes` (`"Save"` for Spending) plus the `notices a change to %s` cases, in all 8 `*WidgetSettings.test.ts` files | unit | AC6. The test fails if a saved setting is added to `build…WidgetSettings` without a matching changed value in the test |
+
+**Not tested automatically, and why:**
+
+- **Page-level tests for Cash Flow, Spending, Summary, Crossover, Age of Money and Calendar:** their pages need much larger mocks (charts, spreadsheet queries). Their saved settings are covered by the unit tests, and the page wiring is the same pattern tested on Goal and Net Worth. Listed under Tech Debt.
+- **Real charts and the server:** the page tests stub the charts and the server connection. The full flow was checked by hand in the app.
+
+**AI-written tests:** Claude Code wrote the 9 unit test files, `NetWorth.test.tsx` and the new "unsaved changes" tests in `GoalReport.test.tsx`. The expected values were checked like this:
+
+- **Traced to the issue:** the true/false expectations come from the ACs and the user scenario, not from running the code. The saved-settings lists were compared with what each page's `onSaveWidget` writes.
+- **Mutation testing:** StrykerJS showed 25 places where the tests missed a real change. Tests were added until all 237 mutants were killed. One AI call was wrong: it first called five Spending mutants "equivalent", four of which were real gaps; a test was added and checked by putting the mutant back by hand.
+- **Re-run by me:** I re-ran the mutation tests before and after to check the reported scores, and reviewed the tests manually.
+
+## Design decisions
+
+### How to tell that a widget has unsaved changes
+
+- **Chosen: compare the current settings with the saved widget.** Each report builds its "Save widget" settings with one function, and the label shows when the result differs from the saved `widget.meta` (after filling in the same defaults the page uses when it opens).
+- **Alternative 1: a "touched" flag** set whenever the user changes any setting, and cleared on save.
+  - Simpler to add to each page.
+  - But changing a setting and then changing it back would still show the label, which fails AC3. Every setter on every page would also need to remember to set the flag.
+- **Alternative 2: block leaving the page with a prompt** instead of showing a label.
+  - Rejected in #96: it needs changes to `App.tsx` and the router, which is out of scope for this issue.
+- **Rationale:** comparing with the saved widget is the only option that satisfies AC3. Building the saved and the compared settings from the same function also means a setting can't be saved without being compared, which AC6 tests.
+- **Consequences:**
+  - Each report needs a `*WidgetSettings.ts` module, and its comparison has to repeat the defaults the page uses when it opens. Changing one means updating the other (see Tech Debt).
+  - Each page has to wait until its saved settings have loaded before comparing, so the label doesn't flash while loading (`isRangeReady`).
+
+### How to compare relative date ranges
+
+- **Chosen: compare the range setting**, not the dates it currently resolves to. Sliding windows compare their length, "All time" and named ranges ("last month", "year to date") compare only the mode, and fixed ranges compare the exact dates.
+- **Alternative 1: compare the resolved start and end dates.** A widget saved as "last 6 months" would show as modified as soon as a new month starts, without the user changing anything.
+- **Alternative 2: compare the saved `timeFrame` exactly as stored.** Pages save absolute dates even for sliding windows and re-resolve them when they open, so this has the same problem.
+- **Rationale:** matches the proposed answer to the issue's first open question, and what "Save widget" would actually change.
+- **Consequences:** `toComparableTimeFrame` has to know every range mode. It also absorbs Crossover's "move back one month" adjustment when it opens.
+
+### Other decisions
+
+- The baseline is the saved widget fetched from the server. A successful save refreshes it, so the label disappears; a failed save doesn't, so the label stays.
+- On Calendar, the date filter added by clicking a day on the dashboard card counts as a change, because "Save widget" would save it.
+- Renaming a Summary widget now saves only the name. Previously it also saved any unsaved "Show as" changes. This matches the other seven reports.
+- "Save widget" stays enabled even when nothing has changed (issue's second open question).
+- Crossover's range adjustment moved into `crossoverWidgetSettings.ts`, so the page and the comparison share it.
+
+## Scope:
+
+- Included: the eight reports listed above, in both the desktop and mobile headers.
+- Not included: Formula and the experimental reports (#126), Custom Reports (they already have the label), any prompt when leaving the page, and any change to `App.tsx` or the router.
+
+## Tests:
+
+- `widgetModified.test.ts`: time-range comparison (each mode, day vs month windows, defaults), filter defaults, and when `isWidgetModified` returns early.
+- `*WidgetSettings.test.ts` (one per report):
+  - Compared settings match saved settings, each setting's change is detected, the name is ignored, and empty settings match the defaults.
+  - Report-specific cases: Spending's live comparisons, Summary's "Show as" content, and Crossover's range adjustment and category/account order.
+- `GoalReport.test.tsx`, `NetWorth.test.tsx`: the page-level behaviour described above.
+
+## Tech Debt
+
+### Introduced:
+
+- Eight small settings modules. Some defaults (for example Crossover's and Spending's) exist both in the page's setup code and in the comparison, so changing one means updating the other.
+- Each page has a new `isRangeReady` state to wait for the saved date range to load.
+- Only Goal and Net Worth have page-level tests; the other six reports have unit tests only.
+
+### Encountered:
+
+- **Cash Flow, Spending, Summary, Crossover and Calendar may stay stuck on the loading indicator when opened without a widget id** (for example `/reports/cash-flow`). Not fixed: it's existing behaviour and outside this issue. The label is unaffected, because without a widget it never shows (AC4). Should get its own issue.
+- **Crossover's sliding window drifts back a month each time it is saved and reopened.** Not fixed, since changing what Crossover saves is outside this issue. Handled for the label by comparing the window's length, so the drift doesn't show "(modified)". The adjustment now lives in one place (`crossoverWidgetSettings.ts`), which makes a later fix easier.
+- **Calendar shows two error messages when a save fails.** Not fixed, outside this issue. The label behaves correctly: it stays after the failed save.
+- **StrykerJS's Vitest runner (10.0.0) reports every mutant as surviving with this repo's Vitest 5.** Worked around by using Stryker's command runner, which starts Vitest once per mutant. The config is committed (`packages/desktop-client/stryker.config.json`, `vitest.stryker.config.mts`), and the evidence is in the mutation write-up.
+- **On Windows, `yarn lint` and `knip` report hundreds of false failures locally,** because files are checked out with CRLF line endings. Handled by formatting only the changed files. CI on Linux isn't affected.
+
+## Checklist
+
+- [x] Release notes added (see link above)
+- [x] No obvious regressions in affected areas
+- [x] Self-review has been performed - I have read every line of this diff and can explain what each change does and why it is needed
+
+
+```
+
+```text
+File created successfully at: C:\Users\Kirby\AppData\Local\Temp\claude\27e9af139dc6c5c1\ff8ccefc-bffd-4af0-bfc3-cade8c8c9df6\scratchpad\pr163-top.md (file state is current in your context — no need to Read it back)
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:02:17Z)**_
+
+Before posting I'll run `yarn typecheck` myself, so the body doesn't claim a check I haven't run on this commit.
+
+_**Agent (claude-opus-5-5 2026-11-12 03:03:46Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Run repo typecheck
+
+`cd "/c/Actual Budget" && yarn typecheck 2>&1 | tail -4; echo "exit ${PIPESTATUS[0]}"`
+
+```text
+success: 3, skipped: 7, pending: 0, aborted: 0, failed: 0
+worker restarts: 0, max worker memory usage: 57.03 MB
+┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈
+Took a total of 1m 21.06s to complete. 
+exit 0
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:03:51Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Edit"><details>
+<summary>Tool use: **Edit**</summary>
+
+```text
+The file C:\Users\Kirby\AppData\Local\Temp\claude\27e9af139dc6c5c1\ff8ccefc-bffd-4af0-bfc3-cade8c8c9df6\scratchpad\pr163-top.md has been updated successfully.
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:03:55Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Assemble new PR body keeping the bot section
+
+`cd "/c/Actual Budget" && S="C:/Users/Kirby/AppData/Local/Temp/claude/27e9af139dc6c5c1/ff8ccefc-bffd-4af0-bfc3-cade8c8c9df6/scratchpad" && gh pr view 163 -R CSCI-435-SE/actual-budget --json body -q .body > "$S/pr163-old.md" && grep -c "actual-bot-sections" "$S/pr163-old.md" && { cat "$S/pr163-top.md"; sed -n '/<!--- actual-bot-sections --->/,$p' "$S/pr163-old.md"; } > "$S/pr163-new.md" && grep -nE "^## |Existing|26 mutants|isn't committed" "$S/pr163-new.md" | head -20`
+
+```text
+1
+1:## Description
+10:## Related issue(s)
+14:## Testing
+26:## Test Evidence
+48:## Design decisions
+79:## Scope:
+84:## Tests:
+92:## Tech Debt
+108:## Checklist
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:04:05Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Update PR 163 body and set Sprint 3 milestone
+
+`cd "/c/Actual Budget" && S="C:/Users/Kirby/AppData/Local/Temp/claude/27e9af139dc6c5c1/ff8ccefc-bffd-4af0-bfc3-cade8c8c9df6/scratchpad" && grep -c "bundlestats-action-comment" "$S/pr163-new.md" && gh pr edit 163 -R CSCI-435-SE/actual-budget --body-file "$S/pr163-new.md" --milestone "Sprint 3" && gh pr view 163 -R CSCI-435-SE/actual-budget --json milestone,body -q '.milestone.title, (.body|length)'`
+
+```text
+2
+https://github.com/CSCI-435-SE/actual-budget/pull/163
+Sprint 3
+23230
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:04:06Z)**_
+
+Now I'll post the AI Assistance comment, in the same format as the one you used on #136.
+
+_**Agent (claude-opus-5-5 2026-11-12 03:04:12Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Post AI Assistance comment on PR 163
+
+```bash
+cd "/c/Actual Budget" && gh pr comment 163 -R CSCI-435-SE/actual-budget --body-file - <<'EOF'
+🤖
+
+### AI Assistance — @bennettmatuszewski
+
+**Role in this issue:** Implementation
+
+| # | Tool | Log | What AI helped with |
+|---|---|---|---|
+| 1 | claude-code | [link](https://github.com/CSCI-435-SE/actual-budget/blob/master/ai-logs/sprint3/bennettmatuszewski/2026-11-08_claude-code_issue-125-modified-label.md) | Planning the design, writing the label, settings modules and tests, StrykerJS mutation testing and the D6 write-up, fixing lint/knip, drafting the PR description |
+
+**Attachments:** None
+
+The log link points to `master` and works once this PR is merged. Until then it's on the branch: [`feat/issue-125-modified-label`](https://github.com/CSCI-435-SE/actual-budget/blob/feat/issue-125-modified-label/ai-logs/sprint3/bennettmatuszewski/2026-11-08_claude-code_issue-125-modified-label.md).
+EOF
+```
+
+```text
+https://github.com/CSCI-435-SE/actual-budget/pull/163#issuecomment-6813134325
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:04:21Z)**_
+
+I've made all five changes the review asked for to PR #163.
+
+1. **Test Evidence and AI-written tests:**
+   - The table now covers AC1–6, with the test names, test level and where each expected value comes from.
+   - A "Not tested automatically, and why" list explains the missing page tests for the other six reports.
+   - A new "AI-written tests" section says which tests Claude Code wrote and how they were checked.
+2. **Tech Debt:** "Existing" is renamed to "Encountered", and each item now says how it was handled. I also added the Windows line-ending item that made `yarn lint` and `knip` fail locally.
+3. **Design decisions:** two decisions now list two alternatives each, with rationale and consequences:
+   - **Detecting changes:** comparing with the saved widget, versus a "touched" flag or blocking the user from leaving the page.
+   - **Relative date ranges:** comparing the range setting, versus the actual dates or the stored `timeFrame`.
+4. **AI log:**
+   - The file is renamed to `2026-11-08_claude-code_issue-125-modified-label.md`, committed as `4f8956b31` and pushed.
+   - I posted the [AI Assistance comment](https://github.com/CSCI-435-SE/actual-budget/pull/163#issuecomment-6813134325) in the same format as your one on #136. It starts with 🤖, as the repo rules require.
+   - Its link points to `master` like your teammates' do, so it only works after the merge. Until then the comment also links the branch copy.
+5. **Mutation numbers:** the body now says 28 survivors, made up of 25 missing tests and 3 pieces of code that had no effect, scoring 88.62% → 100%. The "config isn't committed" line is replaced by a list of the committed config files.
+
+I also set the Sprint 3 milestone.
+
+The "Testing" section quotes only what I ran myself:
+- **On `4f8956b31`:** the report tests (41 files, 692 tests) and `yarn typecheck` passed.
+- **On the previous commit:** `yarn knip`, plus format and lint checks on the changed files, passed. The rename since then changed no code.
+
+I left the reviewer's two small code nits alone, since they said no code changes were needed:
+- The `useCallback` in `AgeOfMoney.tsx` no longer does anything.
+- `DEFAULT_SUMMARY_CONTENT` uses `as` where the repo prefers `satisfies`.
+
+A new code commit would also mean the reviewer has to look at the PR again before approving. I can fix them if you want.
+
+---
+
+_**User (2026-11-12 03:06:04Z)**_
+
+Can you create this sprint report template? I will fill out the info for what I learned.
+
+<pasted_content id="92b0">
+Submission: docs/sprint3/checkin/<username>.md
+
+Format: ~100 words per question, plus a link.
+
+What have you implemented so far, and what remains?
+What is one thing you learned about testing in your project?
+What is one risk to finishing your work by Nov 19, and what will you do about it?
+</pasted_content id="92b0">
+
+
+---
+
+_**Agent (claude-opus-5-5 2026-11-12 03:06:06Z)**_
+
+I'll use your Sprint 2 check-in as a model for the format.
+
+_**Agent (claude-opus-5-5 2026-11-12 03:06:12Z)**_
+
+<tool-use data-tool-type="shell" data-tool-name="Bash"><details>
+<summary>Tool use: **Bash**</summary>
+Show sprint2 check-in, sprint3 issues and PRs
+
+`cd "/c/Actual Budget" && ls docs/sprint2/checkin/ && cat docs/sprint2/checkin/bamatuszewski.md; ls docs/sprint3/checkin 2>/dev/null; gh issue list -R CSCI-435-SE/actual-budget --milestone "Sprint 3" --assignee "@me" --state all --json number,title,state -q '.[]|"#\(.number) \(.state) \(.title)"'; gh pr list -R CSCI-435-SE/actual-budget --author "@me" --state all --limit 10 --json number,title,state -q '.[]|"#\(.number) \(.state) \(.title)"'`
+
+```text
+bamatuszewski.md
+icsasso.md
+jamesleonard3rd.md
+raccoonswarm.md
+sgstrick.md
+tigerk9.md
+## What did you implement so far in the sprint, and what remains?
+
+So far in the sprint I have closed 3 small issues.  My main priorities haven't been on specific features, but rather getting the codebase to a more stable and up to date state. I fixed broken mutation tests as part of issue #94 and fixed other tests that have been broken since the start of our project in issue #98. I also synced the codebase upstream, as the original repository released a new version. What I thought would be a simple merge, this task ending up requiring me to have to fix many merge conflicts and perform lots of merges. I still need to finish issue #24 which is allowing color customization for accounts, which I will work on over the next week or so.
+
+## What is one thing you learned about the codebase or about software engineering practice?
+
+One thing I have learned about software engineering in general so far, is the overall difficulty of syncing a forked repository upstream, so we can see all our changes that we have made over the past 2 sprints, as well as all of the changes that open source contrbutors have made to the repo over the past few weeks. We originally scoped this to be a fairly small issue, but what I didn't expect was that so many conflicts would arise, as we often touched many of the same files. Claude Code was very helpful for fixing these conflicts. I also had to learn about rebasing vs. merging to see which git option fit this scenario better, and ended up settling on a straight merge, with the help of Claude Code to perform lots of the tricky git logic.
+
+## What is one thing you would do differently?
+
+One thing I would do differently upcoming is make sure to utulize strykerJS in my upcoming issue. For my 3 issues completed, I didn't necessarily have to use the tool because I worked on fixing test cases and syncing the repository upstream, which weren't necessarily feature changes, but I think it's important to utulize this tool going forward in all of our issues. Without performing mutation tests on the tests that we write for our features, we risk our tests not fully covering feature changes, and gaps that can lead to bugs down the line. Going forward in all future pull requests that I create, I want to make sure to utulize this tool and find any gaps because I make a PR.#125 OPEN Show a "(modified)" label on the standard report widgets
+#163 OPEN [AI] Show "(modified)" on eight report widgets with unsaved changes
+#137 MERGED [AI] Add AI log for PR #136 review (bennettmatuszewski)
+#133 MERGED [AI] Add AI log for PR #118 review (bennettmatuszewski)
+#131 MERGED [AI] Add D6 UML diagrams and Q&A for issue #24
+#117 MERGED [AI] Add AI log for PR #115 review (bennettmatuszewski)
+#112 MERGED [AI] Add account color description
+#105 MERGED [AI] Add sprint 2 check-in for bamatuszewski
+#104 MERGED [AI] Fix failed mutation tests and pre-existing failed tests
+#102 MERGED Add AI logs for Issue 95
+#99 MERGED [AI] Sync with upstream Actual v26.10.0
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:06:24Z)**_
+
+<tool-use data-tool-type="write" data-tool-name="Write"><details>
+<summary>Tool use: **Write**</summary>
+
+```markdown
+## What have you implemented so far, and what remains?
+
+So far I have implemented issue #125, which adds a "(modified)" label to eight dashboard reports (Net Worth, Cash Flow, Spending, Summary, Crossover, Age of Money, Calendar and Goal) whenever the report has settings that haven't been saved yet. Each report now builds what "Save widget" writes and what gets compared from the same function, so the label only reacts to settings that are actually saved. I added unit tests for all eight reports and page tests for Goal and Net Worth, and ran StrykerJS mutation testing, taking the score from 88.62% to 100%. What remains is getting the PR approved and merged, and following up on the reviewer's small code comments.
+
+**Link:** [PR #163](https://github.com/CSCI-435-SE/actual-budget/pull/163)
+
+## What is one thing you learned about testing in your project?
+
+<!-- ~100 words: what you learned about testing -->
+
+**Link:** <!-- e.g. the mutation write-up: https://github.com/CSCI-435-SE/actual-budget/blob/master/docs/sprint3/mutation/125-bennettmatuszewski.md -->
+
+## What is one risk to finishing your work by Nov 19, and what will you do about it?
+
+The main risk is that PR #163 isn't merged in time. It's a large change across eight reports, so review takes a while, and any new code commit means the reviewer has to look at it again before approving. A second risk is that StrykerJS's Vitest runner doesn't work with our Vitest 5, so I used Stryker's command runner instead, which still needs the TA's OK. To handle this, I have already updated the PR description with everything the reviewer asked for, and I will ask the TA about the command runner this week so there is time to change the setup if needed.
+
+**Link:** [PR #163 review](https://github.com/CSCI-435-SE/actual-budget/pull/163)
+
+```
+
+```text
+File created successfully at: c:\Actual Budget\docs\sprint3\checkin\bamatuszewski.md (file state is current in your context — no need to Read it back)
+```
+</details></tool-use>
+
+_**Agent (claude-opus-5-5 2026-11-12 03:06:28Z)**_
+
+I've created the Sprint 3 check-in at [docs/sprint3/checkin/bamatuszewski.md](docs/sprint3/checkin/bamatuszewski.md). I named it `bamatuszewski.md`, the same as your Sprint 2 check-in. It isn't committed yet.
+
+- **What you've implemented:** I drafted about 100 words on issue #125 and what's left (getting PR #163 approved and merged, and the reviewer's small code comments). It links to PR #163.
+- **What you learned about testing:** this is left blank for you, with a placeholder comment. The suggested link points to your mutation write-up.
+- **Risk to finishing by Nov 19:** I drafted two risks. One is getting PR #163 merged in time. The other is getting the TA's OK for using Stryker's command runner. Check that both match what you actually see as risks, and that you're willing to commit to asking the TA this week.
+
+I can commit it and open a PR once you've filled in your section.
