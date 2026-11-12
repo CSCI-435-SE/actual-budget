@@ -236,14 +236,50 @@ that asks for a `depot-*` runner waits in the queue until GitHub cancels it, abo
 - **Upstream-only workflows are turned off** with `if: github.repository == 'actualbudget/actual'`
   on each job. They show as "skipped" here. These are publishing and releases (npm, Docker,
   Netlify, Flathub, Microsoft Store, nightly desktop app), the stale-PR closer, autofix.ci, the
-  release-notes check, `/update-vrt`, the issue bots that point at upstream, and the bot that
-  labels `[AI]` PRs (we review AI-generated PRs by hand).
+  release-notes check, `/update-vrt` (use [Updating VRT screenshots](#updating-vrt-screenshots)
+  instead), the issue bots that point at upstream, and the bot that labels `[AI]` PRs (we review
+  AI-generated PRs by hand).
 - **The `Fork CI guard` check** runs `.github/scripts/fork-ci-runners.mjs` on every PR. It fails
   if any job that can run here still asks for a Depot runner.
 
 **A red check doesn't block merging.** No check is marked "required", so you can merge a PR with
 a failing check and fix the problem in a later PR. Before you merge, compare the PR's failing
 checks with `master`'s. If they're the same failures, your PR didn't break anything new.
+
+### Updating VRT screenshots
+
+When a PR changes how the app looks, the visual regression (VRT) check fails until its screenshots
+are regenerated. Don't make them in your dev container: they must come from CI's x86_64 Playwright
+container, and screenshots made on our arm64 containers differ by a few pixels. Use the **Update VRT
+screenshots** workflow (`.github/workflows/update-vrt.yml`) instead. When VRT fails on your PR, the
+VRT Comment bot posts these steps with your PR number and the failed test files filled in.
+
+1. If your branch is behind `master`, merge `master` into it first. The workflow screenshots your
+   branch as it is, and branches older than this workflow can't have their checks started for you.
+2. Open **Actions → Update VRT screenshots → Run workflow**. Leave **Use workflow from** on `master`.
+3. Enter the **PR number**. In **Test files**, you can list the failed files separated by spaces
+   (`e2e/budget.test.ts e2e/settings.test.ts`) so only they run. Leave it blank to update every
+   screenshot (slower).
+4. Click **Run workflow**. It builds your branch and runs VRT in CI's container with
+   `--update-snapshots=changed`. If any screenshot changed, it pushes one "Update VRT screenshots"
+   commit with only those `.png` files, then starts **E2E Tests** (which include VRT) on that commit.
+   If nothing changed, it pushes nothing and the run summary says so.
+5. Check the run summary. It links to the commit and the E2E run, which should pass. Open the
+   commit's changed PNGs and make sure they show what you meant to change.
+   - Your PR may also say **"workflows awaiting approval"**. GitHub holds the other checks on a
+     commit pushed by the bot until a person allows them. Click **Approve and run workflows** so
+     the new commit gets all its checks.
+6. Run `git pull` before you push again, so you have the bot's commit.
+
+The run fails without pushing anything, and says why, if the PR is closed, its branch is in another
+repository, a test file name isn't an e2e test file, or the tests changed anything other than
+screenshots. If some tests fail for another reason, the other screenshots are still pushed and the
+summary warns you; the `vrt-test-results-<shard>` artifact has the details.
+
+If the summary says it couldn't start E2E Tests, merge `master` into your branch, or start the
+checks with an empty commit: `git commit --allow-empty -m "Run CI" && git push`. Commits pushed by
+a workflow don't start checks on their own, and re-running an old VRT check tests the old commit,
+not the new screenshots.
 
 ### After merging an upstream release
 

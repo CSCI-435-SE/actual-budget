@@ -1,0 +1,65 @@
+<testsuites id="" name="" tests="4" failures="1" skipped="1" errors="0" time="1.031118">
+<testsuite name="passing.test.ts" timestamp="2026-11-09T21:30:43.549Z" hostname="" tests="2" failures="0" skipped="1" time="0.006" errors="0">
+<testcase name="passes" classname="passing.test.ts" time="0.006">
+</testcase>
+<testcase name="skipped" classname="passing.test.ts">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="reports/failing.mobile.test.ts" timestamp="2026-11-09T21:30:43.549Z" hostname="" tests="2" failures="1" skipped="0" time="0.01" errors="0">
+<testcase name="Reports › fails" classname="reports/failing.mobile.test.ts" time="0.007">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|test-results/reports-failing.mobile-Reports-fails/error-context.md]]
+
+[[ATTACHMENT|test-results/reports-failing.mobile-Reports-fails-retry1/error-context.md]]
+]]>
+</system-out>
+<failure message="expect(received).toBe(expected) // Object.is equality" type="expect.toBe">
+<![CDATA[  reports/failing.mobile.test.ts:3:7 › Reports › fails ─────────────────────────────────────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 1
+
+      1 | import { test, expect } from '@playwright/test';
+      2 | test.describe('Reports', () => {
+    > 3 |   test('fails', () => { expect(1).toBe(2); });
+        |                                   ^
+      4 |   test('passes', () => { expect(1).toBe(1); });
+      5 | });
+      6 |
+        at /__w/actual-budget/actual-budget/packages/desktop-client/e2e/reports/failing.mobile.test.ts:3:35
+
+    Error Context: ../test-results/reports-failing.mobile-Reports-fails/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 1
+
+      1 | import { test, expect } from '@playwright/test';
+      2 | test.describe('Reports', () => {
+    > 3 |   test('fails', () => { expect(1).toBe(2); });
+        |                                   ^
+      4 |   test('passes', () => { expect(1).toBe(1); });
+      5 | });
+      6 |
+        at /__w/actual-budget/actual-budget/packages/desktop-client/e2e/reports/failing.mobile.test.ts:3:35
+
+    Error Context: ../test-results/reports-failing.mobile-Reports-fails-retry1/error-context.md
+]]>
+</failure>
+</testcase>
+<testcase name="Reports › passes" classname="reports/failing.mobile.test.ts" time="0.003">
+</testcase>
+</testsuite>
+</testsuites>
