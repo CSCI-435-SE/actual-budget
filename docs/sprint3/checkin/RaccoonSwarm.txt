@@ -1,0 +1,16 @@
+Reese Bryan - Mid-Sprint Check-In
+
+What have you implemented so far, and what remains?
+
+At this point in the sprint I've finished issue #157. This adds end-to-end and visual regression test (VRT) coverage for the Manage Tags page. I used claude to write a Playwright page model for the tags page and added a navigation helper to reach it. I also wrote tests for creating a tag with a description, recoloring with the hex field, swatches and hue slider, handling a leading "#", and expanding the custom color picker. Several tests reload the page to confirm that changes persist. Six VRT screenshots cover the color picker. Next, I will address issue #156 which consists of adding a "Has attachment" transaction filter and exporting a filtered list's attachments as a zip with a CSV index.
+
+What is one thing you learned about testing in your project?
+
+I learned that VRTs depend heavily on the environment they run in. For example, font rendering, anti-aliasing and small layout differences change from one operating system to another. Screenshots generated on my Windows machine don't match what CI produces on Linux. To get correct baselines, I wrote a temporary GitHub Actions workflow that ran the tags tests on Linux and updated only the snapshots that changed, then committed those images and deleted the workflow. I also learned that a page model makes e2e tests much easier to read and maintain, because the tests describe what a user does instead of repeating selectors.
+
+What is one risk to finishing your work by Nov 19, and what will you do about it?
+
+The biggest risk is that issue 156 is much larger than 157 and I have about a week left. It touches the transaction filter system, saved rules, zip and CSV generation, and fetching files from the sync server. It also asks for partial-failure handling, progress and cancellation. To manage this, I'll split the work into stages: first the filter condition and its persistence in rules, then a basic zip export with the CSV index, and finally the failure handling and large-export limits. I'll open a draft PR early so I get feedback sooner, and I'll tell my team by Nov 16 if the last stage needs to move to the next sprint.
+
+
+https://github.com/CSCI-435-SE/actual-budget/pull/166 
