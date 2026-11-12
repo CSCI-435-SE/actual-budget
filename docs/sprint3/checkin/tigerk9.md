@@ -9,3 +9,5 @@ What is one thing you learned about testing in your project?
 What is one risk to finishing your work by Nov 19, and what will you do about it?
 
 - One risk is that I’ve got a lot of final projects that I need to start working on for my other classes. I’m working out my schedule so I can make time for each thing I need to do, but I’m not too worried about getting things done for this sprint. I plan to get my PRs done days before the due date so we can spend the last few days of the sprint reviewing PRs and getting the report done, rather than scrambling to review PRs.
+
+[PR #164](https://github.com/CSCI-435-SE/actual-budget/pull/164)
