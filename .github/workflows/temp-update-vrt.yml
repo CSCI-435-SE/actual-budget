@@ -65,8 +65,10 @@ jobs:
         with:
           name: desktop-client-build
           path: packages/desktop-client/build/
-      - name: Generate missing snapshots
-        run: yarn vrt --update-snapshots=missing $VRT_FILES
+      # `missing` writes new snapshots but still fails the test, so use
+      # `changed`; it is scoped to tags.test.ts, which has no other snapshots
+      - name: Generate snapshots
+        run: yarn vrt --update-snapshots=changed $VRT_FILES
       - name: Verify generated snapshots
         run: yarn vrt $VRT_FILES
       - name: Upload snapshots artifact
