@@ -3,11 +3,12 @@ import * as db from '#server/db';
 import { mutator } from '#server/mutators';
 import { batchMessages } from '#server/sync';
 import { undoable } from '#server/undo';
-import { renameTagInNotes } from '#shared/tags';
+import { renameTagInNotes, tagMatchPattern } from '#shared/tags';
 import type { TagEntity } from '#types/models';
 
 export type TagsHandlers = {
   'tags-get': typeof getTags;
+  'tags-get-counts': typeof getTagCounts;
   'tags-create': typeof createTag;
   'tags-delete': typeof deleteTag;
   'tags-delete-all': typeof deleteAllTags;
@@ -20,6 +21,7 @@ export type TagsHandlers = {
 
 export const app = createApp<TagsHandlers>();
 app.method('tags-get', getTags);
+app.method('tags-get-counts', getTagCounts);
 app.method('tags-create', mutator(undoable(createTag)));
 app.method('tags-delete', mutator(undoable(deleteTag)));
 app.method('tags-delete-all', mutator(undoable(deleteAllTags)));
@@ -37,6 +39,32 @@ async function getTags(): Promise<TagEntity[]> {
   const tags = await db.getTags();
   tags.sort((a, b) => collator.compare(a.tag, b.tag));
   return tags.map(tag => ({ ...tag, hidden: !!tag.hidden }));
+}
+
+// Number of transactions using each tag, keyed by tag name. The count is the
+// number of rows a "View Transactions" (`hasTags`) filter lists: matching uses
+// the same pattern, and a split counts once however many of its parent and
+// children carry the tag.
+async function getTagCounts(): Promise<Record<TagEntity['tag'], number>> {
+  const [tags, rows] = await Promise.all([
+    db.getTags(),
+    db.getTaggedTransactionGroups(),
+  ]);
+
+  // `Object.fromEntries` defines own properties, so tag names such as
+  // `__proto__` are stored as ordinary keys
+  return Object.fromEntries(
+    tags.map(({ tag }) => {
+      const pattern = new RegExp(tagMatchPattern(tag));
+      const groups = new Set<string>();
+      for (const { group_id, notes } of rows) {
+        if (pattern.test(notes)) {
+          groups.add(group_id);
+        }
+      }
+      return [tag, groups.size];
+    }),
+  );
 }
 
 async function createTag({
