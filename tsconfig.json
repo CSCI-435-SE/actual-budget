@@ -7,6 +7,7 @@
     { "path": "./packages/api" },
     { "path": "./packages/desktop-client" },
     { "path": "./packages/sync-server" },
+    { "path": "./packages/sync-integration-tests" },
     { "path": "./packages/desktop-electron" },
     { "path": "./packages/cli" }
   ],
