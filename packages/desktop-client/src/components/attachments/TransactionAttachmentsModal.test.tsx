@@ -9,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 
 import { TestProviders } from '#mocks';
+import * as modalsSlice from '#modals/modalsSlice';
 
 import { TransactionAttachmentsModal } from './TransactionAttachmentsModal';
 
@@ -21,6 +22,7 @@ const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
 let attachments: TransactionAttachmentEntity[];
 let addAttachment: Mock<Handlers['attachment-add']>;
+let removeAttachment: Mock<Handlers['attachment-remove']>;
 
 function makeAttachment(
   fields: Partial<TransactionAttachmentEntity>,
@@ -77,6 +79,12 @@ beforeEach(() => {
     },
   );
 
+  removeAttachment = vi.fn<Handlers['attachment-remove']>(async ({ id }) => {
+    attachments = attachments.filter(attachment => attachment.id !== id);
+    notifyChanged();
+    return {};
+  });
+
   initServer({
     query: async (query: { table: string }) => {
       if (query.table !== 'transaction_attachments') {
@@ -88,6 +96,7 @@ beforeEach(() => {
       };
     },
     'attachment-add': addAttachment,
+    'attachment-remove': removeAttachment,
   });
 });
 
@@ -184,5 +193,55 @@ describe('TransactionAttachmentsModal', () => {
       expect(screen.queryByText("The file couldn't be saved.")).toBeNull(),
     );
     expect(addAttachment).toHaveBeenCalledTimes(2);
+  });
+
+  describe('removing', () => {
+    // Presses "Remove" and returns the confirmation it asked for
+    async function pressRemove(name: string) {
+      const pushModalSpy = vi.spyOn(modalsSlice, 'pushModal');
+      await userEvent.click(
+        await screen.findByRole('button', { name: `Remove ${name}` }),
+      );
+      expect(pushModalSpy).toHaveBeenCalledTimes(1);
+      const { modal } = pushModalSpy.mock.calls[0][0];
+      pushModalSpy.mockRestore();
+      if (modal.name !== 'confirm-delete') {
+        throw new Error(`expected confirm-delete, got ${modal.name}`);
+      }
+      return modal.options;
+    }
+
+    it('asks first, then removes the file', async () => {
+      attachments = [
+        makeAttachment({ id: 'a1', file_name: 'receipt.png' }),
+        makeAttachment({ id: 'a2', file_name: 'invoice.pdf' }),
+      ];
+      renderModal();
+
+      const confirmation = await pressRemove('receipt.png');
+      expect(confirmation.message).toContain('"receipt.png"');
+      expect(removeAttachment).not.toHaveBeenCalled();
+
+      confirmation.onConfirm();
+
+      await waitFor(() =>
+        expect(attachedFiles().queryByText('receipt.png')).toBeNull(),
+      );
+      expect(removeAttachment).toHaveBeenCalledWith({ id: 'a1' });
+      expect(attachedFiles().getByText('invoice.pdf')).toBeVisible();
+    });
+
+    it('says so when removing fails', async () => {
+      attachments = [makeAttachment({ id: 'a1', file_name: 'receipt.png' })];
+      removeAttachment.mockRejectedValueOnce(new Error('disk full'));
+      renderModal();
+
+      (await pressRemove('receipt.png')).onConfirm();
+
+      expect(
+        await screen.findByText(/Couldn't remove receipt.png/),
+      ).toBeVisible();
+      expect(attachedFiles().getByText('receipt.png')).toBeVisible();
+    });
   });
 });

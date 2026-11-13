@@ -22,7 +22,9 @@ import type { TransObjectLiteral } from '@actual-app/core/types/util';
 import { Error as ErrorAlert, Warning } from '#components/alerts';
 import { Modal, ModalCloseButton, ModalHeader } from '#components/common/Modal';
 import { useQuery } from '#hooks/useQuery';
+import { pushModal } from '#modals/modalsSlice';
 import type { Modal as ModalType } from '#modals/modalsSlice';
+import { useDispatch } from '#redux';
 
 import {
   canRetryAttachmentError,
@@ -43,6 +45,7 @@ export function TransactionAttachmentsModal({
   transactionId,
 }: TransactionAttachmentsModalProps) {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const errorMessage = useAttachmentErrorMessage();
   const inputRef = useRef<HTMLInputElement>(null);
   const nextKey = useRef(0);
@@ -55,6 +58,7 @@ export function TransactionAttachmentsModal({
 
   const [pending, setPending] = useState<PendingUpload[]>([]);
   const [failures, setFailures] = useState<FailedUpload[]>([]);
+  const [removeFailure, setRemoveFailure] = useState<string | null>(null);
 
   async function attachFiles(files: File[]) {
     // One at a time, so a large batch doesn't hold every file in memory
@@ -87,6 +91,37 @@ export function TransactionAttachmentsModal({
   function retry(failure: FailedUpload) {
     dismissFailure(failure.key);
     void attachFiles([failure.file]);
+  }
+
+  function confirmRemove(attachment: TransactionAttachmentEntity) {
+    dispatch(
+      pushModal({
+        modal: {
+          name: 'confirm-delete',
+          options: {
+            message: t(
+              'Remove "{{name}}"? The file will be deleted from this device and can\'t be recovered.',
+              { name: attachment.file_name },
+            ),
+            onConfirm: () => void remove(attachment),
+          },
+        },
+      }),
+    );
+  }
+
+  async function remove(attachment: TransactionAttachmentEntity) {
+    setRemoveFailure(null);
+    let failed: boolean;
+    try {
+      const result = await send('attachment-remove', { id: attachment.id });
+      failed = result.error != null;
+    } catch {
+      failed = true;
+    }
+    if (failed) {
+      setRemoveFailure(attachment.file_name);
+    }
   }
 
   const maxSize = formatAttachmentSize(ATTACHMENT_MAX_SIZE);
@@ -139,7 +174,11 @@ export function TransactionAttachmentsModal({
                 </Text>
               ) : null}
               {attachments?.map(attachment => (
-                <AttachmentRow key={attachment.id} attachment={attachment} />
+                <AttachmentRow
+                  key={attachment.id}
+                  attachment={attachment}
+                  onRemove={() => confirmRemove(attachment)}
+                />
               ))}
               {pending.map(upload => (
                 <View
@@ -155,6 +194,29 @@ export function TransactionAttachmentsModal({
                 </View>
               ))}
             </View>
+
+            {removeFailure != null && (
+              <ErrorAlert>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}
+                >
+                  <Text style={{ flex: 1 }}>
+                    <Trans>
+                      Couldn't remove{' '}
+                      {{ name: removeFailure } as TransObjectLiteral}. Try
+                      again.
+                    </Trans>
+                  </Text>
+                  <Button variant="bare" onPress={() => setRemoveFailure(null)}>
+                    <Trans>Dismiss</Trans>
+                  </Button>
+                </View>
+              </ErrorAlert>
+            )}
 
             {failures.map(failure => (
               <ErrorAlert key={failure.key}>
@@ -219,9 +281,12 @@ export function TransactionAttachmentsModal({
 
 type AttachmentRowProps = {
   attachment: TransactionAttachmentEntity;
+  onRemove: () => void;
 };
 
-function AttachmentRow({ attachment }: AttachmentRowProps) {
+function AttachmentRow({ attachment, onRemove }: AttachmentRowProps) {
+  const { t } = useTranslation();
+
   return (
     <View role="listitem" style={rowStyle}>
       <Text style={fileNameStyle} title={attachment.file_name}>
@@ -230,6 +295,13 @@ function AttachmentRow({ attachment }: AttachmentRowProps) {
       <Text style={{ color: theme.pageTextSubdued, flexShrink: 0 }}>
         {formatAttachmentSize(attachment.size)}
       </Text>
+      <Button
+        variant="bare"
+        aria-label={t('Remove {{name}}', { name: attachment.file_name })}
+        onPress={onRemove}
+      >
+        <Trans>Remove</Trans>
+      </Button>
     </View>
   );
 }
