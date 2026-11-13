@@ -36,3 +36,7 @@ locale/
 
 # service worker build output
 dev-dist
+
+# stryker sandbox and reports
+.stryker-tmp
+reports/mutation

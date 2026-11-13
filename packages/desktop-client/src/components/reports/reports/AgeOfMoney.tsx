@@ -26,7 +26,6 @@ import type {
 } from '@actual-app/core/types/models';
 import * as d from 'date-fns';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
 import { PrivacyFilter } from '#components/PrivacyFilter';
@@ -34,9 +33,11 @@ import { AgeOfMoneyGraph } from '#components/reports/graphs/AgeOfMoneyGraph';
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import { createAgeOfMoneySpreadsheet } from '#components/reports/spreadsheets/age-of-money-spreadsheet';
 import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useLocale } from '#hooks/useLocale';
 import { useNavigate } from '#hooks/useNavigate';
@@ -47,6 +48,10 @@ import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
 
 import { getAgeColor } from './AgeOfMoneyCard';
+import {
+  buildAgeOfMoneyWidgetSettings,
+  toComparableAgeOfMoneySettings,
+} from './ageOfMoneyWidgetSettings';
 
 export function AgeOfMoney() {
   const params = useParams();
@@ -96,6 +101,8 @@ function AgeOfMoneyInner({ widget }: AgeOfMoneyInnerProps) {
   );
 
   const [latestTransaction, setLatestTransaction] = useState('');
+  // The date range is placeholder state until the saved one is applied.
+  const [isRangeReady, setIsRangeReady] = useState(false);
   const [earliestTransaction, setEarliestTransaction] = useState('');
 
   const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
@@ -167,6 +174,7 @@ function AgeOfMoneyInner({ widget }: AgeOfMoneyInnerProps) {
       setStart(initialStart);
       setEnd(initialEnd);
       setMode(initialMode);
+      setIsRangeReady(true);
     }
   }, [latestTransaction, widget?.meta?.timeFrame]);
 
@@ -182,6 +190,21 @@ function AgeOfMoneyInner({ widget }: AgeOfMoneyInnerProps) {
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
 
+  const currentSettings = buildAgeOfMoneyWidgetSettings({
+    conditions,
+    conditionsOp,
+    start,
+    end,
+    mode,
+    granularity,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: isRangeReady,
+    saved: toComparableAgeOfMoneySettings(widget?.meta),
+    current: toComparableAgeOfMoneySettings(currentSettings),
+  });
+
   const onSaveWidget = useCallback(async () => {
     if (!widget) {
       throw new Error('No widget that could be saved.');
@@ -192,14 +215,7 @@ function AgeOfMoneyInner({ widget }: AgeOfMoneyInnerProps) {
         id: widget.id,
         meta: {
           ...(widget.meta ?? {}),
-          conditions,
-          conditionsOp,
-          timeFrame: {
-            start,
-            end,
-            mode,
-          },
-          granularity,
+          ...currentSettings,
         },
       },
     });
@@ -211,18 +227,7 @@ function AgeOfMoneyInner({ widget }: AgeOfMoneyInnerProps) {
         },
       }),
     );
-  }, [
-    widget,
-    updateDashboardWidgetMutation,
-    conditions,
-    conditionsOp,
-    start,
-    end,
-    mode,
-    granularity,
-    dispatch,
-    t,
-  ]);
+  }, [widget, updateDashboardWidgetMutation, currentSettings, dispatch, t]);
 
   const navigate = useNavigate();
   const { isNarrowWidth } = useResponsive();
@@ -257,7 +262,7 @@ function AgeOfMoneyInner({ widget }: AgeOfMoneyInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -265,14 +270,11 @@ function AgeOfMoneyInner({ widget }: AgeOfMoneyInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )
