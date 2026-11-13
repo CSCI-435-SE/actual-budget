@@ -733,7 +733,10 @@ function PayeeCell({
             onNavigateToTransferAccount={onNavigateToTransferAccount}
             onNavigateToSchedule={onNavigateToSchedule}
           />
-          <AttachmentIndicator count={attachmentCount} />
+          <AttachmentIndicator
+            transactionId={transaction.id}
+            count={attachmentCount}
+          />
           <SvgSplit
             style={{
               color: 'inherit',
@@ -833,7 +836,10 @@ function PayeeCell({
               onNavigateToTransferAccount={onNavigateToTransferAccount}
               onNavigateToSchedule={onNavigateToSchedule}
             />
-            <AttachmentIndicator count={attachmentCount} />
+            <AttachmentIndicator
+              transactionId={transaction.id}
+              count={attachmentCount}
+            />
             <div
               style={{
                 overflow: 'hidden',
@@ -995,12 +1001,18 @@ function PayeeIcons({
 }
 
 type AttachmentIndicatorProps = {
+  transactionId: TransactionEntity['id'];
   count: number;
 };
 
-// Shows a paperclip on a transaction that has attachments
-function AttachmentIndicator({ count }: AttachmentIndicatorProps) {
+// Shows a paperclip on a transaction that has attachments. Pressing it opens
+// the transaction's attachments.
+function AttachmentIndicator({
+  transactionId,
+  count,
+}: AttachmentIndicatorProps) {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const iconSize = scaledIconSize(13);
 
   if (count <= 0) {
@@ -1017,16 +1029,26 @@ function AttachmentIndicator({ count }: AttachmentIndicatorProps) {
       placement="bottom"
       triggerProps={{ delay: 500 }}
     >
-      <View
+      <Button
+        variant="bare"
         data-testid="attachment-icon"
-        role="img"
         aria-label={label}
-        style={{ flexShrink: 0, marginRight: 5 }}
+        style={{ ...payeeIconButtonStyle, flexShrink: 0 }}
+        onPress={() =>
+          dispatch(
+            pushModal({
+              modal: {
+                name: 'transaction-attachments',
+                options: { transactionId },
+              },
+            }),
+          )
+        }
       >
         <SvgAttachment
           style={{ width: iconSize, height: iconSize, color: 'inherit' }}
         />
-      </View>
+      </Button>
     </Tooltip>
   );
 }

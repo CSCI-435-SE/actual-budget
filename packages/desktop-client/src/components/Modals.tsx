@@ -11,6 +11,7 @@ import { SheetNameProvider } from '#hooks/useSheetName';
 import { closeModal } from '#modals/modalsSlice';
 import { useDispatch } from '#redux';
 
+import { TransactionAttachmentsModal } from './attachments/TransactionAttachmentsModal';
 import { EditSyncAccount } from './banksync/EditSyncAccount';
 import { AccountAutocompleteModal } from './modals/AccountAutocompleteModal';
 import { AccountGroupsModal } from './modals/AccountGroupsModal';
@@ -158,6 +159,9 @@ export function Modals() {
 
         case 'confirm-transaction-edit':
           return <ConfirmTransactionEditModal key={key} {...modal.options} />;
+
+        case 'transaction-attachments':
+          return <TransactionAttachmentsModal key={key} {...modal.options} />;
 
         case 'transaction-table-columns':
           return <TransactionTableColumnsModal key={key} {...modal.options} />;

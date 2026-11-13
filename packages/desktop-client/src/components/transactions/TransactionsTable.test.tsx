@@ -1761,6 +1761,23 @@ describe('Transactions', () => {
     );
   });
 
+  test('pressing the paperclip opens the attachments', async () => {
+    const pushModalSpy = vi.spyOn(modalsSlice, 'pushModal');
+    const transactions = generateTransactions(3);
+    attachmentCounts = [{ transaction_id: transactions[1].id, count: 1 }];
+    renderTransactions({ transactions });
+
+    await userEvent.click(await screen.findByTestId('attachment-icon'));
+
+    expect(pushModalSpy).toHaveBeenCalledWith({
+      modal: {
+        name: 'transaction-attachments',
+        options: { transactionId: transactions[1].id },
+      },
+    });
+    pushModalSpy.mockRestore();
+  });
+
   test('transaction with splits shows 0 in correct column', async () => {
     const { container, getTransactions } = renderTransactions();
 

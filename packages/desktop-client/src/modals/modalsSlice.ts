@@ -588,6 +588,14 @@ export type Modal =
       };
     }
   | {
+      name: 'transaction-attachments';
+      options: {
+        // A split child's attachments are on its parent; the modal shows the
+        // parent's
+        transactionId: TransactionEntity['id'];
+      };
+    }
+  | {
       name: 'transaction-table-columns';
       options: {
         columns: TransactionTableColumn[];

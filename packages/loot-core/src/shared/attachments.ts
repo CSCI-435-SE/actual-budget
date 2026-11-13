@@ -111,6 +111,14 @@ export function transactionAttachmentCountsQuery() {
     .select(['transaction_id', { count: { $count: '$id' } }]);
 }
 
+// A transaction's attachments, oldest first. Pass the parent's id for a split:
+// attachments are stored on the parent.
+export function transactionAttachmentsQuery(transactionId: string) {
+  return q('transaction_attachments')
+    .filter({ transaction_id: transactionId })
+    .select('*');
+}
+
 // Cleans up a file name for storing and showing. Files are stored by
 // attachment id, so the name is never used as a path; this only removes
 // characters that would display badly and keeps the name a sensible length.
