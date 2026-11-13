@@ -30,7 +30,8 @@ export function ManageTags() {
   const [hoveredTag, setHoveredTag] = useState<string>();
   const [create, setCreate] = useState(false);
   const { data: tags = [], refetch } = useTags();
-  const { refetch: refetchCounts } = useTagCounts();
+  const { data: counts, refetch: refetchCounts } = useTagCounts();
+  const [scrollWidth, setScrollWidth] = useState(0);
 
   useEffect(() =>
     listen('undo-event', () => {
@@ -104,7 +105,7 @@ export function ManageTags() {
           <TagsMenuButton />
         </SpaceBetween>
         <View style={{ marginTop: 12, ...styles.tableContainer }}>
-          <TagsHeader />
+          <TagsHeader scrollWidth={scrollWidth} />
           {create && (
             <TagCreationRow onClose={() => setCreate(false)} tags={tags} />
           )}
@@ -112,8 +113,12 @@ export function ManageTags() {
             <TagsList
               navigator={tableNavigator}
               tags={filteredTags}
+              counts={counts}
               hoveredTag={hoveredTag}
               onHover={id => setHoveredTag(id ?? undefined)}
+              saveScrollWidth={(parent, child) =>
+                setScrollWidth(parent > 0 && child > 0 ? parent - child : 0)
+              }
             />
           ) : (
             <View
