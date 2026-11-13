@@ -34,7 +34,11 @@ describe('ManageTags', () => {
 
   beforeEach(async () => {
     renameTag = createRenameTagMock();
-    initServer({ 'tags-get': async () => tags, 'tags-rename': renameTag });
+    initServer({
+      'tags-get': async () => tags,
+      'tags-get-counts': async () => ({ Reimbursable: 3, Work: 0 }),
+      'tags-rename': renameTag,
+    });
 
     const queryClient = createTestQueryClient();
     queryClient.setQueryData(tagQueries.list().queryKey, tags);

@@ -15,7 +15,7 @@ import { Search } from '#components/common/Search';
 import { useTableNavigator } from '#components/table';
 import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { SelectedProvider, useSelected } from '#hooks/useSelected';
-import { useTags } from '#hooks/useTags';
+import { useTagCounts, useTags } from '#hooks/useTags';
 
 import { SelectedTagsButton } from './SelectedTagsButton';
 import { TagCreationRow } from './TagCreationRow';
@@ -30,8 +30,23 @@ export function ManageTags() {
   const [hoveredTag, setHoveredTag] = useState<string>();
   const [create, setCreate] = useState(false);
   const { data: tags = [], refetch } = useTags();
+  const { refetch: refetchCounts } = useTagCounts();
 
-  useEffect(() => listen('undo-event', () => refetch({ cancelRefetch: true })));
+  useEffect(() =>
+    listen('undo-event', () => {
+      void refetch({ cancelRefetch: true });
+      void refetchCounts({ cancelRefetch: true });
+    }),
+  );
+
+  // Notes can change while this page is open, e.g. when another device syncs
+  useEffect(() =>
+    listen('sync-event', event => {
+      if (event.type === 'applied' && event.tables.includes('transactions')) {
+        void refetchCounts();
+      }
+    }),
+  );
 
   const filteredTags = useMemo(() => {
     return filter === ''
