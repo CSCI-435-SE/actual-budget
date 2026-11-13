@@ -1,0 +1,21 @@
+{
+  "name": "@actual-app/sync-integration-tests",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Integration tests that run loot-core clients against a real in-process sync server",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "test": "vitest --run",
+    "typecheck": "tsgo -b"
+  },
+  "devDependencies": {
+    "@actual-app/api": "workspace:*",
+    "@actual-app/crdt": "workspace:*",
+    "@actual-app/sync-server": "workspace:*",
+    "@types/node": "^22.20.1",
+    "@typescript/native-preview": "beta",
+    "fflate": "^0.8.3",
+    "vitest": "^5.0.0"
+  }
+}

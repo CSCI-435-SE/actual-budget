@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "strict": true,
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "build",
+    "tsBuildInfoFile": "build/.tsbuildinfo"
+  },
+  "references": [{ "path": "../crdt" }, { "path": "../sync-server" }],
+  "include": ["src/**/*", "vitest.config.ts", "vitest.globalSetup.ts"],
+  "exclude": ["node_modules", "build"]
+}
