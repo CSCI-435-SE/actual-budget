@@ -6,6 +6,7 @@ import {
   generateTransaction,
 } from '@actual-app/core/mocks';
 import { initServer } from '@actual-app/core/platform/client/connection';
+import type { TransactionAttachmentCount } from '@actual-app/core/shared/attachments';
 import {
   addSplitTransaction,
   realizeTempTransactions,
@@ -118,6 +119,7 @@ vi.mock('../../hooks/useCategories', () => ({
 
 const usualGroup = categoryGroups[1];
 let schedules: ScheduleEntity[] = [];
+let attachmentCounts: TransactionAttachmentCount[] = [];
 const createScheduleMock = vi.fn(async () => 'new-schedule');
 
 function generateTransactions(
@@ -262,6 +264,8 @@ function initBasicServer() {
           };
         case 'schedules':
           return { data: schedules, dependencies: [] };
+        case 'transaction_attachments':
+          return { data: attachmentCounts, dependencies: [] };
         default:
           throw new Error(`queried unknown table: ${query.table}`);
       }
@@ -285,6 +289,7 @@ function initBasicServer() {
 
 beforeEach(() => {
   schedules = [];
+  attachmentCounts = [];
   createScheduleMock.mockClear();
   initBasicServer();
 });
@@ -1708,6 +1713,69 @@ describe('Transactions', () => {
 
     // await userEvent.click(queryField(container, 'delete', '', 1));
     // expect(getTransactions()[0].isParent).toBe(false);
+  });
+
+  test('shows a paperclip on transactions with attachments', async () => {
+    const transactions = generateTransactions(5);
+    attachmentCounts = [
+      { transaction_id: transactions[1].id, count: 2 },
+      { transaction_id: transactions[3].id, count: 1 },
+      // Attachments on a deleted transaction come back without an id
+      { transaction_id: null, count: 4 },
+    ];
+    const { container } = renderTransactions({ transactions });
+
+    const icons = await screen.findAllByTestId('attachment-icon');
+    expect(icons).toHaveLength(2);
+    expect(icons.map(icon => icon.getAttribute('aria-label'))).toEqual([
+      '2 attachments',
+      '1 attachment',
+    ]);
+
+    const payeeCells = container.querySelectorAll(
+      '[data-testid="transaction-table"] [data-testid="payee"]',
+    );
+    const rowsWithIcon = [...payeeCells].map(
+      cell => cell.querySelector('[data-testid="attachment-icon"]') != null,
+    );
+    expect(rowsWithIcon).toEqual([false, true, false, true, false]);
+  });
+
+  test('shows the paperclip on a split parent, not its children', async () => {
+    const transactions = generateTransactions(2, [0]);
+    const parent = transactions[0];
+    expect(parent.is_parent).toBe(true);
+    attachmentCounts = [{ transaction_id: parent.id, count: 1 }];
+    const { container } = renderTransactions({ transactions });
+
+    await screen.findByTestId('attachment-icon');
+
+    const payeeCells = container.querySelectorAll(
+      '[data-testid="transaction-table"] [data-testid="payee"]',
+    );
+    const rowsWithIcon = [...payeeCells].map(
+      cell => cell.querySelector('[data-testid="attachment-icon"]') != null,
+    );
+    expect(rowsWithIcon).toEqual(
+      transactions.map(transaction => transaction.id === parent.id),
+    );
+  });
+
+  test('pressing the paperclip opens the attachments', async () => {
+    const pushModalSpy = vi.spyOn(modalsSlice, 'pushModal');
+    const transactions = generateTransactions(3);
+    attachmentCounts = [{ transaction_id: transactions[1].id, count: 1 }];
+    renderTransactions({ transactions });
+
+    await userEvent.click(await screen.findByTestId('attachment-icon'));
+
+    expect(pushModalSpy).toHaveBeenCalledWith({
+      modal: {
+        name: 'transaction-attachments',
+        options: { transactionId: transactions[1].id },
+      },
+    });
+    pushModalSpy.mockRestore();
   });
 
   test('transaction with splits shows 0 in correct column', async () => {

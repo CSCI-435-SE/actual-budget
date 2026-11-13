@@ -47,6 +47,17 @@ export type DbAccountGroup = {
   tombstone: 1 | 0;
 };
 
+export type DbTransactionAttachment = {
+  id: string;
+  transaction_id: DbTransaction['id'];
+  file_name: string;
+  mime_type: string;
+  size: number;
+  storage: string;
+  created_at: number;
+  tombstone: 1 | 0;
+};
+
 export type DbBank = {
   id: string;
   bank_id: string;

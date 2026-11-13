@@ -7,7 +7,10 @@ import {
   extractScheduleConds,
   scheduleIsRecurring,
 } from '@actual-app/core/shared/schedules';
-import { isPreviewId } from '@actual-app/core/shared/transactions';
+import {
+  isPreviewId,
+  isTemporaryId,
+} from '@actual-app/core/shared/transactions';
 import type { TransactionEntity } from '@actual-app/core/types/models';
 
 import type { ContextMenuItem } from '#contextmenu/types';
@@ -134,6 +137,36 @@ export function useTransactionRowContextActions({
     return areNoReconciledTransactions && areAllSplitTransactions;
   }, [selectedIds, types, getTransaction]);
 
+  // Attachments belong to the parent of a split, so a child opens its
+  // parent's attachments
+  const attachmentOwnerId = useMemo(() => {
+    if (selectedIds.length !== 1) {
+      return null;
+    }
+    const id = selectedIds[0];
+    if (isPreviewId(id) || isTemporaryId(id)) {
+      return null;
+    }
+    const trans = getTransaction(id);
+    if (!trans) {
+      return null;
+    }
+    return trans.is_child ? (trans.parent_id ?? null) : trans.id;
+  }, [selectedIds, getTransaction]);
+
+  function onOpenAttachments() {
+    if (attachmentOwnerId) {
+      dispatch(
+        pushModal({
+          modal: {
+            name: 'transaction-attachments',
+            options: { transactionId: attachmentOwnerId },
+          },
+        }),
+      );
+    }
+  }
+
   function onViewSchedule() {
     const firstId = selectedIds[0];
     let scheduleId;
@@ -196,6 +229,12 @@ export function useTransactionRowContextActions({
       name: 'delete',
       text: t('Delete'),
       onClick: () => onDelete(selectedIds),
+    },
+    {
+      name: 'attachments',
+      text: t('Attachments'),
+      onClick: onOpenAttachments,
+      hidden: attachmentOwnerId == null,
     },
     {
       name: 'view-schedule',

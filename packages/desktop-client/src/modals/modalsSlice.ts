@@ -13,6 +13,7 @@ import type {
   RuleEntity,
   ScheduleEntity,
   SyncServerEnableBankingAccount,
+  TransactionAttachmentEntity,
   TransactionEntity,
   UserAccessEntity,
   UserEntity,
@@ -585,6 +586,20 @@ export type Modal =
         onConfirm: () => void;
         onCancel?: () => void;
         confirmReason: ConfirmTransactionEditReason;
+      };
+    }
+  | {
+      name: 'attachment-viewer';
+      options: {
+        attachment: TransactionAttachmentEntity;
+      };
+    }
+  | {
+      name: 'transaction-attachments';
+      options: {
+        // A split child's attachments are on its parent; the modal shows the
+        // parent's
+        transactionId: TransactionEntity['id'];
       };
     }
   | {
