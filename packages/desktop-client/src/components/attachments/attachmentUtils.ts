@@ -1,6 +1,11 @@
 import { useTranslation } from 'react-i18next';
 
+import { send } from '@actual-app/core/platform/client/connection';
 import type { Handlers } from '@actual-app/core/types/handlers';
+import type { TransactionAttachmentEntity } from '@actual-app/core/types/models';
+
+import { pushModal } from '#modals/modalsSlice';
+import { useDispatch } from '#redux';
 
 type AddResult = Awaited<ReturnType<Handlers['attachment-add']>>;
 
@@ -60,4 +65,45 @@ export function useAttachmentErrorMessage() {
         return t("The file couldn't be saved.");
     }
   };
+}
+
+// Asks the user to confirm, then removes the attachment. `onDone` is called
+// after a confirmed removal with whether it worked; it isn't called if the
+// user cancels.
+export function useConfirmRemoveAttachment() {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  return (
+    attachment: TransactionAttachmentEntity,
+    onDone: (removed: boolean) => void,
+  ) => {
+    dispatch(
+      pushModal({
+        modal: {
+          name: 'confirm-delete',
+          options: {
+            message: t(
+              'Remove "{{name}}"? The file will be deleted from this device and can\'t be recovered.',
+              { name: attachment.file_name },
+            ),
+            onConfirm: () => {
+              void removeAttachment(attachment.id).then(onDone);
+            },
+          },
+        },
+      }),
+    );
+  };
+}
+
+async function removeAttachment(
+  id: TransactionAttachmentEntity['id'],
+): Promise<boolean> {
+  try {
+    const result = await send('attachment-remove', { id });
+    return result.error == null;
+  } catch {
+    return false;
+  }
 }

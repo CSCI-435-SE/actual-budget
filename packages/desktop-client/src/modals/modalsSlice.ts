@@ -13,6 +13,7 @@ import type {
   RuleEntity,
   ScheduleEntity,
   SyncServerEnableBankingAccount,
+  TransactionAttachmentEntity,
   TransactionEntity,
   UserAccessEntity,
   UserEntity,
@@ -585,6 +586,12 @@ export type Modal =
         onConfirm: () => void;
         onCancel?: () => void;
         confirmReason: ConfirmTransactionEditReason;
+      };
+    }
+  | {
+      name: 'attachment-viewer';
+      options: {
+        attachment: TransactionAttachmentEntity;
       };
     }
   | {

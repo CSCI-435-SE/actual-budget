@@ -195,6 +195,22 @@ describe('TransactionAttachmentsModal', () => {
     expect(addAttachment).toHaveBeenCalledTimes(2);
   });
 
+  it('opens a file in the viewer', async () => {
+    const attachment = makeAttachment({ id: 'a1', file_name: 'receipt.png' });
+    attachments = [attachment];
+    const pushModalSpy = vi.spyOn(modalsSlice, 'pushModal');
+    renderModal();
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Open receipt.png' }),
+    );
+
+    expect(pushModalSpy).toHaveBeenCalledWith({
+      modal: { name: 'attachment-viewer', options: { attachment } },
+    });
+    pushModalSpy.mockRestore();
+  });
+
   describe('removing', () => {
     // Presses "Remove" and returns the confirmation it asked for
     async function pressRemove(name: string) {

@@ -30,6 +30,7 @@ import {
   canRetryAttachmentError,
   formatAttachmentSize,
   useAttachmentErrorMessage,
+  useConfirmRemoveAttachment,
 } from './attachmentUtils';
 import type { AttachmentUploadError } from './attachmentUtils';
 
@@ -47,6 +48,7 @@ export function TransactionAttachmentsModal({
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const errorMessage = useAttachmentErrorMessage();
+  const confirmRemoveAttachment = useConfirmRemoveAttachment();
   const inputRef = useRef<HTMLInputElement>(null);
   const nextKey = useRef(0);
 
@@ -94,34 +96,17 @@ export function TransactionAttachmentsModal({
   }
 
   function confirmRemove(attachment: TransactionAttachmentEntity) {
-    dispatch(
-      pushModal({
-        modal: {
-          name: 'confirm-delete',
-          options: {
-            message: t(
-              'Remove "{{name}}"? The file will be deleted from this device and can\'t be recovered.',
-              { name: attachment.file_name },
-            ),
-            onConfirm: () => void remove(attachment),
-          },
-        },
-      }),
+    confirmRemoveAttachment(attachment, removed =>
+      setRemoveFailure(removed ? null : attachment.file_name),
     );
   }
 
-  async function remove(attachment: TransactionAttachmentEntity) {
-    setRemoveFailure(null);
-    let failed: boolean;
-    try {
-      const result = await send('attachment-remove', { id: attachment.id });
-      failed = result.error != null;
-    } catch {
-      failed = true;
-    }
-    if (failed) {
-      setRemoveFailure(attachment.file_name);
-    }
+  function openViewer(attachment: TransactionAttachmentEntity) {
+    dispatch(
+      pushModal({
+        modal: { name: 'attachment-viewer', options: { attachment } },
+      }),
+    );
   }
 
   const maxSize = formatAttachmentSize(ATTACHMENT_MAX_SIZE);
@@ -177,6 +162,7 @@ export function TransactionAttachmentsModal({
                 <AttachmentRow
                   key={attachment.id}
                   attachment={attachment}
+                  onOpen={() => openViewer(attachment)}
                   onRemove={() => confirmRemove(attachment)}
                 />
               ))}
@@ -281,17 +267,31 @@ export function TransactionAttachmentsModal({
 
 type AttachmentRowProps = {
   attachment: TransactionAttachmentEntity;
+  onOpen: () => void;
   onRemove: () => void;
 };
 
-function AttachmentRow({ attachment, onRemove }: AttachmentRowProps) {
+function AttachmentRow({ attachment, onOpen, onRemove }: AttachmentRowProps) {
   const { t } = useTranslation();
 
   return (
     <View role="listitem" style={rowStyle}>
-      <Text style={fileNameStyle} title={attachment.file_name}>
-        {attachment.file_name}
-      </Text>
+      <Button
+        variant="bare"
+        aria-label={t('Open {{name}}', { name: attachment.file_name })}
+        style={{
+          ...fileNameStyle,
+          justifyContent: 'flex-start',
+          padding: '2px 4px',
+          marginLeft: -4,
+          color: theme.pageTextLink,
+        }}
+        onPress={onOpen}
+      >
+        <Text style={fileNameStyle} title={attachment.file_name}>
+          {attachment.file_name}
+        </Text>
+      </Button>
       <Text style={{ color: theme.pageTextSubdued, flexShrink: 0 }}>
         {formatAttachmentSize(attachment.size)}
       </Text>
