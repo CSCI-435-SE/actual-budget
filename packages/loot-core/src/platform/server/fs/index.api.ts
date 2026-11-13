@@ -157,6 +157,14 @@ export const removeFile: typeof T.removeFile = filepath => {
   });
 };
 
+export const rename: typeof T.rename = (frompath, topath) => {
+  return new Promise(function (resolve, reject) {
+    fs.rename(frompath, topath, err => {
+      return err ? reject(err) : resolve(undefined);
+    });
+  });
+};
+
 export const removeDir: typeof T.removeDir = dirpath => {
   return new Promise(function (resolve, reject) {
     fs.rmdir(dirpath, err => {
