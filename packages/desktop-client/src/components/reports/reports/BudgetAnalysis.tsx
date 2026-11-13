@@ -22,7 +22,6 @@ import type {
 } from '@actual-app/core/types/models';
 import * as d from 'date-fns';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { FinancialText } from '#components/FinancialText';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
@@ -32,6 +31,7 @@ import { BudgetAnalysisGraph } from '#components/reports/graphs/BudgetAnalysisGr
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import { buildBudgetAnalysisCsv } from '#components/reports/spreadsheets/budget-analysis-export';
 import {
   createBudgetAnalysisSpreadsheet,
@@ -39,6 +39,7 @@ import {
 } from '#components/reports/spreadsheets/budget-analysis-spreadsheet';
 import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useFormat } from '#hooks/useFormat';
 import { useLocale } from '#hooks/useLocale';
@@ -48,6 +49,11 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+import {
+  buildBudgetAnalysisWidgetSettings,
+  toComparableBudgetAnalysisSettings,
+} from './budgetAnalysisWidgetSettings';
 
 type OptionsButtonProps = {
   graphType: 'Line' | 'Bar';
@@ -181,6 +187,8 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
     widget?.meta?.showHiddenCategories ?? false,
   );
   const [latestTransaction, setLatestTransaction] = useState('');
+  // The date range is placeholder state until the saved one is applied.
+  const [isRangeReady, setIsRangeReady] = useState(false);
   const [isConcise, setIsConcise] = useState(() => {
     return true;
   });
@@ -263,6 +271,7 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
 
         setIsConcise(calculateIsConcise(liveStart, liveEnd));
       }
+      setIsRangeReady(true);
     }
     void run();
   }, [locale, widget?.meta?.timeFrame]);
@@ -301,6 +310,24 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
 
+  const currentSettings = buildBudgetAnalysisWidgetSettings({
+    conditions,
+    conditionsOp,
+    start,
+    end,
+    mode,
+    graphType,
+    showBalance,
+    showCategories,
+    showHiddenCategories,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: isRangeReady,
+    saved: toComparableBudgetAnalysisSettings(widget?.meta),
+    current: toComparableBudgetAnalysisSettings(currentSettings),
+  });
+
   async function onSaveWidget() {
     if (!widget) {
       throw new Error('No widget that could be saved.');
@@ -312,17 +339,7 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            conditions,
-            conditionsOp,
-            timeFrame: {
-              start,
-              end,
-              mode,
-            },
-            graphType,
-            showBalance,
-            balanceOnly: !showCategories,
-            showHiddenCategories,
+            ...currentSettings,
           },
         },
       },
@@ -388,7 +405,7 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -396,14 +413,11 @@ function BudgetAnalysisInternal({ widget }: BudgetAnalysisInternalProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

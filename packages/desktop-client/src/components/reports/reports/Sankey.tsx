@@ -30,7 +30,6 @@ import { debounce } from 'es-toolkit/compat';
 import type { TFunction } from 'i18next';
 import type { SankeyData } from 'recharts/types/chart/Sankey';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
 import { SankeyGraph } from '#components/reports/graphs/SankeyGraph';
@@ -40,14 +39,15 @@ import {
   boundMonthRangeFromDates,
   calculateTimeRange,
 } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import {
   buildSankeyData,
   createBaseGraphSpreadsheet,
-  GRAPH_LAYER_ORDER,
   GraphLayers,
 } from '#components/reports/spreadsheets/sankey-spreadsheet';
 import type { Graph } from '#components/reports/spreadsheets/sankey-spreadsheet';
 import { useReport } from '#components/reports/useReport';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useCategories } from '#hooks/useCategories';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useFormatList } from '#hooks/useFormatList';
@@ -59,6 +59,20 @@ import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
 import { mapField } from '#util/rule';
+
+import {
+  buildSankeyWidgetSettings,
+  getAvailableLayers,
+  getDefaultLayerRange,
+  getInitialLayerRange,
+  normalizeLayerRange,
+  toComparableSankeySettings,
+} from './sankeyWidgetSettings';
+import type {
+  LayerDirection,
+  LayerRange,
+  SankeyGraphMode,
+} from './sankeyWidgetSettings';
 
 export function Sankey() {
   const params = useParams();
@@ -80,83 +94,8 @@ export function topNNodes(cardHeight: number): number {
   return heightBasedTopN;
 }
 
-type GraphMode = 'budgeted' | 'spent';
-
-type LayerDirection = 'from' | 'to';
-type LayerRange = {
-  from: GraphLayers;
-  to: GraphLayers;
-};
-
-function getAvailableLayers(mode: GraphMode): GraphLayers[] {
-  return GRAPH_LAYER_ORDER.filter(layer => {
-    if (mode === 'budgeted') {
-      return layer !== GraphLayers.IncomePayee;
-    }
-
-    return layer !== GraphLayers.Budget;
-  }) as GraphLayers[];
-}
-
-export function getDefaultLayerRange(mode: GraphMode): LayerRange {
-  return {
-    from:
-      mode === 'budgeted'
-        ? GraphLayers.IncomeCategory
-        : GraphLayers.IncomePayee,
-    to: GraphLayers.Category,
-  };
-}
-
-function normalizeLayerRange(
-  mode: GraphMode,
-  candidate: LayerRange,
-  changedDirection?: LayerDirection,
-): LayerRange {
-  const availableLayers = getAvailableLayers(mode);
-  const fallback = getDefaultLayerRange(mode);
-  const defaultFromIndex = availableLayers.indexOf(fallback.from);
-  const defaultToIndex = availableLayers.indexOf(fallback.to);
-
-  let from = availableLayers.includes(candidate.from)
-    ? candidate.from
-    : fallback.from;
-  let to = availableLayers.includes(candidate.to) ? candidate.to : fallback.to;
-
-  let fromIndex = availableLayers.indexOf(from);
-  let toIndex = availableLayers.indexOf(to);
-
-  if (fromIndex >= toIndex) {
-    if (changedDirection === 'from') {
-      const adjustedToIndex = Math.min(
-        availableLayers.length - 1,
-        Math.max(fromIndex + 1, defaultToIndex),
-      );
-      to = availableLayers[adjustedToIndex] ?? fallback.to;
-    } else if (changedDirection === 'to') {
-      const adjustedFromIndex = Math.max(
-        0,
-        Math.min(toIndex - 1, defaultFromIndex),
-      );
-      from = availableLayers[adjustedFromIndex] ?? fallback.from;
-    } else {
-      from = fallback.from;
-      to = fallback.to;
-    }
-
-    fromIndex = availableLayers.indexOf(from);
-    toIndex = availableLayers.indexOf(to);
-  }
-
-  if (fromIndex >= toIndex) {
-    return fallback;
-  }
-
-  return { from, to };
-}
-
 function getLayerMenuItems(
-  mode: GraphMode,
+  mode: SankeyGraphMode,
   direction: LayerDirection,
   otherLayer: GraphLayers,
 ): GraphLayers[] {
@@ -338,8 +277,8 @@ function LayerSelector({
 }
 
 type GraphModeSelectorProps = {
-  mode: GraphMode;
-  onChange: (mode: GraphMode) => void;
+  mode: SankeyGraphMode;
+  onChange: (mode: SankeyGraphMode) => void;
 };
 
 function GraphModeSelector({ mode, onChange }: GraphModeSelectorProps) {
@@ -471,7 +410,7 @@ function SankeyInner({ widget }: SankeyInnerProps) {
   const [earliestTransaction, setEarliestTransaction] = useState('');
   const [latestTransaction, setLatestTransaction] = useState('');
 
-  const [graphMode, setGraphMode] = useState<GraphMode>(
+  const [graphMode, setGraphMode] = useState<SankeyGraphMode>(
     widget?.meta?.mode ?? 'spent',
   );
 
@@ -521,14 +460,11 @@ function SankeyInner({ widget }: SankeyInnerProps) {
   );
 
   const [layerRange, setLayerRange] = useState<LayerRange>(() =>
-    normalizeLayerRange(widget?.meta?.mode ?? 'spent', {
-      from:
-        (widget?.meta?.layerFrom as GraphLayers) ??
-        getDefaultLayerRange(widget?.meta?.mode ?? 'spent').from,
-      to:
-        (widget?.meta?.layerTo as GraphLayers) ??
-        getDefaultLayerRange(widget?.meta?.mode ?? 'spent').to,
-    }),
+    getInitialLayerRange(
+      widget?.meta?.mode ?? 'spent',
+      widget?.meta?.layerFrom,
+      widget?.meta?.layerTo,
+    ),
   );
 
   const layerFrom = layerRange.from;
@@ -702,6 +638,29 @@ function SankeyInner({ widget }: SankeyInnerProps) {
   }
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
+
+  const currentSettings = buildSankeyWidgetSettings({
+    conditions,
+    conditionsOp,
+    graphMode,
+    topNcategories,
+    categorySort,
+    showPercentages,
+    showTransfers,
+    layerFrom,
+    layerTo,
+    start,
+    end,
+    timeFrameMode,
+    groupAccounts,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: datesInitialized,
+    saved: toComparableSankeySettings(widget?.meta),
+    current: toComparableSankeySettings(currentSettings),
+  });
+
   async function onSaveWidget() {
     if (!widget) {
       throw new Error('No widget that could be saved.');
@@ -713,21 +672,7 @@ function SankeyInner({ widget }: SankeyInnerProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            conditions,
-            conditionsOp,
-            mode: graphMode,
-            topNcategories,
-            categorySort,
-            showPercentages,
-            showTransfers,
-            layerFrom,
-            layerTo,
-            timeFrame: {
-              start,
-              end,
-              mode: timeFrameMode,
-            },
-            groupAccounts,
+            ...currentSettings,
           },
         },
       },
@@ -792,7 +737,7 @@ function SankeyInner({ widget }: SankeyInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -800,14 +745,11 @@ function SankeyInner({ widget }: SankeyInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

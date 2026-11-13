@@ -35,6 +35,8 @@ import { getCustomTick } from '#components/reports/getCustomTick';
 import { computePadding } from '#components/reports/graphs/util/computePadding';
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useAccounts } from '#hooks/useAccounts';
 import { useBalanceForecast } from '#hooks/useBalanceForecast';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
@@ -45,6 +47,7 @@ import { useRuleConditionFilters } from '#hooks/useRuleConditionFilters';
 import { useSyncedPref } from '#hooks/useSyncedPref';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
+import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
 
 import {
   buildBalanceForecastChartData,
@@ -52,6 +55,12 @@ import {
   getLowestChartDataPoint,
   getZeroCrossingGradientOffset,
 } from './balanceForecastChartData';
+import {
+  buildBalanceForecastWidgetSettings,
+  getBalanceForecastSource,
+  getInitialBalanceForecastTimeFrame,
+  toComparableBalanceForecastSettings,
+} from './balanceForecastWidgetSettings';
 
 export function BalanceForecast() {
   const params = useParams();
@@ -101,24 +110,17 @@ function BalanceForecastInner({ widget }: BalanceForecastInnerProps) {
   }> | null>(null);
 
   const currentMonth = monthUtils.currentMonth();
-  const [start, setStart] = useState(
-    widget?.meta?.timeFrame?.start ?? widget?.meta?.startDate ?? currentMonth,
+  const [initialTimeFrame] = useState(() =>
+    getInitialBalanceForecastTimeFrame(widget?.meta),
   );
-  const [end, setEnd] = useState(
-    widget?.meta?.timeFrame?.end ??
-      widget?.meta?.endDate ??
-      monthUtils.addMonths(currentMonth, 11),
-  );
-  const [mode, setMode] = useState<TimeFrame['mode']>(
-    widget?.meta?.timeFrame?.mode ?? 'static',
-  );
+  const [start, setStart] = useState(initialTimeFrame.start);
+  const [end, setEnd] = useState(initialTimeFrame.end);
+  const [mode, setMode] = useState<TimeFrame['mode']>(initialTimeFrame.mode);
   const [granularity, setGranularity] = useState<'Daily' | 'Monthly'>(
     widget?.meta?.granularity ?? 'Monthly',
   );
   const [source, setSource] = useState<ForecastSource>(
-    widget?.meta?.source === 'tracking-budget' && budgetType === 'tracking'
-      ? 'tracking-budget'
-      : 'schedules',
+    getBalanceForecastSource(widget?.meta?.source, budgetType),
   );
   const isTrackingBudgetForecast = source === 'tracking-budget';
 
@@ -168,36 +170,76 @@ function BalanceForecastInner({ widget }: BalanceForecastInnerProps) {
   const hasFilters = !isTrackingBudgetForecast && conditions.length > 0;
   const committedChartRange = useRef({ start, end });
 
+  // Saving through the mutation refreshes the cached widget, which is what
+  // the "(modified)" label compares against.
+  const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
+
+  const currentSettings = buildBalanceForecastWidgetSettings({
+    conditions,
+    conditionsOp,
+    start,
+    end,
+    mode,
+    granularity,
+    source,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    // Every setting is read from the widget when the page opens.
+    isReady: true,
+    saved: toComparableBalanceForecastSettings(widget?.meta, { budgetType }),
+    current: toComparableBalanceForecastSettings(currentSettings, {
+      budgetType,
+    }),
+  });
+
   async function onSaveWidget() {
     if (!widget) {
       throw new Error('No widget that could be saved.');
     }
 
-    await send('dashboard-update-widget', {
-      id: widget.id,
-      meta: {
-        ...widget.meta,
-        conditions,
-        conditionsOp,
-        startDate: start,
-        endDate: end,
-        granularity: isTrackingBudgetForecast ? 'Monthly' : granularity,
-        source,
-        timeFrame: {
-          start,
-          end,
-          mode,
+    updateDashboardWidgetMutation.mutate(
+      {
+        widget: {
+          id: widget.id,
+          meta: {
+            ...(widget.meta ?? {}),
+            ...currentSettings,
+          },
+        },
+      },
+      {
+        onSuccess: () => {
+          dispatch(
+            addNotification({
+              notification: {
+                type: 'message',
+                message: t('Dashboard widget successfully saved.'),
+              },
+            }),
+          );
+        },
+      },
+    );
+  }
+
+  const title = widget?.meta?.name || t('Balance Forecast');
+
+  function onSaveWidgetName(newName: string) {
+    if (!widget) {
+      throw new Error('No widget that could be saved.');
+    }
+
+    const name = newName || t('Balance Forecast');
+    updateDashboardWidgetMutation.mutate({
+      widget: {
+        id: widget.id,
+        meta: {
+          ...(widget.meta ?? {}),
+          name,
         },
       },
     });
-    dispatch(
-      addNotification({
-        notification: {
-          type: 'message',
-          message: t('Dashboard widget successfully saved.'),
-        },
-      }),
-    );
   }
 
   const earliestTransaction =
@@ -365,7 +407,17 @@ function BalanceForecastInner({ widget }: BalanceForecastInnerProps) {
 
   return (
     <Page
-      header={<PageHeader title={<Trans>Balance Forecast</Trans>} />}
+      header={
+        <PageHeader
+          title={
+            <ReportWidgetTitle
+              title={title}
+              onSave={widget ? onSaveWidgetName : undefined}
+              isModified={isModified}
+            />
+          }
+        />
+      }
       padding={0}
     >
       {isTrackingBudgetForecast ? (
