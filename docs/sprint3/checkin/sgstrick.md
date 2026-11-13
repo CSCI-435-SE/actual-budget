@@ -2,6 +2,7 @@
 
 So far I have been implementing Issue #161. This is a subissue from Issue #160, and blocks Issue #162. These all deal with the sync server aspect of Actual Budget, which is something we have not worked with before. The goal is to build a test that runs the sync server and multiple clients together in a single test so we can write end-to-end sync tests without rebuilding the setup each time. After making initial changes to be tested and review, I created PR #171.
 
+PR Link: https://github.com/CSCI-435-SE/actual-budget/pull/171
 
 ## What is one thing you learned about the codebase or about software engineering practice?
 
