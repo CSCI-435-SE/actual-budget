@@ -12,27 +12,11 @@ import {
   writeAttachmentFile,
 } from './storage';
 
-const failRename = vi.hoisted(() => ({ current: false }));
-
-vi.mock('#platform/server/fs', async importOriginal => {
-  const actual = await importOriginal<typeof fs>();
-  return {
-    ...actual,
-    rename: async (frompath: string, topath: string) => {
-      if (failRename.current) {
-        throw new Error('rename failed');
-      }
-      return actual.rename(frompath, topath);
-    },
-  };
-});
-
 const BUDGET_ID = 'My-Budget-abc1234';
 
 let documentDir: string;
 
 beforeEach(() => {
-  failRename.current = false;
   documentDir = nativeFs.mkdtempSync(
     path.join(os.tmpdir(), 'actual-attachments-'),
   );
@@ -78,15 +62,20 @@ describe('attachment storage', () => {
     expect(read && Array.from(read)).toEqual([1, 2, 3]);
   });
 
-  it('leaves no file behind when the write fails', async () => {
-    failRename.current = true;
+  it('removes the temporary file when the rename fails', async () => {
+    // A non-empty folder where the file should go makes the rename fail.
+    // (The fs module can't be mocked here: the test setup has already
+    // loaded this module through cloud-storage.)
+    const blocker = path.join(documentDir, BUDGET_ID, 'attachments', 'att-1');
+    nativeFs.mkdirSync(blocker, { recursive: true });
+    nativeFs.writeFileSync(path.join(blocker, 'file'), 'x');
 
     await expect(
       writeAttachmentFile(BUDGET_ID, 'att-1', new Uint8Array([1, 2, 3])),
-    ).rejects.toThrow('rename failed');
+    ).rejects.toThrow();
 
-    expect(listAttachmentsDir()).toEqual([]);
-    expect(await readAttachmentFile(BUDGET_ID, 'att-1')).toBeNull();
+    expect(listAttachmentsDir()).toEqual(['att-1']);
+    expect(nativeFs.readdirSync(blocker)).toEqual(['file']);
   });
 
   it('reports a missing file as null', async () => {

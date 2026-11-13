@@ -8,6 +8,7 @@ import * as db from '#server/db';
 import type { DbTransaction, DbTransactionAttachment } from '#server/db';
 import * as prefs from '#server/prefs';
 import {
+  detectAttachmentMimeType,
   normalizeAttachmentFileName,
   validateAttachment,
 } from '#shared/attachments';
@@ -203,7 +204,15 @@ async function readAttachment({
     if (data == null) {
       return { error: { reason: 'missing' } };
     }
-    return { attachment: fromDbRow(row), data };
+    // Report the type found in the file itself rather than the row's: rows
+    // can come from an imported budget, and the UI shows the file using
+    // this type
+    const mimeType = detectAttachmentMimeType(data);
+    if (mimeType == null) {
+      logger.warn(`Attachment ${id} is not an allowed file type`);
+      return { error: { reason: 'read-failed' } };
+    }
+    return { attachment: { ...fromDbRow(row), mime_type: mimeType }, data };
   } catch (error) {
     reportError('Failed to read attachment file', error);
     return { error: { reason: 'read-failed' } };
@@ -256,7 +265,8 @@ function fromDbRow(row: DbTransactionAttachment): TransactionAttachmentEntity {
     id: row.id,
     transaction_id: row.transaction_id,
     file_name: row.file_name,
-    // Only validated types are ever written
+    // This app only writes validated types, but an imported budget could hold
+    // anything; `attachment-read` reports the type found in the file instead
     mime_type: row.mime_type as AttachmentMimeType,
     size: row.size,
     storage: 'local',

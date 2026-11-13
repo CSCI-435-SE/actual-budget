@@ -12,27 +12,13 @@ import {
 } from '#shared/attachments';
 
 import { app } from './app';
+import * as storage from './storage';
 
 vi.mock('#platform/server/connection', () => ({
   init: vi.fn(),
   send: vi.fn(),
   resetEvents: vi.fn(),
 }));
-
-const failRename = vi.hoisted(() => ({ current: false }));
-
-vi.mock('#platform/server/fs', async importOriginal => {
-  const actual = await importOriginal<typeof fs>();
-  return {
-    ...actual,
-    rename: async (frompath: string, topath: string) => {
-      if (failRename.current) {
-        throw new Error('rename failed');
-      }
-      return actual.rename(frompath, topath);
-    },
-  };
-});
 
 // `prefs.loadPrefs()` uses this id in tests
 const BUDGET_ID = 'test';
@@ -70,7 +56,6 @@ beforeEach(async () => {
   await global.emptyDatabase()();
   await prefs.loadPrefs();
 
-  failRename.current = false;
   vi.mocked(connection.send).mockClear();
 
   documentDir = nativeFs.mkdtempSync(
@@ -205,8 +190,12 @@ describe('attachment-add', () => {
     },
   );
 
-  it('leaves nothing behind when writing the file fails', async () => {
-    failRename.current = true;
+  it('saves no row when writing the file fails', async () => {
+    // `writeAttachmentFile` removes its own temporary file on failure (see
+    // storage.test.ts); here it just has to fail
+    const write = vi
+      .spyOn(storage, 'writeAttachmentFile')
+      .mockRejectedValue(new Error('disk full'));
 
     const result = await addAttachment({
       transactionId: 'plain',
@@ -214,10 +203,13 @@ describe('attachment-add', () => {
       data: PDF,
     });
 
+    expect(write).toHaveBeenCalledOnce();
     expect(result).toEqual({ error: { reason: 'save-failed' } });
     expect(attachmentFiles()).toEqual([]);
     expect(attachmentRows()).toEqual([]);
     expect(syncEvents()).toEqual([]);
+
+    write.mockRestore();
   });
 
   it('removes the file when saving the row fails', async () => {
@@ -374,6 +366,47 @@ describe('attachment-read', () => {
 
     expect(await readAttachment({ id: added.attachment.id })).toEqual({
       error: { reason: 'missing' },
+    });
+  });
+
+  it("reports the type found in the file, not the row's", async () => {
+    // An imported budget could hold a row with any type
+    const added = await addAttachment({
+      transactionId: 'plain',
+      fileName: 'receipt.png',
+      data: PNG,
+    });
+    if (!('attachment' in added)) {
+      throw new Error('setup failed');
+    }
+    db.runQuery(
+      "UPDATE transaction_attachments SET mime_type = 'text/html' WHERE id = ?",
+      [added.attachment.id],
+    );
+
+    const result = await readAttachment({ id: added.attachment.id });
+
+    expect('attachment' in result && result.attachment.mime_type).toBe(
+      'image/png',
+    );
+  });
+
+  it('refuses to return a file that is not an allowed type', async () => {
+    const added = await addAttachment({
+      transactionId: 'plain',
+      fileName: 'receipt.pdf',
+      data: PDF,
+    });
+    if (!('attachment' in added)) {
+      throw new Error('setup failed');
+    }
+    nativeFs.writeFileSync(
+      path.join(documentDir, BUDGET_ID, 'attachments', added.attachment.id),
+      '<script>alert(1)</script>',
+    );
+
+    expect(await readAttachment({ id: added.attachment.id })).toEqual({
+      error: { reason: 'read-failed' },
     });
   });
 

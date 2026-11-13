@@ -9,8 +9,12 @@ const ATTACHMENTS_DIR = 'attachments';
 const TEMP_SUFFIX = '.tmp';
 
 // The id becomes part of a path, so only allow characters a uuid can contain
+export function isSafeAttachmentId(attachmentId: string): boolean {
+  return /^[A-Za-z0-9_-]+$/.test(attachmentId);
+}
+
 function assertSafeAttachmentId(attachmentId: string) {
-  if (!/^[A-Za-z0-9_-]+$/.test(attachmentId)) {
+  if (!isSafeAttachmentId(attachmentId)) {
     throw new Error(`Invalid attachment id: "${attachmentId}"`);
   }
 }

@@ -9,6 +9,11 @@ import * as memory from '#platform/server/memory';
 import * as sqlite from '#platform/server/sqlite';
 import * as monthUtils from '#shared/months';
 
+import {
+  clearAttachmentRows,
+  collectAttachmentEntries,
+  restoreAttachmentEntries,
+} from './attachments/archive';
 import * as encryption from './encryption';
 import {
   FileDownloadError,
@@ -142,7 +147,15 @@ export async function resetSyncState(newKeyState) {
   return {};
 }
 
-export async function exportBuffer() {
+// `includeAttachments` is true for the user's own export, which keeps the
+// attachment rows and adds their files. The snapshot uploaded to the sync
+// server passes false: attachments stay on this device, so their rows are
+// removed from the uploaded copy.
+export async function exportBuffer({
+  includeAttachments,
+}: {
+  includeAttachments: boolean;
+}) {
   const { id, budgetName } = prefs.getPrefs();
   if (!budgetName) {
     return null;
@@ -172,6 +185,13 @@ export async function exportBuffer() {
       `,
     );
 
+    let attachmentEntries: Record<string, Uint8Array> = {};
+    if (includeAttachments) {
+      attachmentEntries = await collectAttachmentEntries(id, memDb);
+    } else {
+      clearAttachmentRows(memDb);
+    }
+
     const dbContent = await sqlite.exportDatabase(memDb);
 
     sqlite.closeDatabase(memDb);
@@ -188,6 +208,7 @@ export async function exportBuffer() {
     const entries = {
       'db.sqlite': Buffer.from(dbContent),
       'metadata.json': metaContent,
+      ...attachmentEntries,
     };
 
     return { zipped: safeZip(entries), entries };
@@ -283,6 +304,9 @@ export async function importBuffer(fileData, buffer) {
   await fs.writeFile(fs.join(budgetDir, 'db.sqlite'), dbContent);
   await fs.writeFile(fs.join(budgetDir, 'metadata.json'), JSON.stringify(meta));
 
+  // Only the user's own exports contain attachment files
+  await restoreAttachmentEntries(meta.id, entries, dir);
+
   return { id: meta.id };
 }
 
@@ -292,7 +316,7 @@ export async function upload() {
     throw FileUploadError('unauthorized');
   }
 
-  const exported = await exportBuffer();
+  const exported = await exportBuffer({ includeAttachments: false });
   if (exported == null) {
     return;
   }
