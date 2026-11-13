@@ -4,12 +4,15 @@ import * as path from 'path';
 
 import * as connection from '#platform/server/connection';
 import * as fs from '#platform/server/fs';
+import { aqlQuery } from '#server/aql';
 import * as db from '#server/db';
 import * as prefs from '#server/prefs';
 import {
   ATTACHMENT_MAX_SIZE,
   ATTACHMENT_MIME_TYPES,
+  transactionAttachmentCountsQuery,
 } from '#shared/attachments';
+import type { TransactionAttachmentCount } from '#shared/attachments';
 
 import { app } from './app';
 import * as storage from './storage';
@@ -414,5 +417,59 @@ describe('attachment-read', () => {
     expect(await readAttachment({ id: 'unknown' })).toEqual({
       error: { reason: 'not-found' },
     });
+  });
+});
+
+describe('transactionAttachmentCountsQuery', () => {
+  async function counts() {
+    const { data } = await aqlQuery(transactionAttachmentCountsQuery());
+    return (data as TransactionAttachmentCount[])
+      .filter(row => row.transaction_id != null)
+      .sort((a, b) =>
+        (a.transaction_id ?? '').localeCompare(b.transaction_id ?? ''),
+      );
+  }
+
+  async function add(transactionId: string) {
+    const result = await addAttachment({
+      transactionId,
+      fileName: 'receipt.pdf',
+      data: PDF,
+    });
+    if (!('attachment' in result)) {
+      throw new Error('setup failed');
+    }
+    return result.attachment;
+  }
+
+  it('counts the attachments on each transaction', async () => {
+    const first = await add('plain');
+    await add('plain');
+    // A split child's attachment is counted on its parent
+    await add('child');
+
+    expect(await counts()).toEqual([
+      { transaction_id: 'parent', count: 1 },
+      { transaction_id: 'plain', count: 2 },
+    ]);
+
+    await removeAttachment({ id: first.id });
+
+    expect(await counts()).toEqual([
+      { transaction_id: 'parent', count: 1 },
+      { transaction_id: 'plain', count: 1 },
+    ]);
+  });
+
+  it('leaves out attachments on deleted transactions', async () => {
+    await add('plain');
+    await add('parent');
+    db.runQuery("UPDATE transactions SET tombstone = 1 WHERE id = 'plain'");
+
+    expect(await counts()).toEqual([{ transaction_id: 'parent', count: 1 }]);
+  });
+
+  it('returns nothing when there are no attachments', async () => {
+    expect(await counts()).toEqual([]);
   });
 });

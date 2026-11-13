@@ -1,5 +1,7 @@
 import type { AttachmentMimeType } from '#types/models';
 
+import { q } from './query';
+
 // Rules for files attached to transactions (#154). They live in `shared` so
 // the UI can check a file before sending it, and loot-core checks it again
 // before storing it, using the same rules.
@@ -92,6 +94,21 @@ export function validateAttachment(
   }
 
   return { ok: true, mimeType };
+}
+
+// The number of attachments on each transaction, as rows of
+// `{ transaction_id, count }`. `transaction_id` is read through the live
+// transactions, so attachments on a deleted transaction come back with a
+// null id.
+export type TransactionAttachmentCount = {
+  transaction_id: string | null;
+  count: number;
+};
+
+export function transactionAttachmentCountsQuery() {
+  return q('transaction_attachments')
+    .groupBy('transaction_id')
+    .select(['transaction_id', { count: { $count: '$id' } }]);
 }
 
 // Cleans up a file name for storing and showing. Files are stored by
