@@ -24,7 +24,7 @@
 - **Two additions to the standalone Vitest config:**
   - The shared row walk (`budgetMonthRows.ts`) imports `MonthsContext.tsx`, so the config compiles JSX (`oxc: { jsx: { runtime: 'automatic' } }`). Without it, the CSV and row tests fail to load.
   - `vitest.stryker.issue-97.setup.ts` initializes i18next. The regular test run initializes it indirectly (`setupTests.ts` → mocks → redux store → i18n). Without it, `t('Total')` returns `undefined` and 16 tests fail before Stryker starts. I checked that all 57 (before) and 73 (after) tests pass under this config before each run.
-- **Commits.** [`33f7a49f6`](https://github.com/CSCI-435-SE/actual-budget/commit/33f7a49f6) is the code and tests the before run saw; the next commit adds the tests written from the survivor analysis, the after report and this write-up. I made the before run before committing anything, so to build `33f7a49f6` I took those tests back out. One difference: the "indents category names" test uses the version without `as` casts that I cleaned up later, which has the same assertions. I reran Stryker on `33f7a49f6` and got the same 75.15%, with every one of the 169 mutants in the same state as the before report.
+- **Commits.** [`33f7a49f6`](https://github.com/CSCI-435-SE/actual-budget/commit/33f7a49f6) is the code and tests the before run saw; [`08cd6fa9d`](https://github.com/CSCI-435-SE/actual-budget/commit/08cd6fa9d) adds the tests written from the survivor analysis, the after report and this write-up. I made the before run before committing anything, so to build `33f7a49f6` I took those tests back out. One difference: the "indents category names" test uses the version without `as` casts that I cleaned up later, which has the same assertions. I reran Stryker on `33f7a49f6` and got the same 75.15%, with every one of the 169 mutants in the same state as the before report.
 - **Timeouts.** My first after run used `concurrency: 4`. It reported 4 mutants in `budgetMonthPdf.ts` (lines 114–117) as timed out, which Stryker counts as detected (92.90%). They had survived the before run, and two of them are equivalent (see the table), so the timeouts were the machine being overloaded, not tests catching them. I reran at `concurrency: 2` and they survived with no timeouts. The after report and score above are from that run, and the committed config uses 2. The before run had no timeouts at 4.
 
 ## Surviving mutants
@@ -73,7 +73,7 @@ All 42 survivors are in lines this PR added. "Gap" = a test was missing; "Equiva
 
 ## New or strengthened test
 
-Commit: TODO (link to the commit after `33f7a49f6`; added once it's pushed) · Test: `budgetMonthPdf.test.ts › renderBudgetMonthPdf › draws the page number inside the bottom margin of each page` · Kills: `budgetMonthPdf.ts:172` (`pageSize.getHeight() - 20` → `+ 20`), shown as Killed in the after report.
+Commit: [`08cd6fa9d`](https://github.com/CSCI-435-SE/actual-budget/commit/08cd6fa9d) (all tests added from the survivor analysis; the code they test is in [`33f7a49f6`](https://github.com/CSCI-435-SE/actual-budget/commit/33f7a49f6)) · Test: `budgetMonthPdf.test.ts › renderBudgetMonthPdf › draws the page number inside the bottom margin of each page` · Kills: `budgetMonthPdf.ts:172` (`pageSize.getHeight() - 20` → `+ 20`), shown as Killed in the after report.
 
 All tests added or strengthened from this analysis:
 
