@@ -137,7 +137,7 @@ export function BudgetExportMenu() {
         showHiddenCategories,
         formatAmount: value => format(value, 'financial'),
       });
-      const title = t('{{budgetName}} — {{month}}', {
+      const title = t('{{budgetName}}: {{month}}', {
         budgetName: budgetName || t('Budget'),
         month: monthUtils.format(month, 'MMMM yyyy', locale),
       });
