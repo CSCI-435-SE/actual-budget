@@ -98,6 +98,25 @@ describe('toPdfSafeText', () => {
     expect(toPdfSafeText(drawable)).toBe(drawable);
   });
 
+  // Issue #97, Design Decision 1: strip U+200E/U+200F, U+202A-U+202E and
+  // U+2066-U+2069. useFormat only emits U+202A/U+202C today, so each mark is
+  // checked on its own in case that changes.
+  it.each([
+    0x200e, 0x200f, 0x202a, 0x202b, 0x202c, 0x202d, 0x202e, 0x2066, 0x2067,
+    0x2068, 0x2069,
+  ])('strips the direction mark U+%s', code => {
+    const mark = String.fromCharCode(code);
+    expect(toPdfSafeText(`${mark}$${mark}12.00`)).toBe('$12.00');
+  });
+
+  // Latin-1 (up to U+00FF) is what the PDF font covers.
+  it('keeps the last Latin-1 character and replaces the first one after it', () => {
+    const lastLatin1 = String.fromCharCode(0x00ff); // y with diaeresis
+    const firstAfter = String.fromCharCode(0x0100); // A with macron
+    expect(toPdfSafeText(lastLatin1)).toBe(lastLatin1);
+    expect(toPdfSafeText(firstAfter)).toBe('?');
+  });
+
   // Out of scope for #97 (needs an embedded font), but one unsupported
   // character must not garble the rest of the text.
   it('replaces characters the PDF font cannot draw with a single "?"', () => {

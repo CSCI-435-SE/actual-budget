@@ -23,7 +23,8 @@
   "jsonReporter": {
     "fileName": "reports/mutation/issue-97.json"
   },
-  "concurrency": 4,
+  "concurrency": 2,
+  "concurrency_comment": "At 4, the after run reported 4 equivalent mutants (budgetMonthPdf.ts lines 114-117) as timeouts because the machine was overloaded; Stryker counts timeouts as kills. At 2 there are no timeouts.",
   "timeoutMS": 60000,
   "tempDirName": ".stryker-tmp"
 }
