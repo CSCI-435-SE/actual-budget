@@ -49,7 +49,9 @@
         "src/globals.ts",
         "src/build-shims.js",
         "vitest.stryker.config.mts",
-        "vitest.stryker.setup.ts"
+        "vitest.stryker.setup.ts",
+        "vitest.stryker.issue-97.config.mts",
+        "vitest.stryker.issue-97.setup.ts"
       ],
       "ignore": ["playwright.config.d.ts"],
       "ignoreDependencies": ["plugins-service"]
