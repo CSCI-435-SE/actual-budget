@@ -2,6 +2,7 @@ import type { CategoryGroupEntity } from '@actual-app/core/types/models';
 import { describe, expect, it } from 'vitest';
 
 import { buildBudgetMonthPdfRows } from './budgetMonthPdfRows';
+import { collectBudgetMonthRows } from './budgetMonthRows';
 
 const month = '2026-01';
 
@@ -90,53 +91,94 @@ describe('buildBudgetMonthPdfRows', () => {
     expect(build()).toEqual([
       {
         type: 'groupHeader',
-        categoryGroup: 'Bills',
-        category: '',
+        label: 'Bills',
         budgeted: '$1500.00',
         spent: '$-1400.00',
         balance: '$100.00',
       },
       {
         type: 'category',
-        categoryGroup: 'Bills',
-        category: 'Rent',
+        label: 'Rent',
         budgeted: '$1200.00',
         spent: '$-1200.00',
         balance: '$0.00',
       },
       {
         type: 'groupHeader',
-        categoryGroup: 'Income',
-        category: '',
+        label: 'Income',
         budgeted: '',
         spent: '$3000.00',
         balance: '',
       },
       {
         type: 'category',
-        categoryGroup: 'Income',
-        category: 'Salary',
+        label: 'Salary',
         budgeted: '',
         spent: '$3000.00',
         balance: '',
       },
       {
-        type: 'grandTotal',
-        categoryGroup: 'Total',
-        category: '',
+        type: 'total',
+        label: 'Total',
         budgeted: '$2000.00',
         spent: '$-1400.00',
         balance: '$600.00',
       },
       {
-        type: 'grandTotal',
-        categoryGroup: 'To Budget',
-        category: '',
+        type: 'toBudget',
+        label: 'To Budget',
         budgeted: '',
         spent: '',
         balance: '$1000.00',
       },
     ]);
+  });
+
+  // AC3: the group name is shown only on its group row.
+  it('shows each category group name exactly once, on its groupHeader row', () => {
+    const rows = build({ showHiddenCategories: true });
+
+    for (const groupName of ['Bills', 'Savings', 'Income']) {
+      const rowsWithName = rows.filter(r => r.label === groupName);
+      expect(rowsWithName).toHaveLength(1);
+      expect(rowsWithName[0].type).toBe('groupHeader');
+    }
+  });
+
+  // AC5: To Budget has to be styled differently from Total, so the two need
+  // different row types.
+  it('gives the Total and To Budget rows different types', () => {
+    const rows = build();
+    expect(rows.at(-2)).toMatchObject({ type: 'total', label: 'Total' });
+    expect(rows.at(-1)).toMatchObject({ type: 'toBudget', label: 'To Budget' });
+  });
+
+  // AC8: the PDF shows the same rows and values as the CSV export, which is
+  // built from collectBudgetMonthRows.
+  it('has the same rows, order and amounts as the shared CSV row walk', () => {
+    const options = {
+      month,
+      categoryGroups,
+      cells: makeCells(),
+      showHiddenCategories: true,
+    };
+    const rawRows = collectBudgetMonthRows(options);
+    const pdfRows = buildBudgetMonthPdfRows({ ...options, formatAmount });
+
+    expect(pdfRows).toHaveLength(rawRows.length);
+    pdfRows.forEach((pdfRow, i) => {
+      const raw = rawRows[i];
+      expect(pdfRow.label).toBe(raw.categoryName || raw.groupName);
+      expect(pdfRow.budgeted).toBe(
+        raw.budgeted == null ? '' : formatAmount(raw.budgeted),
+      );
+      expect(pdfRow.spent).toBe(
+        raw.spent == null ? '' : formatAmount(raw.spent),
+      );
+      expect(pdfRow.balance).toBe(
+        raw.balance == null ? '' : formatAmount(raw.balance),
+      );
+    });
   });
 
   it('tags a group with no visible categories as a groupHeader row with no category rows beneath it', () => {
@@ -153,11 +195,8 @@ describe('buildBudgetMonthPdfRows', () => {
       groups,
       cells: makeCells(),
     });
-    expect(rows[0]).toMatchObject({
-      type: 'groupHeader',
-      categoryGroup: 'Bills',
-    });
-    expect(rows[1]).toMatchObject({ type: 'grandTotal' });
+    expect(rows[0]).toMatchObject({ type: 'groupHeader', label: 'Bills' });
+    expect(rows[1]).toMatchObject({ type: 'total' });
   });
 
   it('uses group cells for subtotals even when hidden categories are left out', () => {
@@ -172,16 +211,16 @@ describe('buildBudgetMonthPdfRows', () => {
 
   it('includes hidden groups and categories when the toggle is on', () => {
     const rows = build({ showHiddenCategories: true });
-    expect(rows.map(r => [r.type, r.categoryGroup, r.category])).toEqual([
-      ['groupHeader', 'Bills', ''],
-      ['category', 'Bills', 'Rent'],
-      ['category', 'Bills', 'Power'],
-      ['groupHeader', 'Savings', ''],
-      ['category', 'Savings', 'Emergency'],
-      ['groupHeader', 'Income', ''],
-      ['category', 'Income', 'Salary'],
-      ['grandTotal', 'Total', ''],
-      ['grandTotal', 'To Budget', ''],
+    expect(rows.map(r => [r.type, r.label])).toEqual([
+      ['groupHeader', 'Bills'],
+      ['category', 'Rent'],
+      ['category', 'Power'],
+      ['groupHeader', 'Savings'],
+      ['category', 'Emergency'],
+      ['groupHeader', 'Income'],
+      ['category', 'Salary'],
+      ['total', 'Total'],
+      ['toBudget', 'To Budget'],
     ]);
   });
 
@@ -191,7 +230,7 @@ describe('buildBudgetMonthPdfRows', () => {
     );
     const rows = build({ groups });
     expect(rows).toContainEqual(
-      expect.objectContaining({ type: 'groupHeader', categoryGroup: 'Income' }),
+      expect.objectContaining({ type: 'groupHeader', label: 'Income' }),
     );
   });
 
@@ -208,7 +247,7 @@ describe('buildBudgetMonthPdfRows', () => {
     });
     expect(rows).toContainEqual(
       expect.objectContaining({
-        category: 'Rent',
+        label: 'Rent',
         budgeted: '$1200.00',
         spent: '$-1200.00',
         balance: '$250.00',
@@ -216,7 +255,7 @@ describe('buildBudgetMonthPdfRows', () => {
     );
     expect(rows).toContainEqual(
       expect.objectContaining({
-        category: 'Power',
+        label: 'Power',
         budgeted: '$100.00',
         spent: '$-150.00',
         balance: '$-50.00',
@@ -227,9 +266,8 @@ describe('buildBudgetMonthPdfRows', () => {
   it('labels a negative To Budget as Overbudgeted', () => {
     const rows = build({ cells: makeCells({ 'to-budget': -2550 }) });
     expect(rows.at(-1)).toEqual({
-      type: 'grandTotal',
-      categoryGroup: 'Overbudgeted',
-      category: '',
+      type: 'toBudget',
+      label: 'Overbudgeted',
       budgeted: '',
       spent: '',
       balance: '$-25.50',
@@ -238,10 +276,9 @@ describe('buildBudgetMonthPdfRows', () => {
 
   it('treats missing cells as zero', () => {
     const rows = build({ cells: new Map() });
-    expect(rows.find(r => r.categoryGroup === 'Total')).toEqual({
-      type: 'grandTotal',
-      categoryGroup: 'Total',
-      category: '',
+    expect(rows.find(r => r.label === 'Total')).toEqual({
+      type: 'total',
+      label: 'Total',
       budgeted: '$0.00',
       spent: '$0.00',
       balance: '$0.00',
@@ -251,7 +288,7 @@ describe('buildBudgetMonthPdfRows', () => {
   it('leaves blank income cells blank instead of formatting them as zero', () => {
     const rows = build();
     const incomeGroupRow = rows.find(
-      r => r.type === 'groupHeader' && r.categoryGroup === 'Income',
+      r => r.type === 'groupHeader' && r.label === 'Income',
     );
     expect(incomeGroupRow).toMatchObject({ budgeted: '', balance: '' });
   });
