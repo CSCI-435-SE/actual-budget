@@ -1,0 +1,10 @@
+What have you implemented so far, and what remains?
+I implemented issue #148, which adds a Transactions column to the Manage Tags page showing how many transactions use each tag. The work is split into five commits: a shared tag-matching pattern used by the existing hasTags filter, a server handler that counts tagged transactions, a client query that refreshes the counts when tags or transactions change, the column itself (right-aligned, with a muted 0 for unused tags and a loading placeholder), and a release note. Unit, integration and component tests pass, and I checked the UI manually. What remains is getting and responding to review feedback, getting PR #178 merged, and also working on my second issue.
+
+What is one thing you learned about testing in your project?
+I learned that the best source of expected values is sometimes the real system rather than anything worked out by hand. The tag counts had to match exactly what the View Transactions button lists, so there's a test that runs the real View Transactions query on tricky data (split transactions, deleted rows, #food vs #foodie, escaped tags) and checks every count against it. A wrong hand-written expectation can't slip through that test. I also learned to check a failing test against the code from before my branch: one core failure turned out to be an existing timeout, not my change.
+
+What is one risk to finishing your work by Nov 19, and what will you do about it?
+The biggest risk is how slow my development machine is. The repo sits on my Windows drive and is mounted into the dev container, so a full test run takes over 90 minutes and some tests time out just from slowness. If reviewers request changes, re-verifying could eat most of a day. To reduce this, I'll move the repo onto the WSL Linux filesystem, free up space on my nearly full C: drive, and run only the tests affected by my changes during review, saving the full suite for the final check before merge.
+
+PR link: https://github.com/CSCI-435-SE/actual-budget/pull/178
