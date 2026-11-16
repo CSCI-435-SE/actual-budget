@@ -29,11 +29,15 @@ export type ApiPrefs = {
   groupId?: string;
 };
 
-/** What `init` returns: loot-core's handler bridge and its database. */
+/**
+ * What `init` returns: loot-core's handler bridge and its database.
+ * `send` is a plain function (it doesn't use `this`), so it's safe to pass
+ * around on its own.
+ */
 export type ApiLib = {
-  send(name: 'load-prefs'): Promise<ApiPrefs>;
-  send(name: 'sync'): Promise<ApiSyncResult>;
-  send(name: string, args?: unknown): Promise<unknown>;
+  send(this: void, name: 'load-prefs'): Promise<ApiPrefs>;
+  send(this: void, name: 'sync'): Promise<ApiSyncResult>;
+  send(this: void, name: string, args?: unknown): Promise<unknown>;
   db: {
     all<T extends object = Row>(sql: string, params?: unknown[]): Promise<T[]>;
     first<T extends object = Row>(
