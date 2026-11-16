@@ -1,10 +1,9 @@
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 
-import { strToU8, zipSync } from 'fflate';
-
 import { startSyncServer } from './startSyncServer';
 import type { SyncServerHandle } from './startSyncServer';
+import { zipStored } from './zip';
 
 export type SyncServerWithBudgetHandle = SyncServerHandle & {
   password: string;
@@ -18,7 +17,7 @@ export type SyncServerWithBudgetHandle = SyncServerHandle & {
 // The empty schema loot-core copies when it creates a new budget. It isn't
 // in loot-core's package exports, so it's referenced by its repo path.
 const DEFAULT_DB_URL = new URL(
-  '../../loot-core/default-db.sqlite',
+  '../../../loot-core/default-db.sqlite',
   import.meta.url,
 );
 
@@ -77,9 +76,9 @@ async function uploadStarterBudget(
   // Same shape as loot-core's `upload()`: a zip of db.sqlite and
   // metadata.json, with `resetClock` so each downloading client gets its
   // own CRDT node id
-  const zipped = zipSync({
+  const zipped = zipStored({
     'db.sqlite': new Uint8Array(await readFile(DEFAULT_DB_URL)),
-    'metadata.json': strToU8(
+    'metadata.json': new TextEncoder().encode(
       JSON.stringify({ id: budgetId, budgetName, resetClock: true }),
     ),
   });

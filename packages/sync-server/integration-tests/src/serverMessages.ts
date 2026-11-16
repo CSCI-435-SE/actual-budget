@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { openDatabase } from '@actual-app/sync-server/src/db';
+import { openDatabase } from '#db';
 
 import type { SyncServerHandle } from './startSyncServer';
 

@@ -18,6 +18,7 @@
   ],
   "type": "module",
   "imports": {
+    "#app": "./src/app.ts",
     "#db": "./src/db.js",
     "#account-db": "./src/account-db.js",
     "#load-config": "./src/load-config.js",
@@ -46,6 +47,7 @@
   },
   "publishConfig": {
     "imports": {
+      "#app": "./build/src/app.js",
       "#db": "./build/src/db.js",
       "#account-db": "./build/src/account-db.js",
       "#load-config": "./build/src/load-config.js",
@@ -77,8 +79,9 @@
     "start": "yarn build && node build/app.js",
     "start-monitor": "nodemon --exec 'yarn build && node build/app.js' --ignore './build/**/*' --ext 'ts,js' build/app.js",
     "build": "vite build",
-    "typecheck": "tsgo -b && tsc-strict",
-    "test": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules --trace-warnings' vitest --run",
+    "typecheck": "tsgo -b && tsgo -b integration-tests && tsc-strict",
+    "test": "NODE_ENV=test NODE_OPTIONS='--experimental-vm-modules --trace-warnings' vitest --run && yarn test:integration",
+    "test:integration": "vitest --run --config integration-tests/vitest.config.ts",
     "db:migrate": "yarn build && cross-env NODE_ENV=development node build/scripts/run-migrations.js up",
     "db:downgrade": "yarn build && cross-env NODE_ENV=development node build/scripts/run-migrations.js down",
     "db:test-migrate": "yarn build && cross-env NODE_ENV=test node build/scripts/run-migrations.js up",

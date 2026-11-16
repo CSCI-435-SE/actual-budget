@@ -7,6 +7,7 @@
 // it must only use erasable TypeScript syntax and type-only local imports.
 import { parentPort } from 'node:worker_threads';
 
+import type { ApiLib, ApiModule, ApiSyncMessage } from './apiBundle';
 import type {
   Change,
   ChangeResult,
@@ -64,9 +65,10 @@ function isSyncRequest(input: Parameters<typeof fetch>[0]): boolean {
   return new URL(url).pathname.endsWith('/sync/sync');
 }
 
-const api = await import('@actual-app/api');
-
-type Lib = Awaited<ReturnType<typeof api.init>>;
+// The built API, loaded by path because sync-server doesn't depend on
+// `@actual-app/api` (see apiBundle.ts)
+const API_BUNDLE_URL = new URL('../../../api/dist/index.js', import.meta.url);
+const api: ApiModule = await import(API_BUNDLE_URL.href);
 
 // --- Message handling ---------------------------------------------------
 
@@ -75,7 +77,7 @@ if (!parentPort) {
 }
 const port = parentPort;
 
-let lib: Lib | null = null;
+let lib: ApiLib | null = null;
 
 port.on('message', async ({ id, op }: DeviceRequest) => {
   let response: DeviceResponse;
@@ -200,13 +202,7 @@ function runSync(): Promise<SyncResult> {
   });
 }
 
-function toSyncedMessage(message: {
-  timestamp: unknown;
-  dataset: string;
-  row: string;
-  column: string;
-  value: unknown;
-}): SyncedMessage {
+function toSyncedMessage(message: ApiSyncMessage): SyncedMessage {
   const { timestamp, dataset, row, column, value } = message;
   return { timestamp: String(timestamp), dataset, row, column, value };
 }
@@ -260,7 +256,7 @@ async function getClientId(): Promise<string> {
   return String(timestamp).split('-').pop() ?? '';
 }
 
-function requireLib(): Lib {
+function requireLib(): ApiLib {
   if (!lib) {
     throw new Error('Device is not initialized');
   }

@@ -1,7 +1,13 @@
+import { fileURLToPath } from 'node:url';
+
 import { defineConfig } from 'vitest/config';
 
+// Run by sync-server's `test` script after its unit tests, with
+// `--config integration-tests/vitest.config.ts`. sync-server's own
+// vitest.config.ts excludes this folder.
 export default defineConfig({
   test: {
+    root: fileURLToPath(new URL('.', import.meta.url)),
     include: ['src/**/*.test.ts'],
     environment: 'node',
     // Removes the temp folders Vitest itself leaves behind on Windows
@@ -25,8 +31,9 @@ export default defineConfig({
           [
             'junit',
             {
-              outputFile: './test-results/junit.xml',
-              suiteName: 'sync-integration-tests',
+              // Next to sync-server's unit test results, where CI collects them
+              outputFile: '../test-results/junit-integration.xml',
+              suiteName: 'sync-server-integration',
             },
           ],
         ]

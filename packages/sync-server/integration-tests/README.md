@@ -10,10 +10,11 @@ two or more **real clients** ("devices"), and checks that the devices converge.
 - Devices talk to the server over loopback HTTP only, and sync only when a test
   tells them to.
 
-Use this package to write sync scenarios: concurrent edits, offline catch-up,
-and so on. The unit tests in `packages/loot-core/src/server/sync/` (which use
-`mockSyncServer.ts`) and `packages/sync-server/src/app-sync.test.ts` are
-unchanged; this package adds coverage across both.
+Use these tests to write sync scenarios: concurrent edits, offline catch-up,
+and so on. They live in `packages/sync-server/integration-tests/` and run as
+part of sync-server's `test` script, after its unit tests. The unit tests in
+`packages/loot-core/src/server/sync/` (which use `mockSyncServer.ts`) and
+`packages/sync-server/src/` are unchanged; these add coverage across both.
 
 ## Running the tests
 
@@ -23,14 +24,14 @@ From the repo root:
 # As part of the whole suite. Builds @actual-app/api first (cached).
 yarn test
 
-# Just this package. Needs a current API build; see the note below.
+# Just the integration tests. Needs a current API build; see the note below.
 yarn build:api
-yarn workspace @actual-app/sync-integration-tests run test
+yarn workspace @actual-app/sync-server run test:integration
 ```
 
 Devices run on the **bundled** `@actual-app/api` build in `packages/api/dist`.
 `yarn test` builds it (or restores it from lage's cache) before these tests.
-When you run this package directly, build it yourself after changing loot-core
+When you run the integration tests directly, build it yourself after changing loot-core
 or the API, and after any `yarn typecheck`: typecheck overwrites
 `packages/api/dist/index.js` with an unbundled compile. If the bundle is
 missing or overwritten, the tests stop right away and tell you to run
@@ -162,14 +163,16 @@ Table "accounts": 1 row(s) differ
 
 1. Add a variant to `Change` in [`src/deviceProtocol.ts`](src/deviceProtocol.ts).
 2. Handle it in `makeChange` in [`src/deviceWorker.ts`](src/deviceWorker.ts),
-   using the `api` methods, and return `{ id }`.
+   using the `api` methods, and return `{ id }`. If you call an API method
+   the devices haven't used before, add its signature to `ApiModule` in
+   [`src/apiBundle.ts`](src/apiBundle.ts).
 
 Keep values plain data (strings, numbers, booleans, arrays, objects): changes
 and results are posted between threads.
 
 ## How it works
 
-These answer the open questions from the issue that introduced this package.
+These answer the open questions from the issue that introduced these tests.
 
 - **Why worker threads?** loot-core keeps its clock, database, prefs and sync
   state in module-level variables, so two clients in one module graph would
@@ -179,14 +182,19 @@ These answer the open questions from the issue that introduced this package.
   (`init` with a session token, `downloadBudget`). Its bundled build runs in a
   plain worker thread, which loot-core's TypeScript source can't. No loot-core
   changes were needed.
+- **Why the API is loaded by path.** sync-server doesn't depend on
+  `@actual-app/api`, and adding that dependency (or a separate workspace for
+  these tests) would change `yarn.lock`. So the device worker imports
+  `packages/api/dist/index.js` by its repo path, and `src/apiBundle.ts` types
+  the methods it calls. lage still builds the API before sync-server's tests.
+  For the same reason, the starter budget is zipped by a small writer in
+  `src/zip.ts` instead of a zip library.
 - **Starting the server without building it.** Vitest compiles sync-server from
   source, including its `?raw` SQL imports and migration loading, so no
   sync-server build and no `--experimental-vm-modules` flag are needed. The
-  only change to sync-server is that `src/app.ts` exports its Express `app`,
-  so tests can listen on port 0 and close the server afterwards.
-- **Why a separate workspace?** It depends on both the client
-  (`@actual-app/api`) and the server (`@actual-app/sync-server`), and neither
-  of those should depend on the other.
+  changes to sync-server itself are that `src/app.ts` exports its Express
+  `app` (plus a `#app` subpath import for it), so tests can listen on port 0
+  and close the server afterwards.
 - **How devices are controlled.** The worker wraps `fetch` before loading the
   API, which is how it blocks automatic syncs, simulates going offline, and
   refuses non-loopback hosts. Workers run with `NODE_ENV=production`, because
@@ -201,7 +209,7 @@ These answer the open questions from the issue that introduced this package.
   `yarn build:api`, then rerun. See [Running the tests](#running-the-tests).
 - **A test times out while starting up**: startup is slow (several seconds per
   server, plus loot-core per device). Timeouts are 60s and at most two files
-  run at once; see `vitest.config.ts`. A test that times out during startup
+  run at once; see `integration-tests/vitest.config.ts`. A test that times out during startup
   can leave a temporary directory behind.
 - **`[cause]: TypeError: fetch failed: automatic sync is disabled on test devices`**
   in the output is expected: it's loot-core logging an automatic sync that

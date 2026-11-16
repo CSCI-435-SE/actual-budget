@@ -1,5 +1,8 @@
 {
-  "extends": "../../tsconfig.json",
+  // Typechecked by sync-server's `typecheck` script. Separate from
+  // sync-server's own tsconfig so these files can be strict and use Node's
+  // newer APIs without changing how the server itself is checked.
+  "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "composite": true,
     "strict": true,
@@ -11,11 +14,7 @@
     "outDir": "build",
     "tsBuildInfoFile": "build/.tsbuildinfo"
   },
-  "references": [
-    { "path": "../api" },
-    { "path": "../crdt" },
-    { "path": "../sync-server" }
-  ],
+  "references": [{ "path": "../../crdt" }, { "path": ".." }],
   "include": ["src/**/*", "vitest.config.ts", "vitest.globalSetup.ts"],
   "exclude": ["node_modules", "build"]
 }

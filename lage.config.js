@@ -17,14 +17,14 @@ module.exports = {
         ],
       },
     },
-    // The integration tests run devices on the built @actual-app/api bundle,
-    // so build it first (cached when nothing changed) instead of testing a
-    // stale or missing bundle.
-    '@actual-app/sync-integration-tests#test': {
+    // sync-server's integration tests (integration-tests/) run devices on the
+    // built @actual-app/api bundle, so build it first (cached when nothing
+    // changed) instead of testing a stale or missing bundle.
+    '@actual-app/sync-server#test': {
       type: 'npmScript',
       dependsOn: ['@actual-app/api#build'],
       options: {
-        outputGlob: ['**/test-results/**'],
+        outputGlob: ['coverage/**', '**/test-results/**'],
       },
     },
     build: {

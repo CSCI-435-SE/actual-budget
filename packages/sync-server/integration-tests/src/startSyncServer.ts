@@ -49,11 +49,10 @@ export async function startSyncServer(): Promise<SyncServerHandle> {
   try {
     // Migrations must run before the app is imported: the app's modules
     // touch the account database as they load.
-    const { run: runMigrations } =
-      await import('@actual-app/sync-server/src/migrations');
+    const { run: runMigrations } = await import('#migrations');
     await runMigrations();
 
-    const { app } = await import('@actual-app/sync-server/src/app');
+    const { app } = await import('#app');
     server = await listen(app.listen(0, '127.0.0.1'));
   } catch (error) {
     await removeDir(rootDir);
@@ -67,8 +66,7 @@ export async function startSyncServer(): Promise<SyncServerHandle> {
     throw new Error('Expected the sync server to listen on a TCP port');
   }
 
-  const { closeAccountDb } =
-    await import('@actual-app/sync-server/src/account-db');
+  const { closeAccountDb } = await import('#account-db');
   const listeningServer = server;
   let shutdownPromise: Promise<void> | null = null;
 
