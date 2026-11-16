@@ -11,7 +11,11 @@
     "outDir": "build",
     "tsBuildInfoFile": "build/.tsbuildinfo"
   },
-  "references": [{ "path": "../crdt" }, { "path": "../sync-server" }],
+  "references": [
+    { "path": "../api" },
+    { "path": "../crdt" },
+    { "path": "../sync-server" }
+  ],
   "include": ["src/**/*", "vitest.config.ts", "vitest.globalSetup.ts"],
   "exclude": ["node_modules", "build"]
 }
