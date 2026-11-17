@@ -19,7 +19,6 @@ import type {
 } from '@actual-app/core/types/models';
 import * as d from 'date-fns';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { FinancialText } from '#components/FinancialText';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
@@ -29,8 +28,10 @@ import { CashFlowGraph } from '#components/reports/graphs/CashFlowGraph';
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import { cashFlowByDate } from '#components/reports/spreadsheets/cash-flow-spreadsheet';
 import { useReport } from '#components/reports/useReport';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useFormat } from '#hooks/useFormat';
 import { useLocale } from '#hooks/useLocale';
@@ -41,13 +42,11 @@ import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
 
-// Month-shaped so the range means the whole current month (the query clamps
-// to today); day-shaped values here would slide by days instead.
-export const defaultTimeFrame = {
-  start: monthUtils.currentMonth(),
-  end: monthUtils.currentMonth(),
-  mode: 'sliding-window',
-} satisfies TimeFrame;
+import {
+  buildCashFlowWidgetSettings,
+  defaultTimeFrame,
+  toComparableCashFlowSettings,
+} from './cashFlowWidgetSettings';
 
 export function CashFlow() {
   const params = useParams();
@@ -97,6 +96,8 @@ function CashFlowInner({ widget }: CashFlowInnerProps) {
     widget?.meta?.showBalance ?? true,
   );
   const [latestTransaction, setLatestTransaction] = useState('');
+  // The date range is placeholder state until the saved one is applied.
+  const [isRangeReady, setIsRangeReady] = useState(false);
 
   const [isConcise, setIsConcise] = useState(false);
 
@@ -164,6 +165,7 @@ function CashFlowInner({ widget }: CashFlowInnerProps) {
       setStart(initialStart);
       setEnd(initialEnd);
       setMode(initialMode);
+      setIsRangeReady(true);
     }
   }, [latestTransaction, widget?.meta?.timeFrame]);
 
@@ -177,6 +179,21 @@ function CashFlowInner({ widget }: CashFlowInnerProps) {
   const { isNarrowWidth } = useResponsive();
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
 
+  const currentSettings = buildCashFlowWidgetSettings({
+    conditions,
+    conditionsOp,
+    start,
+    end,
+    mode,
+    showBalance,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: isRangeReady,
+    saved: toComparableCashFlowSettings(widget?.meta),
+    current: toComparableCashFlowSettings(currentSettings),
+  });
+
   async function onSaveWidget() {
     if (!widget) {
       throw new Error('No widget that could be saved.');
@@ -188,14 +205,7 @@ function CashFlowInner({ widget }: CashFlowInnerProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            conditions,
-            conditionsOp,
-            timeFrame: {
-              start,
-              end,
-              mode,
-            },
-            showBalance,
+            ...currentSettings,
           },
         },
       },
@@ -247,7 +257,7 @@ function CashFlowInner({ widget }: CashFlowInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -255,14 +265,11 @@ function CashFlowInner({ widget }: CashFlowInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

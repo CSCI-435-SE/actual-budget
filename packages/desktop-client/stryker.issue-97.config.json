@@ -1,0 +1,30 @@
+{
+  "$schema": "../../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Mutation testing for issue #97 (PDF export formatting). Based on Bennett Matuszewski's stryker.config.json from #163, including the command runner workaround below. Run from packages/desktop-client: npx stryker run stryker.issue-97.config.json",
+  "testRunner": "command",
+  "testRunner_comment": "The Vitest runner (@stryker-mutator/vitest-runner 10.0.0) reports every mutant as surviving with Vitest 5: its initial run works, but no tests run for any mutant. The command runner starts Vitest once per mutant and switches the mutant on through __STRYKER_ACTIVE_MUTANT__.",
+  "commandRunner": {
+    "command": "npx vitest --run --config vitest.stryker.issue-97.config.mts --bail 1 --maxWorkers 1"
+  },
+  "coverageAnalysis": "off",
+  "mutate": [
+    "src/components/budget/export/pdfText.ts",
+    "src/components/budget/export/budgetMonthPdfRows.ts",
+    "src/components/budget/export/budgetMonthPdf.ts"
+  ],
+  "ignorePatterns": [
+    "build",
+    "build-stats",
+    "e2e",
+    "playwright-report",
+    "test-results"
+  ],
+  "reporters": ["clear-text", "progress", "json"],
+  "jsonReporter": {
+    "fileName": "reports/mutation/issue-97.json"
+  },
+  "concurrency": 2,
+  "concurrency_comment": "At 4, the after run reported 4 equivalent mutants (budgetMonthPdf.ts lines 114-117) as timeouts because the machine was overloaded; Stryker counts timeouts as kills. At 2 there are no timeouts.",
+  "timeoutMS": 60000,
+  "tempDirName": ".stryker-tmp"
+}

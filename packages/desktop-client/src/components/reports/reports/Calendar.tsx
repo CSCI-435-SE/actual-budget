@@ -30,7 +30,6 @@ import { css } from '@emotion/css';
 import { useDrag } from '@use-gesture/react';
 import { format as formatDate, parseISO } from 'date-fns';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { FinancialText } from '#components/FinancialText';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { TransactionList as TransactionListMobile } from '#components/mobile/transactions/TransactionList';
@@ -41,11 +40,13 @@ import { CalendarGraph } from '#components/reports/graphs/CalendarGraph';
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import { calendarSpreadsheet } from '#components/reports/spreadsheets/calendar-spreadsheet';
 import type { CalendarDataType } from '#components/reports/spreadsheets/calendar-spreadsheet';
 import { includeSubcategoriesInConditions } from '#components/reports/spreadsheets/subcategories';
 import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import type { TableHandleRef } from '#components/table';
 import { TransactionList } from '#components/transactions/TransactionList';
 import { useAccounts } from '#hooks/useAccounts';
@@ -69,6 +70,11 @@ import { useTransactions } from '#hooks/useTransactions';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+import {
+  buildCalendarWidgetSettings,
+  toComparableCalendarSettings,
+} from './calendarWidgetSettings';
 
 const CHEVRON_HEIGHT = 42;
 const SUMMARY_HEIGHT = 140;
@@ -106,6 +112,8 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
   const [query, setQuery] = useState<Query | undefined>(undefined);
   const [dirty, setDirty] = useState(false);
   const [latestTransaction, setLatestTransaction] = useState('');
+  // The date range is placeholder state until the saved one is applied.
+  const [isRangeReady, setIsRangeReady] = useState(false);
 
   const {
     transactions: transactionsGrouped,
@@ -317,6 +325,7 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
       setStart(initialStart);
       setEnd(initialEnd);
       setMode(initialMode);
+      setIsRangeReady(true);
     }
   }, [latestTransaction, widget?.meta?.timeFrame]);
 
@@ -327,6 +336,22 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
   const table = useRef<TableHandleRef<TransactionEntity>>(null);
   const dateFormat = useDateFormat();
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
+
+  // A filter added by opening a day or month from the card counts as a
+  // change: "Save widget" would save it.
+  const currentSettings = buildCalendarWidgetSettings({
+    conditions,
+    conditionsOp,
+    start,
+    end,
+    mode,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: isRangeReady,
+    saved: toComparableCalendarSettings(widget?.meta),
+    current: toComparableCalendarSettings(currentSettings),
+  });
 
   const onSaveWidgetName = async (newName: string) => {
     if (!widget) {
@@ -362,13 +387,7 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            conditions,
-            conditionsOp,
-            timeFrame: {
-              start,
-              end,
-              mode,
-            },
+            ...currentSettings,
           },
         },
       },
@@ -526,7 +545,7 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -534,14 +553,11 @@ function CalendarInner({ widget, parameters }: CalendarInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

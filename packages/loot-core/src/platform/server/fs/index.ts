@@ -432,6 +432,43 @@ export const removeDir = async function (filepath) {
   FS.rmdir(filepath);
 };
 
+// Moves a file, replacing any file already at `topath`. Persisted files are
+// moved in a single IndexedDB transaction, so the move either happens
+// completely or not at all. SQLite files live in the blocked fs and can't be
+// renamed here.
+export const rename = async function (
+  frompath: string,
+  topath: string,
+): Promise<void> {
+  if (frompath.endsWith('.sqlite') || topath.endsWith('.sqlite')) {
+    throw new Error('Renaming sqlite files is not supported: ' + frompath);
+  }
+
+  const fromPersisted = !NO_PERSIST && isPersistedPath(frompath);
+  const toPersisted = !NO_PERSIST && isPersistedPath(topath);
+  if (fromPersisted !== toPersisted) {
+    throw new Error(
+      `Cannot rename between persisted and in-memory paths: ${frompath} -> ${topath}`,
+    );
+  }
+
+  if (fromPersisted) {
+    if (!_exists(frompath)) {
+      throw new Error('File does not exist: ' + frompath);
+    }
+
+    const { store } = idb.getStore(await idb.getDatabase(), 'files');
+    const item = await idb.get(store, frompath);
+    if (item == null) {
+      throw new Error('File does not exist: ' + frompath);
+    }
+    await idb.set(store, { filepath: topath, contents: item.contents });
+    await idb.del(store, frompath);
+  }
+
+  FS.rename(frompath, topath);
+};
+
 export const removeDirRecursively = async function (dirpath) {
   if (await exists(dirpath)) {
     for (const file of await listDir(dirpath)) {

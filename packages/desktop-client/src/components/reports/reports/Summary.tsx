@@ -23,7 +23,6 @@ import type {
 } from '@actual-app/core/types/models';
 import { parseISO } from 'date-fns';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { AppliedFilters } from '#components/filters/AppliedFilters';
 import { FilterButton } from '#components/filters/FiltersMenu';
 import { FinancialText } from '#components/FinancialText';
@@ -34,9 +33,11 @@ import { PrivacyFilter } from '#components/PrivacyFilter';
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import { summarySpreadsheet } from '#components/reports/spreadsheets/summary-spreadsheet';
 import { useReport } from '#components/reports/useReport';
 import { fromDateRepr } from '#components/reports/util';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { FieldSelect } from '#components/rules/RuleEditor';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useFormat } from '#hooks/useFormat';
@@ -47,6 +48,12 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+import {
+  buildSummaryWidgetSettings,
+  parseSummaryContent,
+  toComparableSummarySettings,
+} from './summaryWidgetSettings';
 
 export function Summary() {
   const params = useParams();
@@ -83,27 +90,8 @@ function SummaryInner({ widget }: SummaryInnerProps) {
     widget?.meta?.conditionsOp ?? 'and',
   );
 
-  const [content, setContent] = useState<SummaryContent>(
-    widget?.meta?.content
-      ? (() => {
-          try {
-            return JSON.parse(widget.meta.content);
-          } catch (error) {
-            console.error('Failed to parse widget meta content:', error);
-            return {
-              type: 'sum',
-              divisorAllTimeDateRange: false,
-              divisorConditions: [],
-              divisorConditionsOp: 'and',
-            };
-          }
-        })()
-      : {
-          type: 'sum',
-          divisorAllTimeDateRange: false,
-          divisorConditions: [],
-          divisorConditionsOp: 'and',
-        },
+  const [content, setContent] = useState<SummaryContent>(() =>
+    parseSummaryContent(widget?.meta?.content),
   );
 
   const divisorFilters = useRuleConditionFilters(
@@ -152,6 +140,8 @@ function SummaryInner({ widget }: SummaryInnerProps) {
 
   const [earliestTransaction, setEarliestTransaction] = useState('');
   const [latestTransaction, setLatestTransaction] = useState('');
+  // The date range is placeholder state until the saved one is applied.
+  const [isRangeReady, setIsRangeReady] = useState(false);
   const [_firstDayOfWeekIdx] = useSyncedPref('firstDayOfWeekIdx');
   const firstDayOfWeekIdx = _firstDayOfWeekIdx || '0';
 
@@ -221,6 +211,7 @@ function SummaryInner({ widget }: SummaryInnerProps) {
       setStart(initialStart);
       setEnd(initialEnd);
       setMode(initialMode);
+      setIsRangeReady(true);
     }
   }, [latestTransaction, widget?.meta?.timeFrame]);
 
@@ -230,6 +221,21 @@ function SummaryInner({ widget }: SummaryInnerProps) {
   const title = widget?.meta?.name || t('Summary');
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
+
+  const currentSettings = buildSummaryWidgetSettings({
+    conditions: dividendFilters.conditions,
+    conditionsOp: dividendFilters.conditionsOp,
+    start,
+    end,
+    mode,
+    content,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: isRangeReady,
+    saved: toComparableSummarySettings(widget?.meta),
+    current: toComparableSummarySettings(currentSettings),
+  });
 
   const onSaveWidgetName = async (newName: string) => {
     if (!widget) {
@@ -251,7 +257,6 @@ function SummaryInner({ widget }: SummaryInnerProps) {
         meta: {
           ...(widget.meta ?? {}),
           name,
-          content: JSON.stringify(content),
         },
       },
     });
@@ -282,14 +287,7 @@ function SummaryInner({ widget }: SummaryInnerProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            conditions: dividendFilters.conditions,
-            conditionsOp: dividendFilters.conditionsOp,
-            timeFrame: {
-              start,
-              end,
-              mode,
-            },
-            content: JSON.stringify(content),
+            ...currentSettings,
           },
         },
       },
@@ -332,7 +330,7 @@ function SummaryInner({ widget }: SummaryInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -340,14 +338,11 @@ function SummaryInner({ widget }: SummaryInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

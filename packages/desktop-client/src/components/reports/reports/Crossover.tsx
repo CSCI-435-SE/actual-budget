@@ -23,7 +23,6 @@ import type {
 } from '@actual-app/core/types/models';
 
 import { Link } from '#components/common/Link';
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { FinancialText } from '#components/FinancialText';
 import { Checkbox } from '#components/forms';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
@@ -34,10 +33,11 @@ import { CategorySelector } from '#components/reports/CategorySelector';
 import { CrossoverGraph } from '#components/reports/graphs/CrossoverGraph';
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
-import { calculateTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import { createCrossoverSpreadsheet } from '#components/reports/spreadsheets/crossover-spreadsheet';
 import type { CrossoverData } from '#components/reports/spreadsheets/crossover-spreadsheet';
 import { useReport } from '#components/reports/useReport';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useAccounts } from '#hooks/useAccounts';
 import { useCategories } from '#hooks/useCategories';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
@@ -49,11 +49,12 @@ import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
 
-export const defaultTimeFrame = {
-  start: monthUtils.subMonths(monthUtils.currentMonth(), 120),
-  end: monthUtils.subMonths(monthUtils.currentMonth(), 1),
-  mode: 'full',
-} satisfies TimeFrame;
+import {
+  adjustCrossoverRange,
+  buildCrossoverWidgetSettings,
+  resolveCrossoverTimeFrame,
+  toComparableCrossoverSettings,
+} from './crossoverWidgetSettings';
 
 // Spinner increment for the monthly contribution input, as an IntegerAmount so
 // it scales with the currency: $100 at two decimal places, ¥10,000 at zero.
@@ -102,6 +103,8 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
   const [mode, setMode] = useState<TimeFrame['mode']>('static');
   const [earliestTransaction, setEarliestTransaction] = useState<string>('');
   const [latestTransaction, setLatestTransaction] = useState<string>('');
+  // The date range is placeholder state until the saved one is applied.
+  const [isRangeReady, setIsRangeReady] = useState(false);
 
   const [selectedExpenseCategories, setSelectedExpenseCategories] =
     useState<Array<CategoryEntity>>(expenseCategories);
@@ -203,40 +206,18 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
 
   useEffect(() => {
     if (latestTransaction && allMonths?.length) {
-      const [initialStart, initialEnd, mode] = calculateTimeRange(
+      const { start, end, mode } = resolveCrossoverTimeFrame(
         widget?.meta?.timeFrame,
-        defaultTimeFrame,
-        latestTransaction,
+        {
+          earliestMonth: allMonths[allMonths.length - 1].name,
+          latestMonth: allMonths[0].name,
+          latestTransaction,
+        },
       );
-      const earliestMonth = allMonths[allMonths.length - 1].name;
-      const latestMonth = allMonths[0].name;
-      let start = initialStart;
-      let end = initialEnd;
-
-      const clampMonth = (m: string) => {
-        if (monthUtils.isBefore(m, earliestMonth)) return earliestMonth;
-        if (monthUtils.isAfter(m, latestMonth)) return latestMonth;
-        return m;
-      };
-
-      // For both sliding-window and full modes, ensure end doesn't include current month
-      if (mode === 'sliding-window') {
-        // Shift both start and end back one month for sliding-window
-        start = clampMonth(monthUtils.subMonths(start, 1));
-        end = clampMonth(monthUtils.subMonths(end, 1));
-      } else if (mode === 'full') {
-        start = earliestMonth;
-        end = latestMonth;
-      } else {
-        start = clampMonth(start);
-        end = clampMonth(end);
-      }
-      if (monthUtils.isBefore(end, start)) {
-        end = start;
-      }
       setStart(start);
       setEnd(end);
       setMode(mode);
+      setIsRangeReady(true);
     }
   }, [latestTransaction, widget?.meta?.timeFrame, allMonths]);
 
@@ -244,36 +225,52 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
     if (!allMonths?.length) {
       return;
     }
-    const earliestMonth = allMonths[allMonths.length - 1].name;
-    const latestMonth = allMonths[0].name;
-
-    const clampMonth = (m: string) => {
-      if (monthUtils.isBefore(m, earliestMonth)) return earliestMonth;
-      if (monthUtils.isAfter(m, latestMonth)) return latestMonth;
-      return m;
-    };
-
-    // For both sliding-window and full modes, ensure end doesn't include current month
-    if (mode === 'sliding-window') {
-      // Shift both start and end back one month for sliding-window
-      start = clampMonth(monthUtils.subMonths(start, 1));
-      end = clampMonth(monthUtils.subMonths(end, 1));
-    } else if (mode === 'full') {
-      start = earliestMonth;
-      end = latestMonth;
-    } else {
-      start = clampMonth(start);
-      end = clampMonth(end);
-    }
-    if (monthUtils.isBefore(end, start)) {
-      end = start;
-    }
-    setStart(start);
-    setEnd(end);
+    const [adjustedStart, adjustedEnd] = adjustCrossoverRange(
+      start,
+      end,
+      mode,
+      allMonths[allMonths.length - 1].name,
+      allMonths[0].name,
+    );
+    setStart(adjustedStart);
+    setEnd(adjustedEnd);
     setMode(mode);
   }
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
+
+  const currentSettings = buildCrossoverWidgetSettings({
+    selectedExpenseCategories,
+    selectedIncomeAccountIds,
+    swr,
+    useCustomGrowth,
+    estimatedReturn,
+    expectedContribution,
+    projectionType,
+    expenseAdjustmentFactor,
+    showHiddenCategories,
+    start,
+    end,
+    mode,
+  });
+  const comparisonContext = {
+    categories: categories.list,
+    accounts,
+    range:
+      latestTransaction && allMonths?.length
+        ? {
+            earliestMonth: allMonths[allMonths.length - 1].name,
+            latestMonth: allMonths[0].name,
+            latestTransaction,
+          }
+        : undefined,
+  };
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: selectionsInitialized && isRangeReady,
+    saved: toComparableCrossoverSettings(widget?.meta, comparisonContext),
+    current: toComparableCrossoverSettings(currentSettings, comparisonContext),
+  });
 
   async function onSaveWidget() {
     if (!widget) {
@@ -294,17 +291,7 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            expenseCategoryIds: selectedExpenseCategories.map(c => c.id),
-            incomeAccountIds: selectedIncomeAccountIds,
-            safeWithdrawalRate: swr,
-            estimatedReturn: useCustomGrowth ? (estimatedReturn ?? 0) : null,
-            expectedContribution: useCustomGrowth
-              ? (expectedContribution ?? 0)
-              : null,
-            projectionType,
-            expenseAdjustmentFactor,
-            showHiddenCategories,
-            timeFrame: { start, end, mode },
+            ...currentSettings,
           },
         },
       },
@@ -432,7 +419,7 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -440,14 +427,11 @@ function CrossoverInner({ widget }: CrossoverInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

@@ -1222,3 +1222,19 @@ export function findTags() {
     ['%#%'],
   );
 }
+
+// Notes of every live transaction that may contain a tag, together with the
+// id of the row it is listed under in a grouped transaction list: split
+// children are listed under their parent. Reading from
+// `v_transactions_internal_alive` gives the same rows a filtered account view
+// sees, so children of deleted parents are excluded.
+export function getTaggedTransactionGroups() {
+  return all<{ group_id: DbTransaction['id']; notes: string }>(
+    `
+      SELECT IFNULL(parent_id, id) AS group_id, notes
+      FROM v_transactions_internal_alive
+      WHERE notes LIKE ?
+    `,
+    ['%#%'],
+  );
+}

@@ -1,19 +1,12 @@
 import React, { memo, useRef } from 'react';
 import type { KeyboardEvent } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
-import { SvgArrowThinRight } from '@actual-app/components/icons/v1';
-import { Text } from '@actual-app/components/text';
+import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import type { TagEntity } from '@actual-app/core/types/models';
 
-import {
-  Cell,
-  CellButton,
-  InputCell,
-  Row,
-  SelectCell,
-} from '#components/table';
+import { Cell, InputCell, Row, SelectCell } from '#components/table';
 import { useContextMenu } from '#hooks/useContextMenu';
 import { useNavigate } from '#hooks/useNavigate';
 import { useProperFocus } from '#hooks/useProperFocus';
@@ -27,9 +20,13 @@ import {
 } from '#tags';
 
 import { TagEditor } from './TagEditor';
+import { TAG_COUNT_COLUMN_WIDTH } from './TagsHeader';
+import { TagViewTransactionsButton } from './TagViewTransactionsButton';
 
 type TagRowProps = {
   tag: TagEntity;
+  // Number of transactions using the tag; undefined while it is loading
+  count?: number;
   hovered?: boolean;
   onHover: (id?: string) => void;
   focusedField: string | null;
@@ -37,7 +34,7 @@ type TagRowProps = {
 };
 
 export const TagRow = memo(
-  ({ tag, hovered, onHover, focusedField, onEdit }: TagRowProps) => {
+  ({ tag, count, hovered, onHover, focusedField, onEdit }: TagRowProps) => {
     const { t } = useTranslation();
     const dispatchSelected = useSelectedDispatch();
     const selectedIds = useSelectedItems();
@@ -196,26 +193,26 @@ export const TagRow = memo(
           }}
         />
 
+        <Cell
+          width={TAG_COUNT_COLUMN_WIDTH}
+          name="count"
+          textAlign="right"
+          // A placeholder until the counts have loaded
+          value={count === undefined ? '…' : String(count)}
+          valueStyle={{
+            ...styles.tnum,
+            opacity: tag.hidden ? 0.5 : undefined,
+            fontStyle: count === 0 ? 'italic' : undefined,
+            color: count ? undefined : theme.tableTextLight,
+          }}
+          aria-busy={count === undefined}
+        />
+
         <Cell width="auto" style={{ padding: '0 10px' }} plain>
-          <CellButton
-            style={{
-              borderRadius: 4,
-              padding: '3px 6px',
-              backgroundColor: theme.noticeBackground,
-              border: '1px solid ' + theme.noticeBackground,
-              color: theme.noticeTextDark,
-              fontSize: 'var(--font-size-12)',
-              cursor: 'pointer',
-              opacity: tag.hidden ? 0.5 : undefined,
-              ':hover': { backgroundColor: theme.noticeBackgroundLight },
-            }}
+          <TagViewTransactionsButton
+            dimmed={tag.hidden}
             onSelect={onShowActivity}
-          >
-            <Text style={{ paddingRight: 5 }}>
-              <Trans>View Transactions</Trans>
-            </Text>
-            <SvgArrowThinRight style={{ width: 8, height: 8 }} />
-          </CellButton>
+          />
         </Cell>
       </Row>
     );

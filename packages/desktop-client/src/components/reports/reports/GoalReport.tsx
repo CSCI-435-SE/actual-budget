@@ -13,7 +13,6 @@ import * as monthUtils from '@actual-app/core/shared/months';
 import type { GoalCardWidget, TimeFrame } from '@actual-app/core/types/models';
 import type { TransObjectLiteral } from '@actual-app/core/types/util';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { FinancialText } from '#components/FinancialText';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
@@ -28,7 +27,9 @@ import { GoalTransactions } from '#components/reports/GoalTransactions';
 import { Header } from '#components/reports/Header';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
 import { calculateTimeRange } from '#components/reports/reportRanges';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
 import { useGoalTotal } from '#components/reports/useGoalTotal';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { AmountInput } from '#components/util/AmountInput';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useFormat } from '#hooks/useFormat';
@@ -39,6 +40,11 @@ import { useSyncedPref } from '#hooks/useSyncedPref';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+import {
+  buildGoalWidgetSettings,
+  toComparableGoalSettings,
+} from './goalWidgetSettings';
 
 export function GoalReport() {
   const params = useParams();
@@ -77,6 +83,8 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
   const [linkedTag, setLinkedTag] = useState(widget?.meta?.linkedTag);
   const [earliestTransaction, setEarliestTransaction] = useState('');
   const [latestTransaction, setLatestTransaction] = useState('');
+  // The date range is placeholder state until the saved one is applied.
+  const [isRangeReady, setIsRangeReady] = useState(false);
   const [allMonths, setAllMonths] = useState<
     Array<{ name: string; pretty: string }>
   >([]);
@@ -146,10 +154,27 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
       setStart(initialStart);
       setEnd(initialEnd);
       setMode(initialMode);
+      setIsRangeReady(true);
     }
   }, [latestTransaction, widget?.meta?.timeFrame]);
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
+
+  const currentSettings = buildGoalWidgetSettings({
+    conditions,
+    conditionsOp,
+    targetAmount,
+    linkedTag,
+    start,
+    end,
+    mode,
+  });
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: isRangeReady,
+    saved: toComparableGoalSettings(widget?.meta),
+    current: toComparableGoalSettings(currentSettings),
+  });
 
   const title = widget?.meta?.name || t('Personal goal');
   // Uses the unsaved editor state so the report previews changes before the
@@ -209,18 +234,17 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
       return;
     }
 
+    // Drop the saved tag so clearing the tag removes it from the widget.
     const { linkedTag: _previousTag, ...previousMeta } = widget.meta ?? {};
+    const { linkedTag: newTag, ...otherSettings } = currentSettings;
     updateDashboardWidgetMutation.mutate(
       {
         widget: {
           id: widget.id,
           meta: {
             ...previousMeta,
-            ...(linkedTag ? { linkedTag } : {}),
-            conditions,
-            targetAmount,
-            conditionsOp,
-            timeFrame: { start, end, mode },
+            ...(newTag ? { linkedTag: newTag } : {}),
+            ...otherSettings,
           },
         },
       },
@@ -254,7 +278,7 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -262,14 +286,11 @@ function GoalReportInner({ widget }: GoalReportInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

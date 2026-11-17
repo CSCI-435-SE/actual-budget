@@ -23,7 +23,7 @@ import { simpleCashFlow } from '#components/reports/spreadsheets/cash-flow-sprea
 import { useReport } from '#components/reports/useReport';
 import { useFormat } from '#hooks/useFormat';
 
-import { defaultTimeFrame } from './CashFlow';
+import { defaultTimeFrame } from './cashFlowWidgetSettings';
 
 type CustomLabelProps = {
   value?: number;

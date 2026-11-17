@@ -24,6 +24,7 @@ import {
 } from '#reports/mutations';
 
 import { LoadingIndicator } from './LoadingIndicator';
+import { ModifiedLabel } from './ModifiedLabel';
 import { SaveReportChoose } from './SaveReportChoose';
 import { SaveReportDelete } from './SaveReportDelete';
 import { SaveReportMenu } from './SaveReportMenu';
@@ -267,9 +268,10 @@ export function SaveReport({
           {!report.id ? <Trans>Unsaved report</Trans> : report.name}&nbsp;
         </Text>
         {savedStatus === 'modified' && (
-          <Text>
-            <Trans>(modified)</Trans>&nbsp;
-          </Text>
+          <>
+            <ModifiedLabel />
+            &nbsp;
+          </>
         )}
         <SvgExpandArrow width={8} height={8} style={{ marginRight: 5 }} />
       </Button>

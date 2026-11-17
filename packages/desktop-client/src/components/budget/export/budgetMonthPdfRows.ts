@@ -3,22 +3,18 @@ import type { CategoryGroupEntity } from '@actual-app/core/types/models';
 import { collectBudgetMonthRows } from './budgetMonthRows';
 import type { RawBudgetMonthRowKind } from './budgetMonthRows';
 
-// The envelope budget page renders a category group's name and its
-// Budgeted/Spent/Balance as one combined, bold row (see
-// `CategoryGroupMonth` in EnvelopeBudgetComponents.tsx) — there is no
-// separate header-then-subtotal split to preserve. `groupHeader` is used for
-// that combined row; `groupSubtotal` is kept in the type for the renderer's
-// vocabulary (per the issue's acceptance criteria) but is never emitted here.
-export type PdfRowType =
-  | 'groupHeader'
-  | 'category'
-  | 'groupSubtotal'
-  | 'grandTotal';
+// `groupHeader` is a category group's combined name-and-totals row, shown in
+// bold like `CategoryGroupMonth` on the envelope budget page. `category`
+// rows are indented beneath it. `total` and `toBudget` are kept apart so the
+// renderer can style To Budget differently from Total.
+export type PdfRowType = 'groupHeader' | 'category' | 'total' | 'toBudget';
 
 export type PdfRow = {
   type: PdfRowType;
-  categoryGroup: string;
-  category: string;
+  // The single "Category" column: the group name on group rows, the
+  // category name on category rows, and "Total" / "To Budget" /
+  // "Overbudgeted" on the summary rows.
+  label: string;
   // Already formatted for display; '' for a blank cell.
   budgeted: string;
   spent: string;
@@ -30,8 +26,8 @@ const ROW_TYPE_BY_KIND: Record<RawBudgetMonthRowKind, PdfRowType> = {
   category: 'category',
   income: 'groupHeader',
   incomeCategory: 'category',
-  total: 'grandTotal',
-  toBudget: 'grandTotal',
+  total: 'total',
+  toBudget: 'toBudget',
 };
 
 type BuildBudgetMonthPdfRowsOptions = {
@@ -67,8 +63,12 @@ export function buildBudgetMonthPdfRows({
     showHiddenCategories,
   }).map(row => ({
     type: ROW_TYPE_BY_KIND[row.kind],
-    categoryGroup: row.groupName,
-    category: row.categoryName,
+    // Category rows show only their own name; the group name appears once,
+    // on the group's row.
+    label:
+      row.kind === 'category' || row.kind === 'incomeCategory'
+        ? row.categoryName
+        : row.groupName,
     budgeted: amount(row.budgeted),
     spent: amount(row.spent),
     balance: amount(row.balance),

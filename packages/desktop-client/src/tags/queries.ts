@@ -13,4 +13,18 @@ export const tagQueries = {
       // Manually invalidated when tags change
       staleTime: Infinity,
     }),
+  // Number of transactions using each tag, keyed by tag name. Nested under
+  // `lists()` so every tag mutation (including renames, which rewrite notes)
+  // also refreshes the counts.
+  counts: () =>
+    queryOptions<Map<TagEntity['tag'], number>>({
+      queryKey: [...tagQueries.lists(), 'counts'],
+      queryFn: async () => {
+        const counts = await send('tags-get-counts');
+        return new Map(Object.entries(counts ?? {}));
+      },
+      // Transactions change outside of tag mutations, so refetch whenever the
+      // Tags page mounts instead of relying on invalidation
+      staleTime: 0,
+    }),
 };
