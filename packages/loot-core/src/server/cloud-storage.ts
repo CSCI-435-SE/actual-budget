@@ -11,6 +11,7 @@ import * as monthUtils from '#shared/months';
 
 import {
   clearAttachmentRows,
+  clearRemovedAttachmentRows,
   collectAttachmentEntries,
   restoreAttachmentEntries,
 } from './attachments/archive';
@@ -188,6 +189,7 @@ export async function exportBuffer({
     let attachmentEntries: Record<string, Uint8Array> = {};
     if (includeAttachments) {
       attachmentEntries = await collectAttachmentEntries(id, memDb);
+      clearRemovedAttachmentRows(memDb);
     } else {
       clearAttachmentRows(memDb);
     }

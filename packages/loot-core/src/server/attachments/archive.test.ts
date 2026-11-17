@@ -164,6 +164,23 @@ describe('exporting a budget', () => {
       [kept.id, lost.id].sort(),
     );
   });
+
+  it('leaves out removed attachments, their rows and their files', async () => {
+    const kept = await addAttachment('receipt.pdf', PDF);
+    const removed = await addAttachment('photo.png', PNG);
+    await app.handlers['attachment-remove']({ id: removed.id });
+    await saveBudgetToDisk(documentDir);
+
+    const exported = await exportBuffer({ includeAttachments: true });
+    const entries = safeUnzip(exported!.data);
+
+    expect(
+      Object.keys(entries).filter(name => name.startsWith('attachments/')),
+    ).toEqual([`attachments/${kept.id}`]);
+    expect(await attachmentRowIds(entries['db.sqlite'])).toEqual([kept.id]);
+    // The local budget keeps the removed attachment, so it can be restored
+    expect(attachmentFiles(documentDir)).toEqual([kept.id, removed.id].sort());
+  });
 });
 
 describe('the snapshot uploaded to the sync server', () => {

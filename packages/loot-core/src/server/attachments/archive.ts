@@ -36,6 +36,18 @@ export function clearAttachmentRows(database: Database) {
   }
 }
 
+// Removed attachments are kept on this device only so their removal can be
+// undone; an export leaves them out. `collectAttachmentEntries` already
+// skips their files, and this drops their rows.
+export function clearRemovedAttachmentRows(database: Database) {
+  if (hasAttachmentsTable(database)) {
+    sqlite.execQuery(
+      database,
+      'DELETE FROM transaction_attachments WHERE tombstone = 1',
+    );
+  }
+}
+
 // The zip entries for every attachment that `database` lists. A row whose
 // file is missing is exported without a file and shows as missing after
 // import, the same as it does here.

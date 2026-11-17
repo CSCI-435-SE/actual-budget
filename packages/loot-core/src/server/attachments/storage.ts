@@ -74,6 +74,13 @@ export async function readAttachmentFile(
   return fs.readFile(path, 'binary');
 }
 
+export async function hasAttachmentFile(
+  budgetId: string,
+  attachmentId: string,
+): Promise<boolean> {
+  return fs.exists(getAttachmentPath(budgetId, attachmentId));
+}
+
 // Removes the file. Does nothing if it is already gone.
 export async function removeAttachmentFile(
   budgetId: string,
