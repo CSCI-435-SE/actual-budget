@@ -227,6 +227,16 @@ export const schema = {
     created_at: f('integer', { required: true }),
     tombstone: f('boolean'),
   },
+  transaction_attachments: {
+    id: f('id'),
+    transaction_id: f('id', { ref: 'transactions', required: true }),
+    file_name: f('string', { required: true }),
+    mime_type: f('string', { required: true }),
+    size: f('integer', { required: true }),
+    storage: f('string', { default: 'local' }),
+    created_at: f('integer', { required: true }),
+    tombstone: f('boolean'),
+  },
 };
 
 export const schemaConfig: SchemaConfig = {
@@ -299,6 +309,8 @@ export const schemaConfig: SchemaConfig = {
           return ['sort_order', 'name'];
         case 'account_groups':
           return ['sort_order', 'id'];
+        case 'transaction_attachments':
+          return ['created_at', 'id'];
         case 'schedules':
           return [{ $condition: { completed: true } }, 'next_date'];
         default:

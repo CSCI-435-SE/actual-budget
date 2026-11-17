@@ -12,6 +12,7 @@ import {
   join,
   pathToId,
   readFile,
+  rename,
   writeFile,
 } from './index';
 
@@ -164,6 +165,62 @@ describe('web filesystem', () => {
     const FS = sqlite._getModule().FS;
     const { node } = FS.lookupPath('/custom/xyz/db.sqlite', {});
     expect(node.link).toBe('/blocked/' + pathToId('/custom/xyz/db.sqlite'));
+  });
+
+  test('rename moves a persisted file in idb', async () => {
+    await idb.openDatabase();
+    await sqlite.init();
+    await init();
+
+    const data = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0xff]);
+    await writeFile('/documents/a.tmp', data);
+    await writeFile('/documents/b', new Uint8Array([1]));
+
+    // Replaces the file already at the destination
+    await rename('/documents/a.tmp', '/documents/b');
+
+    expect(await exists('/documents/a.tmp')).toBe(false);
+    expect(Array.from(await readFile('/documents/b', 'binary'))).toEqual(
+      Array.from(data),
+    );
+
+    const db = await idb.openDatabase();
+    const { store } = idb.getStore(db, 'files');
+    expect(await idb.get(store, '/documents/a.tmp')).toBe(undefined);
+    expect(Array.from((await idb.get(store, '/documents/b')).contents)).toEqual(
+      Array.from(data),
+    );
+
+    await idb.closeDatabase();
+  });
+
+  test('rename moves an in-memory file', async () => {
+    await idb.openDatabase();
+    await sqlite.init();
+    await init();
+
+    await writeFile('/uploads/a.txt', 'hello');
+    await rename('/uploads/a.txt', '/uploads/b.txt');
+
+    expect(await exists('/uploads/a.txt')).toBe(false);
+    expect(await readFile('/uploads/b.txt')).toBe('hello');
+
+    await idb.closeDatabase();
+  });
+
+  test('rename refuses sqlite files and missing files', async () => {
+    await idb.openDatabase();
+    await sqlite.init();
+    await init();
+
+    await expect(
+      rename('/documents/db.sqlite', '/documents/other.sqlite'),
+    ).rejects.toThrow('not supported');
+    await expect(
+      rename('/documents/missing', '/documents/other'),
+    ).rejects.toThrow('does not exist');
+
+    await idb.closeDatabase();
   });
 });
 

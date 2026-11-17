@@ -13,6 +13,7 @@ import { app as accountsApp } from './accounts/app';
 import { app as adminApp } from './admin/app';
 import { installAPI } from './api';
 import { aqlQuery } from './aql';
+import { app as attachmentsApp } from './attachments/app';
 import { app as authApp } from './auth/app';
 import { app as budgetApp } from './budget/app';
 import { app as budgetFilesApp } from './budgetfiles/app';
@@ -152,6 +153,7 @@ app.combine(
   budgetFilesApp,
   encryptionApp,
   tagsApp,
+  attachmentsApp,
 );
 
 export function getDefaultDocumentDir() {
