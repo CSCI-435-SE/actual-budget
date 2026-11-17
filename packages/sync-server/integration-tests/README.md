@@ -106,7 +106,9 @@ The pattern:
   tests.
 - **Nothing syncs implicitly.** loot-core normally starts a sync about a
   second after each change; test devices block that. Only `sync(device)` and
-  the initial budget download reach the server.
+  the initial budget download reach the server. The device counts the
+  automatic syncs it blocked (`device.request({ type: 'blockedAutoSyncs' })`),
+  so a test can wait for one instead of sleeping.
 - **Only loopback is reachable.** A device that tries any other host gets a
   network error, and the attempt is recorded
   (`device.request({ type: 'blockedRequests' })`).

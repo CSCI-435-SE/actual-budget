@@ -59,6 +59,8 @@ export type DeviceOp =
   | { type: 'setOnline'; online: boolean }
   // URLs of non-loopback requests the device attempted (and was refused)
   | { type: 'blockedRequests' }
+  // How many automatic syncs (not started by a `sync` op) were blocked
+  | { type: 'blockedAutoSyncs' }
   // Tables this device holds CRDT messages for
   | { type: 'syncedTables' }
   | { type: 'snapshot'; tables: string[] }

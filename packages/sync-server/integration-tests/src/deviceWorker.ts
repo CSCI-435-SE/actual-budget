@@ -40,6 +40,7 @@ const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '[::1]']);
 const blockedRequests: string[] = [];
 let isOnline = true;
 let explicitSyncsRunning = 0;
+let blockedAutoSyncs = 0;
 
 globalThis.fetch = (input, init) => {
   const url = new URL(input instanceof Request ? input.url : String(input));
@@ -53,6 +54,7 @@ globalThis.fetch = (input, init) => {
     return Promise.reject(new TypeError('fetch failed: device is offline'));
   }
   if (isSyncRequest(input) && explicitSyncsRunning === 0) {
+    blockedAutoSyncs++;
     return Promise.reject(
       new TypeError('fetch failed: automatic sync is disabled on test devices'),
     );
@@ -113,6 +115,8 @@ async function handle(op: DeviceOp): Promise<unknown> {
       return null;
     case 'blockedRequests':
       return [...blockedRequests];
+    case 'blockedAutoSyncs':
+      return blockedAutoSyncs;
     case 'syncedTables':
       return getSyncedTables();
     case 'snapshot':

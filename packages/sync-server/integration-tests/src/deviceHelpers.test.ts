@@ -6,6 +6,7 @@ import {
   describe,
   expect,
   it,
+  vi,
 } from 'vitest';
 
 import { createDevice } from './createDevice';
@@ -16,9 +17,6 @@ import { startSyncServerWithBudget } from './startSyncServerWithBudget';
 import type { SyncServerWithBudgetHandle } from './startSyncServerWithBudget';
 
 type Account = { id: string; name: string; offbudget: boolean };
-
-// loot-core normally starts a sync 1s after a local change
-const PAST_AUTO_SYNC_DELAY_MS = 1500;
 
 // One server for the file (sync-server allows one per module graph) and a
 // fresh device per test. Each test only uses a single device.
@@ -47,6 +45,10 @@ describe('device helpers', () => {
     return countServerMessages(server, server.groupId);
   }
 
+  function blockedAutoSyncs() {
+    return device.request<number>({ type: 'blockedAutoSyncs' });
+  }
+
   async function getAccounts() {
     return device.api<Account[]>('getAccounts');
   }
@@ -67,11 +69,18 @@ describe('device helpers', () => {
     });
     expect(await getAccounts()).toMatchObject([{ id, name: 'Everyday' }]);
 
+    const blockedBefore = await blockedAutoSyncs();
     await makeChange(device, { type: 'deleteAccount', id });
     expect(await getAccounts()).toEqual([]);
 
-    // Nothing reached the server, even after loot-core's usual auto-sync delay
-    await new Promise(resolve => setTimeout(resolve, PAST_AUTO_SYNC_DELAY_MS));
+    // loot-core starts a sync about 1s after a local change. Wait until it
+    // has actually tried (and the device blocked it) rather than sleeping
+    // for a fixed time, then check nothing reached the server.
+    await vi.waitFor(
+      async () =>
+        expect(await blockedAutoSyncs()).toBeGreaterThan(blockedBefore),
+      { timeout: 15_000, interval: 100 },
+    );
     expect(serverMessageCount()).toBe(before);
   });
 

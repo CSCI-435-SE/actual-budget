@@ -8,7 +8,13 @@ describe('startSyncServerWithBudget', () => {
 
     try {
       const { url, token, fileId, groupId } = server;
-      console.log('sync server setup', { url, token, fileId, groupId });
+      // The token is a credential, so only its length is logged
+      console.log('sync server setup', {
+        url,
+        tokenLength: token.length,
+        fileId,
+        groupId,
+      });
 
       expect(token).toEqual(expect.any(String));
       expect(token).not.toBe('');
