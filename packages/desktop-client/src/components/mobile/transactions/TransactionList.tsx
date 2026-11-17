@@ -48,6 +48,7 @@ import { useNavigate } from '#hooks/useNavigate';
 import { usePayees } from '#hooks/usePayees';
 import { useScrollListener } from '#hooks/useScrollListener';
 import { useSelectedDispatch, useSelectedItems } from '#hooks/useSelected';
+import { useTransactionAttachmentCounts } from '#hooks/useTransactionAttachmentCounts';
 import { useTransactionBatchActions } from '#hooks/useTransactionBatchActions';
 import { useUndo } from '#hooks/useUndo';
 import { setNotificationInset } from '#notifications/notificationsSlice';
@@ -133,6 +134,7 @@ export function TransactionList({
 
   const dispatchSelected = useSelectedDispatch();
   const selectedTransactions = useSelectedItems();
+  const attachmentCounts = useTransactionAttachmentCounts();
 
   const onTransactionPress: (
     transaction: TransactionEntity,
@@ -189,6 +191,7 @@ export function TransactionList({
               onTransactionPress,
               runningBalances,
               showRunningBalances,
+              attachmentCounts,
               isReconciling,
               onToggleTransactionCleared,
               t,
@@ -241,6 +244,13 @@ export function TransactionList({
                           {...itemProps}
                           showRunningBalance={showRunningBalances}
                           runningBalance={runningBalances?.get(transaction.id)}
+                          attachmentCount={
+                            // Attachments on a split belong to the parent,
+                            // which shows them
+                            transaction.is_child || isPreviewId(transaction.id)
+                              ? 0
+                              : (attachmentCounts.get(transaction.id) ?? 0)
+                          }
                           transaction={transaction}
                           isReconciling={isReconciling}
                           onPress={trans => onTransactionPress(trans)}

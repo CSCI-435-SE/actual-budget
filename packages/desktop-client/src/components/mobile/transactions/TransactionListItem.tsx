@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@actual-app/components/button';
 import { SvgSplit } from '@actual-app/components/icons/v0';
+import { SvgAttachment } from '@actual-app/components/icons/v1';
 import {
   SvgArrowsSynchronize,
   SvgCalendar3,
@@ -70,6 +71,8 @@ type TransactionListItemProps = ListBoxItemRenderProps & {
   transaction?: TransactionEntity;
   showRunningBalance?: boolean;
   runningBalance?: IntegerAmount;
+  // The number of files attached; 0 for split children and previews
+  attachmentCount?: number;
   isReconciling?: boolean;
   onPress: (transaction: TransactionEntity) => void;
   onLongPress: (transaction: TransactionEntity) => void;
@@ -79,6 +82,7 @@ type TransactionListItemProps = ListBoxItemRenderProps & {
 export function TransactionListItem({
   showRunningBalance,
   runningBalance,
+  attachmentCount = 0,
   isReconciling = false,
   onPress,
   onLongPress,
@@ -218,6 +222,7 @@ export function TransactionListItem({
                   transaction={transaction}
                   transferAccount={transferAccount}
                 />
+                <AttachmentIcon count={attachmentCount} />
                 <TextOneLine
                   style={{
                     ...textStyle,
@@ -418,6 +423,37 @@ type PayeeIconsProps = {
   transaction: TransactionEntity;
   transferAccount?: AccountEntity;
 };
+
+type AttachmentIconProps = {
+  count: number;
+};
+
+// A paperclip on a transaction that has attachments. Unlike desktop's, it
+// isn't a button: the whole row already is, and opens the transaction.
+function AttachmentIcon({ count }: AttachmentIconProps) {
+  const { t } = useTranslation();
+
+  if (count <= 0) {
+    return null;
+  }
+
+  return (
+    <SvgAttachment
+      role="img"
+      data-testid="attachment-icon"
+      aria-label={
+        count === 1 ? t('1 attachment') : t('{{count}} attachments', { count })
+      }
+      style={{
+        width: 12,
+        height: 12,
+        marginRight: 5,
+        flexShrink: 0,
+        color: theme.menuItemText,
+      }}
+    />
+  );
+}
 
 function PayeeIcons({ transaction, transferAccount }: PayeeIconsProps) {
   const { id, schedule: scheduleId } = transaction;

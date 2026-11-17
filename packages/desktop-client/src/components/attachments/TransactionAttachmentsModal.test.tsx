@@ -10,6 +10,7 @@ import type { Mock } from 'vitest';
 
 import { TestProviders } from '#mocks';
 import * as modalsSlice from '#modals/modalsSlice';
+import * as notificationsSlice from '#notifications/notificationsSlice';
 
 import { TransactionAttachmentsModal } from './TransactionAttachmentsModal';
 
@@ -23,6 +24,9 @@ const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 let attachments: TransactionAttachmentEntity[];
 let addAttachment: Mock<Handlers['attachment-add']>;
 let removeAttachment: Mock<Handlers['attachment-remove']>;
+let restoreAttachment: Mock<Handlers['attachment-restore']>;
+// Attachments removed in this test, which restore can bring back
+let removed: TransactionAttachmentEntity[];
 
 function makeAttachment(
   fields: Partial<TransactionAttachmentEntity>,
@@ -66,6 +70,7 @@ function attachedFiles() {
 
 beforeEach(() => {
   attachments = [];
+  removed = [];
   addAttachment = vi.fn<Handlers['attachment-add']>(
     async ({ fileName, data }) => {
       const attachment = makeAttachment({
@@ -80,7 +85,19 @@ beforeEach(() => {
   );
 
   removeAttachment = vi.fn<Handlers['attachment-remove']>(async ({ id }) => {
+    removed = [...removed, ...attachments.filter(a => a.id === id)];
     attachments = attachments.filter(attachment => attachment.id !== id);
+    notifyChanged();
+    return {};
+  });
+
+  restoreAttachment = vi.fn<Handlers['attachment-restore']>(async ({ id }) => {
+    const attachment = removed.find(a => a.id === id);
+    if (!attachment) {
+      return { error: { reason: 'not-found' } };
+    }
+    removed = removed.filter(a => a.id !== id);
+    attachments = [...attachments, attachment];
     notifyChanged();
     return {};
   });
@@ -97,6 +114,7 @@ beforeEach(() => {
     },
     'attachment-add': addAttachment,
     'attachment-remove': removeAttachment,
+    'attachment-restore': restoreAttachment,
   });
 });
 
@@ -227,6 +245,26 @@ describe('TransactionAttachmentsModal', () => {
       return modal.options;
     }
 
+    // Confirms a removal and returns the notifications it showed
+    async function confirmAndWatchNotifications(
+      confirmation: { onConfirm: () => void },
+      count = 1,
+    ) {
+      const addNotificationSpy = vi.spyOn(
+        notificationsSlice,
+        'addNotification',
+      );
+      confirmation.onConfirm();
+      await waitFor(() =>
+        expect(addNotificationSpy).toHaveBeenCalledTimes(count),
+      );
+      const notifications = addNotificationSpy.mock.calls.map(
+        ([payload]) => payload.notification,
+      );
+      addNotificationSpy.mockRestore();
+      return notifications;
+    }
+
     it('asks first, then removes the file', async () => {
       attachments = [
         makeAttachment({ id: 'a1', file_name: 'receipt.png' }),
@@ -258,6 +296,74 @@ describe('TransactionAttachmentsModal', () => {
         await screen.findByText(/Couldn't remove receipt.png/),
       ).toBeVisible();
       expect(attachedFiles().getByText('receipt.png')).toBeVisible();
+    });
+
+    it('offers Undo, which brings the file back', async () => {
+      attachments = [makeAttachment({ id: 'a1', file_name: 'receipt.png' })];
+      renderModal();
+
+      const confirmation = await pressRemove('receipt.png');
+      expect(confirmation.message).not.toMatch(/can't be recovered/);
+      const [notification] = await confirmAndWatchNotifications(confirmation);
+
+      expect(notification.message).toBe('Removed "receipt.png".');
+      expect(notification.type).toBe('message');
+      expect(notification.timeout).toBeGreaterThan(0);
+      expect(notification.button?.title).toBe('Undo');
+      expect(await screen.findByText('No files attached yet.')).toBeVisible();
+
+      const addNotificationSpy = vi.spyOn(
+        notificationsSlice,
+        'addNotification',
+      );
+      await notification.button?.action();
+
+      expect(restoreAttachment).toHaveBeenCalledWith({ id: 'a1' });
+      expect(await attachedFiles().findByText('receipt.png')).toBeVisible();
+      expect(addNotificationSpy).not.toHaveBeenCalled();
+    });
+
+    it('says so when Undo fails because the transaction was deleted', async () => {
+      attachments = [makeAttachment({ id: 'a1', file_name: 'receipt.png' })];
+      restoreAttachment.mockResolvedValueOnce({
+        error: { reason: 'transaction-not-found' },
+      });
+      renderModal();
+
+      const [notification] = await confirmAndWatchNotifications(
+        await pressRemove('receipt.png'),
+      );
+      const addNotificationSpy = vi.spyOn(
+        notificationsSlice,
+        'addNotification',
+      );
+      await notification.button?.action();
+
+      expect(addNotificationSpy).toHaveBeenCalledTimes(1);
+      const [[{ notification: error }]] = addNotificationSpy.mock.calls;
+      expect(error.type).toBe('error');
+      expect(error.message).toBe(
+        'Couldn\'t restore "receipt.png" because its transaction has been deleted.',
+      );
+    });
+
+    it('offers no Undo when removing fails', async () => {
+      attachments = [makeAttachment({ id: 'a1', file_name: 'receipt.png' })];
+      removeAttachment.mockResolvedValueOnce({
+        error: { reason: 'no-budget' },
+      });
+      const addNotificationSpy = vi.spyOn(
+        notificationsSlice,
+        'addNotification',
+      );
+      renderModal();
+
+      (await pressRemove('receipt.png')).onConfirm();
+
+      expect(
+        await screen.findByText(/Couldn't remove receipt.png/),
+      ).toBeVisible();
+      expect(addNotificationSpy).not.toHaveBeenCalled();
     });
   });
 });
