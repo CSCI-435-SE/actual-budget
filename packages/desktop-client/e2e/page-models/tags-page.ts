@@ -3,7 +3,6 @@ import type { Locator, Page } from '@playwright/test';
 export class TagsPage {
   readonly page: Page;
   readonly addNewButton: Locator;
-  readonly searchBox: Locator;
   readonly newTagRow: Locator;
   readonly colorPicker: Locator;
   readonly hexColorInput: Locator;
@@ -14,9 +13,12 @@ export class TagsPage {
   constructor(page: Page) {
     this.page = page;
     this.addNewButton = page.getByRole('button', { name: 'Add New' });
-    this.searchBox = page.getByPlaceholder('Filter tags...');
     this.newTagRow = page.getByTestId('new-tag');
-    this.colorPicker = page.getByRole('dialog');
+    // The picker's dialog has no label or test id, so match the dialog that
+    // holds the hex field rather than any dialog on the page
+    this.colorPicker = page.getByRole('dialog').filter({
+      has: page.getByRole('textbox', { name: 'Hex color' }),
+    });
     this.hexColorInput = this.colorPicker.getByRole('textbox', {
       name: 'Hex color',
     });
@@ -151,9 +153,5 @@ export class TagsPage {
    */
   async moveMouseAway() {
     await this.page.mouse.move(0, 0);
-  }
-
-  async searchFor(text: string) {
-    await this.searchBox.fill(text);
   }
 }
