@@ -3,8 +3,12 @@ import * as os from 'os';
 import * as path from 'path';
 
 import * as fs from '#platform/server/fs';
+import { app as accountsApp } from '#server/accounts/app';
+import { aqlQuery } from '#server/aql';
 import * as db from '#server/db';
 import * as prefs from '#server/prefs';
+import { transactionAttachmentCountsQuery } from '#shared/attachments';
+import type { TransactionAttachmentCount } from '#shared/attachments';
 
 import { app } from './app';
 import { ATTACHMENT_GRACE_MS, cleanUpAttachments } from './cleanup';
@@ -160,6 +164,73 @@ describe("a deleted transaction's attachments", () => {
 
     expect(rows()).toEqual([]);
     expect(attachmentFiles()).toEqual([]);
+  });
+});
+
+describe("a deleted account's attachments", () => {
+  async function counts() {
+    const { data } = await aqlQuery(transactionAttachmentCountsQuery());
+    return (data as TransactionAttachmentCount[])
+      .filter(row => row.transaction_id != null)
+      .map(row => row.transaction_id)
+      .sort();
+  }
+
+  beforeEach(() => {
+    db.runQuery(
+      "INSERT INTO accounts (id, name, offbudget, closed, sort_order) VALUES ('acct2', 'Savings', 0, 0, 2)",
+    );
+    db.runQuery(
+      `INSERT INTO payees (id, name, transfer_acct, tombstone)
+         VALUES ('transfer-acct1', '', 'acct1', 0),
+                ('transfer-acct2', '', 'acct2', 0)`,
+    );
+  });
+
+  it('are hidden, then removed after the grace period, like its transactions', async () => {
+    const id = await add('plain');
+    await add('child');
+    expect(await counts()).toEqual(['parent', 'plain']);
+
+    await accountsApp.handlers['account-close']({ id: 'acct1', forced: true });
+
+    expect(await counts()).toEqual([]);
+    expect(attachmentFiles()).toHaveLength(2);
+    expect(rows().find(row => row.id === id)?.tombstone).toBe(0);
+
+    expect((await cleanUp(T0)).stamped).toBe(2);
+    await cleanUp(T0 + GRACE - 1);
+    expect(attachmentFiles()).toHaveLength(2);
+
+    expect((await cleanUp(T0 + GRACE)).purged).toBe(2);
+    expect(rows()).toEqual([]);
+    expect(attachmentFiles()).toEqual([]);
+  });
+
+  it('are left alone when the account is closed without deleting them', async () => {
+    // A zero balance, so closing needs no transfer
+    db.runQuery(
+      `INSERT INTO transactions (id, isParent, isChild, acct, amount, date, parent_id, sort_order, tombstone)
+         VALUES ('zero', 0, 0, 'acct2', 0, 20261113, NULL, 5, 0)`,
+    );
+    const id = await add('zero');
+
+    await accountsApp.handlers['account-close']({ id: 'acct2' });
+
+    expect(
+      db.runQuery<{ closed: number }>(
+        "SELECT closed FROM accounts WHERE id = 'acct2'",
+        [],
+        true,
+      ),
+    ).toEqual([{ closed: 1 }]);
+    expect(await counts()).toEqual(['zero']);
+
+    await cleanUp(T0);
+    await cleanUp(T0 + 2 * GRACE);
+
+    expect(rows()).toEqual([{ id, tombstone: 0, deleted_at: null }]);
+    expect(attachmentFiles()).toEqual([id]);
   });
 });
 
