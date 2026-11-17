@@ -16,7 +16,7 @@ import {
 import type { TransactionAttachmentCount } from '#shared/attachments';
 import type { TransactionAttachmentEntity } from '#types/models';
 
-import { app } from './app';
+import { app, moveAttachments } from './app';
 import * as storage from './storage';
 
 vi.mock('#platform/server/connection', () => ({
@@ -665,5 +665,35 @@ describe('transactionAttachmentCountsQuery', () => {
 
   it('returns nothing when there are no attachments', async () => {
     expect(await counts()).toEqual([]);
+  });
+});
+
+describe('moveAttachments', () => {
+  it('moves live attachments and tells the UI', async () => {
+    const added = await add('plain');
+    vi.mocked(connection.send).mockClear();
+
+    await moveAttachments('plain', 'parent');
+
+    expect(attachmentRows()).toEqual([
+      { id: added.id, transaction_id: 'parent' },
+    ]);
+    expect(syncEvents()).toHaveLength(1);
+  });
+
+  it("puts them on a split child's parent", async () => {
+    const added = await add('plain');
+
+    await moveAttachments('plain', 'child');
+
+    expect(attachmentRows()).toEqual([
+      { id: added.id, transaction_id: 'parent' },
+    ]);
+  });
+
+  it('sends no event when there is nothing to move', async () => {
+    await moveAttachments('plain', 'parent');
+
+    expect(syncEvents()).toEqual([]);
   });
 });

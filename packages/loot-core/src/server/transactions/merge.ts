@@ -1,4 +1,5 @@
 import { aqlQuery } from '#server/aql';
+import { moveAttachments } from '#server/attachments/app';
 import * as db from '#server/db';
 import { validForMergeExplanation } from '#shared/merge';
 import { q } from '#shared/query';
@@ -112,6 +113,9 @@ export async function mergeTransactionsNoTransfer(
   b: TransactionEntity,
 ): Promise<TransactionEntity['id']> {
   const { keep, drop } = determineKeepDrop(a, b);
+
+  // The kept transaction gets the attachments of both
+  await moveAttachments(drop.id, keep.id);
 
   // Load subtransactions with a single query, then split by parent_id in memory
   const keepSubtransactions: TransactionEntity[] = [];

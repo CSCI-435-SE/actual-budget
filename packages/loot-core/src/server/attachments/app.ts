@@ -274,6 +274,34 @@ async function readAttachment({
   }
 }
 
+// Moves the live attachments of one transaction to another, for merges: the
+// kept transaction ends up with the attachments of both. Removed attachments
+// stay where they are and are cleaned up with the dropped transaction.
+//
+// Undoing the merge brings the dropped transaction back but leaves the
+// attachments on the kept one, because the undo stack can't see attachment
+// rows.
+export async function moveAttachments(
+  fromTransactionId: TransactionAttachmentEntity['transaction_id'],
+  toTransactionId: TransactionAttachmentEntity['transaction_id'],
+) {
+  // A split child's attachments go on its parent. A child never owns
+  // attachments itself, so `fromTransactionId` needs no such step.
+  const ownerId = await resolveOwnerTransactionId(toTransactionId);
+  if (ownerId == null || ownerId === fromTransactionId) {
+    return;
+  }
+
+  const { changes } = db.runQuery(
+    `UPDATE transaction_attachments SET transaction_id = ?
+       WHERE transaction_id = ? AND tombstone = 0`,
+    [ownerId, fromTransactionId],
+  );
+  if (Number(changes) > 0) {
+    notifyChanged();
+  }
+}
+
 function getBudgetId(): string | null {
   return prefs.getPrefs()?.id ?? null;
 }

@@ -508,3 +508,104 @@ describe('Merging success', () => {
     expect(transactions[1].transfer_id).toBe(d);
   });
 });
+
+describe('Merging attachments', () => {
+  beforeEach(global.emptyDatabase());
+  beforeEach(prepareDatabase);
+  afterEach(global.emptyDatabase());
+
+  const base = {
+    account: 'one',
+    date: '2025-01-01',
+    amount: 5,
+  } as TransactionEntity;
+
+  // Rows only: merging never touches the files
+  function attach(id: string, transactionId: string, tombstone = 0) {
+    db.runQuery(
+      `INSERT INTO transaction_attachments
+         (id, transaction_id, file_name, mime_type, size, storage, created_at, tombstone)
+         VALUES (?, ?, 'receipt.pdf', 'application/pdf', 1, 'local', 1, ?)`,
+      [id, transactionId, tombstone],
+    );
+  }
+
+  function attachmentOwners() {
+    return db.runQuery<{ id: string; transaction_id: string }>(
+      'SELECT id, transaction_id FROM transaction_attachments ORDER BY id',
+      [],
+      true,
+    );
+  }
+
+  it('gives the kept transaction the attachments of both', async () => {
+    const kept = await db.insertTransaction({ ...base, imported_id: 'i1' });
+    const dropped = await db.insertTransaction({ ...base });
+    attach('a1', kept);
+    attach('a2', dropped);
+    attach('a3', dropped);
+
+    expect(await mergeTransactions([{ id: kept }, { id: dropped }])).toBe(kept);
+
+    expect(attachmentOwners()).toEqual([
+      { id: 'a1', transaction_id: kept },
+      { id: 'a2', transaction_id: kept },
+      { id: 'a3', transaction_id: kept },
+    ]);
+  });
+
+  it('leaves removed attachments on the dropped transaction', async () => {
+    const kept = await db.insertTransaction({ ...base, imported_id: 'i1' });
+    const dropped = await db.insertTransaction({ ...base });
+    attach('live', dropped);
+    attach('removed', dropped, 1);
+
+    await mergeTransactions([{ id: kept }, { id: dropped }]);
+
+    expect(attachmentOwners()).toEqual([
+      { id: 'live', transaction_id: kept },
+      { id: 'removed', transaction_id: dropped },
+    ]);
+  });
+
+  it('changes nothing when neither transaction has attachments', async () => {
+    const kept = await db.insertTransaction({ ...base, imported_id: 'i1' });
+    const dropped = await db.insertTransaction({ ...base });
+
+    expect(await mergeTransactions([{ id: kept }, { id: dropped }])).toBe(kept);
+    expect(attachmentOwners()).toEqual([]);
+  });
+
+  it('moves the attachments of both sides of merged transfers', async () => {
+    // A -> B and C -> D, as in the transfer test above: A and D are kept
+    const a = await db.insertTransaction({ ...base, amount: -10 });
+    const b = await db.insertTransaction({
+      ...base,
+      amount: 10,
+      date: '2025-01-05',
+      transfer_id: a,
+    });
+    await db.updateTransaction({ id: a, transfer_id: b });
+    const c = await db.insertTransaction({
+      ...base,
+      amount: -10,
+      date: '2025-01-03',
+    });
+    const d = await db.insertTransaction({
+      ...base,
+      amount: 10,
+      date: '2025-01-02',
+      transfer_id: c,
+    });
+    await db.updateTransaction({ id: c, transfer_id: d });
+    attach('on-b', b);
+    attach('on-c', c);
+
+    expect(await mergeTransactions([{ id: a }, { id: c }])).toBe(a);
+
+    expect(attachmentOwners()).toEqual([
+      { id: 'on-b', transaction_id: d },
+      { id: 'on-c', transaction_id: a },
+    ]);
+  });
+});
