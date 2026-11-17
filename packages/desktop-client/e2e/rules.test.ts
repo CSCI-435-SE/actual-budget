@@ -70,6 +70,95 @@ test.describe('Rules', () => {
     await expect(page).toMatchThemeScreenshots();
   });
 
+  test('duplicates a rule without changing the original', async () => {
+    await rulesPage.searchFor('Fast Internet');
+    const createModal = await rulesPage.createNewRule();
+    await createModal.fill({
+      conditions: [{ field: 'payee', op: 'is', value: 'Fast Internet' }],
+      actions: [{ field: 'category', value: 'General' }],
+    });
+    await createModal.save();
+    await expect(createModal.locator).toBeHidden();
+    await expect(rulesPage.getNthRule(0).actions).toHaveText([
+      'set category to General',
+    ]);
+
+    // Duplicate is always shown, but only enabled with exactly one rule selected
+    await expect(rulesPage.duplicateButton).toBeDisabled();
+    await rulesPage.duplicateButton.hover();
+    await expect(page.getByRole('tooltip')).toHaveText(
+      'Select a rule to duplicate',
+    );
+
+    await rulesPage.selectNthRule(0);
+    await rulesPage.selectNthRule(1);
+    await expect(rulesPage.duplicateButton).toBeDisabled();
+    await rulesPage.duplicateButton.hover();
+    await expect(page.getByRole('tooltip')).toHaveText(
+      'Select only one rule to duplicate',
+    );
+
+    await rulesPage.selectNthRule(1);
+    await expect(rulesPage.duplicateButton).toBeEnabled();
+
+    const duplicateModal = await rulesPage.duplicateSelectedRule();
+    await expect(
+      duplicateModal.conditionList.getByRole('textbox').first(),
+    ).toHaveValue('Fast Internet');
+    await duplicateModal.fill({
+      actions: [{ field: 'category', value: 'Food' }],
+    });
+    await duplicateModal.save();
+    await expect(duplicateModal.locator).toBeHidden();
+
+    // The demo budget also has a schedule rule for this payee
+    const rows = page.getByTestId('table').getByTestId('row');
+    const categoryActions = async () =>
+      (await rows.getByTestId('actions').allTextContents())
+        .filter(text => text.startsWith('set category'))
+        .sort();
+    await expect(rows).toHaveCount(3);
+    await expect
+      .poll(categoryActions)
+      .toEqual(['set category to Food', 'set category to General']);
+
+    // The new rule is persisted
+    await page.reload();
+    await rulesPage.searchFor('Fast Internet');
+    await expect(rows).toHaveCount(3);
+    await expect
+      .poll(categoryActions)
+      .toEqual(['set category to Food', 'set category to General']);
+  });
+
+  test('duplicates a schedule rule without taking over the schedule', async () => {
+    // The demo budget has a single schedule rule for this payee
+    await rulesPage.searchFor('Fast Internet');
+    const rows = page.getByTestId('table').getByTestId('row');
+    await expect(rows).toHaveCount(1);
+    await expect(rulesPage.getNthRule(0).actions).toHaveText([
+      /^link schedule/,
+    ]);
+
+    await rulesPage.selectNthRule(0);
+    const duplicateModal = await rulesPage.duplicateSelectedRule();
+    await duplicateModal.fill({
+      actions: [{ field: 'category', value: 'Food' }],
+    });
+    await duplicateModal.save();
+    await expect(duplicateModal.locator).toBeHidden();
+
+    await expect(rows).toHaveCount(2);
+    await expect
+      .poll(async () =>
+        (await rows.getByTestId('actions').allTextContents()).sort(),
+      )
+      .toEqual([
+        expect.stringMatching(/^link schedule/),
+        'set category to Food',
+      ]);
+  });
+
   test('creates a split transaction rule and makes sure it is applied when creating a transaction', async () => {
     const editRuleModal = await rulesPage.createNewRule();
     await editRuleModal.fill({

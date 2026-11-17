@@ -8,6 +8,7 @@ import { SpaceBetween } from '@actual-app/components/space-between';
 import { styles } from '@actual-app/components/styles';
 import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
+import { Tooltip } from '@actual-app/components/tooltip';
 import { View } from '@actual-app/components/view';
 import { send } from '@actual-app/core/platform/client/connection';
 import * as undo from '@actual-app/core/platform/client/undo';
@@ -27,7 +28,7 @@ import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { SelectedProvider, useSelected } from '#hooks/useSelected';
 import { pushModal } from '#modals/modalsSlice';
 import { useDispatch } from '#redux';
-import { friendlyOp, mapField } from '#util/rule';
+import { duplicateRule, friendlyOp, mapField } from '#util/rule';
 import { describeSchedule } from '#util/schedule';
 
 import { InfiniteScrollWrapper } from './common/InfiniteScrollWrapper';
@@ -164,6 +165,13 @@ export function ManageRules({
   const selectedInst = useSelected('manage-rules', filteredRules, []);
   const [hoveredRule, setHoveredRule] = useState(null);
 
+  // Duplicating is only offered when exactly one rule is selected
+  const selectedRule =
+    selectedInst.items.size === 1
+      ? allRules.find(rule => selectedInst.items.has(rule.id))
+      : undefined;
+  const canDuplicate = selectedRule != null;
+
   const onSearchChange = (value: string) => {
     setFilter(value);
     setPage(0);
@@ -289,6 +297,26 @@ export function ManageRules({
     );
   }
 
+  function onDuplicateSelected() {
+    if (!canDuplicate) return;
+
+    dispatch(
+      pushModal({
+        modal: {
+          name: 'edit-rule',
+          options: {
+            rule: duplicateRule(selectedRule),
+            onSave: async () => {
+              await loadRules();
+              selectedInst.dispatch({ type: 'select-none' });
+              setLoading(false);
+            },
+          },
+        },
+      }),
+    );
+  }
+
   const onHover = id => {
     setHoveredRule(id);
   };
@@ -366,6 +394,19 @@ export function ManageRules({
                 </Trans>
               </Button>
             )}
+            <Tooltip
+              content={
+                selectedInst.items.size === 0
+                  ? t('Select a rule to duplicate')
+                  : t('Select only one rule to duplicate')
+              }
+              placement="top"
+              triggerProps={{ isDisabled: canDuplicate }}
+            >
+              <Button isDisabled={!canDuplicate} onPress={onDuplicateSelected}>
+                <Trans>Duplicate</Trans>
+              </Button>
+            </Tooltip>
             <Button variant="primary" onPress={onCreateRule}>
               <Trans>Create new rule</Trans>
             </Button>
