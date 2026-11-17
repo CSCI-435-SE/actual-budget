@@ -6,7 +6,7 @@ import { logger } from '#platform/server/log';
 // them in IndexedDB; on desktop they are ordinary files.
 
 const ATTACHMENTS_DIR = 'attachments';
-const TEMP_SUFFIX = '.tmp';
+export const TEMP_SUFFIX = '.tmp';
 
 // The id becomes part of a path, so only allow characters a uuid can contain
 export function isSafeAttachmentId(attachmentId: string): boolean {

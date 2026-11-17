@@ -18,6 +18,8 @@ import type {
   TransactionAttachmentEntity,
 } from '#types/models';
 
+import { cleanUpAttachments } from './cleanup';
+import type { AttachmentCleanupResult } from './cleanup';
 import {
   hasAttachmentFile,
   readAttachmentFile,
@@ -33,7 +35,7 @@ import {
 //
 // Removing an attachment only marks its row (`tombstone = 1` and
 // `deleted_at`) and keeps the file, so `attachment-restore` can undo it.
-// Cleanup removes the row and the file after a grace period (#155).
+// Cleanup (`cleanup.ts`) removes the row and the file after a grace period.
 
 export type AttachmentAddError =
   | AttachmentValidationError
@@ -61,6 +63,7 @@ export type AttachmentHandlers = {
   'attachment-restore': typeof restoreAttachment;
   'attachment-list': typeof listAttachments;
   'attachment-read': typeof readAttachment;
+  'attachments-cleanup': typeof runCleanup;
 };
 
 export const app = createApp<AttachmentHandlers>();
@@ -69,6 +72,18 @@ app.method('attachment-remove', removeAttachment);
 app.method('attachment-restore', restoreAttachment);
 app.method('attachment-list', listAttachments);
 app.method('attachment-read', readAttachment);
+app.method('attachments-cleanup', runCleanup);
+
+// Cleanup also runs on its own after a budget opens (see `loadBudget`)
+async function runCleanup(): Promise<
+  AttachmentCleanupResult | { error: { reason: 'no-budget' } }
+> {
+  const budgetId = getBudgetId();
+  if (budgetId == null) {
+    return { error: { reason: 'no-budget' } };
+  }
+  return cleanUpAttachments(budgetId);
+}
 
 async function addAttachment({
   transactionId,

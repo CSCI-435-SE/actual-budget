@@ -8,6 +8,7 @@ import * as connection from '#platform/server/connection';
 import * as fs from '#platform/server/fs';
 import { logger } from '#platform/server/log';
 import { createApp } from '#server/app';
+import { cleanUpAttachments } from '#server/attachments/cleanup';
 import * as budget from '#server/budget/base';
 import * as cloudStorage from '#server/cloud-storage';
 import * as db from '#server/db';
@@ -682,6 +683,14 @@ async function _loadBudget(id: Budget['id']): Promise<{
   }
 
   app.events.emit('load-budget', { id });
+
+  // Not awaited, so it doesn't hold up opening the budget. It runs in the
+  // browser too (unlike backups), and stops if another budget is opened.
+  if (process.env.NODE_ENV !== 'test') {
+    cleanUpAttachments(id).catch(error => {
+      logger.warn('Attachment cleanup failed', error);
+    });
+  }
 
   return {};
 }
