@@ -27,7 +27,7 @@ import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { SelectedProvider, useSelected } from '#hooks/useSelected';
 import { pushModal } from '#modals/modalsSlice';
 import { useDispatch } from '#redux';
-import { friendlyOp, mapField } from '#util/rule';
+import { duplicateRule, friendlyOp, mapField } from '#util/rule';
 import { describeSchedule } from '#util/schedule';
 
 import { InfiniteScrollWrapper } from './common/InfiniteScrollWrapper';
@@ -164,6 +164,13 @@ export function ManageRules({
   const selectedInst = useSelected('manage-rules', filteredRules, []);
   const [hoveredRule, setHoveredRule] = useState(null);
 
+  // Duplicating is only offered when exactly one rule is selected
+  const selectedRule =
+    selectedInst.items.size === 1
+      ? allRules.find(rule => selectedInst.items.has(rule.id))
+      : undefined;
+  const canDuplicate = selectedRule != null;
+
   const onSearchChange = (value: string) => {
     setFilter(value);
     setPage(0);
@@ -289,6 +296,26 @@ export function ManageRules({
     );
   }
 
+  function onDuplicateSelected() {
+    if (!canDuplicate) return;
+
+    dispatch(
+      pushModal({
+        modal: {
+          name: 'edit-rule',
+          options: {
+            rule: duplicateRule(selectedRule),
+            onSave: async () => {
+              await loadRules();
+              selectedInst.dispatch({ type: 'select-none' });
+              setLoading(false);
+            },
+          },
+        },
+      }),
+    );
+  }
+
   const onHover = id => {
     setHoveredRule(id);
   };
@@ -364,6 +391,11 @@ export function ManageRules({
                 <Trans count={selectedInst.items.size}>
                   Delete {{ count: selectedInst.items.size }} rules
                 </Trans>
+              </Button>
+            )}
+            {canDuplicate && (
+              <Button onPress={onDuplicateSelected}>
+                <Trans>Duplicate</Trans>
               </Button>
             )}
             <Button variant="primary" onPress={onCreateRule}>

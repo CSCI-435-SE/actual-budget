@@ -1,5 +1,5 @@
 // @ts-strict-ignore
-import type { RuleEntity } from '@actual-app/core/types/models';
+import type { NewRuleEntity, RuleEntity } from '@actual-app/core/types/models';
 import { t } from 'i18next';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -158,4 +158,24 @@ export function translateRuleStage(stage: string): string {
     default:
       return '';
   }
+}
+
+export function duplicateRule(rule: RuleEntity): NewRuleEntity {
+  // Drop the schedule link so the copy is a standalone rule. A copy that kept
+  // it would overwrite the schedule's schedules_json_paths entry when saved
+  // (onRuleUpdate in schedules/app.ts) and link the transactions it matches
+  // to the schedule.
+  const actions = structuredClone(rule.actions).filter(
+    action => action.op !== 'link-schedule',
+  );
+
+  return {
+    stage: rule.stage,
+    conditionsOp: rule.conditionsOp,
+    conditions: structuredClone(rule.conditions),
+    actions:
+      actions.length > 0
+        ? actions
+        : [{ op: 'set', field: 'category', value: null, type: 'id' }],
+  };
 }
