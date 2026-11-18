@@ -2,6 +2,7 @@ import {
   initServer,
   serverPush,
 } from '@actual-app/core/platform/client/connection';
+import { ATTACHMENT_MAX_SIZE } from '@actual-app/core/shared/attachments';
 import type { Handlers } from '@actual-app/core/types/handlers';
 import type { TransactionAttachmentEntity } from '@actual-app/core/types/models';
 import { render, screen, waitFor, within } from '@testing-library/react';
@@ -227,6 +228,96 @@ describe('TransactionAttachmentsModal', () => {
       modal: { name: 'attachment-viewer', options: { attachment } },
     });
     pushModalSpy.mockRestore();
+  });
+
+  it('has no camera button on a wide screen', async () => {
+    renderModal();
+    await screen.findByText('No files attached yet.');
+
+    expect(screen.queryByRole('button', { name: 'Take photo' })).toBeNull();
+    expect(screen.queryByTestId('attachment-camera-input')).toBeNull();
+  });
+
+  describe('on a phone', () => {
+    let originalWidth: number;
+
+    beforeEach(() => {
+      originalWidth = window.innerWidth;
+      window.innerWidth = 350;
+    });
+
+    afterEach(() => {
+      window.innerWidth = originalWidth;
+    });
+
+    function cameraInput() {
+      return screen.getByTestId<HTMLInputElement>('attachment-camera-input');
+    }
+
+    it('offers to take a photo with the back camera', async () => {
+      renderModal();
+      await screen.findByText('No files attached yet.');
+
+      expect(screen.getByRole('button', { name: 'Take photo' })).toBeVisible();
+      expect(
+        screen.getByRole('button', { name: 'Attach files' }),
+      ).toBeVisible();
+      expect(cameraInput().accept).toBe('image/*');
+      expect(cameraInput().getAttribute('capture')).toBe('environment');
+    });
+
+    it('pressing "Take photo" opens the camera', async () => {
+      renderModal();
+      await screen.findByText('No files attached yet.');
+      const click = vi.spyOn(cameraInput(), 'click');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Take photo' }));
+
+      expect(click).toHaveBeenCalledTimes(1);
+    });
+
+    it('attaches a photo', async () => {
+      renderModal();
+      await screen.findByText('No files attached yet.');
+
+      await userEvent.upload(
+        cameraInput(),
+        new File([PNG], 'image.png', { type: 'image/png' }),
+      );
+
+      expect(await attachedFiles().findByText('image.png')).toBeVisible();
+      expect(addAttachment).toHaveBeenCalledTimes(1);
+      expect(addAttachment.mock.calls[0][0].transactionId).toBe('txn1');
+    });
+
+    it('checks a photo the same way as a picked file', async () => {
+      renderModal();
+      await screen.findByText('No files attached yet.');
+
+      // A format the app can't show, such as HEIC from some phones
+      await userEvent.upload(
+        cameraInput(),
+        new File(['ftypheic'], 'IMG_0001.heic', { type: 'image/heic' }),
+      );
+      expect(
+        await screen.findByText(/Only JPEG, PNG, WebP and PDF files/),
+      ).toBeVisible();
+
+      const large = new File([PNG], 'large.png', { type: 'image/png' });
+      Object.defineProperty(large, 'size', { value: ATTACHMENT_MAX_SIZE + 1 });
+      await userEvent.upload(cameraInput(), large);
+      expect(await screen.findByText(/This file is larger than/)).toBeVisible();
+
+      expect(addAttachment).not.toHaveBeenCalled();
+    });
+
+    it('warns that phones may clear the files', async () => {
+      renderModal();
+
+      expect(
+        await screen.findByText(/Some phones clear site data/),
+      ).toBeVisible();
+    });
   });
 
   describe('removing', () => {

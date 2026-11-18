@@ -164,6 +164,44 @@ test.describe('Transaction attachments', () => {
     await expect(rowsWithAttachments()).toHaveCount(0);
   });
 
+  test('keeps attachments when deleting a transaction is undone', async () => {
+    await accountPage.rightClickNthTransaction(0);
+    await page
+      .getByRole('menu')
+      .getByRole('button', { name: 'Attachments' })
+      .click();
+    let modal = attachmentsModal();
+    await attachFiles(modal, [RECEIPT]);
+    await expect(
+      modal.getByRole('button', { name: 'Open receipt.png' }),
+    ).toBeVisible();
+    await modal.getByRole('button', { name: 'Close' }).click();
+    await expect(modal).toBeHidden();
+    await expect(rowsWithAttachments()).toHaveCount(1);
+
+    // Deleting the transaction hides its paperclip
+    await accountPage.selectNthTransaction(0);
+    await accountPage.clickSelectAction('Delete');
+    await page
+      .getByTestId('confirm-delete-modal')
+      .getByRole('button', { name: 'Delete' })
+      .click();
+    await expect(rowsWithAttachments()).toHaveCount(0);
+
+    // Undoing the delete brings the transaction back with its attachment
+    await page.keyboard.press('ControlOrMeta+z');
+    await expect(rowsWithAttachments()).toHaveCount(1);
+
+    await rowsWithAttachments().getByTestId('attachment-icon').click();
+    modal = attachmentsModal();
+    await modal.getByRole('button', { name: 'Open receipt.png' }).click();
+    const image = viewerModal().getByRole('img', { name: 'receipt.png' });
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() => image.evaluate(img => (img as HTMLImageElement).naturalWidth))
+      .toBe(4);
+  });
+
   test('refuses a file type that is not allowed', async () => {
     await accountPage.rightClickNthTransaction(0);
     await page
