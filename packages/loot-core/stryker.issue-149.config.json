@@ -1,0 +1,23 @@
+{
+  "$schema": "../../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Mutation testing for issue #149 (Transactions / Last Used columns on the Payees page), server half. The client half is packages/desktop-client/stryker.issue-149.config.json. Based on the command-runner setup from #163 and #97. Run from packages/loot-core: npx stryker run stryker.issue-149.config.json",
+  "testRunner": "command",
+  "testRunner_comment": "The Vitest runner (@stryker-mutator/vitest-runner 10.0.0) reports every mutant as surviving with Vitest 5: no tests run for any mutant (see docs/sprint3/mutation/125-bennettmatuszewski.md). The command runner starts Vitest once per mutant and switches the mutant on through __STRYKER_ACTIVE_MUTANT__.",
+  "commandRunner": {
+    "command": "ENV=node npx vitest --run src/server/payees/app.test.ts --bail 1 --maxWorkers 1"
+  },
+  "coverageAnalysis": "off",
+  "mutate_comment": "Only the lines this PR added: the usage-stats query, the handler's registration, and the handler. The rest of these files is unrelated to #149.",
+  "mutate": [
+    "src/server/db/index.ts:815-828",
+    "src/server/payees/app.ts:41-41",
+    "src/server/payees/app.ts:95-114"
+  ],
+  "reporters": ["clear-text", "progress", "json"],
+  "jsonReporter": {
+    "fileName": "reports/mutation/issue-149.json"
+  },
+  "concurrency": 2,
+  "timeoutMS": 120000,
+  "tempDirName": ".stryker-tmp"
+}

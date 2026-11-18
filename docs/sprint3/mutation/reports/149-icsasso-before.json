@@ -1,0 +1,766 @@
+{
+  "schemaVersion": "1.0",
+  "thresholds": {
+    "high": 80,
+    "low": 60,
+    "break": null
+  },
+  "projectRoot": "/workspaces/actual-budget",
+  "files": {
+    "packages/loot-core/src/server/db/index.ts": {
+      "language": "typescript",
+      "mutants": [
+        {
+          "id": "loot-core-0",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/loot-core/.stryker-tmp/sandbox-u9KMcH\n\n\n\n ❯ src/server/payees/app.test.ts (13 tests | 1 failed) 2004ms\n\n   ❯ payees app (13)\n     ✓ payees-get-rule-counts (1)\n       ✓ counts payee rules but excludes rules linked to completed schedules 1345ms\n     ❯ payees-get-usage-stats (12)\n       × returns no entry for a payee with no transactions 634ms\n       · counts transactions and returns the latest date\n       · keeps each payee separate\n       · shows a future date when that is the latest transaction\n       · does not count deleted transactions or their dates\n       · returns no entry when all of a payee's transactions are deleted\n       · counts a merged payee's transactions toward the target\n       · counts a split once for a payee on both the parent and its children\n       · counts a split once for each different payee on its children\n       · does not count the children of a deleted split\n       · counts transactions for transfer payees\n       · has no entry for any payee in the unused payees list\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/server/payees/app.test.ts > payees app > payees-get-usage-stats > returns no entry for a payee with no transactions\n\nTypeError: rows is not iterable\n\n ❯ Object.getPayeeUsageStats [as payees-get-usage-stats] src/server/payees/app.ts:141:23\n\n    139|     const rows = await db.getPayeeUsageStats();\n    140|     const stats: Record<PayeeEntity['id'], PayeeUsageStats> = {};\n    141|     for (const row of rows) {\n       |                       ^\n    142|       if (stryMutAct_9fa48(\"5\")) {\n    143|         {}\n ❯ src/server/payees/app.test.ts:75:21\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (13)\n   Start at  21:26:34\n\n   Duration  69.65s (setup 67%, transform 29%, tests 3%, worker 1%)\n\n\n\n  Transform  transforming modules took 19.28s · 29% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "loot-core-0"
+          ],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 828
+            },
+            "start": {
+              "column": 38,
+              "line": 815
+            }
+          }
+        },
+        {
+          "id": "loot-core-1",
+          "mutatorName": "StringLiteral",
+          "replacement": "``",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/loot-core/.stryker-tmp/sandbox-u9KMcH\n\n\n\n ❯ src/server/payees/app.test.ts (13 tests | 1 failed) 2241ms\n\n   ❯ payees app (13)\n     ✓ payees-get-rule-counts (1)\n       ✓ counts payee rules but excludes rules linked to completed schedules 1600ms\n     ❯ payees-get-usage-stats (12)\n\n       × returns no entry for a payee with no transactions 631ms\n\n       · counts transactions and returns the latest date\n\n       · keeps each payee separate\n\n       · shows a future date when that is the latest transaction\n\n       · does not count deleted transactions or their dates\n       · returns no entry when all of a payee's transactions are deleted\n       · counts a merged payee's transactions toward the target\n       · counts a split once for a payee on both the parent and its children\n       · counts a split once for each different payee on its children\n       · does not count the children of a deleted split\n\n       · counts transactions for transfer payees\n       · has no entry for any payee in the unused payees list\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/server/payees/app.test.ts > payees app > payees-get-usage-stats > returns no entry for a payee with no transactions\n\nRangeError: The supplied SQL string contains no statements\n\n ❯ Database.prepare ../../../../node_modules/better-sqlite3/lib/methods/wrappers.js:5:21\n\n ❯ Module.runQuery src/platform/server/sqlite/index.electron.ts:51:41\n\n     49|   let stmt: SQL.Statement;\n     50|   try {\n     51|     stmt = typeof sql === 'string' ? db.prepare(sql) : sql;\n       |                                         ^\n     52|   } catch (e) {\n     53|     logger.log('error', sql);\n\n ❯ runQuery src/server/db/index.ts:118:19\n ❯ all src/server/db/index.ts:157:10\n ❯ Module.getPayeeUsageStats src/server/db/index.ts:638:12\n ❯ Object.getPayeeUsageStats [as payees-get-usage-stats] src/server/payees/app.ts:139:27\n\n ❯ getUsageStats src/server/payees/app.test.ts:69:52\n ❯ src/server/payees/app.test.ts:75:27\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (13)\n\n   Start at  21:26:34\n\n   Duration  69.68s (setup 68%, transform 28%, tests 3%, worker 1%)\n\n\n\n  Transform  transforming modules took 18.74s · 28% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "loot-core-0"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 827
+            },
+            "start": {
+              "column": 6,
+              "line": 820
+            }
+          }
+        }
+      ],
+      "source": "// @ts-strict-ignore\nimport {\n  deserializeClock,\n  makeClientId,\n  makeClock,\n  serializeClock,\n  setClock,\n  Timestamp,\n} from '@actual-app/crdt';\nimport type { Database, Statement } from '@jlongster/sql.js';\nimport { LRUCache } from 'lru-cache';\nimport { v4 as uuidv4 } from 'uuid';\n\nimport * as fs from '#platform/server/fs';\nimport * as sqlite from '#platform/server/sqlite';\nimport {\n  convertForInsert,\n  convertForUpdate,\n  convertFromSelect,\n  schema,\n  schemaConfig,\n} from '#server/aql';\nimport {\n  accountGroupModel,\n  accountModel,\n  categoryGroupModel,\n  categoryModel,\n  payeeModel,\n  toDateRepr,\n} from '#server/models';\nimport { batchMessages, sendMessages } from '#server/sync';\nimport * as monthUtils from '#shared/months';\nimport { groupById } from '#shared/util';\nimport type { TransactionEntity } from '#types/models';\nimport type { WithRequired } from '#types/util';\n\nimport {\n  shoveSortOrders,\n  shoveSortOrdersDescending,\n  SORT_INCREMENT,\n  TRANSACTION_SORT_INCREMENT,\n} from './sort';\nimport type {\n  DbAccount,\n  DbAccountGroup,\n  DbBank,\n  DbCategory,\n  DbCategoryGroup,\n  DbCategoryMapping,\n  DbClockMessage,\n  DbPayee,\n  DbPayeeMapping,\n  DbTag,\n  DbTransaction,\n  DbViewTransaction,\n  DbViewTransactionInternalAlive,\n} from './types';\n\nexport * from './types';\n\nexport { fromDateRepr, toDateRepr } from '#server/models';\n\nlet dbPath: string | null = null;\nlet db: Database | null = null;\n\n// Util\n\nexport function getDatabasePath() {\n  return dbPath;\n}\n\nexport async function openDatabase(id?: string) {\n  if (db) {\n    sqlite.closeDatabase(db);\n  }\n\n  dbPath = fs.join(fs.getBudgetDir(id), 'db.sqlite');\n  setDatabase(await sqlite.openDatabase(dbPath));\n\n  // await execQuery('PRAGMA journal_mode = WAL');\n}\n\nexport function closeDatabase() {\n  if (db) {\n    sqlite.closeDatabase(db);\n    setDatabase(null);\n  }\n}\n\nexport function setDatabase(db_: Database) {\n  db = db_;\n  resetQueryCache();\n}\n\nexport function getDatabase() {\n  return db;\n}\n\nexport async function loadClock() {\n  const row = await first<DbClockMessage>('SELECT * FROM messages_clock');\n  if (row) {\n    const clock = deserializeClock(row.clock);\n    setClock(clock);\n  } else {\n    // No clock exists yet (first run of the app), so create a default\n    // one.\n    const timestamp = new Timestamp(0, 0, makeClientId());\n    const clock = makeClock(timestamp);\n    setClock(clock);\n\n    runQuery('INSERT INTO messages_clock (id, clock) VALUES (?, ?)', [\n      1,\n      serializeClock(clock),\n    ]);\n  }\n}\n\n// Functions\nexport function runQuery(\n  sql: string | Statement,\n  params?: sqlite.SqlParam[],\n  fetchAll?: false,\n): { changes: unknown };\n\nexport function runQuery<T>(\n  sql: string | Statement,\n  params: sqlite.SqlParam[] | undefined,\n  fetchAll: true,\n): T[];\n\nexport function runQuery<T>(\n  sql: string | Statement,\n  params: sqlite.SqlParam[],\n  fetchAll: boolean,\n) {\n  if (fetchAll) {\n    return sqlite.runQuery<T>(db, sql, params, true);\n  } else {\n    return sqlite.runQuery(db, sql, params, false);\n  }\n}\n\nexport function execQuery(sql: string) {\n  sqlite.execQuery(db, sql);\n}\n\n// This manages an LRU cache of prepared query statements. This is\n// only needed in hot spots when you are running lots of queries.\nlet _queryCache = new LRUCache<string, Statement>({ max: 100 });\nexport function cache(sql: string) {\n  const cached = _queryCache.get(sql);\n  if (cached) {\n    return cached;\n  }\n\n  const prepared = sqlite.prepare(db, sql);\n  _queryCache.set(sql, prepared);\n  return prepared;\n}\n\nfunction resetQueryCache() {\n  _queryCache = new LRUCache<string, Statement>({ max: 100 });\n}\n\nexport function transaction(\n  fn: () => void,\n  options?: sqlite.TransactionOptions,\n) {\n  return sqlite.transaction(db, fn, options);\n}\n\nexport function asyncTransaction(fn: () => Promise<void>) {\n  return sqlite.asyncTransaction(db, fn);\n}\n\n// This function is marked as async because `runQuery` is no longer\n// async. We return a promise here until we've audited all the code to\n// make sure nothing calls `.then` on this.\nexport async function all<T>(sql: string, params?: sqlite.SqlParam[]) {\n  return runQuery<T>(sql, params, true);\n}\n\nexport async function first<T>(sql, params?: sqlite.SqlParam[]) {\n  const arr = runQuery<T>(sql, params, true);\n  return arr.length === 0 ? null : arr[0];\n}\n\n// The underlying sql system is now sync, but we can't update `first` yet\n// without auditing all uses of it\nexport function firstSync<T>(sql, params?: sqlite.SqlParam[]) {\n  const arr = runQuery<T>(sql, params, true);\n  return arr.length === 0 ? null : arr[0];\n}\n\n// This function is marked as async because `runQuery` is no longer\n// async. We return a promise here until we've audited all the code to\n// make sure nothing calls `.then` on this.\nexport async function run(sql, params?: sqlite.SqlParam[]) {\n  return runQuery(sql, params);\n}\n\nexport async function select(table, id) {\n  const rows = runQuery('SELECT * FROM ' + table + ' WHERE id = ?', [id], true);\n  // TODO: In the next phase, we will make this function generic\n  // and pass the type of the return type to `runQuery`.\n  // oxlint-disable-next-line typescript/no-explicit-any\n  return rows[0] as any;\n}\n\nexport async function update(table, params) {\n  const fields = Object.keys(params).filter(k => k !== 'id');\n\n  if (params.id == null) {\n    throw new Error('update: id is required');\n  }\n\n  await sendMessages(\n    fields.map(k => {\n      return {\n        dataset: table,\n        row: params.id,\n        column: k,\n        value: params[k],\n        timestamp: Timestamp.send(),\n      };\n    }),\n  );\n}\n\nexport async function insertWithUUID(table, row) {\n  if (!row.id) {\n    row = { ...row, id: uuidv4() };\n  }\n\n  await insert(table, row);\n\n  // We can't rely on the return value of insert because if the\n  // primary key is text, sqlite returns the internal row id which we\n  // don't care about. We want to return the generated UUID.\n  return row.id;\n}\n\nexport async function insert(table, row) {\n  const fields = Object.keys(row).filter(k => k !== 'id');\n\n  if (row.id == null) {\n    throw new Error('insert: id is required');\n  }\n\n  await sendMessages(\n    fields.map(k => {\n      return {\n        dataset: table,\n        row: row.id,\n        column: k,\n        value: row[k],\n        timestamp: Timestamp.send(),\n      };\n    }),\n  );\n}\n\nexport async function delete_(table, id) {\n  await sendMessages([\n    {\n      dataset: table,\n      row: id,\n      column: 'tombstone',\n      value: 1,\n      timestamp: Timestamp.send(),\n    },\n  ]);\n}\n\nexport async function deleteAll(table: string) {\n  const rows = await all<{ id: string }>(`\n    SELECT id FROM ${table} WHERE tombstone = 0\n  `);\n  await Promise.all(rows.map(({ id }) => delete_(table, id)));\n}\n\nexport async function selectWithSchema(table, sql, params) {\n  const rows = runQuery(sql, params, true);\n  const convertedRows = rows\n    .map(row => convertFromSelect(schema, schemaConfig, table, row))\n    .filter(Boolean);\n  // TODO: Make convertFromSelect generic so we don't need this cast\n  // oxlint-disable-next-line typescript/no-explicit-any\n  return convertedRows as any[];\n}\n\nexport async function selectFirstWithSchema(table, sql, params) {\n  const rows = await selectWithSchema(table, sql, params);\n  return rows.length > 0 ? rows[0] : null;\n}\n\nexport function insertWithSchema(table, row) {\n  // Even though `insertWithUUID` does this, we need to do it here so\n  // the schema validation passes\n  if (!row.id) {\n    row = { ...row, id: uuidv4() };\n  }\n\n  return insertWithUUID(\n    table,\n    convertForInsert(schema, schemaConfig, table, row),\n  );\n}\n\nexport function updateWithSchema(table, fields) {\n  return update(table, convertForUpdate(schema, schemaConfig, table, fields));\n}\n\n// Data-specific functions. Ideally this would be split up into\n// different files\n\nexport async function getCategories(\n  ids?: Array<DbCategory['id']>,\n): Promise<DbCategory[]> {\n  const whereIn = ids ? `c.id IN (${toSqlQueryParameters(ids)}) AND` : '';\n  const query = `SELECT c.* FROM categories c WHERE ${whereIn} c.tombstone = 0 ORDER BY c.sort_order, c.id`;\n  return ids\n    ? await all<DbCategory>(query, [...ids])\n    : await all<DbCategory>(query);\n}\n\nexport async function getCategoriesGrouped(\n  ids?: Array<DbCategoryGroup['id']>,\n): Promise<\n  Array<\n    DbCategoryGroup & {\n      categories: DbCategory[];\n    }\n  >\n> {\n  const categoryGroupWhereIn = ids\n    ? `cg.id IN (${toSqlQueryParameters(ids)}) AND`\n    : '';\n  const categoryGroupQuery = `SELECT cg.* FROM category_groups cg WHERE ${categoryGroupWhereIn} cg.tombstone = 0\n                              ORDER BY cg.is_income, cg.sort_order, cg.id`;\n\n  const categoryWhereIn = ids\n    ? `c.cat_group IN (${toSqlQueryParameters(ids)}) AND`\n    : '';\n  const categoryQuery = `SELECT c.* FROM categories c WHERE ${categoryWhereIn} c.tombstone = 0\n                         ORDER BY c.sort_order, c.id`;\n\n  const groups = ids\n    ? await all<DbCategoryGroup>(categoryGroupQuery, [...ids])\n    : await all<DbCategoryGroup>(categoryGroupQuery);\n\n  const categories = ids\n    ? await all<DbCategory>(categoryQuery, [...ids])\n    : await all<DbCategory>(categoryQuery);\n\n  return groups.map(group => ({\n    ...group,\n    categories: categories.filter(c => c.cat_group === group.id),\n  }));\n}\n\nexport async function insertCategoryGroup(\n  group: WithRequired<Partial<DbCategoryGroup>, 'name'>,\n): Promise<DbCategoryGroup['id']> {\n  // Don't allow duplicate group\n  const existingGroup = await first<\n    Pick<DbCategoryGroup, 'id' | 'name' | 'hidden'>\n  >(\n    `SELECT id, name, hidden FROM category_groups WHERE UPPER(name) = ? and tombstone = 0 LIMIT 1`,\n    [group.name.toUpperCase()],\n  );\n  if (existingGroup) {\n    throw new Error(\n      `A ${\n        existingGroup.hidden ? 'hidden ' : ''\n      }'${existingGroup.name}' category group already exists.`,\n    );\n  }\n\n  const lastGroup = await first<Pick<DbCategoryGroup, 'sort_order'>>(`\n    SELECT sort_order FROM category_groups WHERE tombstone = 0 ORDER BY sort_order DESC, id DESC LIMIT 1\n  `);\n  const sort_order = (lastGroup ? lastGroup.sort_order : 0) + SORT_INCREMENT;\n\n  group = {\n    ...categoryGroupModel.validate(group),\n    sort_order,\n  };\n  const id: DbCategoryGroup['id'] = await insertWithUUID(\n    'category_groups',\n    group,\n  );\n  return id;\n}\n\nexport async function updateCategoryGroup(\n  group: WithRequired<Partial<DbCategoryGroup>, 'id' | 'name' | 'is_income'>,\n) {\n  const existingGroup = await first<\n    Pick<DbCategoryGroup, 'id' | 'name' | 'hidden'>\n  >(\n    `SELECT id, name, hidden FROM category_groups WHERE UPPER(name) = ? AND id != ? AND tombstone = 0 LIMIT 1`,\n    [group.name.toUpperCase(), group.id],\n  );\n  if (existingGroup) {\n    throw new Error(\n      `A ${\n        existingGroup.hidden ? 'hidden ' : ''\n      }'${existingGroup.name}' category group already exists.`,\n    );\n  }\n  group = categoryGroupModel.validate(group, { update: true });\n  return update('category_groups', group);\n}\n\nexport async function moveCategoryGroup(\n  id: DbCategoryGroup['id'],\n  targetId?: DbCategoryGroup['id'] | null,\n) {\n  const groups = await all<Pick<DbCategoryGroup, 'id' | 'sort_order'>>(\n    `SELECT id, sort_order FROM category_groups WHERE tombstone = 0 ORDER BY sort_order, id`,\n  );\n\n  const { updates, sort_order } = shoveSortOrders(groups, targetId);\n  for (const info of updates) {\n    await update('category_groups', info);\n  }\n  await update('category_groups', { id, sort_order });\n}\n\nexport async function deleteCategoryGroup(\n  group: Pick<DbCategoryGroup, 'id'>,\n  transferId?: DbCategory['id'] | null,\n) {\n  const categories = await all<DbCategory>(\n    'SELECT * FROM categories WHERE cat_group = ?',\n    [group.id],\n  );\n\n  // Delete all the categories within a group\n  await Promise.all(categories.map(cat => deleteCategory(cat, transferId)));\n  await delete_('category_groups', group.id);\n}\n\nexport async function insertCategory(\n  category: WithRequired<Partial<DbCategory>, 'name' | 'cat_group'>,\n  { atEnd }: { atEnd?: boolean | undefined } = { atEnd: undefined },\n): Promise<DbCategory['id']> {\n  let sort_order;\n\n  let id_: DbCategory['id'];\n  await batchMessages(async () => {\n    // Dont allow duplicated names in groups\n    const existingCatInGroup = await first<Pick<DbCategory, 'id'>>(\n      `SELECT id FROM categories WHERE cat_group = ? and UPPER(name) = ? and tombstone = 0 LIMIT 1`,\n      [category.cat_group, category.name.toUpperCase()],\n    );\n    if (existingCatInGroup) {\n      throw new Error(\n        `Category '${category.name}' already exists in group '${category.cat_group}'`,\n      );\n    }\n\n    await validateCategoryParent(category);\n\n    if (atEnd) {\n      const lastCat = await first<Pick<DbCategory, 'sort_order'>>(`\n        SELECT sort_order FROM categories WHERE tombstone = 0 ORDER BY sort_order DESC, id DESC LIMIT 1\n      `);\n      sort_order = (lastCat ? lastCat.sort_order : 0) + SORT_INCREMENT;\n    } else {\n      // Unfortunately since we insert at the beginning, we need to shove\n      // the sort orders to make sure there's room for it\n      const categories = await all<Pick<DbCategory, 'id' | 'sort_order'>>(\n        `SELECT id, sort_order FROM categories WHERE cat_group = ? AND tombstone = 0 ORDER BY sort_order, id`,\n        [category.cat_group],\n      );\n\n      const { updates, sort_order: order } = shoveSortOrders(\n        categories,\n        categories.length > 0 ? categories[0].id : null,\n      );\n      for (const info of updates) {\n        await update('categories', info);\n      }\n      sort_order = order;\n    }\n\n    category = {\n      ...categoryModel.validate(category),\n      sort_order,\n    };\n\n    const id = await insertWithUUID('categories', category);\n    // Create an entry in the mapping table that points it to itself\n    await insert('category_mapping', { id, transferId: id });\n    id_ = id;\n  });\n  return id_;\n}\n\n// Subcategories are one level deep: a child must live in the same group as\n// its parent, the parent can't itself be a child, and a category that\n// already has children can't become a child.\nasync function validateCategoryParent(\n  category: Pick<\n    Partial<DbCategory>,\n    'id' | 'parent_id' | 'cat_group' | 'is_income'\n  >,\n) {\n  if (category.parent_id == null) {\n    return;\n  }\n\n  if (category.id && category.parent_id === category.id) {\n    throw new Error('A category cannot be its own parent');\n  }\n\n  const parent = await first<\n    Pick<DbCategory, 'id' | 'cat_group' | 'is_income' | 'parent_id'>\n  >(\n    'SELECT id, cat_group, is_income, parent_id FROM categories WHERE id = ? AND tombstone = 0',\n    [category.parent_id],\n  );\n  if (!parent) {\n    throw new Error(`Parent category '${category.parent_id}' does not exist`);\n  }\n  if (parent.is_income || category.is_income) {\n    throw new Error('Income categories cannot have subcategories');\n  }\n  if (parent.cat_group !== category.cat_group) {\n    throw new Error(\n      'A subcategory must be in the same group as its parent category',\n    );\n  }\n  if (parent.parent_id) {\n    throw new Error('A subcategory cannot have subcategories of its own');\n  }\n\n  if (category.id) {\n    const child = await first<Pick<DbCategory, 'id'>>(\n      'SELECT id FROM categories WHERE parent_id = ? AND tombstone = 0 LIMIT 1',\n      [category.id],\n    );\n    if (child) {\n      throw new Error(\n        'A category with subcategories cannot become a subcategory',\n      );\n    }\n  }\n}\n\nexport async function updateCategory(\n  category: WithRequired<\n    Partial<DbCategory>,\n    'name' | 'is_income' | 'cat_group'\n  >,\n) {\n  category = categoryModel.validate(category, { update: true });\n  await validateCategoryParent(category);\n  // Change from cat_group to group because category AQL schema named it group.\n  // const { cat_group: group, ...rest } = category;\n  return update('categories', category);\n}\n\nexport async function moveCategory(\n  id: DbCategory['id'],\n  groupId: DbCategoryGroup['id'],\n  targetId?: DbCategory['id'] | null,\n) {\n  if (!groupId) {\n    throw new Error('moveCategory: groupId is required');\n  }\n\n  const category = await first<Pick<DbCategory, 'cat_group' | 'parent_id'>>(\n    'SELECT cat_group, parent_id FROM categories WHERE id = ?',\n    [id],\n  );\n  if (category?.parent_id && category.cat_group !== groupId) {\n    throw new Error(\n      'A subcategory cannot be moved to a different group than its parent',\n    );\n  }\n\n  await moveCategoryRow(id, groupId, targetId);\n\n  // Subcategories follow their parent into the new group, in their\n  // current order, placed right after it.\n  if (category && category.cat_group !== groupId) {\n    const children = await all<Pick<DbCategory, 'id'>>(\n      'SELECT id FROM categories WHERE parent_id = ? AND tombstone = 0 ORDER BY sort_order, id',\n      [id],\n    );\n    for (const child of children) {\n      await moveCategoryRow(child.id, groupId, targetId);\n    }\n  }\n}\n\nasync function moveCategoryRow(\n  id: DbCategory['id'],\n  groupId: DbCategoryGroup['id'],\n  targetId?: DbCategory['id'] | null,\n) {\n  const categories = await all<Pick<DbCategory, 'id' | 'sort_order'>>(\n    `SELECT id, sort_order FROM categories WHERE cat_group = ? AND tombstone = 0 ORDER BY sort_order, id`,\n    [groupId],\n  );\n\n  const { updates, sort_order } = shoveSortOrders(categories, targetId);\n  for (const info of updates) {\n    await update('categories', info);\n  }\n  await update('categories', { id, sort_order, cat_group: groupId });\n}\n\nexport async function deleteCategory(\n  category: Pick<DbCategory, 'id'>,\n  transferId?: DbCategory['id'] | null,\n) {\n  if (transferId) {\n    // We need to update all the deleted categories that currently\n    // point to the one we're about to delete so they all are\n    // \"forwarded\" to the new transferred category.\n    const existingTransfers = await all<DbCategoryMapping>(\n      'SELECT * FROM category_mapping WHERE transferId = ?',\n      [category.id],\n    );\n    for (const mapping of existingTransfers) {\n      await update('category_mapping', {\n        id: mapping.id,\n        transferId,\n      });\n    }\n\n    // Finally, map the category we're about to delete to the new one\n    await update('category_mapping', { id: category.id, transferId });\n  }\n\n  // Subcategories outlive their parent as regular categories\n  const children = await all<Pick<DbCategory, 'id'>>(\n    'SELECT id FROM categories WHERE parent_id = ? AND tombstone = 0',\n    [category.id],\n  );\n  for (const child of children) {\n    await update('categories', { id: child.id, parent_id: null });\n  }\n\n  return delete_('categories', category.id);\n}\n\nexport async function getPayee(id: DbPayee['id']) {\n  return first<DbPayee>(`SELECT * FROM payees WHERE id = ?`, [id]);\n}\n\nexport async function getAccount(id: DbAccount['id']) {\n  return first<DbAccount>(`SELECT * FROM accounts WHERE id = ?`, [id]);\n}\n\nexport async function getCategory(id: DbCategory['id']) {\n  return first<DbCategory>(`SELECT * FROM categories WHERE id = ?`, [id]);\n}\n\nexport async function insertPayee(\n  payee: WithRequired<Partial<DbPayee>, 'name'>,\n) {\n  payee = payeeModel.validate(payee);\n  let id: DbPayee['id'];\n  await batchMessages(async () => {\n    id = await insertWithUUID('payees', payee);\n    await insert('payee_mapping', { id, targetId: id });\n  });\n  return id;\n}\n\nexport async function deletePayee(payee: Pick<DbPayee, 'id'>) {\n  const { transfer_acct } = await first<DbPayee>(\n    'SELECT * FROM payees WHERE id = ?',\n    [payee.id],\n  );\n  if (transfer_acct) {\n    // You should never be able to delete transfer payees\n    return;\n  }\n\n  // let mappings = await all('SELECT id FROM payee_mapping WHERE targetId = ?', [\n  //   payee.id\n  // ]);\n  // await Promise.all(\n  //   mappings.map(m => update('payee_mapping', { id: m.id, targetId: null }))\n  // );\n\n  return delete_('payees', payee.id);\n}\n\nexport async function deleteTransferPayee(payee: Pick<DbPayee, 'id'>) {\n  // This allows deleting transfer payees\n  return delete_('payees', payee.id);\n}\n\nexport function updatePayee(payee: WithRequired<Partial<DbPayee>, 'id'>) {\n  payee = payeeModel.validate(payee, { update: true });\n  return update('payees', payee);\n}\n\nexport async function mergePayees(\n  target: DbPayee['id'],\n  ids: Array<DbPayee['id']>,\n) {\n  // Load in payees so we can check some stuff\n  const dbPayees: DbPayee[] = await all<DbPayee>('SELECT * FROM payees');\n  const payees = groupById(dbPayees);\n\n  // Filter out any transfer payees\n  if (payees[target].transfer_acct != null) {\n    return;\n  }\n  ids = ids.filter(id => payees[id].transfer_acct == null);\n\n  await batchMessages(async () => {\n    await Promise.all(\n      ids.map(async id => {\n        const mappings = await all<DbPayeeMapping>(\n          'SELECT id FROM payee_mapping WHERE targetId = ?',\n          [id],\n        );\n        await Promise.all(\n          mappings.map(m =>\n            update('payee_mapping', { id: m.id, targetId: target }),\n          ),\n        );\n      }),\n    );\n\n    await Promise.all(\n      ids.map(id =>\n        Promise.all([\n          update('payee_mapping', { id, targetId: target }),\n          delete_('payees', id),\n        ]),\n      ),\n    );\n  });\n}\n\nexport function getPayees() {\n  return all<DbPayee & { name: DbAccount['name'] | DbPayee['name'] }>(`\n    SELECT p.*, COALESCE(a.name, p.name) AS name FROM payees p\n    LEFT JOIN accounts a ON (p.transfer_acct = a.id AND a.tombstone = 0)\n    WHERE p.tombstone = 0 AND (p.transfer_acct IS NULL OR a.id IS NOT NULL)\n    ORDER BY p.transfer_acct IS NULL DESC, p.name COLLATE NOCASE, a.offbudget, a.sort_order\n  `);\n}\n\nexport function getCommonPayees() {\n  const twelveWeeksAgo = toDateRepr(\n    monthUtils.subWeeks(monthUtils.currentDate(), 12),\n  );\n  const limit = 10;\n  return all<\n    DbPayee & {\n      common: true;\n      transfer_acct: null;\n      c: number;\n      latest: DbViewTransactionInternalAlive['date'];\n    }\n  >(`\n    SELECT     p.id as id, p.name as name, p.favorite as favorite,\n      p.category as category, TRUE as common, NULL as transfer_acct,\n    count(*) as c,\n    max(t.date) as latest\n    FROM payees p\n    LEFT JOIN v_transactions_internal_alive t on t.payee == p.id\n    WHERE LENGTH(p.name) > 0\n    AND p.tombstone = 0\n    AND t.date > ${twelveWeeksAgo}\n    GROUP BY p.id\n    ORDER BY c DESC ,p.transfer_acct IS NULL DESC, p.name\n    COLLATE NOCASE\n    LIMIT ${limit}\n  `);\n}\n\nconst orphanedPayeesQuery = `\n  SELECT p.id\n  FROM payees p\n    LEFT JOIN payee_mapping pm ON pm.id = p.id\n    LEFT JOIN v_transactions_internal_alive t ON t.payee = pm.targetId\n  WHERE p.tombstone = 0\n    AND p.transfer_acct IS NULL\n    AND t.id IS NULL\n    AND NOT EXISTS (\n      SELECT 1\n      FROM rules r,\n      json_each(r.conditions) as cond\n      WHERE r.tombstone = 0\n        AND json_extract(cond.value, '$.field') = 'description'\n        AND json_extract(cond.value, '$.value') = pm.targetId\n    );\n`;\n\nexport function syncGetOrphanedPayees() {\n  return all<Pick<DbPayee, 'id'>>(orphanedPayeesQuery);\n}\n\nexport async function getOrphanedPayees() {\n  const rows = await all<Pick<DbPayee, 'id'>>(orphanedPayeesQuery);\n  return rows.map(row => row.id);\n}\n\n// Reads the same view as `orphanedPayeesQuery`, so every orphaned payee is\n// absent here. The view already resolves merged payees to their target and\n// drops deleted transactions (and children of deleted parents). A split\n// counts once per distinct payee on it, whether on the parent or a child.\nexport function getPayeeUsageStats() {\n  return all<{\n    payee: DbPayee['id'];\n    count: number;\n    last_date: DbViewTransactionInternalAlive['date'];\n  }>(`\n    SELECT payee,\n      COUNT(DISTINCT COALESCE(parent_id, id)) AS count,\n      MAX(date) AS last_date\n    FROM v_transactions_internal_alive\n    WHERE payee IS NOT NULL\n    GROUP BY payee\n  `);\n}\n\nexport async function getPayeeByName(name: DbPayee['name']) {\n  return first<DbPayee>(\n    `SELECT * FROM payees WHERE UNICODE_LOWER(name) = ? AND tombstone = 0`,\n    [name.toLowerCase()],\n  );\n}\n\nexport function getAccounts() {\n  return all<\n    DbAccount & {\n      bankName: DbBank['name'];\n      bankId: DbBank['id'];\n    }\n  >(\n    `SELECT a.*, b.name as bankName, b.id as bankId FROM accounts a\n       LEFT JOIN banks b ON a.bank = b.id\n       WHERE a.tombstone = 0\n       ORDER BY sort_order, name`,\n  );\n}\n\nexport async function insertAccount(account) {\n  const accounts = await all<DbAccount>(\n    'SELECT * FROM accounts WHERE offbudget = ? ORDER BY sort_order, name',\n    [account.offbudget ? 1 : 0],\n  );\n\n  // Don't pass a target in, it will default to appending at the end\n  const { sort_order } = shoveSortOrders(accounts);\n\n  account = accountModel.validate({ ...account, sort_order });\n  return insertWithUUID('accounts', account);\n}\n\nexport function updateAccount(account) {\n  account = accountModel.validate(account, { update: true });\n  return update('accounts', account);\n}\n\nexport function deleteAccount(account) {\n  return delete_('accounts', account.id);\n}\n\nexport async function moveAccount(\n  id: DbAccount['id'],\n  targetId: DbAccount['id'] | null,\n  accountGroupId?: DbAccountGroup['id'] | null,\n) {\n  const account = await first<DbAccount>(\n    'SELECT * FROM accounts WHERE id = ?',\n    [id],\n  );\n  let accounts;\n  if (account.closed) {\n    accounts = await all<Pick<DbAccount, 'id' | 'sort_order'>>(\n      `SELECT id, sort_order FROM accounts WHERE closed = 1 ORDER BY sort_order, name`,\n    );\n  } else {\n    accounts = await all<Pick<DbAccount, 'id' | 'sort_order'>>(\n      `SELECT id, sort_order FROM accounts WHERE tombstone = 0 AND offbudget = ? ORDER BY sort_order, name`,\n      [account.offbudget ? 1 : 0],\n    );\n  }\n\n  const { updates, sort_order } = shoveSortOrders(accounts, targetId);\n  await batchMessages(async () => {\n    for (const info of updates) {\n      void update('accounts', info);\n    }\n    void update('accounts', {\n      id,\n      sort_order,\n      ...(accountGroupId !== undefined && {\n        account_group_id: accountGroupId,\n      }),\n    });\n  });\n}\n\nexport function getAccountGroups() {\n  return all<DbAccountGroup>(\n    `SELECT * FROM account_groups WHERE tombstone = 0 ORDER BY sort_order, id`,\n  );\n}\n\nexport async function insertAccountGroup(\n  group: WithRequired<Partial<DbAccountGroup>, 'name'>,\n): Promise<DbAccountGroup['id']> {\n  // Don't allow duplicate group\n  const existingGroup = await first<Pick<DbAccountGroup, 'id' | 'name'>>(\n    `SELECT id, name FROM account_groups WHERE UPPER(name) = ? AND tombstone = 0 LIMIT 1`,\n    [group.name.toUpperCase()],\n  );\n  if (existingGroup) {\n    throw new Error(`An '${existingGroup.name}' account group already exists.`);\n  }\n\n  const lastGroup = await first<Pick<DbAccountGroup, 'sort_order'>>(`\n    SELECT sort_order FROM account_groups WHERE tombstone = 0 ORDER BY sort_order DESC, id DESC LIMIT 1\n  `);\n  const sort_order = (lastGroup ? lastGroup.sort_order : 0) + SORT_INCREMENT;\n\n  group = {\n    ...accountGroupModel.validate(group),\n    sort_order,\n  };\n  const id: DbAccountGroup['id'] = await insertWithUUID(\n    'account_groups',\n    group,\n  );\n  return id;\n}\n\nexport async function updateAccountGroup(\n  group: WithRequired<Partial<DbAccountGroup>, 'id' | 'name'>,\n) {\n  const existingGroup = await first<Pick<DbAccountGroup, 'id' | 'name'>>(\n    `SELECT id, name FROM account_groups WHERE UPPER(name) = ? AND id != ? AND tombstone = 0 LIMIT 1`,\n    [group.name.toUpperCase(), group.id],\n  );\n  if (existingGroup) {\n    throw new Error(`An '${existingGroup.name}' account group already exists.`);\n  }\n  group = accountGroupModel.validate(group, { update: true });\n  return update('account_groups', group);\n}\n\nexport async function moveAccountGroup(\n  id: DbAccountGroup['id'],\n  targetId?: DbAccountGroup['id'] | null,\n) {\n  const groups = await all<Pick<DbAccountGroup, 'id' | 'sort_order'>>(\n    `SELECT id, sort_order FROM account_groups WHERE tombstone = 0 ORDER BY sort_order, id`,\n  );\n\n  const { updates, sort_order } = shoveSortOrders(groups, targetId);\n  await batchMessages(async () => {\n    for (const info of updates) {\n      await update('account_groups', info);\n    }\n    await update('account_groups', { id, sort_order });\n  });\n}\n\nexport async function deleteAccountGroup(group: Pick<DbAccountGroup, 'id'>) {\n  const accounts = await all<Pick<DbAccount, 'id'>>(\n    `SELECT id FROM accounts WHERE account_group_id = ? AND tombstone = 0`,\n    [group.id],\n  );\n\n  // Clearing member refs is best-effort under CRDT sync: a concurrent\n  // assignment on another device can win against these nulls, so consumers\n  // must always treat a ref to a missing/tombstoned group as ungrouped.\n  await batchMessages(async () => {\n    for (const account of accounts) {\n      await update('accounts', { id: account.id, account_group_id: null });\n    }\n    await delete_('account_groups', group.id);\n  });\n}\n\nexport async function getTransaction(id: DbViewTransaction['id']) {\n  const rows = await selectWithSchema(\n    'transactions',\n    'SELECT * FROM v_transactions WHERE id = ?',\n    [id],\n  );\n  return rows[0];\n}\n\nexport async function getTransactions(accountId: DbTransaction['acct']) {\n  if (arguments.length > 1) {\n    throw new Error(\n      '`getTransactions` was given a second argument, it now only takes a single argument `accountId`',\n    );\n  }\n\n  return selectWithSchema(\n    'transactions',\n    'SELECT * FROM v_transactions WHERE account = ?',\n    [accountId],\n  );\n}\n\nexport function insertTransaction(\n  transaction,\n): Promise<TransactionEntity['id']> {\n  return insertWithSchema('transactions', transaction);\n}\n\nexport function updateTransaction(transaction) {\n  return updateWithSchema('transactions', transaction);\n}\n\nexport async function deleteTransaction(transaction) {\n  return delete_('transactions', transaction.id);\n}\n\n/**\n * Move a transaction to a new position within the same date.\n * Uses the same midpoint/shove algorithm as category reordering.\n *\n * @param id - The ID of the transaction to move\n * @param accountId - The account the transaction belongs to\n * @param targetId - The ID of the transaction to place AFTER, or null to place at top\n */\nexport async function moveTransaction(\n  id: string,\n  accountId: string,\n  targetId: string | null,\n) {\n  await batchMessages(async () => {\n    const transaction = await getTransaction(id);\n    if (!transaction) {\n      throw new Error(`Transaction not found: ${id}`);\n    }\n\n    // Validate that the transaction belongs to the specified account\n    if (transaction.account !== accountId) {\n      throw new Error(\n        `Transaction ${id} does not belong to account ${accountId}`,\n      );\n    }\n\n    // Convert date string (YYYY-MM-DD) to integer format (YYYYMMDD) for SQL query\n    const dateInt = parseInt(transaction.date.replace(/-/g, ''), 10);\n\n    // Get transactions to reorder against.\n    // If this is a child transaction, scope to siblings with the same parent_id.\n    // Otherwise, get all parent transactions for the same date (excluding children).\n    // Query in DESC order to match UI display order.\n    const isChild = transaction.is_child && transaction.parent_id;\n    const transactions = await all<{ id: string; sort_order: number }>(\n      isChild\n        ? `SELECT vt.id, vt.sort_order\n           FROM v_transactions vt\n           WHERE vt.parent_id = ?\n           ORDER BY sort_order DESC, id`\n        : `SELECT vt.id, vt.sort_order\n           FROM v_transactions vt\n           WHERE vt.account = ?\n             AND vt.date = ?\n             AND vt.is_child = 0\n           ORDER BY sort_order DESC, id`,\n      isChild ? [transaction.parent_id] : [accountId, dateInt],\n    );\n\n    // Calculate new sort_order using the descending shove algorithm\n    // - If targetId is null, place at TOP (highest sort_order)\n    // - Otherwise, place AFTER target (sort_order between target and next)\n    const { sort_order: newSortOrder, updates } = shoveSortOrdersDescending(\n      transactions,\n      targetId,\n      id,\n      TRANSACTION_SORT_INCREMENT,\n    );\n\n    // Apply updates to shuffle other transactions if needed\n    for (const info of updates) {\n      await update('transactions', info);\n      // Only move subtransactions for parent transactions\n      if (!isChild) {\n        await moveSubtransactions(info.id, info.sort_order, accountId, dateInt);\n      }\n    }\n\n    // Update the moved transaction\n    await update('transactions', { id, sort_order: newSortOrder });\n    // Only move subtransactions for parent transactions\n    if (!isChild) {\n      await moveSubtransactions(id, newSortOrder, accountId, dateInt);\n    }\n  });\n}\n\n/**\n * Move a schedule to a new position among all non-tombstoned schedules.\n * Uses the same midpoint/shove algorithm as transaction reordering.\n *\n * @param id - The ID of the schedule to move\n * @param targetId - The ID of the schedule to place AFTER, or null to place at top\n */\nexport async function moveSchedule(id: string, targetId: string | null) {\n  await batchMessages(async () => {\n    const schedule = await first<{ id: string }>(\n      'SELECT id FROM schedules WHERE id = ? AND tombstone = 0',\n      [id],\n    );\n    if (!schedule) {\n      throw new Error(`Schedule not found: ${id}`);\n    }\n\n    const schedules = await all<{ id: string; sort_order: number }>(\n      `SELECT id, sort_order FROM schedules\n       WHERE tombstone = 0\n       ORDER BY sort_order DESC, id`,\n    );\n\n    const { sort_order: newSortOrder, updates } = shoveSortOrdersDescending(\n      schedules,\n      targetId,\n      id,\n    );\n\n    for (const info of updates) {\n      await update('schedules', info);\n    }\n\n    await update('schedules', { id, sort_order: newSortOrder });\n  });\n}\n\n/**\n * Update sort_order of child/subtransactions to maintain relative ordering.\n * Children are distributed evenly between the parent's sort_order and the\n * next sibling's sort_order to avoid collisions.\n *\n * This ensures split transaction children move with their parent.\n *\n * @param parentId - The ID of the parent transaction\n * @param parentSortOrder - The sort_order of the parent transaction\n * @param accountId - The account ID to scope the next sibling lookup\n * @param txnDate - The transaction date (as integer YYYYMMDD) to scope the next sibling lookup\n */\nasync function moveSubtransactions(\n  parentId: string,\n  parentSortOrder: number,\n  accountId: string,\n  txnDate: number,\n) {\n  const subtransactions = await all<{ id: string }>(\n    'SELECT id FROM v_transactions WHERE parent_id = ? ORDER BY sort_order DESC',\n    [parentId],\n  );\n\n  if (subtransactions.length === 0) {\n    return;\n  }\n\n  // Find the next sibling's sort_order (transaction with lower sort_order that isn't a child)\n  // Scoped to the same account and date to avoid picking transactions from other contexts\n  const nextSibling = await first<{ sort_order: number }>(\n    `SELECT sort_order FROM v_transactions\n     WHERE parent_id IS NULL\n       AND is_child = 0\n       AND sort_order < ?\n       AND account = ?\n       AND date = ?\n     ORDER BY sort_order DESC\n     LIMIT 1`,\n    [parentSortOrder, accountId, txnDate],\n  );\n\n  // Calculate the available gap for distributing children\n  // Use a sensible fallback if no next sibling exists\n  const nextSiblingSortOrder =\n    nextSibling?.sort_order ?? parentSortOrder - TRANSACTION_SORT_INCREMENT;\n  const gap = parentSortOrder - nextSiblingSortOrder;\n\n  // Distribute children evenly within the gap\n  // Avoid rounding to prevent duplicate sort_order values in tight gaps\n  for (const [index, sub] of subtransactions.entries()) {\n    const newSortOrder =\n      parentSortOrder - ((index + 1) * gap) / (subtransactions.length + 1);\n    await update('transactions', {\n      id: sub.id,\n      sort_order: newSortOrder,\n    });\n  }\n}\n\nfunction toSqlQueryParameters(params: unknown[]) {\n  return params.map(() => '?').join(',');\n}\n\nexport function getTags() {\n  return all<DbTag>(`\n    SELECT id, tag, color, description, hidden\n    FROM tags\n    WHERE tombstone = 0\n  `);\n}\n\nexport function getAllTags() {\n  return all<DbTag>(`\n    SELECT id, tag, color, description, hidden\n    FROM tags\n  `);\n}\n\nexport function insertTag(\n  tag: Omit<DbTag, 'id' | 'tombstone'>,\n): Promise<DbTag['id']> {\n  return insertWithUUID('tags', tag);\n}\n\nexport async function deleteTag(tag: Pick<DbTag, 'id'>) {\n  return delete_('tags', tag.id);\n}\n\nexport function updateTag(tag: Partial<DbTag> & Pick<DbTag, 'id'>) {\n  return update('tags', tag);\n}\n\nexport function findTags() {\n  return all<{ id: DbTransaction['id']; notes: string }>(\n    `\n      SELECT id, notes\n      FROM transactions\n      WHERE tombstone = 0 AND notes LIKE ?\n    `,\n    ['%#%'],\n  );\n}\n\n// Notes of every live transaction that may contain a tag, together with the\n// id of the row it is listed under in a grouped transaction list: split\n// children are listed under their parent. Reading from\n// `v_transactions_internal_alive` gives the same rows a filtered account view\n// sees, so children of deleted parents are excluded.\nexport function getTaggedTransactionGroups() {\n  return all<{ group_id: DbTransaction['id']; notes: string }>(\n    `\n      SELECT IFNULL(parent_id, id) AS group_id, notes\n      FROM v_transactions_internal_alive\n      WHERE notes LIKE ?\n    `,\n    ['%#%'],\n  );\n}\n"
+    },
+    "packages/loot-core/src/server/payees/app.ts": {
+      "language": "typescript",
+      "mutants": [
+        {
+          "id": "loot-core-4",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/loot-core/.stryker-tmp/sandbox-u9KMcH\n\n\n\n ❯ src/server/payees/app.test.ts (13 tests | 1 failed) 2234ms\n\n   ❯ payees app (13)\n     ✓ payees-get-rule-counts (1)\n       ✓ counts payee rules but excludes rules linked to completed schedules 1396ms\n     ❯ payees-get-usage-stats (12)\n       × returns no entry for a payee with no transactions 825ms\n\n       · counts transactions and returns the latest date\n       · keeps each payee separate\n\n       · shows a future date when that is the latest transaction\n       · does not count deleted transactions or their dates\n       · returns no entry when all of a payee's transactions are deleted\n       · counts a merged payee's transactions toward the target\n       · counts a split once for a payee on both the parent and its children\n       · counts a split once for each different payee on its children\n       · does not count the children of a deleted split\n       · counts transactions for transfer payees\n       · has no entry for any payee in the unused payees list\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/server/payees/app.test.ts > payees app > payees-get-usage-stats > returns no entry for a payee with no transactions\n\nTypeError: Cannot read properties of undefined (reading 'id3')\n\n ❯ src/server/payees/app.test.ts:77:14\n\n     75|       const stats = await getUsageStats();\n     76|\n     77|       expect(stats[payeeId]).toBeUndefined();\n       |              ^\n     78|     });\n     79|\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (13)\n   Start at  21:27:51\n\n   Duration  62.52s (setup 66%, transform 30%, tests 4%)\n\n\n\n  Transform  transforming modules took 18.03s · 30% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "loot-core-0"
+          ],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 114
+            },
+            "start": {
+              "column": 3,
+              "line": 104
+            }
+          }
+        },
+        {
+          "id": "loot-core-3",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/loot-core/.stryker-tmp/sandbox-u9KMcH\n\n\n\n ❯ src/server/payees/app.test.ts (13 tests | 1 failed) 2146ms\n\n   ❯ payees app (13)\n     ✓ payees-get-rule-counts (1)\n       ✓ counts payee rules but excludes rules linked to completed schedules 1242ms\n     ❯ payees-get-usage-stats (12)\n       × returns no entry for a payee with no transactions 885ms\n       · counts transactions and returns the latest date\n       · keeps each payee separate\n\n       · shows a future date when that is the latest transaction\n       · does not count deleted transactions or their dates\n       · returns no entry when all of a payee's transactions are deleted\n       · counts a merged payee's transactions toward the target\n       · counts a split once for a payee on both the parent and its children\n       · counts a split once for each different payee on its children\n       · does not count the children of a deleted split\n       · counts transactions for transfer payees\n       · has no entry for any payee in the unused payees list\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/server/payees/app.test.ts > payees app > payees-get-usage-stats > returns no entry for a payee with no transactions\n\nTypeError: app.handlers.payees-get-usage-stats is not a function\n\n ❯ getUsageStats src/server/payees/app.test.ts:69:52\n\n     67|\n     68|     function getUsageStats() {\n     69|       return app.handlers['payees-get-usage-stats']();\n       |                                                    ^\n     70|     }\n     71|\n\n ❯ src/server/payees/app.test.ts:75:27\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed | 1 passed (13)\n\n   Start at  21:27:51\n\n   Duration  62.98s (setup 66%, transform 30%, tests 4%)\n\n\n  Transform  transforming modules took 18.47s · 30% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "loot-core-0"
+          ],
+          "location": {
+            "end": {
+              "column": 36,
+              "line": 41
+            },
+            "start": {
+              "column": 12,
+              "line": 41
+            }
+          }
+        },
+        {
+          "id": "loot-core-5",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/loot-core/.stryker-tmp/sandbox-u9KMcH\n\n\n\n ❯ src/server/payees/app.test.ts (13 tests | 1 failed) 2318ms\n\n   ❯ payees app (13)\n     ✓ payees-get-rule-counts (1)\n       ✓ counts payee rules but excludes rules linked to completed schedules 980ms\n\n     ❯ payees-get-usage-stats (12)\n       ✓ returns no entry for a payee with no transactions 697ms\n\n       × counts transactions and returns the latest date 632ms\n\n       · keeps each payee separate\n\n       · shows a future date when that is the latest transaction\n       · does not count deleted transactions or their dates\n       · returns no entry when all of a payee's transactions are deleted\n       · counts a merged payee's transactions toward the target\n       · counts a split once for a payee on both the parent and its children\n       · counts a split once for each different payee on its children\n       · does not count the children of a deleted split\n       · counts transactions for transfer payees\n       · has no entry for any payee in the unused payees list\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/server/payees/app.test.ts > payees app > payees-get-usage-stats > counts transactions and returns the latest date\n\nAssertionError: expected undefined to deeply equal { count: 3, lastUsed: '2026-10-30' }\n\n\n- Expected:\n{\n  \"count\": 3,\n  \"lastUsed\": \"2026-10-30\",\n}\n\n+ Received:\nundefined\n\n\n ❯ src/server/payees/app.test.ts:88:30\n\n     86|       const stats = await getUsageStats();\n     87|\n     88|       expect(stats[payeeId]).toEqual({ count: 3, lastUsed: '2026-10-30…\n       |                              ^\n     89|     });\n     90|\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 2 passed (13)\n   Start at  21:29:05\n\n   Duration  63.91s (setup 69%, transform 27%, tests 4%, worker 1%)\n\n\n\n  Transform  transforming modules took 16.64s · 27% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "loot-core-0"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 112
+            },
+            "start": {
+              "column": 27,
+              "line": 107
+            }
+          }
+        },
+        {
+          "id": "loot-core-6",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/loot-core/.stryker-tmp/sandbox-u9KMcH\n\n\n\n ❯ src/server/payees/app.test.ts (13 tests | 1 failed) 2238ms\n\n   ❯ payees app (13)\n     ✓ payees-get-rule-counts (1)\n       ✓ counts payee rules but excludes rules linked to completed schedules 878ms\n     ❯ payees-get-usage-stats (12)\n       ✓ returns no entry for a payee with no transactions 711ms\n       × counts transactions and returns the latest date 639ms\n\n       · keeps each payee separate\n\n       · shows a future date when that is the latest transaction\n\n       · does not count deleted transactions or their dates\n       · returns no entry when all of a payee's transactions are deleted\n       · counts a merged payee's transactions toward the target\n\n       · counts a split once for a payee on both the parent and its children\n       · counts a split once for each different payee on its children\n       · does not count the children of a deleted split\n       · counts transactions for transfer payees\n       · has no entry for any payee in the unused payees list\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/server/payees/app.test.ts > payees app > payees-get-usage-stats > counts transactions and returns the latest date\n\nAssertionError: expected {} to deeply equal { count: 3, lastUsed: '2026-10-30' }\n\n- Expected\n+ Received\n\n- {\n-   \"count\": 3,\n-   \"lastUsed\": \"2026-10-30\",\n- }\n+ {}\n\n\n ❯ src/server/payees/app.test.ts:88:30\n\n     86|       const stats = await getUsageStats();\n     87|\n     88|       expect(stats[payeeId]).toEqual({ count: 3, lastUsed: '2026-10-30…\n       |                              ^\n     89|     });\n     90|\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed | 2 passed (13)\n\n   Start at  21:29:05\n\n   Duration  63.61s (setup 69%, transform 27%, tests 4%)\n\n\n\n  Transform  transforming modules took 16.60s · 27% of tracked time, re-done on every run\n             persist transforms across runs with fsModuleCache: true\n             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "loot-core-0"
+          ],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 111
+            },
+            "start": {
+              "column": 24,
+              "line": 108
+            }
+          }
+        }
+      ],
+      "source": "import { createApp } from '#server/app';\nimport * as db from '#server/db';\nimport { fromDateRepr, payeeModel } from '#server/models';\nimport { mutator } from '#server/mutators';\nimport { getCompletedScheduleRuleIds } from '#server/schedules/app';\nimport { batchMessages } from '#server/sync';\nimport * as rules from '#server/transactions/transaction-rules';\nimport { undoable } from '#server/undo';\nimport { DEFAULT_MAX_DISTANCE_METERS } from '#shared/constants';\nimport type { Diff } from '#shared/util';\nimport type {\n  NearbyPayeeEntity,\n  PayeeEntity,\n  PayeeLocationEntity,\n  RuleEntity,\n} from '#types/models';\n\nexport type PayeesHandlers = {\n  'payee-create': typeof createPayee;\n  'common-payees-get': typeof getCommonPayees;\n  'payees-get': typeof getPayees;\n  'payees-get-orphaned': typeof getOrphanedPayees;\n  'payees-get-rule-counts': typeof getPayeeRuleCounts;\n  'payees-get-usage-stats': typeof getPayeeUsageStats;\n  'payees-merge': typeof mergePayees;\n  'payees-batch-change': typeof batchChangePayees;\n  'payees-check-orphaned': typeof checkOrphanedPayees;\n  'payees-get-rules': typeof getPayeeRules;\n  'payee-location-create': typeof createPayeeLocation;\n  'payee-locations-get': typeof getPayeeLocations;\n  'payee-location-delete': typeof deletePayeeLocation;\n  'payees-get-nearby': typeof getNearbyPayees;\n};\n\nexport const app = createApp<PayeesHandlers>();\napp.method('payee-create', mutator(undoable(createPayee)));\napp.method('common-payees-get', getCommonPayees);\napp.method('payees-get', getPayees);\napp.method('payees-get-orphaned', getOrphanedPayees);\napp.method('payees-get-rule-counts', getPayeeRuleCounts);\napp.method('payees-get-usage-stats', getPayeeUsageStats);\napp.method(\n  'payees-merge',\n  mutator(\n    undoable(mergePayees, args => ({\n      mergeIds: args.mergeIds,\n      targetId: args.targetId,\n    })),\n  ),\n);\napp.method('payees-batch-change', mutator(undoable(batchChangePayees)));\napp.method('payees-check-orphaned', checkOrphanedPayees);\napp.method('payees-get-rules', getPayeeRules);\napp.method('payee-location-create', mutator(createPayeeLocation));\napp.method('payee-locations-get', getPayeeLocations);\napp.method('payee-location-delete', mutator(deletePayeeLocation));\napp.method('payees-get-nearby', getNearbyPayees);\n\nasync function createPayee({ name }: { name: PayeeEntity['name'] }) {\n  return db.insertPayee({ name });\n}\n\nasync function getCommonPayees(): Promise<PayeeEntity[]> {\n  // TODO: Update to an AQL query. Server must return AQL entities not the raw DB data.\n  return (await db.getCommonPayees()).map(p => payeeModel.fromDb(p));\n}\n\nasync function getPayees(): Promise<PayeeEntity[]> {\n  // TODO: Update to an AQL query. Server must return AQL entities not the raw DB data.\n  return (await db.getPayees()).map(p => payeeModel.fromDb(p));\n}\n\nasync function getOrphanedPayees(): Promise<Array<Pick<PayeeEntity, 'id'>>> {\n  return await db.syncGetOrphanedPayees();\n}\n\nasync function getPayeeRuleCounts() {\n  const payeeCounts: Record<PayeeEntity['id'], number> = {};\n  const completedScheduleRules = new Set(await getCompletedScheduleRuleIds());\n\n  rules.iterateIds(rules.getRules(), 'payee', (rule, id) => {\n    if (rule.id && completedScheduleRules.has(rule.id)) {\n      return;\n    }\n\n    if (payeeCounts[id] == null) {\n      payeeCounts[id] = 0;\n    }\n    payeeCounts[id]++;\n  });\n\n  return payeeCounts;\n}\n\nexport type PayeeUsageStats = {\n  count: number;\n  lastUsed: string;\n};\n\n// Payees without any transactions are omitted; callers treat a missing\n// entry as 0 transactions, never used.\nasync function getPayeeUsageStats(): Promise<\n  Record<PayeeEntity['id'], PayeeUsageStats>\n> {\n  const rows = await db.getPayeeUsageStats();\n  const stats: Record<PayeeEntity['id'], PayeeUsageStats> = {};\n  for (const row of rows) {\n    stats[row.payee] = {\n      count: row.count,\n      lastUsed: fromDateRepr(row.last_date),\n    };\n  }\n  return stats;\n}\n\nasync function mergePayees({\n  targetId,\n  mergeIds,\n}: {\n  targetId: PayeeEntity['id'];\n  mergeIds: Array<PayeeEntity['id']>;\n}) {\n  await db.mergePayees(targetId, mergeIds);\n}\n\nasync function batchChangePayees({\n  added,\n  deleted,\n  updated,\n}: Partial<Diff<PayeeEntity>>): Promise<void> {\n  await batchMessages(async () => {\n    if (deleted) {\n      await Promise.all(\n        deleted.map(p => ({ id: p.id })).map(p => db.deletePayee(p)),\n      );\n    }\n\n    if (added) {\n      await Promise.all(\n        added.map(p => payeeModel.toDb(p)).map(p => db.insertPayee(p)),\n      );\n    }\n\n    if (updated) {\n      await Promise.all(\n        updated\n          .map(p => payeeModel.toDb(p as PayeeEntity, { update: true }))\n          .map(p => db.updatePayee(p)),\n      );\n    }\n  });\n}\n\nasync function checkOrphanedPayees({\n  ids,\n}: {\n  ids: Array<PayeeEntity['id']>;\n}): Promise<Array<PayeeEntity['id']>> {\n  const orphaned = new Set(await db.getOrphanedPayees());\n  return ids.filter(id => orphaned.has(id));\n}\n\nasync function getPayeeRules({\n  id,\n}: {\n  id: PayeeEntity['id'];\n}): Promise<RuleEntity[]> {\n  return rules.getRulesForPayee(id).map(rule => rule.serialize());\n}\n\nasync function createPayeeLocation({\n  payeeId,\n  latitude,\n  longitude,\n}: {\n  payeeId: PayeeEntity['id'];\n  latitude: number;\n  longitude: number;\n}): Promise<PayeeLocationEntity['id']> {\n  const created_at = Date.now();\n\n  if (\n    !Number.isFinite(latitude) ||\n    !Number.isFinite(longitude) ||\n    latitude < -90 ||\n    latitude > 90 ||\n    longitude < -180 ||\n    longitude > 180\n  ) {\n    throw new Error(\n      'Invalid coordinates: latitude must be between -90 and 90, longitude must be between -180 and 180',\n    );\n  }\n\n  return await db.insertWithUUID('payee_locations', {\n    payee_id: payeeId,\n    latitude,\n    longitude,\n    created_at,\n  });\n}\n\nasync function getPayeeLocations({\n  payeeId,\n}: {\n  payeeId?: PayeeEntity['id'];\n} = {}): Promise<PayeeLocationEntity[]> {\n  let query = 'SELECT * FROM payee_locations WHERE tombstone IS NOT 1';\n  let params: string[] = [];\n\n  if (payeeId) {\n    query += ' AND payee_id = ?';\n    params = [payeeId];\n  }\n\n  query += ' ORDER BY created_at DESC';\n\n  return db.runQuery<PayeeLocationEntity>(query, params, true);\n}\n\nasync function deletePayeeLocation({\n  id,\n}: {\n  id: PayeeLocationEntity['id'];\n}): Promise<void> {\n  await db.delete_('payee_locations', id);\n}\n\n// Type for the raw query result that combines PayeeEntity and PayeeLocationEntity fields\ntype NearbyPayeeQueryResult = Pick<\n  db.DbPayee,\n  | 'id'\n  | 'name'\n  | 'transfer_acct'\n  | 'favorite'\n  | 'learn_categories'\n  | 'tombstone'\n> &\n  Omit<PayeeLocationEntity, 'id'> & {\n    // PayeeLocationEntity's id renamed to location_id\n    location_id: PayeeLocationEntity['id'];\n    // Calculated distance from SQL\n    distance: number;\n  };\nasync function getNearbyPayees({\n  latitude,\n  longitude,\n  maxDistance = DEFAULT_MAX_DISTANCE_METERS,\n}: {\n  latitude: number;\n  longitude: number;\n  maxDistance?: number;\n}): Promise<NearbyPayeeEntity[]> {\n  if (\n    !Number.isFinite(latitude) ||\n    !Number.isFinite(longitude) ||\n    latitude < -90 ||\n    latitude > 90 ||\n    longitude < -180 ||\n    longitude > 180\n  ) {\n    throw new Error(\n      'Invalid coordinates: latitude must be between -90 and 90, longitude must be between -180 and 180',\n    );\n  }\n\n  if (!Number.isFinite(maxDistance) || maxDistance <= 0) {\n    throw new Error(\n      'Invalid maxDistance: must be a finite positive number greater than 0',\n    );\n  }\n\n  // Get the closest location for each payee within maxDistance using window functions\n  const query = `\n    WITH payee_distances AS (\n      SELECT\n        pl.id as location_id,\n        pl.payee_id,\n        pl.latitude,\n        pl.longitude,\n        pl.created_at,\n        p.id,\n        p.name,\n        p.transfer_acct,\n        p.favorite,\n        p.learn_categories,\n        p.tombstone,\n        -- Haversine formula to calculate distance\n        ((6371 * acos(\n          MIN(1, MAX(-1,\n            cos(radians(?)) * cos(radians(pl.latitude)) *\n            cos(radians(pl.longitude) - radians(?)) +\n            sin(radians(?)) * sin(radians(pl.latitude))\n          ))\n        ))) * 1000 as distance,\n        -- Rank locations by distance for each payee\n        ROW_NUMBER() OVER (PARTITION BY pl.payee_id ORDER BY (\n          (6371 * acos(\n            MIN(1, MAX(-1,\n              cos(radians(?)) * cos(radians(pl.latitude)) *\n              cos(radians(pl.longitude) - radians(?)) +\n              sin(radians(?)) * sin(radians(pl.latitude))\n            ))\n          )) * 1000\n        )) as distance_rank\n      FROM payee_locations pl\n      JOIN payees p ON pl.payee_id = p.id\n      WHERE p.tombstone IS NOT 1\n        AND pl.tombstone IS NOT 1\n        -- Filter by distance using Haversine formula\n        AND (6371 * acos(\n          MIN(1, MAX(-1,\n            cos(radians(?)) * cos(radians(pl.latitude)) *\n            cos(radians(pl.longitude) - radians(?)) +\n            sin(radians(?)) * sin(radians(pl.latitude))\n          ))\n        )) * 1000 <= ?\n    )\n    SELECT\n      location_id,\n      payee_id,\n      latitude,\n      longitude,\n      created_at,\n      id,\n      name,\n      transfer_acct,\n      favorite,\n      learn_categories,\n      tombstone,\n      distance\n    FROM payee_distances\n    WHERE distance_rank = 1\n    ORDER BY distance ASC\n    LIMIT 10\n  `;\n\n  const results = db.runQuery<NearbyPayeeQueryResult>(\n    query,\n    [\n      latitude,\n      longitude,\n      latitude, // For first distance calculation in SELECT\n      latitude,\n      longitude,\n      latitude, // For ROW_NUMBER() ordering\n      latitude,\n      longitude,\n      latitude, // For WHERE distance filter\n      maxDistance,\n    ],\n    true,\n  );\n\n  // Transform results to expected format\n  const nearbyPayees: NearbyPayeeEntity[] = results.map(row => {\n    const payee = payeeModel.fromDb({\n      id: row.id,\n      name: row.name,\n      transfer_acct: row.transfer_acct,\n      favorite: row.favorite,\n      learn_categories: row.learn_categories,\n      tombstone: row.tombstone,\n    });\n\n    return {\n      payee,\n      location: {\n        id: row.location_id,\n        payee_id: row.payee_id,\n        latitude: row.latitude,\n        longitude: row.longitude,\n        created_at: row.created_at,\n        distance: row.distance,\n      },\n    };\n  });\n\n  return nearbyPayees;\n}\n"
+    },
+    "packages/desktop-client/src/components/payees/payeeUsageDisplay.ts": {
+      "language": "typescript",
+      "mutants": [
+        {
+          "id": "desktop-client-0",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "status": "Survived",
+          "testsCompleted": 1,
+          "location": {
+            "end": {
+              "column": 45,
+              "line": 6
+            },
+            "start": {
+              "column": 42,
+              "line": 6
+            }
+          }
+        },
+        {
+          "id": "desktop-client-1",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 37ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows a placeholder in both cells while loading 28ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows a placeholder in both cells while loading\nAssertionError: expected undefined to deeply equal { count: '…', lastUsed: '…', …(2) }\n\n- Expected:\n{\n  \"count\": \"…\",\n  \"isLoading\": true,\n  \"isUnused\": false,\n  \"lastUsed\": \"…\",\n}\n\n+ Received:\nundefined\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:18:7\n\n     16|     expect(\n     17|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     18|     ).toEqual({\n       |       ^\n     19|       count: USAGE_LOADING_PLACEHOLDER,\n     20|       lastUsed: USAGE_LOADING_PLACEHOLDER,\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed (5)\n\n   Start at  21:09:55\n\n   Duration  15.02s (import 88%, transform 10%, worker 2%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 2,
+              "line": 57
+            },
+            "start": {
+              "column": 49,
+              "line": 32
+            }
+          }
+        },
+        {
+          "id": "desktop-client-2",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 55ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows 0 and the never label, muted, for a payee with no transactions 35ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows 0 and the never label, muted, for a payee with no transactions\n\nAssertionError: expected { count: '…', lastUsed: '…', …(2) } to deeply equal { count: '0', lastUsed: 'Never', …(2) }\n\n\n- Expected\n+ Received\n\n  {\n-   \"count\": \"0\",\n-   \"isLoading\": false,\n-   \"isUnused\": true,\n-   \"lastUsed\": \"Never\",\n+   \"count\": \"…\",\n+   \"isLoading\": true,\n+   \"isUnused\": false,\n+   \"lastUsed\": \"…\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:29:7\n\n     27|     expect(\n     28|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     29|     ).toEqual({\n       |       ^\n     30|       count: '0',\n     31|       lastUsed: 'Never',\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (5)\n   Start at  21:10:25\n\n   Duration  19.01s (import 88%, transform 8%, worker 3%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 16,
+              "line": 33
+            },
+            "start": {
+              "column": 7,
+              "line": 33
+            }
+          }
+        },
+        {
+          "id": "desktop-client-3",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 65ms\n\n   ❯ getPayeeUsageDisplay (5)\n\n     × shows a placeholder in both cells while loading 54ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows a placeholder in both cells while loading\nAssertionError: expected { count: '0', lastUsed: 'Never', …(2) } to deeply equal { count: '…', lastUsed: '…', …(2) }\n\n- Expected\n+ Received\n\n  {\n-   \"count\": \"…\",\n-   \"isLoading\": true,\n-   \"isUnused\": false,\n-   \"lastUsed\": \"…\",\n+   \"count\": \"0\",\n+   \"isLoading\": false,\n+   \"isUnused\": true,\n+   \"lastUsed\": \"Never\",\n  }\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:18:7\n\n     16|     expect(\n     17|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     18|     ).toEqual({\n       |       ^\n     19|       count: USAGE_LOADING_PLACEHOLDER,\n     20|       lastUsed: USAGE_LOADING_PLACEHOLDER,\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed (5)\n   Start at  21:10:25\n\n   Duration  18.81s (import 87%, transform 10%, worker 3%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 16,
+              "line": 33
+            },
+            "start": {
+              "column": 7,
+              "line": 33
+            }
+          }
+        },
+        {
+          "id": "desktop-client-4",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 48ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows a placeholder in both cells while loading 40ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows a placeholder in both cells while loading\n\nAssertionError: expected { count: '0', lastUsed: 'Never', …(2) } to deeply equal { count: '…', lastUsed: '…', …(2) }\n\n\n- Expected\n+ Received\n\n  {\n-   \"count\": \"…\",\n-   \"isLoading\": true,\n-   \"isUnused\": false,\n-   \"lastUsed\": \"…\",\n+   \"count\": \"0\",\n+   \"isLoading\": false,\n+   \"isUnused\": true,\n+   \"lastUsed\": \"Never\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:18:7\n\n     16|     expect(\n     17|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     18|     ).toEqual({\n       |       ^\n     19|       count: USAGE_LOADING_PLACEHOLDER,\n     20|       lastUsed: USAGE_LOADING_PLACEHOLDER,\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed (5)\n\n   Start at  21:10:52\n\n   Duration  21.52s (import 90%, transform 8%, worker 1%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 40
+            },
+            "start": {
+              "column": 18,
+              "line": 33
+            }
+          }
+        },
+        {
+          "id": "desktop-client-5",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 41ms\n\n   ❯ getPayeeUsageDisplay (5)\n\n     × shows a placeholder in both cells while loading 34ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows a placeholder in both cells while loading\n\nAssertionError: expected {} to deeply equal { count: '…', lastUsed: '…', …(2) }\n\n\n- Expected\n+ Received\n\n- {\n-   \"count\": \"…\",\n-   \"isLoading\": true,\n-   \"isUnused\": false,\n-   \"lastUsed\": \"…\",\n- }\n+ {}\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:18:7\n\n     16|     expect(\n     17|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     18|     ).toEqual({\n       |       ^\n     19|       count: USAGE_LOADING_PLACEHOLDER,\n     20|       lastUsed: USAGE_LOADING_PLACEHOLDER,\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed (5)\n\n   Start at  21:10:53\n\n   Duration  21.32s (import 89%, transform 9%, worker 1%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 39
+            },
+            "start": {
+              "column": 12,
+              "line": 34
+            }
+          }
+        },
+        {
+          "id": "desktop-client-6",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "false",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 48ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows a placeholder in both cells while loading 37ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows a placeholder in both cells while loading\n\nAssertionError: expected { count: '…', lastUsed: '…', …(2) } to deeply equal { count: '…', lastUsed: '…', …(2) }\n\n\n- Expected\n+ Received\n\n  {\n    \"count\": \"…\",\n-   \"isLoading\": true,\n+   \"isLoading\": false,\n    \"isUnused\": false,\n    \"lastUsed\": \"…\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:18:7\n\n     16|     expect(\n     17|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     18|     ).toEqual({\n       |       ^\n     19|       count: USAGE_LOADING_PLACEHOLDER,\n     20|       lastUsed: USAGE_LOADING_PLACEHOLDER,\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed (5)\n\n   Start at  21:11:20\n\n   Duration  20.65s (import 92%, transform 6%, worker 1%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 22,
+              "line": 37
+            },
+            "start": {
+              "column": 18,
+              "line": 37
+            }
+          }
+        },
+        {
+          "id": "desktop-client-7",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "true",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 56ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows a placeholder in both cells while loading 42ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows a placeholder in both cells while loading\n\nAssertionError: expected { count: '…', lastUsed: '…', …(2) } to deeply equal { count: '…', lastUsed: '…', …(2) }\n\n\n- Expected\n+ Received\n\n  {\n    \"count\": \"…\",\n    \"isLoading\": true,\n-   \"isUnused\": false,\n+   \"isUnused\": true,\n    \"lastUsed\": \"…\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:18:7\n\n     16|     expect(\n     17|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     18|     ).toEqual({\n       |       ^\n     19|       count: USAGE_LOADING_PLACEHOLDER,\n     20|       lastUsed: USAGE_LOADING_PLACEHOLDER,\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed (5)\n\n   Start at  21:11:20\n\n   Duration  20.81s (import 92%, transform 6%, worker 1%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 22,
+              "line": 38
+            },
+            "start": {
+              "column": 17,
+              "line": 38
+            }
+          }
+        },
+        {
+          "id": "desktop-client-8",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "stats",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 23ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows 0 and the never label, muted, for a payee with no transactions 12ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows 0 and the never label, muted, for a payee with no transactions\n\nTypeError: Cannot read properties of undefined (reading 'count')\n\n ❯ getPayeeUsageDisplay src/components/payees/payeeUsageDisplay.ts:108:27\n\n    106|     }\n    107|     return stryMutAct_9fa48(\"16\") ? {} : (stryCov_9fa48(\"16\"), {\n    108|       count: String(stats.count),\n       |                           ^\n    109|       lastUsed: monthUtils.format(stats.lastUsed, dateFormat, locale),\n    110|       isLoading: stryMutAct_9fa48(\"17\") ? true : (stryCov_9fa48(\"17\"),…\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:28:7\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed | 1 passed (5)\n\n   Start at  21:11:55\n\n   Duration  18.01s (import 91%, transform 7%, worker 1%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 13,
+              "line": 42
+            },
+            "start": {
+              "column": 7,
+              "line": 42
+            }
+          }
+        },
+        {
+          "id": "desktop-client-9",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "true",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 42ms\n\n   ❯ getPayeeUsageDisplay (5)\n\n     × shows the count and last-used date for a used payee 27ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows the count and last-used date for a used payee\n\nAssertionError: expected { count: '0', lastUsed: 'Never', …(2) } to deeply equal { count: '312', …(3) }\n\n\n- Expected\n+ Received\n\n  {\n-   \"count\": \"312\",\n+   \"count\": \"0\",\n    \"isLoading\": false,\n-   \"isUnused\": false,\n-   \"lastUsed\": \"10/30/2026\",\n+   \"isUnused\": true,\n+   \"lastUsed\": \"Never\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:55:7\n\n     53|         isLoading: false,\n     54|       }),\n     55|     ).toEqual({\n       |       ^\n     56|       count: '312',\n     57|       lastUsed: '10/30/2026',\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed | 3 passed (5)\n\n   Start at  21:11:55\n\n   Duration  18.05s (import 91%, transform 7%, worker 1%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 13,
+              "line": 42
+            },
+            "start": {
+              "column": 7,
+              "line": 42
+            }
+          }
+        },
+        {
+          "id": "desktop-client-10",
+          "mutatorName": "ConditionalExpression",
+          "replacement": "false",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 67ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows 0 and the never label, muted, for a payee with no transactions 25ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows 0 and the never label, muted, for a payee with no transactions\n\nTypeError: Cannot read properties of undefined (reading 'count')\n\n ❯ getPayeeUsageDisplay src/components/payees/payeeUsageDisplay.ts:108:27\n\n    106|     }\n    107|     return stryMutAct_9fa48(\"16\") ? {} : (stryCov_9fa48(\"16\"), {\n    108|       count: String(stats.count),\n       |                           ^\n    109|       lastUsed: monthUtils.format(stats.lastUsed, dateFormat, locale),\n    110|       isLoading: stryMutAct_9fa48(\"17\") ? true : (stryCov_9fa48(\"17\"),…\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:28:7\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (5)\n   Start at  21:12:20\n\n   Duration  16.56s (import 87%, transform 11%, worker 2%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 13,
+              "line": 42
+            },
+            "start": {
+              "column": 7,
+              "line": 42
+            }
+          }
+        },
+        {
+          "id": "desktop-client-11",
+          "mutatorName": "BlockStatement",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 59ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows 0 and the never label, muted, for a payee with no transactions 23ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows 0 and the never label, muted, for a payee with no transactions\n\nTypeError: Cannot read properties of undefined (reading 'count')\n\n ❯ getPayeeUsageDisplay src/components/payees/payeeUsageDisplay.ts:108:27\n\n    106|     }\n    107|     return stryMutAct_9fa48(\"16\") ? {} : (stryCov_9fa48(\"16\"), {\n    108|       count: String(stats.count),\n       |                           ^\n    109|       lastUsed: monthUtils.format(stats.lastUsed, dateFormat, locale),\n    110|       isLoading: stryMutAct_9fa48(\"17\") ? true : (stryCov_9fa48(\"17\"),…\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:28:7\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (5)\n   Start at  21:12:20\n\n   Duration  16.92s (import 88%, transform 10%, worker 2%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 49
+            },
+            "start": {
+              "column": 15,
+              "line": 42
+            }
+          }
+        },
+        {
+          "id": "desktop-client-12",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 42ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows 0 and the never label, muted, for a payee with no transactions 25ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows 0 and the never label, muted, for a payee with no transactions\n\nAssertionError: expected {} to deeply equal { count: '0', lastUsed: 'Never', …(2) }\n\n\n- Expected\n+ Received\n\n- {\n-   \"count\": \"0\",\n-   \"isLoading\": false,\n-   \"isUnused\": true,\n-   \"lastUsed\": \"Never\",\n- }\n+ {}\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:29:7\n\n     27|     expect(\n     28|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     29|     ).toEqual({\n       |       ^\n     30|       count: '0',\n     31|       lastUsed: 'Never',\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (5)\n\n   Start at  21:12:45\n\n   Duration  18.27s (import 90%, transform 8%, worker 2%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 6,
+              "line": 48
+            },
+            "start": {
+              "column": 12,
+              "line": 43
+            }
+          }
+        },
+        {
+          "id": "desktop-client-13",
+          "mutatorName": "StringLiteral",
+          "replacement": "\"\"",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 52ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows 0 and the never label, muted, for a payee with no transactions 32ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows 0 and the never label, muted, for a payee with no transactions\n\nAssertionError: expected { count: '', lastUsed: 'Never', …(2) } to deeply equal { count: '0', lastUsed: 'Never', …(2) }\n\n\n- Expected\n+ Received\n\n  {\n-   \"count\": \"0\",\n+   \"count\": \"\",\n    \"isLoading\": false,\n    \"isUnused\": true,\n    \"lastUsed\": \"Never\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:29:7\n\n     27|     expect(\n     28|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     29|     ).toEqual({\n       |       ^\n     30|       count: '0',\n     31|       lastUsed: 'Never',\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (5)\n   Start at  21:12:45\n\n   Duration  18.40s (import 89%, transform 9%, worker 2%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 17,
+              "line": 44
+            },
+            "start": {
+              "column": 14,
+              "line": 44
+            }
+          }
+        },
+        {
+          "id": "desktop-client-14",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "true",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 47ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows 0 and the never label, muted, for a payee with no transactions 29ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows 0 and the never label, muted, for a payee with no transactions\n\nAssertionError: expected { count: '0', lastUsed: 'Never', …(2) } to deeply equal { count: '0', lastUsed: 'Never', …(2) }\n\n\n- Expected\n+ Received\n\n  {\n    \"count\": \"0\",\n-   \"isLoading\": false,\n+   \"isLoading\": true,\n    \"isUnused\": true,\n    \"lastUsed\": \"Never\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:29:7\n\n     27|     expect(\n     28|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     29|     ).toEqual({\n       |       ^\n     30|       count: '0',\n     31|       lastUsed: 'Never',\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (5)\n\n   Start at  21:13:13\n\n   Duration  17.81s (import 87%, transform 11%, worker 2%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 23,
+              "line": 46
+            },
+            "start": {
+              "column": 18,
+              "line": 46
+            }
+          }
+        },
+        {
+          "id": "desktop-client-15",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "false",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 83ms\n\n   ❯ getPayeeUsageDisplay (5)\n\n     × shows 0 and the never label, muted, for a payee with no transactions 56ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows 0 and the never label, muted, for a payee with no transactions\n\nAssertionError: expected { count: '0', lastUsed: 'Never', …(2) } to deeply equal { count: '0', lastUsed: 'Never', …(2) }\n\n\n- Expected\n+ Received\n\n  {\n    \"count\": \"0\",\n    \"isLoading\": false,\n-   \"isUnused\": true,\n+   \"isUnused\": false,\n    \"lastUsed\": \"Never\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:29:7\n\n     27|     expect(\n     28|       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading:…\n     29|     ).toEqual({\n       |       ^\n     30|       count: '0',\n     31|       lastUsed: 'Never',\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 1 passed (5)\n   Start at  21:13:13\n\n   Duration  18.21s (import 85%, transform 12%, worker 3%, tests 1%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 47
+            },
+            "start": {
+              "column": 17,
+              "line": 47
+            }
+          }
+        },
+        {
+          "id": "desktop-client-16",
+          "mutatorName": "ObjectLiteral",
+          "replacement": "{}",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 42ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows the count and last-used date for a used payee 23ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows the count and last-used date for a used payee\n\nAssertionError: expected {} to deeply equal { count: '312', …(3) }\n\n\n- Expected\n+ Received\n\n- {\n-   \"count\": \"312\",\n-   \"isLoading\": false,\n-   \"isUnused\": false,\n-   \"lastUsed\": \"10/30/2026\",\n- }\n+ {}\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:55:7\n\n     53|         isLoading: false,\n     54|       }),\n     55|     ).toEqual({\n       |       ^\n     56|       count: '312',\n     57|       lastUsed: '10/30/2026',\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 3 passed (5)\n\n   Start at  21:13:40\n\n   Duration  17.68s (import 89%, transform 9%, worker 2%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 4,
+              "line": 56
+            },
+            "start": {
+              "column": 10,
+              "line": 51
+            }
+          }
+        },
+        {
+          "id": "desktop-client-17",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "true",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 47ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows the count and last-used date for a used payee 25ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows the count and last-used date for a used payee\n\nAssertionError: expected { count: '312', …(3) } to deeply equal { count: '312', …(3) }\n\n\n- Expected\n+ Received\n\n  {\n    \"count\": \"312\",\n-   \"isLoading\": false,\n+   \"isLoading\": true,\n    \"isUnused\": false,\n    \"lastUsed\": \"10/30/2026\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:55:7\n\n     53|         isLoading: false,\n     54|       }),\n     55|     ).toEqual({\n       |       ^\n     56|       count: '312',\n     57|       lastUsed: '10/30/2026',\n\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n\n      Tests  1 failed | 3 passed (5)\n   Start at  21:13:40\n\n   Duration  17.70s (import 87%, transform 10%, worker 2%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 21,
+              "line": 54
+            },
+            "start": {
+              "column": 16,
+              "line": 54
+            }
+          }
+        },
+        {
+          "id": "desktop-client-18",
+          "mutatorName": "BooleanLiteral",
+          "replacement": "true",
+          "statusReason": "\n\n RUN  v5.0.0 /workspaces/actual-budget/packages/desktop-client/.stryker-tmp/sandbox-XiA5Hj\n\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts (5 tests | 1 failed) 42ms\n\n   ❯ getPayeeUsageDisplay (5)\n     × shows the count and last-used date for a used payee 31ms\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n\n FAIL  src/components/payees/payeeUsageDisplay.test.ts > getPayeeUsageDisplay > shows the count and last-used date for a used payee\n\nAssertionError: expected { count: '312', …(3) } to deeply equal { count: '312', …(3) }\n\n\n- Expected\n+ Received\n\n  {\n    \"count\": \"312\",\n    \"isLoading\": false,\n-   \"isUnused\": false,\n+   \"isUnused\": true,\n    \"lastUsed\": \"10/30/2026\",\n  }\n\n\n ❯ src/components/payees/payeeUsageDisplay.test.ts:55:7\n\n     53|         isLoading: false,\n     54|       }),\n     55|     ).toEqual({\n       |       ^\n     56|       count: '312',\n     57|       lastUsed: '10/30/2026',\n\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n\n\n\n Test Files  1 failed (1)\n      Tests  1 failed | 3 passed (5)\n   Start at  21:14:05\n\n   Duration  14.35s (import 88%, transform 8%, worker 3%)\n\n\n",
+          "status": "Killed",
+          "testsCompleted": 1,
+          "killedBy": [
+            "desktop-client-0"
+          ],
+          "location": {
+            "end": {
+              "column": 20,
+              "line": 55
+            },
+            "start": {
+              "column": 15,
+              "line": 55
+            }
+          }
+        }
+      ],
+      "source": "import type { PayeeUsageStats } from '@actual-app/core/server/payees/app';\nimport * as monthUtils from '@actual-app/core/shared/months';\nimport type { Locale } from 'date-fns';\n\n// Shown in both cells until the usage stats have loaded\nexport const USAGE_LOADING_PLACEHOLDER = '…';\n\nexport type PayeeUsageDisplay = {\n  count: string;\n  lastUsed: string;\n  isLoading: boolean;\n  // No transactions: shown as \"0\" / \"Never\" in a muted style\n  isUnused: boolean;\n};\n\ntype GetPayeeUsageDisplayArgs = {\n  // Undefined when the payee has no transactions\n  stats: PayeeUsageStats | undefined;\n  isLoading: boolean;\n  dateFormat: string;\n  locale?: Locale;\n  // Translated by the caller, so this stays free of React and i18n\n  neverLabel: string;\n};\n\nexport function getPayeeUsageDisplay({\n  stats,\n  isLoading,\n  dateFormat,\n  locale,\n  neverLabel,\n}: GetPayeeUsageDisplayArgs): PayeeUsageDisplay {\n  if (isLoading) {\n    return {\n      count: USAGE_LOADING_PLACEHOLDER,\n      lastUsed: USAGE_LOADING_PLACEHOLDER,\n      isLoading: true,\n      isUnused: false,\n    };\n  }\n\n  if (!stats) {\n    return {\n      count: '0',\n      lastUsed: neverLabel,\n      isLoading: false,\n      isUnused: true,\n    };\n  }\n\n  return {\n    count: String(stats.count),\n    lastUsed: monthUtils.format(stats.lastUsed, dateFormat, locale),\n    isLoading: false,\n    isUnused: false,\n  };\n}\n"
+    }
+  },
+  "testFiles": {
+    "packages/loot-core": {
+      "tests": [
+        {
+          "id": "loot-core-0",
+          "name": "All tests"
+        }
+      ]
+    },
+    "packages/desktop-client": {
+      "tests": [
+        {
+          "id": "desktop-client-0",
+          "name": "All tests"
+        }
+      ]
+    }
+  },
+  "config": {
+    "packages/loot-core": {
+      "$schema": "../../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+      "_comment": "Mutation testing for issue #149 (Transactions / Last Used columns on the Payees page), server half. The client half is packages/desktop-client/stryker.issue-149.config.json. Based on the command-runner setup from #163 and #97. Run from packages/loot-core: npx stryker run stryker.issue-149.config.json",
+      "testRunner": "command",
+      "testRunner_comment": "The Vitest runner (@stryker-mutator/vitest-runner 10.0.0) reports every mutant as surviving with Vitest 5: no tests run for any mutant (see docs/sprint3/mutation/125-bennettmatuszewski.md). The command runner starts Vitest once per mutant and switches the mutant on through __STRYKER_ACTIVE_MUTANT__.",
+      "commandRunner": {
+        "command": "ENV=node npx vitest --run src/server/payees/app.test.ts --bail 1 --maxWorkers 1"
+      },
+      "coverageAnalysis": "off",
+      "mutate_comment": "Only the lines this PR added: the usage-stats query, the handler's registration, and the handler. The rest of these files is unrelated to #149.",
+      "mutate": [
+        "src/server/db/index.ts:815-828",
+        "src/server/payees/app.ts:41-41",
+        "src/server/payees/app.ts:95-114"
+      ],
+      "reporters": [
+        "clear-text",
+        "progress",
+        "json"
+      ],
+      "jsonReporter": {
+        "fileName": "reports/mutation/issue-149.json"
+      },
+      "concurrency": 2,
+      "timeoutMS": 120000,
+      "tempDirName": ".stryker-tmp",
+      "configFile": "stryker.issue-149.config.json",
+      "allowConsoleColors": true,
+      "checkers": [],
+      "checkerNodeArgs": [],
+      "clearTextReporter": {
+        "allowColor": true,
+        "allowEmojis": false,
+        "logTests": true,
+        "maxTestsToLog": 3,
+        "reportTests": true,
+        "reportMutants": true,
+        "reportScoreTable": true,
+        "skipFull": false
+      },
+      "dashboard": {
+        "baseUrl": "https://dashboard.stryker-mutator.io/api/reports",
+        "reportType": "full"
+      },
+      "dryRunOnly": false,
+      "eventReporter": {
+        "baseDir": "reports/mutation/events"
+      },
+      "ignorePatterns": [],
+      "ignoreStatic": false,
+      "incremental": false,
+      "incrementalFile": "reports/stryker-incremental.json",
+      "force": false,
+      "fileLogLevel": "off",
+      "inPlace": false,
+      "logLevel": "info",
+      "maxConcurrentTestRunners": 9007199254740991,
+      "maxTestRunnerReuse": 0,
+      "mutator": {
+        "plugins": null,
+        "excludedMutations": []
+      },
+      "plugins": [
+        "@stryker-mutator/*"
+      ],
+      "appendPlugins": [],
+      "htmlReporter": {
+        "fileName": "reports/mutation/mutation.html"
+      },
+      "disableTypeChecks": true,
+      "symlinkNodeModules": true,
+      "cleanTempDir": true,
+      "testRunnerNodeArgs": [],
+      "thresholds": {
+        "high": 80,
+        "low": 60,
+        "break": null
+      },
+      "timeoutFactor": 1.5,
+      "dryRunTimeoutMinutes": 5,
+      "tsconfigFile": "tsconfig.json",
+      "warnings": true,
+      "disableBail": false,
+      "allowEmpty": false,
+      "ignorers": [],
+      "testFiles": [],
+      "vitest": {
+        "related": true
+      }
+    },
+    "packages/desktop-client": {
+      "$schema": "../../node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+      "_comment": "Mutation testing for issue #149 (Transactions / Last Used columns on the Payees page), client half. The server half is packages/loot-core/stryker.issue-149.config.json. Based on the command-runner setup from #163 and #97. Run from packages/desktop-client: npx stryker run stryker.issue-149.config.json",
+      "testRunner": "command",
+      "testRunner_comment": "The Vitest runner (@stryker-mutator/vitest-runner 10.0.0) reports every mutant as surviving with Vitest 5: no tests run for any mutant (see docs/sprint3/mutation/125-bennettmatuszewski.md). The command runner starts Vitest once per mutant and switches the mutant on through __STRYKER_ACTIVE_MUTANT__.",
+      "commandRunner": {
+        "command": "npx vitest --run --config vitest.stryker.issue-149.config.mts --bail 1 --maxWorkers 1"
+      },
+      "coverageAnalysis": "off",
+      "mutate_comment": "The PR's React components (PayeeTableRow, PayeeTable, ManagePayees, ManagePayeesWithData) are left out: no unit test renders them, so every mutant there would survive as untested code.",
+      "mutate": [
+        "src/components/payees/payeeUsageDisplay.ts"
+      ],
+      "ignorePatterns": [
+        "build",
+        "build-stats",
+        "e2e",
+        "playwright-report",
+        "test-results"
+      ],
+      "reporters": [
+        "clear-text",
+        "progress",
+        "json"
+      ],
+      "jsonReporter": {
+        "fileName": "reports/mutation/issue-149.json"
+      },
+      "concurrency": 2,
+      "timeoutMS": 60000,
+      "tempDirName": ".stryker-tmp",
+      "configFile": "stryker.issue-149.config.json",
+      "allowConsoleColors": true,
+      "checkers": [],
+      "checkerNodeArgs": [],
+      "clearTextReporter": {
+        "allowColor": true,
+        "allowEmojis": false,
+        "logTests": true,
+        "maxTestsToLog": 3,
+        "reportTests": true,
+        "reportMutants": true,
+        "reportScoreTable": true,
+        "skipFull": false
+      },
+      "dashboard": {
+        "baseUrl": "https://dashboard.stryker-mutator.io/api/reports",
+        "reportType": "full"
+      },
+      "dryRunOnly": false,
+      "eventReporter": {
+        "baseDir": "reports/mutation/events"
+      },
+      "ignoreStatic": false,
+      "incremental": false,
+      "incrementalFile": "reports/stryker-incremental.json",
+      "force": false,
+      "fileLogLevel": "off",
+      "inPlace": false,
+      "logLevel": "info",
+      "maxConcurrentTestRunners": 9007199254740991,
+      "maxTestRunnerReuse": 0,
+      "mutator": {
+        "plugins": null,
+        "excludedMutations": []
+      },
+      "plugins": [
+        "@stryker-mutator/*"
+      ],
+      "appendPlugins": [],
+      "htmlReporter": {
+        "fileName": "reports/mutation/mutation.html"
+      },
+      "disableTypeChecks": true,
+      "symlinkNodeModules": true,
+      "cleanTempDir": true,
+      "testRunnerNodeArgs": [],
+      "thresholds": {
+        "high": 80,
+        "low": 60,
+        "break": null
+      },
+      "timeoutFactor": 1.5,
+      "dryRunTimeoutMinutes": 5,
+      "tsconfigFile": "tsconfig.json",
+      "warnings": true,
+      "disableBail": false,
+      "allowEmpty": false,
+      "ignorers": [],
+      "testFiles": [],
+      "vitest": {
+        "related": true
+      }
+    }
+  },
+  "framework": {
+    "name": "StrykerJS",
+    "version": "10.0.0",
+    "branding": {
+      "homepageUrl": "https://stryker-mutator.io",
+      "imageUrl": "data:image/svg+xml;utf8,%3Csvg viewBox='0 0 1458 1458' xmlns='http://www.w3.org/2000/svg' fill-rule='evenodd' clip-rule='evenodd' stroke-linejoin='round' stroke-miterlimit='2'%3E%3Cpath fill='none' d='M0 0h1458v1458H0z'/%3E%3CclipPath id='a'%3E%3Cpath d='M0 0h1458v1458H0z'/%3E%3C/clipPath%3E%3Cg clip-path='url(%23a)'%3E%3Cpath d='M1458 729c0 402.655-326.345 729-729 729S0 1131.655 0 729C0 326.445 326.345 0 729 0s729 326.345 729 729' fill='%23e74c3c' fill-rule='nonzero'/%3E%3Cpath d='M778.349 1456.15L576.6 1254.401l233-105 85-78.668v-64.332l-257-257-44-187-50-208 251.806-82.793L1076.6 389.401l380.14 379.15c-19.681 367.728-311.914 663.049-678.391 687.599z' fill-opacity='.3'/%3E%3Cpath d='M753.4 329.503c41.79 0 74.579 7.83 97.925 25.444 23.571 18.015 41.69 43.956 55.167 77.097l11.662 28.679 165.733-58.183-14.137-32.13c-26.688-60.655-64.896-108.61-114.191-144.011-49.329-35.423-117.458-54.302-204.859-54.302-50.78 0-95.646 7.376-134.767 21.542-40.093 14.671-74.09 34.79-102.239 60.259-28.84 26.207-50.646 57.06-65.496 92.701-14.718 35.052-22.101 72.538-22.101 112.401 0 72.536 20.667 133.294 61.165 182.704 38.624 47.255 98.346 88.037 179.861 121.291 42.257 17.475 78.715 33.125 109.227 46.994 27.193 12.361 49.294 26.124 66.157 41.751 15.309 14.186 26.497 30.584 33.63 49.258 7.721 20.214 11.16 45.69 11.16 76.402 0 28.021-4.251 51.787-13.591 71.219-8.832 18.374-20.171 33.178-34.523 44.219-14.787 11.374-31.193 19.591-49.393 24.466-19.68 5.359-39.14 7.993-58.69 7.993-29.359 0-54.387-3.407-75.182-10.747-20.112-7.013-37.144-16.144-51.259-27.486-13.618-11.009-24.971-23.766-33.744-38.279-9.64-15.8-17.272-31.924-23.032-48.408l-10.965-31.376-161.669 60.585 10.734 30.124c10.191 28.601 24.197 56.228 42.059 82.748 18.208 27.144 41.322 51.369 69.525 72.745 27.695 21.075 60.904 38.218 99.481 51.041 37.777 12.664 82.004 19.159 132.552 19.159 49.998 0 95.818-8.321 137.611-24.622 42.228-16.471 78.436-38.992 108.835-67.291 30.719-28.597 54.631-62.103 71.834-100.642 17.263-38.56 25.923-79.392 25.923-122.248 0-54.339-8.368-100.37-24.208-138.32-16.29-38.759-38.252-71.661-65.948-98.797-26.965-26.418-58.269-48.835-93.858-67.175-33.655-17.241-69.196-33.11-106.593-47.533-35.934-13.429-65.822-26.601-89.948-39.525-22.153-11.868-40.009-24.21-53.547-37.309-11.429-11.13-19.83-23.678-24.718-37.664-5.413-15.49-7.98-33.423-7.98-53.577 0-40.883 11.293-71.522 37.086-90.539 28.443-20.825 64.985-30.658 109.311-30.658z' fill='%23f1c40f' fill-rule='nonzero'/%3E%3Cpath d='M720 0h18v113h-18zM1458 738v-18h-113v18h113zM720 1345h18v113h-18zM113 738v-18H0v18h113z'/%3E%3C/g%3E%3C/svg%3E"
+    },
+    "dependencies": {
+      "typescript": "6.0.3",
+      "webpack": "5.107.2"
+    }
+  }
+}

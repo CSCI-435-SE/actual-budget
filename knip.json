@@ -51,7 +51,8 @@
         "vitest.stryker.config.mts",
         "vitest.stryker.setup.ts",
         "vitest.stryker.issue-97.config.mts",
-        "vitest.stryker.issue-97.setup.ts"
+        "vitest.stryker.issue-97.setup.ts",
+        "vitest.stryker.issue-149.config.mts"
       ],
       "ignore": ["playwright.config.d.ts"],
       "ignoreDependencies": ["plugins-service"]
