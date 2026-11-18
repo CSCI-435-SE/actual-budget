@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  getPayeeUsageDisplay,
-  USAGE_LOADING_PLACEHOLDER,
-} from './payeeUsageDisplay';
+import { getPayeeUsageDisplay } from './payeeUsageDisplay';
 
 const baseArgs = {
   dateFormat: 'MM/dd/yyyy',
@@ -12,11 +9,13 @@ const baseArgs = {
 
 describe('getPayeeUsageDisplay', () => {
   it('shows a placeholder in both cells while loading', () => {
+    // A literal, not the exported constant: comparing against the constant
+    // would still pass if it were emptied, leaving the cells blank
     expect(
       getPayeeUsageDisplay({ ...baseArgs, stats: undefined, isLoading: true }),
     ).toEqual({
-      count: USAGE_LOADING_PLACEHOLDER,
-      lastUsed: USAGE_LOADING_PLACEHOLDER,
+      count: '…',
+      lastUsed: '…',
       isLoading: true,
       isUnused: false,
     });
