@@ -8,7 +8,6 @@ import { SpaceBetween } from '@actual-app/components/space-between';
 import { styles } from '@actual-app/components/styles';
 import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
-import { Tooltip } from '@actual-app/components/tooltip';
 import { View } from '@actual-app/components/view';
 import { send } from '@actual-app/core/platform/client/connection';
 import * as undo from '@actual-app/core/platform/client/undo';
@@ -394,19 +393,11 @@ export function ManageRules({
                 </Trans>
               </Button>
             )}
-            <Tooltip
-              content={
-                selectedInst.items.size === 0
-                  ? t('Select a rule to duplicate')
-                  : t('Select only one rule to duplicate')
-              }
-              placement="top"
-              triggerProps={{ isDisabled: canDuplicate }}
-            >
-              <Button isDisabled={!canDuplicate} onPress={onDuplicateSelected}>
+            {canDuplicate && (
+              <Button onPress={onDuplicateSelected}>
                 <Trans>Duplicate</Trans>
               </Button>
-            </Tooltip>
+            )}
             <Button variant="primary" onPress={onCreateRule}>
               <Trans>Create new rule</Trans>
             </Button>

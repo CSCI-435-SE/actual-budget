@@ -83,23 +83,17 @@ test.describe('Rules', () => {
       'set category to General',
     ]);
 
-    // Duplicate is always shown, but only enabled with exactly one rule selected
-    await expect(rulesPage.duplicateButton).toBeDisabled();
-    await rulesPage.duplicateButton.hover();
-    await expect(page.getByRole('tooltip')).toHaveText(
-      'Select a rule to duplicate',
-    );
+    // Duplicate only appears when exactly one rule is selected
+    await expect(rulesPage.duplicateButton).toBeHidden();
 
     await rulesPage.selectNthRule(0);
-    await rulesPage.selectNthRule(1);
-    await expect(rulesPage.duplicateButton).toBeDisabled();
-    await rulesPage.duplicateButton.hover();
-    await expect(page.getByRole('tooltip')).toHaveText(
-      'Select only one rule to duplicate',
-    );
+    await expect(rulesPage.duplicateButton).toBeVisible();
 
     await rulesPage.selectNthRule(1);
-    await expect(rulesPage.duplicateButton).toBeEnabled();
+    await expect(rulesPage.duplicateButton).toBeHidden();
+
+    await rulesPage.selectNthRule(1);
+    await expect(rulesPage.duplicateButton).toBeVisible();
 
     const duplicateModal = await rulesPage.duplicateSelectedRule();
     await expect(

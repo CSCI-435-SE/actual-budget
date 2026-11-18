@@ -161,9 +161,10 @@ export function translateRuleStage(stage: string): string {
 }
 
 export function duplicateRule(rule: RuleEntity): NewRuleEntity {
-  // A schedule owns exactly one rule; saving a second rule that links to it
-  // would re-point the schedule at the copy. Drop the link so the copy is a
-  // standalone rule.
+  // Drop the schedule link so the copy is a standalone rule. A copy that kept
+  // it would overwrite the schedule's schedules_json_paths entry when saved
+  // (onRuleUpdate in schedules/app.ts) and link the transactions it matches
+  // to the schedule.
   const actions = structuredClone(rule.actions).filter(
     action => action.op !== 'link-schedule',
   );
