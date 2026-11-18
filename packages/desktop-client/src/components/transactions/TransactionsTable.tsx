@@ -28,6 +28,7 @@ import { SvgSplit } from '@actual-app/components/icons/v0';
 import {
   SvgArrowDown,
   SvgArrowUp,
+  SvgAttachment,
   SvgCheveronDown,
 } from '@actual-app/components/icons/v1';
 import {
@@ -131,6 +132,7 @@ import { SheetNameProvider } from '#hooks/useSheetName';
 import { useSplitsExpanded } from '#hooks/useSplitsExpanded';
 import type { SplitsExpandedContextValue } from '#hooks/useSplitsExpanded';
 import { useSyncedPref } from '#hooks/useSyncedPref';
+import { useTransactionAttachmentCounts } from '#hooks/useTransactionAttachmentCounts';
 import { pushModal } from '#modals/modalsSlice';
 import { NotesTagFormatter } from '#notes/NotesTagFormatter';
 import { addNotification } from '#notifications/notificationsSlice';
@@ -639,6 +641,8 @@ type PayeeCellProps = {
   transaction: SerializedTransaction;
   importedPayee?: PayeeEntity['id'];
   isPreview: boolean;
+  // Attachments on this transaction (always 0 for split children)
+  attachmentCount: number;
   onEdit: TransactionEditFunction;
   onUpdate: TransactionUpdateFunction;
   onCreatePayee: (name: string) => Promise<null | PayeeEntity['id']>;
@@ -658,6 +662,7 @@ function PayeeCell({
   transaction,
   importedPayee,
   isPreview,
+  attachmentCount,
   onEdit,
   onUpdate,
   onCreatePayee,
@@ -727,6 +732,10 @@ function PayeeCell({
             transferAccount={transferAccount}
             onNavigateToTransferAccount={onNavigateToTransferAccount}
             onNavigateToSchedule={onNavigateToSchedule}
+          />
+          <AttachmentIndicator
+            transactionId={transaction.id}
+            count={attachmentCount}
           />
           <SvgSplit
             style={{
@@ -826,6 +835,10 @@ function PayeeCell({
               transferAccount={transferAccount}
               onNavigateToTransferAccount={onNavigateToTransferAccount}
               onNavigateToSchedule={onNavigateToSchedule}
+            />
+            <AttachmentIndicator
+              transactionId={transaction.id}
+              count={attachmentCount}
             />
             <div
               style={{
@@ -987,6 +1000,59 @@ function PayeeIcons({
   );
 }
 
+type AttachmentIndicatorProps = {
+  transactionId: TransactionEntity['id'];
+  count: number;
+};
+
+// Shows a paperclip on a transaction that has attachments. Pressing it opens
+// the transaction's attachments.
+function AttachmentIndicator({
+  transactionId,
+  count,
+}: AttachmentIndicatorProps) {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const iconSize = scaledIconSize(13);
+
+  if (count <= 0) {
+    return null;
+  }
+
+  const label =
+    count === 1 ? t('1 attachment') : t('{{count}} attachments', { count });
+
+  return (
+    <Tooltip
+      content={<View style={{ padding: 8 }}>{label}</View>}
+      style={styles.tooltip}
+      placement="bottom"
+      triggerProps={{ delay: 500 }}
+    >
+      <Button
+        variant="bare"
+        data-testid="attachment-icon"
+        aria-label={label}
+        style={{ ...payeeIconButtonStyle, flexShrink: 0 }}
+        onPress={() =>
+          dispatch(
+            pushModal({
+              modal: {
+                name: 'transaction-attachments',
+                options: { transactionId },
+              },
+            }),
+          )
+        }
+      >
+        <SvgAttachment
+          style={{ width: iconSize, height: iconSize, color: 'inherit' }}
+        />
+      </Button>
+    </Tooltip>
+  );
+}
+
 type TransactionProps = {
   allTransactions?: TransactionEntity[];
   transaction: TransactionEntity;
@@ -994,6 +1060,8 @@ type TransactionProps = {
   transferAccountsByTransaction: {
     [id: TransactionEntity['id']]: AccountEntity | null;
   };
+  // Attachments on this transaction (always 0 for split children)
+  attachmentCount?: number;
   editing: boolean;
   columns: TransactionTableColumnId[];
   showZeroInDeposit?: boolean;
@@ -1061,6 +1129,7 @@ const Transaction = memo(function Transaction({
   transaction: originalTransaction,
   subtransactions,
   transferAccountsByTransaction,
+  attachmentCount = 0,
   editing,
   columns,
   showZeroInDeposit,
@@ -1748,6 +1817,7 @@ const Transaction = memo(function Transaction({
             transferAccountsByTransaction={transferAccountsByTransaction}
             importedPayee={importedPayee}
             isPreview={isPreview}
+            attachmentCount={attachmentCount}
             onEdit={onEdit}
             onUpdate={onUpdate}
             onCreatePayee={onCreatePayee}
@@ -2634,6 +2704,7 @@ type TransactionTableInnerProps = {
   transferAccountsByTransaction: {
     [id: TransactionEntity['id']]: AccountEntity | null;
   };
+  attachmentCounts: ReadonlyMap<TransactionEntity['id'], number>;
   newTransactions: TransactionEntity[];
 
   transactions: TransactionEntity[];
@@ -2861,6 +2932,12 @@ function TransactionTableInner({
         editing={editing}
         transaction={trans}
         transferAccountsByTransaction={props.transferAccountsByTransaction}
+        attachmentCount={
+          // Attachments on a split belong to the parent, which shows them
+          trans.is_child || isPreviewId(trans.id)
+            ? 0
+            : (props.attachmentCounts.get(trans.id) ?? 0)
+        }
         subtransactions={childTransactions}
         columns={columns}
         selected={selected}
@@ -3292,6 +3369,8 @@ export const TransactionTable = forwardRef(
         }),
       );
     }, [props.transactions, props.payees, props.accounts]);
+
+    const attachmentCounts = useTransactionAttachmentCounts();
 
     const hasPrevSplitsExpanded = prevSplitsExpanded.current;
 
@@ -4018,6 +4097,7 @@ export const TransactionTable = forwardRef(
             transactionMap={transactionMap}
             transactionsByParent={transactionsByParent}
             transferAccountsByTransaction={transferAccountsByTransaction}
+            attachmentCounts={attachmentCounts}
             selectedItems={selectedItems}
             isExpanded={splitsExpanded.isExpanded}
             onSave={onSave}

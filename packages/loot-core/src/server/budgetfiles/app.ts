@@ -515,7 +515,9 @@ async function importBudget({
 
 async function exportBudget() {
   try {
-    const exported = await cloudStorage.exportBuffer();
+    const exported = await cloudStorage.exportBuffer({
+      includeAttachments: true,
+    });
     return {
       data: exported?.data ?? null,
       warnings: exported?.warnings ?? [],

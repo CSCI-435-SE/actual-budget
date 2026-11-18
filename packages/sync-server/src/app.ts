@@ -22,6 +22,10 @@ import { config } from './load-config';
 
 const app = express();
 
+// Exported so tests can listen on their own port and keep the server handle;
+// `run()` below is the production entry point.
+export { app };
+
 process.on('unhandledRejection', reason => {
   console.log('Rejection:', reason);
 });

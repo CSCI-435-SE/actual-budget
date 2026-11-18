@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router';
 
 import { initServer } from '@actual-app/core/platform/client/connection';
 import type { TagEntity } from '@actual-app/core/types/models';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
@@ -32,9 +32,14 @@ describe('ManageTags', () => {
   let store: ReturnType<typeof configureTestAppStore>;
   let renameTag: ReturnType<typeof createRenameTagMock>;
 
-  beforeEach(async () => {
-    renameTag = createRenameTagMock();
-    initServer({ 'tags-get': async () => tags, 'tags-rename': renameTag });
+  async function renderManageTags(
+    getCounts: () => Promise<Record<string, number>>,
+  ) {
+    initServer({
+      'tags-get': async () => tags,
+      'tags-get-counts': getCounts,
+      'tags-rename': renameTag,
+    });
 
     const queryClient = createTestQueryClient();
     queryClient.setQueryData(tagQueries.list().queryKey, tags);
@@ -48,6 +53,11 @@ describe('ManageTags', () => {
       </TestProviders>,
     );
     await act(() => Promise.resolve());
+  }
+
+  beforeEach(async () => {
+    renameTag = createRenameTagMock();
+    await renderManageTags(async () => ({ Reimbursable: 3, Work: 0 }));
   });
 
   function contextMenuItem(name: string) {
@@ -72,20 +82,63 @@ describe('ManageTags', () => {
     await act(async () => rename.onClick?.());
   }
 
-  async function selectTag(tagName: string) {
+  function getRow(tagName: string) {
     const row = screen
       .getByText(`#${tagName}`)
       .closest<HTMLElement>('[data-testid="row"]');
     if (!row) {
       throw new Error(`Row for #${tagName} not found`);
     }
-    await userEvent.click(within(row).getByTestId('select'));
+    return row;
+  }
+
+  async function selectTag(tagName: string) {
+    await userEvent.click(within(getRow(tagName)).getByTestId('select'));
   }
 
   async function openSelectionMenu() {
     await userEvent.click(screen.getByTestId('selected-tags-select-button'));
     return screen.getByTestId('selected-tags-select-tooltip');
   }
+
+  it('shows a Transactions column after Description', () => {
+    const description = screen.getByText('Description');
+    const transactions = screen.getByText('Transactions');
+
+    expect(
+      description.compareDocumentPosition(transactions) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it('shows how many transactions use each tag', async () => {
+    expect(
+      await within(getRow('Reimbursable')).findByText('3'),
+    ).toBeInTheDocument();
+    expect(await within(getRow('Work')).findByText('0')).toBeInTheDocument();
+  });
+
+  it('shows a placeholder until the counts have loaded', async () => {
+    let resolveCounts: (counts: Record<string, number>) => void = () =>
+      undefined;
+    cleanup();
+    await renderManageTags(
+      () =>
+        new Promise(resolve => {
+          resolveCounts = resolve;
+        }),
+    );
+
+    expect(within(getRow('Reimbursable')).getByText('…')).toBeInTheDocument();
+    expect(within(getRow('Work')).getByText('…')).toBeInTheDocument();
+
+    await act(async () => resolveCounts({ Reimbursable: 3, Work: 0 }));
+
+    expect(
+      await within(getRow('Reimbursable')).findByText('3'),
+    ).toBeInTheDocument();
+    expect(within(getRow('Work')).getByText('0')).toBeInTheDocument();
+  });
 
   it('offers renaming from the selection menu for a single tag', async () => {
     await selectTag('Reimbursable');

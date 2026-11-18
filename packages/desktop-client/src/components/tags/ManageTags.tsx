@@ -15,7 +15,7 @@ import { Search } from '#components/common/Search';
 import { useTableNavigator } from '#components/table';
 import { useSearchHotkey } from '#hooks/useSearchHotkey';
 import { SelectedProvider, useSelected } from '#hooks/useSelected';
-import { useTags } from '#hooks/useTags';
+import { useTagCounts, useTags } from '#hooks/useTags';
 
 import { SelectedTagsButton } from './SelectedTagsButton';
 import { TagCreationRow } from './TagCreationRow';
@@ -30,8 +30,24 @@ export function ManageTags() {
   const [hoveredTag, setHoveredTag] = useState<string>();
   const [create, setCreate] = useState(false);
   const { data: tags = [], refetch } = useTags();
+  const { data: counts, refetch: refetchCounts } = useTagCounts();
+  const [scrollWidth, setScrollWidth] = useState(0);
 
-  useEffect(() => listen('undo-event', () => refetch({ cancelRefetch: true })));
+  useEffect(() =>
+    listen('undo-event', () => {
+      void refetch({ cancelRefetch: true });
+      void refetchCounts({ cancelRefetch: true });
+    }),
+  );
+
+  // Notes can change while this page is open, e.g. when another device syncs
+  useEffect(() =>
+    listen('sync-event', event => {
+      if (event.type === 'applied' && event.tables.includes('transactions')) {
+        void refetchCounts();
+      }
+    }),
+  );
 
   const filteredTags = useMemo(() => {
     return filter === ''
@@ -89,7 +105,7 @@ export function ManageTags() {
           <TagsMenuButton />
         </SpaceBetween>
         <View style={{ marginTop: 12, ...styles.tableContainer }}>
-          <TagsHeader />
+          <TagsHeader scrollWidth={scrollWidth} />
           {create && (
             <TagCreationRow onClose={() => setCreate(false)} tags={tags} />
           )}
@@ -97,8 +113,12 @@ export function ManageTags() {
             <TagsList
               navigator={tableNavigator}
               tags={filteredTags}
+              counts={counts}
               hoveredTag={hoveredTag}
               onHover={id => setHoveredTag(id ?? undefined)}
+              saveScrollWidth={(parent, child) =>
+                setScrollWidth(parent > 0 && child > 0 ? parent - child : 0)
+              }
             />
           ) : (
             <View

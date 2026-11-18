@@ -18,6 +18,10 @@ export function useTags() {
   });
 }
 
+export function useTagCounts() {
+  return useQuery(tagQueries.counts());
+}
+
 export function filterTags<T extends TagEntity>(
   tags: T[],
   filterStr: string,
