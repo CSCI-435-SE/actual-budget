@@ -8,8 +8,10 @@ import {
   SvgBookmark,
   SvgLightBulb,
 } from '@actual-app/components/icons/v1';
+import { styles } from '@actual-app/components/styles';
 import { theme } from '@actual-app/components/theme';
 import { Tooltip } from '@actual-app/components/tooltip';
+import type { PayeeUsageStats } from '@actual-app/core/server/payees/app';
 import type { PayeeEntity } from '@actual-app/core/types/models';
 
 import {
@@ -21,10 +23,21 @@ import {
   SelectCell,
 } from '#components/table';
 import { useContextMenu } from '#hooks/useContextMenu';
+import { useDateFormat } from '#hooks/useDateFormat';
+import { useLocale } from '#hooks/useLocale';
 import { useSelectedDispatch, useSelectedItems } from '#hooks/useSelected';
 import { useSyncedPref } from '#hooks/useSyncedPref';
 
 import { PayeeRuleCountLabel } from './PayeeRuleCountLabel';
+import { getPayeeUsageDisplay } from './payeeUsageDisplay';
+
+// Shared with the header so its columns line up with the rows
+export const PAYEE_COUNT_COLUMN_WIDTH = 110;
+export const PAYEE_LAST_USED_COLUMN_WIDTH = 110;
+// Fits the longest English rules label ("99 associated rules"), so the
+// columns before it stay aligned whatever each row's label says. A longer
+// translation can still widen a single row.
+export const PAYEE_RULE_COLUMN_MIN_WIDTH = 170;
 
 type RuleButtonProps = {
   ruleCount: number;
@@ -39,7 +52,8 @@ function RuleButton({ ruleCount, focused, onEdit, onClick }: RuleButtonProps) {
       name="rule-count"
       width="auto"
       focused={focused}
-      style={{ padding: '0 10px' }}
+      alignItems="flex-end"
+      style={{ padding: '0 10px', minWidth: PAYEE_RULE_COLUMN_MIN_WIDTH }}
       plain
     >
       <CellButton
@@ -71,6 +85,9 @@ type EditablePayeeFields = keyof Pick<
 type PayeeTableRowProps = {
   payee: PayeeEntity;
   ruleCount: number;
+  // Undefined when the payee has no transactions
+  usageStats: PayeeUsageStats | undefined;
+  isUsageLoading: boolean;
   selected: boolean;
   hovered: boolean;
   editing: boolean;
@@ -92,6 +109,8 @@ export const PayeeTableRow = memo(
   ({
     payee,
     ruleCount,
+    usageStats,
+    isUsageLoading,
     selected,
     hovered,
     editing,
@@ -121,6 +140,25 @@ export const PayeeTableRow = memo(
     const isLearnCategoriesEnabled = String(learnCategories) === 'true';
 
     const { t } = useTranslation();
+    const dateFormat = useDateFormat() || 'MM/dd/yyyy';
+    const locale = useLocale();
+
+    const usage = getPayeeUsageDisplay({
+      stats: usageStats,
+      isLoading: isUsageLoading,
+      dateFormat,
+      locale,
+      neverLabel: t('Never'),
+    });
+    const usageValueStyle: CSSProperties = {
+      ...styles.tnum,
+      fontStyle: usage.isUnused ? 'italic' : undefined,
+      color: usage.isUnused
+        ? theme.tableTextLight
+        : selected
+          ? theme.tableTextSelected
+          : undefined,
+    };
 
     const triggerRef = useRef(null);
     useContextMenu({
@@ -244,6 +282,22 @@ export const PayeeTableRow = memo(
           }
           onExpose={() => onEdit(id, 'name')}
           inputProps={{ readOnly: !!payee.transfer_acct }}
+        />
+        <Cell
+          name="transaction-count"
+          width={PAYEE_COUNT_COLUMN_WIDTH}
+          textAlign="right"
+          value={usage.count}
+          valueStyle={usageValueStyle}
+          aria-busy={usage.isLoading}
+        />
+        <Cell
+          name="last-used"
+          width={PAYEE_LAST_USED_COLUMN_WIDTH}
+          textAlign="right"
+          value={usage.lastUsed}
+          valueStyle={usageValueStyle}
+          aria-busy={usage.isLoading}
         />
         <RuleButton
           ruleCount={ruleCount}

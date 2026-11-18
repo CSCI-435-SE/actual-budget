@@ -10,6 +10,7 @@ import type { ComponentProps, ComponentRef } from 'react';
 
 import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
+import type { PayeeUsageStats } from '@actual-app/core/server/payees/app';
 import type { PayeeEntity } from '@actual-app/core/types/models';
 
 import { Table, useTableNavigator } from '#components/table';
@@ -24,6 +25,9 @@ type PayeeWithId = PayeeEntity & Required<Pick<PayeeEntity, 'id'>>;
 type PayeeTableProps = {
   payees: PayeeWithId[];
   ruleCounts: Map<PayeeWithId['id'], number>;
+  // Undefined while loading; payees with no transactions have no entry
+  usageStats: Map<PayeeWithId['id'], PayeeUsageStats> | undefined;
+  saveScrollWidth: ComponentProps<typeof Table>['saveScrollWidth'];
 } & Pick<
   ComponentProps<typeof PayeeTableRow>,
   'onUpdate' | 'onDelete' | 'onViewRules' | 'onCreateRule'
@@ -34,7 +38,16 @@ export const PayeeTable = forwardRef<
   PayeeTableProps
 >(
   (
-    { payees, ruleCounts, onUpdate, onDelete, onViewRules, onCreateRule },
+    {
+      payees,
+      ruleCounts,
+      usageStats,
+      saveScrollWidth,
+      onUpdate,
+      onDelete,
+      onViewRules,
+      onCreateRule,
+    },
     ref,
   ) => {
     const [hovered, setHovered] = useState(null);
@@ -68,11 +81,14 @@ export const PayeeTable = forwardRef<
           ref={ref}
           items={payees}
           backgroundColor={theme.tableBackground}
+          saveScrollWidth={saveScrollWidth}
           renderItem={({ item, editing, focusedField, onEdit }) => {
             return (
               <PayeeTableRow
                 payee={item}
                 ruleCount={ruleCounts.get(item.id) || 0}
+                usageStats={usageStats?.get(item.id)}
+                isUsageLoading={usageStats === undefined}
                 selected={selectedItems.has(item.id)}
                 editing={editing}
                 focusedField={focusedField}

@@ -36,7 +36,8 @@ export function ManagePayeesWithData({
   const dispatch = useDispatch();
   const { data: ruleCounts = new Map(), refetch: refetchRuleCounts } =
     usePayeeRuleCounts();
-  const { refetch: refetchUsageStats } = usePayeeUsageStats();
+  // Undefined until the first load finishes; the cells show a placeholder
+  const { data: usageStats, refetch: refetchUsageStats } = usePayeeUsageStats();
 
   // The unused-payees list and the usage stats read the same transactions
   // view, so they are always refetched together to keep them consistent.
@@ -129,6 +130,7 @@ export function ManagePayeesWithData({
     <ManagePayees
       payees={payees}
       ruleCounts={ruleCounts}
+      usageStats={usageStats}
       orphanedPayees={orphanedPayees}
       initialSelectedIds={initialSelectedIds}
       onBatchChange={async (changes: Diff<PayeeEntity>) => {

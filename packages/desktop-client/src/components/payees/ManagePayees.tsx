@@ -28,10 +28,20 @@ import { useDispatch } from '#redux';
 
 import { PayeeMenu } from './PayeeMenu';
 import { PayeeTable } from './PayeeTable';
+import {
+  PAYEE_COUNT_COLUMN_WIDTH,
+  PAYEE_LAST_USED_COLUMN_WIDTH,
+  PAYEE_RULE_COLUMN_MIN_WIDTH,
+} from './PayeeTableRow';
 
 const getPayeesById = memoizeOne((payees: PayeeEntity[]) => groupById(payees));
 
-function PayeeTableHeader() {
+type PayeeTableHeaderProps = {
+  // Width of the list's vertical scrollbar, which the header doesn't have
+  scrollWidth: number;
+};
+
+function PayeeTableHeader({ scrollWidth }: PayeeTableHeaderProps) {
   const { t } = useTranslation();
 
   const dispatchSelected = useSelectedDispatch();
@@ -39,7 +49,7 @@ function PayeeTableHeader() {
 
   return (
     <View>
-      <TableHeader collapsed>
+      <TableHeader collapsed style={{ paddingRight: scrollWidth }}>
         <SelectCell
           exposed
           focused={false}
@@ -50,6 +60,23 @@ function PayeeTableHeader() {
           }
         />
         <Cell value={t('Name')} width="flex" />
+        <Cell
+          value={t('Transactions')}
+          width={PAYEE_COUNT_COLUMN_WIDTH}
+          textAlign="right"
+        />
+        <Cell
+          value={t('Last Used')}
+          width={PAYEE_LAST_USED_COLUMN_WIDTH}
+          textAlign="right"
+        />
+        {/* Same width as the rows' rules column, which has no header */}
+        <Cell
+          width="auto"
+          plain
+          aria-hidden
+          style={{ minWidth: PAYEE_RULE_COLUMN_MIN_WIDTH }}
+        />
       </TableHeader>
     </View>
   );
@@ -58,6 +85,7 @@ function PayeeTableHeader() {
 type ManagePayeesProps = {
   payees: PayeeEntity[];
   ruleCounts: ComponentProps<typeof PayeeTable>['ruleCounts'];
+  usageStats: ComponentProps<typeof PayeeTable>['usageStats'];
   orphanedPayees: Array<Pick<PayeeEntity, 'id'>>;
   initialSelectedIds: string[];
   onBatchChange: (diff: Diff<PayeeEntity>) => void;
@@ -69,6 +97,7 @@ type ManagePayeesProps = {
 export const ManagePayees = ({
   payees,
   ruleCounts,
+  usageStats,
   orphanedPayees,
   initialSelectedIds,
   onBatchChange,
@@ -81,6 +110,7 @@ export const ManagePayees = ({
   const table = useRef(null);
   const triggerRef = useRef(null);
   const [orphanedOnly, setOrphanedOnly] = useState(false);
+  const [scrollWidth, setScrollWidth] = useState(0);
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
@@ -294,7 +324,7 @@ export const ManagePayees = ({
 
       <SelectedProvider instance={selected} fetchAllIds={getSelectableIds}>
         <View style={styles.tableContainer}>
-          <PayeeTableHeader />
+          <PayeeTableHeader scrollWidth={scrollWidth} />
           {filteredPayees.length === 0 ? (
             <View
               style={{
@@ -312,6 +342,10 @@ export const ManagePayees = ({
               ref={table}
               payees={filteredPayees}
               ruleCounts={ruleCounts}
+              usageStats={usageStats}
+              saveScrollWidth={(parent, child) =>
+                setScrollWidth(parent > 0 && child > 0 ? parent - child : 0)
+              }
               onUpdate={onUpdate}
               onViewRules={onViewRules}
               onCreateRule={onCreateRule}
