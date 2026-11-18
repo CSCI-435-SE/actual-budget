@@ -19,10 +19,7 @@ import {
   boundMonthRangeFromDates,
   calculateTimeRange,
 } from '#components/reports/reportRanges';
-import {
-  getDefaultLayerRange,
-  topNNodes,
-} from '#components/reports/reports/Sankey';
+import { topNNodes } from '#components/reports/reports/Sankey';
 import {
   buildSankeyData,
   createBaseGraphSpreadsheet,
@@ -36,6 +33,8 @@ import { useReport } from '#components/reports/useReport';
 import { useCategories } from '#hooks/useCategories';
 import { useLocale } from '#hooks/useLocale';
 import { useResizeObserver } from '#hooks/useResizeObserver';
+
+import { getDefaultLayerRange } from './sankeyWidgetSettings';
 
 const defaultGetBaseGraph = async (
   _spreadsheet: unknown,

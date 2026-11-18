@@ -13,7 +13,6 @@ import { theme } from '@actual-app/components/theme';
 import { View } from '@actual-app/components/view';
 import type { MonteCarloWidget } from '@actual-app/core/types/models';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { FinancialText } from '#components/FinancialText';
 import { LabeledCheckbox } from '#components/forms/LabeledCheckbox';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
@@ -41,12 +40,16 @@ import {
 import type { MonteCarloConfig } from '#components/reports/reports/monte-carlo/monteCarloSimulation';
 import { GROUP_HEADING_STYLE } from '#components/reports/reports/monte-carlo/monteCarloStyles';
 import { useResolvedMonteCarloConfig } from '#components/reports/reports/monte-carlo/useResolvedMonteCarloConfig';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
 import { useFormat } from '#hooks/useFormat';
 import { useNavigate } from '#hooks/useNavigate';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+import { toComparableMonteCarloSettings } from './monteCarloWidgetSettings';
 
 const firstYear = HISTORICAL_ANNUAL_RETURNS[0].year;
 const lastYear =
@@ -109,6 +112,15 @@ export function MonteCarlo() {
   // Only the stable `mutate` is kept: the mutation result is a new object
   // every render, and closing over it would defeat memoisation below
   const { mutate: updateWidget } = useUpdateDashboardWidgetMutation();
+
+  // Compared against the cached widget, which every save below refreshes,
+  // so renaming keeps the label in step with what is actually saved.
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    isReady: selectionsInitialized,
+    saved: toComparableMonteCarloSettings(widget?.meta),
+    current: toComparableMonteCarloSettings(resolvedConfig),
+  });
 
   async function onSaveWidget() {
     // The save button only renders when a widget exists
@@ -264,7 +276,7 @@ export function MonteCarlo() {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -272,14 +284,11 @@ export function MonteCarlo() {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )

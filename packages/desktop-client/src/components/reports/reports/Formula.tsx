@@ -13,12 +13,13 @@ import { Toggle } from '@actual-app/components/toggle';
 import { View } from '@actual-app/components/view';
 import type { FormulaWidget } from '@actual-app/core/types/models';
 
-import { EditablePageHeaderTitle } from '#components/EditablePageHeaderTitle';
 import { QueryManager } from '#components/formula/QueryManager';
 import { MobileBackButton } from '#components/mobile/MobileBackButton';
 import { MobilePageHeader, Page, PageHeader } from '#components/Page';
 import { FormulaResult } from '#components/reports/FormulaResult';
 import { LoadingIndicator } from '#components/reports/LoadingIndicator';
+import { ReportWidgetTitle } from '#components/reports/ReportWidgetTitle';
+import { isWidgetModified } from '#components/reports/widgetModified';
 import { useAccounts } from '#hooks/useAccounts';
 import { useCategories } from '#hooks/useCategories';
 import { useDashboardWidget } from '#hooks/useDashboardWidget';
@@ -28,6 +29,13 @@ import { useThemeColors } from '#hooks/useThemeColors';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useDispatch } from '#redux';
 import { useUpdateDashboardWidgetMutation } from '#reports/mutations';
+
+import {
+  DEFAULT_FORMULA,
+  DEFAULT_STATIC_FONT_SIZE,
+  toComparableFormulaSettings,
+} from './formulaWidgetSettings';
+import type { FormulaWidgetSettings } from './formulaWidgetSettings';
 
 const FormulaEditor = lazy(() =>
   import('#components/formula/FormulaEditor').then(module => ({
@@ -71,14 +79,14 @@ function FormulaInner({ widget }: FormulaInnerProps) {
   const { data: accounts = [] } = useAccounts();
 
   const [formula, setFormula] = useState(
-    widget?.meta?.formula || '=SUM(1, 2, 3)',
+    widget?.meta?.formula || DEFAULT_FORMULA,
   );
 
   const [fontSizeMode, setFontSizeMode] = useState<'dynamic' | 'static'>(
     widget?.meta?.fontSizeMode || 'dynamic',
   );
   const [staticFontSize, setStaticFontSize] = useState<number>(
-    widget?.meta?.staticFontSize || 32,
+    widget?.meta?.staticFontSize || DEFAULT_STATIC_FONT_SIZE,
   );
   const [showTitle, setShowTitle] = useState(widget?.meta?.showTitle ?? true);
   const [colorFormula, setColorFormula] = useState(
@@ -155,6 +163,24 @@ function FormulaInner({ widget }: FormulaInnerProps) {
 
   const updateDashboardWidgetMutation = useUpdateDashboardWidgetMutation();
 
+  // `queriesVersion` re-renders the page whenever the queries ref changes,
+  // so this always reads the latest queries.
+  const currentSettings: FormulaWidgetSettings = {
+    formula,
+    queries: queriesRef.current,
+    fontSizeMode,
+    staticFontSize,
+    showTitle,
+    colorFormula,
+  };
+  const isModified = isWidgetModified({
+    hasWidget: !!widget,
+    // Every setting is read from the widget when the page opens.
+    isReady: true,
+    saved: toComparableFormulaSettings(widget?.meta),
+    current: toComparableFormulaSettings(currentSettings),
+  });
+
   const onSaveWidgetName = async (newName: string) => {
     if (!widget) {
       dispatch(
@@ -175,12 +201,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
         meta: {
           ...(widget.meta ?? {}),
           name,
-          formula,
-          queries: queriesRef.current,
-          fontSizeMode,
-          staticFontSize,
-          showTitle,
-          colorFormula,
+          ...currentSettings,
         },
       },
     });
@@ -205,12 +226,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
           id: widget.id,
           meta: {
             ...(widget.meta ?? {}),
-            formula,
-            queries: queriesRef.current,
-            fontSizeMode,
-            staticFontSize,
-            showTitle,
-            colorFormula,
+            ...currentSettings,
           },
         },
       },
@@ -238,7 +254,7 @@ function FormulaInner({ widget }: FormulaInnerProps) {
       header={
         isNarrowWidth ? (
           <MobilePageHeader
-            title={title}
+            title={<ReportWidgetTitle title={title} isModified={isModified} />}
             leftContent={
               <MobileBackButton onPress={() => navigate('/reports')} />
             }
@@ -246,14 +262,11 @@ function FormulaInner({ widget }: FormulaInnerProps) {
         ) : (
           <PageHeader
             title={
-              widget ? (
-                <EditablePageHeaderTitle
-                  title={title}
-                  onSave={onSaveWidgetName}
-                />
-              ) : (
-                title
-              )
+              <ReportWidgetTitle
+                title={title}
+                onSave={widget ? onSaveWidgetName : undefined}
+                isModified={isModified}
+              />
             }
           />
         )
