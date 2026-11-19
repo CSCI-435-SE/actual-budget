@@ -1,4 +1,5 @@
 import { send } from '@actual-app/core/platform/client/connection';
+import type { PayeeUsageStats } from '@actual-app/core/server/payees/app';
 import { memoizeOne } from '@actual-app/core/shared/memoize';
 import { groupById } from '@actual-app/core/shared/util';
 import type {
@@ -58,6 +59,17 @@ export const payeeQueries = {
         return new Map(Object.entries(counts ?? {}));
       },
       placeholderData: new Map(),
+    }),
+  usageStats: () =>
+    queryOptions<Map<PayeeEntity['id'], PayeeUsageStats>>({
+      queryKey: [...payeeQueries.lists(), 'usageStats'],
+      queryFn: async () => {
+        const stats = await send('payees-get-usage-stats');
+        return new Map(Object.entries(stats ?? {}));
+      },
+      // No placeholderData: an empty map would render every payee as
+      // "0 / Never" until the real counts arrive. Default staleTime, so the
+      // counts refetch whenever the Payees page mounts.
     }),
   listNearby: () =>
     queryOptions<NearbyPayeeEntity[]>({

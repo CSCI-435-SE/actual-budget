@@ -1,6 +1,6 @@
 import { createApp } from '#server/app';
 import * as db from '#server/db';
-import { payeeModel } from '#server/models';
+import { fromDateRepr, payeeModel } from '#server/models';
 import { mutator } from '#server/mutators';
 import { getCompletedScheduleRuleIds } from '#server/schedules/app';
 import { batchMessages } from '#server/sync';
@@ -21,6 +21,7 @@ export type PayeesHandlers = {
   'payees-get': typeof getPayees;
   'payees-get-orphaned': typeof getOrphanedPayees;
   'payees-get-rule-counts': typeof getPayeeRuleCounts;
+  'payees-get-usage-stats': typeof getPayeeUsageStats;
   'payees-merge': typeof mergePayees;
   'payees-batch-change': typeof batchChangePayees;
   'payees-check-orphaned': typeof checkOrphanedPayees;
@@ -37,6 +38,7 @@ app.method('common-payees-get', getCommonPayees);
 app.method('payees-get', getPayees);
 app.method('payees-get-orphaned', getOrphanedPayees);
 app.method('payees-get-rule-counts', getPayeeRuleCounts);
+app.method('payees-get-usage-stats', getPayeeUsageStats);
 app.method(
   'payees-merge',
   mutator(
@@ -88,6 +90,27 @@ async function getPayeeRuleCounts() {
   });
 
   return payeeCounts;
+}
+
+export type PayeeUsageStats = {
+  count: number;
+  lastUsed: string;
+};
+
+// Payees without any transactions are omitted; callers treat a missing
+// entry as 0 transactions, never used.
+async function getPayeeUsageStats(): Promise<
+  Record<PayeeEntity['id'], PayeeUsageStats>
+> {
+  const rows = await db.getPayeeUsageStats();
+  const stats: Record<PayeeEntity['id'], PayeeUsageStats> = {};
+  for (const row of rows) {
+    stats[row.payee] = {
+      count: row.count,
+      lastUsed: fromDateRepr(row.last_date),
+    };
+  }
+  return stats;
 }
 
 async function mergePayees({

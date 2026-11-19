@@ -808,6 +808,25 @@ export async function getOrphanedPayees() {
   return rows.map(row => row.id);
 }
 
+// Reads the same view as `orphanedPayeesQuery`, so every orphaned payee is
+// absent here. The view already resolves merged payees to their target and
+// drops deleted transactions (and children of deleted parents). A split
+// counts once per distinct payee on it, whether on the parent or a child.
+export function getPayeeUsageStats() {
+  return all<{
+    payee: DbPayee['id'];
+    count: number;
+    last_date: DbViewTransactionInternalAlive['date'];
+  }>(`
+    SELECT payee,
+      COUNT(DISTINCT COALESCE(parent_id, id)) AS count,
+      MAX(date) AS last_date
+    FROM v_transactions_internal_alive
+    WHERE payee IS NOT NULL
+    GROUP BY payee
+  `);
+}
+
 export async function getPayeeByName(name: DbPayee['name']) {
   return first<DbPayee>(
     `SELECT * FROM payees WHERE UNICODE_LOWER(name) = ? AND tombstone = 0`,
