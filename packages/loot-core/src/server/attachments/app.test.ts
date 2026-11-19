@@ -2,8 +2,10 @@ import * as nativeFs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
+import * as exceptions from '#platform/exceptions';
 import * as connection from '#platform/server/connection';
 import * as fs from '#platform/server/fs';
+import { logger } from '#platform/server/log';
 import { aqlQuery } from '#server/aql';
 import * as db from '#server/db';
 import * as prefs from '#server/prefs';
@@ -100,7 +102,8 @@ beforeEach(async () => {
               ('parent', 1, 0, 'acct1', -3000, 20261113, NULL, 2, 0),
               ('child', 0, 1, 'acct1', -3000, 20261113, 'parent', 3, 0),
               ('deleted', 0, 0, 'acct1', -500, 20261113, NULL, 4, 1),
-              ('orphan-child', 0, 1, 'acct1', -500, 20261113, 'deleted', 5, 0)`,
+              ('orphan-child', 0, 1, 'acct1', -500, 20261113, 'deleted', 5, 0),
+              ('lost-child', 0, 1, 'acct1', -500, 20261113, 'gone', 6, 0)`,
   );
 });
 
@@ -203,7 +206,9 @@ describe('attachment-add', () => {
     expect(syncEvents()).toEqual([]);
   });
 
-  it.each(['missing', 'deleted', 'orphan-child'])(
+  // 'orphan-child' has a deleted parent; 'lost-child' has a parent_id that
+  // points to no row at all
+  it.each(['missing', 'deleted', 'orphan-child', 'lost-child'])(
     'rejects a transaction that is %s and stores nothing',
     async transactionId => {
       const result = await addAttachment({
@@ -409,6 +414,20 @@ describe('attachment-remove', () => {
     expect(await removeAttachment({ id: added.attachment.id })).toEqual({});
     expect(attachmentRows()).toEqual([]);
   });
+
+  it('needs an open budget, and leaves the attachment in place', async () => {
+    const added = await add('plain');
+    vi.mocked(connection.send).mockClear();
+    prefs.unloadPrefs();
+
+    expect(await removeAttachment({ id: added.id })).toEqual({
+      error: { reason: 'no-budget' },
+    });
+    expect(attachmentRows()).toEqual([
+      { id: added.id, transaction_id: 'plain' },
+    ]);
+    expect(syncEvents()).toEqual([]);
+  });
 });
 
 describe('attachment-restore', () => {
@@ -565,6 +584,37 @@ describe('attachment-read', () => {
 
     expect(await readAttachment({ id: added.attachment.id })).toEqual({
       error: { reason: 'read-failed' },
+    });
+  });
+
+  it('reports a file that cannot be read as read-failed', async () => {
+    const added = await add('plain');
+    const error = new Error('EIO: i/o error');
+    const read = vi
+      .spyOn(storage, 'readAttachmentFile')
+      .mockRejectedValue(error);
+    // Keeps the expected error out of the test output
+    const logError = vi.spyOn(logger, 'error').mockReturnValue(undefined);
+    const capture = vi.spyOn(exceptions, 'captureException');
+
+    expect(await readAttachment({ id: added.id })).toEqual({
+      error: { reason: 'read-failed' },
+    });
+    // The failure is logged and sent to error reporting
+    expect(logError).toHaveBeenCalledWith(expect.any(String), error);
+    expect(capture).toHaveBeenCalledWith(error);
+
+    read.mockRestore();
+    logError.mockRestore();
+    capture.mockRestore();
+  });
+
+  it('needs an open budget', async () => {
+    const added = await add('plain');
+    prefs.unloadPrefs();
+
+    expect(await readAttachment({ id: added.id })).toEqual({
+      error: { reason: 'no-budget' },
     });
   });
 

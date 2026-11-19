@@ -76,7 +76,11 @@
       "ignore": ["docusaurus.netlify-config.js"]
     },
     "packages/loot-core": {
-      "entry": ["src/**/index-types.ts", "src/mocks/**"],
+      "entry": [
+        "src/**/index-types.ts",
+        "src/mocks/**",
+        "vitest.stryker.issue-154.config.mts"
+      ],
       "ignoreDependencies": [
         "assert",
         "browserify-zlib",
