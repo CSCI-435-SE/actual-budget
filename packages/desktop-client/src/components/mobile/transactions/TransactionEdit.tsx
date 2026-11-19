@@ -15,6 +15,7 @@ import { Button } from '@actual-app/components/button';
 import { SvgSplit } from '@actual-app/components/icons/v0';
 import {
   SvgAdd,
+  SvgAttachment,
   SvgCalendar,
   SvgCheveronDown,
   SvgLocation,
@@ -95,6 +96,7 @@ import {
   useSingleActiveEditForm,
 } from '#hooks/useSingleActiveEditForm';
 import { useSyncedPref } from '#hooks/useSyncedPref';
+import { useTransactionAttachmentCounts } from '#hooks/useTransactionAttachmentCounts';
 import { pushModal } from '#modals/modalsSlice';
 import { addNotification } from '#notifications/notificationsSlice';
 import { useSavePayeeLocationMutation } from '#payees';
@@ -664,6 +666,7 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
     const { data: { grouped: categoryGroups } = { grouped: [] } } =
       useCategories();
     const noteRef = useRef<HTMLInputElement | null>(null);
+    const attachmentCounts = useTransactionAttachmentCounts();
 
     useEffect(() => {
       if (window.history.length === 1) {
@@ -1514,6 +1517,14 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
           </View>
 
           {!isAdding && (
+            <AttachmentsField
+              transactionId={transaction.id}
+              count={attachmentCounts.get(transaction.id) ?? 0}
+              isDisabled={!!editingField}
+            />
+          )}
+
+          {!isAdding && (
             <View style={{ alignItems: 'center' }}>
               <Button
                 variant="bare"
@@ -1549,6 +1560,52 @@ const TransactionEditInner = memo<TransactionEditInnerProps>(
     );
   },
 );
+
+type AttachmentsFieldProps = {
+  transactionId: TransactionEntity['id'];
+  count: number;
+  isDisabled: boolean;
+};
+
+// Opens the transaction's attachments. They're saved as soon as they're added
+// or removed, so they aren't part of the form's Save.
+function AttachmentsField({
+  transactionId,
+  count,
+  isDisabled,
+}: AttachmentsFieldProps) {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  return (
+    <View>
+      <FieldLabel title={t('Attachments')} />
+      <TapField
+        icon={<SvgAttachment width={17} height={17} />}
+        rightContent={dropdownChevron}
+        isDisabled={isDisabled}
+        value={
+          count === 0
+            ? t('None')
+            : count === 1
+              ? t('1 file')
+              : t('{{count}} files', { count })
+        }
+        onPress={() =>
+          dispatch(
+            pushModal({
+              modal: {
+                name: 'transaction-attachments',
+                options: { transactionId },
+              },
+            }),
+          )
+        }
+        data-testid="attachments-field"
+      />
+    </View>
+  );
+}
 
 function isTemporary(transaction: TransactionEntity) {
   return transaction.id.indexOf('temp') === 0;

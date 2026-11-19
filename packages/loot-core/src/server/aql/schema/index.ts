@@ -235,6 +235,7 @@ export const schema = {
     size: f('integer', { required: true }),
     storage: f('string', { default: 'local' }),
     created_at: f('integer', { required: true }),
+    deleted_at: f('integer'),
     tombstone: f('boolean'),
   },
 };

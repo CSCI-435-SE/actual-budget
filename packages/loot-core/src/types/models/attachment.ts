@@ -21,5 +21,8 @@ export type TransactionAttachmentEntity = {
   storage: AttachmentStorage;
   // Milliseconds since the epoch
   created_at: number;
+  // Milliseconds since the epoch when the attachment was removed; null while
+  // it is live. Cleanup deletes the file once this is past the grace period.
+  deleted_at?: number | null;
   tombstone?: boolean;
 };

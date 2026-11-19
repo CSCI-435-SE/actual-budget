@@ -55,6 +55,7 @@ export type DbTransactionAttachment = {
   size: number;
   storage: string;
   created_at: number;
+  deleted_at: number | null;
   tombstone: 1 | 0;
 };
 

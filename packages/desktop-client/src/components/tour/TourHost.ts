@@ -18,7 +18,7 @@ import { TOUR_OFFER_NOTIFICATION_ID, useTour } from './TourProvider';
 import type { TourId } from './TourProvider';
 import { TourTooltip } from './TourTooltip';
 
-// Must stay below MODAL_Z_INDEX (3000) and the notifications layer (2999).
+// Must stay below MODAL_Z_INDEX (3000) and the notifications layer (3001).
 const TOUR_Z_INDEX = 2900;
 
 type TourHostProps = {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '@actual-app/components/button';
+import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 import { AnimatedLoading } from '@actual-app/components/icons/AnimatedLoading';
 import { Paragraph } from '@actual-app/components/paragraph';
 import { Text } from '@actual-app/components/text';
@@ -47,6 +48,7 @@ export function AttachmentViewerModal({
   attachment,
 }: AttachmentViewerModalProps) {
   const { t } = useTranslation();
+  const { isNarrowWidth } = useResponsive();
   const dispatch = useDispatch();
   const confirmRemoveAttachment = useConfirmRemoveAttachment();
 
@@ -160,6 +162,9 @@ export function AttachmentViewerModal({
                       maxWidth: '100%',
                       maxHeight: '65vh',
                       objectFit: 'contain',
+                      // Phone photos are usually larger than the screen,
+                      // but a small image shouldn't be blown up on desktop
+                      ...(isNarrowWidth && { width: '100%' }),
                     }}
                   />
                 </View>
@@ -183,6 +188,7 @@ export function AttachmentViewerModal({
               <View
                 style={{
                   flexDirection: 'row',
+                  flexWrap: 'wrap',
                   justifyContent: 'flex-end',
                   gap: 8,
                 }}

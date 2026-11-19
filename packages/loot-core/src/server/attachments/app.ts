@@ -18,7 +18,10 @@ import type {
   TransactionAttachmentEntity,
 } from '#types/models';
 
+import { cleanUpAttachments } from './cleanup';
+import type { AttachmentCleanupResult } from './cleanup';
 import {
+  hasAttachmentFile,
   readAttachmentFile,
   removeAttachmentFile,
   writeAttachmentFile,
@@ -26,9 +29,13 @@ import {
 
 // Attachments are stored on this device only (#154). Rows are written with
 // `db.runQuery` rather than `db.insert`/`db.update`, so they never produce
-// sync messages, and removing an attachment can't be undone. The handlers
-// aren't wrapped in `mutator` for the same reason: there is nothing to undo,
-// and as plain handlers `close-budget` waits for an in-progress save.
+// sync messages and the app's undo stack never sees them. The handlers
+// aren't wrapped in `mutator` for the same reason, and as plain handlers
+// `close-budget` waits for an in-progress save.
+//
+// Removing an attachment only marks its row (`tombstone = 1` and
+// `deleted_at`) and keeps the file, so `attachment-restore` can undo it.
+// Cleanup (`cleanup.ts`) removes the row and the file after a grace period.
 
 export type AttachmentAddError =
   | AttachmentValidationError
@@ -43,18 +50,40 @@ export type AttachmentReadError =
   | { reason: 'missing' }
   | { reason: 'read-failed' };
 
+export type AttachmentRestoreError =
+  | { reason: 'no-budget' }
+  // The row has been cleaned up, or its file is no longer on this device
+  | { reason: 'not-found' }
+  // The attachment's transaction (or its parent) is deleted
+  | { reason: 'transaction-not-found' };
+
 export type AttachmentHandlers = {
   'attachment-add': typeof addAttachment;
   'attachment-remove': typeof removeAttachment;
+  'attachment-restore': typeof restoreAttachment;
   'attachment-list': typeof listAttachments;
   'attachment-read': typeof readAttachment;
+  'attachments-cleanup': typeof runCleanup;
 };
 
 export const app = createApp<AttachmentHandlers>();
 app.method('attachment-add', addAttachment);
 app.method('attachment-remove', removeAttachment);
+app.method('attachment-restore', restoreAttachment);
 app.method('attachment-list', listAttachments);
 app.method('attachment-read', readAttachment);
+app.method('attachments-cleanup', runCleanup);
+
+// Cleanup also runs on its own after a budget opens (see `loadBudget`)
+async function runCleanup(): Promise<
+  AttachmentCleanupResult | { error: { reason: 'no-budget' } }
+> {
+  const budgetId = getBudgetId();
+  if (budgetId == null) {
+    return { error: { reason: 'no-budget' } };
+  }
+  return cleanUpAttachments(budgetId);
+}
 
 async function addAttachment({
   transactionId,
@@ -91,6 +120,7 @@ async function addAttachment({
     size: bytes.byteLength,
     storage: 'local',
     created_at: Date.now(),
+    deleted_at: null,
     tombstone: false,
   };
 
@@ -131,8 +161,9 @@ async function addAttachment({
   return { attachment };
 }
 
-// Removes the attachment's row and its file. Removing an attachment that is
-// already gone succeeds.
+// Marks the attachment as removed and keeps its file, so the removal can be
+// undone with `attachment-restore`. Cleanup removes the row and the file
+// later. Removing an attachment that is already gone succeeds.
 async function removeAttachment({
   id,
 }: {
@@ -148,29 +179,64 @@ async function removeAttachment({
     return {};
   }
 
-  // The row goes first: if removing the file then fails, the file is left
-  // unused rather than a row pointing at a file that is gone
-  db.runQuery('DELETE FROM transaction_attachments WHERE id = ?', [id]);
+  db.runQuery(
+    'UPDATE transaction_attachments SET tombstone = 1, deleted_at = ? WHERE id = ?',
+    [Date.now(), id],
+  );
   notifyChanged();
+  return {};
+}
 
-  try {
-    await removeAttachmentFile(budgetId, id);
-  } catch (error) {
-    logger.warn(`Failed to remove attachment file ${id}`, error);
+// Undoes `attachment-remove`. Refused when the row or its file is gone, or
+// when the attachment's transaction has been deleted since. Restoring an
+// attachment that isn't removed succeeds.
+async function restoreAttachment({
+  id,
+}: {
+  id: TransactionAttachmentEntity['id'];
+}): Promise<{ error?: AttachmentRestoreError }> {
+  const budgetId = getBudgetId();
+  if (budgetId == null) {
+    return { error: { reason: 'no-budget' } };
   }
 
+  const row = await db.first<DbTransactionAttachment>(
+    'SELECT * FROM transaction_attachments WHERE id = ?',
+    [id],
+  );
+  if (row == null) {
+    return { error: { reason: 'not-found' } };
+  }
+  if ((await resolveOwnerTransactionId(row.transaction_id)) == null) {
+    return { error: { reason: 'transaction-not-found' } };
+  }
+  if (row.tombstone === 0) {
+    return {};
+  }
+  if (!(await hasAttachmentFile(budgetId, id))) {
+    return { error: { reason: 'not-found' } };
+  }
+
+  db.runQuery(
+    'UPDATE transaction_attachments SET tombstone = 0, deleted_at = NULL WHERE id = ?',
+    [id],
+  );
+  // The attachment list is a live query that only refreshes on this event
+  notifyChanged();
   return {};
 }
 
 // The attachments on a transaction, oldest first. A split child's
-// attachments are the ones on its parent.
+// attachments are the ones on its parent. A deleted transaction has none.
 async function listAttachments({
   transactionId,
 }: {
   transactionId: TransactionAttachmentEntity['transaction_id'];
 }): Promise<TransactionAttachmentEntity[]> {
-  const ownerId =
-    (await resolveOwnerTransactionId(transactionId)) ?? transactionId;
+  const ownerId = await resolveOwnerTransactionId(transactionId);
+  if (ownerId == null) {
+    return [];
+  }
 
   const rows = await db.all<DbTransactionAttachment>(
     `SELECT * FROM transaction_attachments
@@ -195,7 +261,11 @@ async function readAttachment({
   }
 
   const row = await getAttachmentRow(id);
-  if (row == null) {
+  // A deleted transaction's attachments are hidden until the delete is undone
+  if (
+    row == null ||
+    (await resolveOwnerTransactionId(row.transaction_id)) == null
+  ) {
     return { error: { reason: 'not-found' } };
   }
 
@@ -216,6 +286,34 @@ async function readAttachment({
   } catch (error) {
     reportError('Failed to read attachment file', error);
     return { error: { reason: 'read-failed' } };
+  }
+}
+
+// Moves the live attachments of one transaction to another, for merges: the
+// kept transaction ends up with the attachments of both. Removed attachments
+// stay where they are and are cleaned up with the dropped transaction.
+//
+// Undoing the merge brings the dropped transaction back but leaves the
+// attachments on the kept one, because the undo stack can't see attachment
+// rows.
+export async function moveAttachments(
+  fromTransactionId: TransactionAttachmentEntity['transaction_id'],
+  toTransactionId: TransactionAttachmentEntity['transaction_id'],
+) {
+  // A split child's attachments go on its parent. A child never owns
+  // attachments itself, so `fromTransactionId` needs no such step.
+  const ownerId = await resolveOwnerTransactionId(toTransactionId);
+  if (ownerId == null || ownerId === fromTransactionId) {
+    return;
+  }
+
+  const { changes } = db.runQuery(
+    `UPDATE transaction_attachments SET transaction_id = ?
+       WHERE transaction_id = ? AND tombstone = 0`,
+    [ownerId, fromTransactionId],
+  );
+  if (Number(changes) > 0) {
+    notifyChanged();
   }
 }
 
@@ -271,6 +369,7 @@ function fromDbRow(row: DbTransactionAttachment): TransactionAttachmentEntity {
     size: row.size,
     storage: 'local',
     created_at: row.created_at,
+    deleted_at: row.deleted_at,
     tombstone: row.tombstone === 1,
   };
 }

@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import { Button } from '@actual-app/components/button';
+import { useResponsive } from '@actual-app/components/hooks/useResponsive';
 import { AnimatedLoading } from '@actual-app/components/icons/AnimatedLoading';
 import { Text } from '@actual-app/components/text';
 import { theme } from '@actual-app/components/theme';
@@ -49,7 +50,9 @@ export function TransactionAttachmentsModal({
   const dispatch = useDispatch();
   const errorMessage = useAttachmentErrorMessage();
   const confirmRemoveAttachment = useConfirmRemoveAttachment();
+  const { isNarrowWidth } = useResponsive();
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const nextKey = useRef(0);
 
   const { data: attachments, isLoading } =
@@ -136,7 +139,8 @@ export function TransactionAttachmentsModal({
                 <Trans>
                   Files are stored in this browser only. They aren't synced to
                   your other devices, and they are lost if this browser's data
-                  is cleared.
+                  is cleared. Some phones clear site data for apps you haven't
+                  used in a while.
                 </Trans>
               </Warning>
             )}
@@ -234,6 +238,7 @@ export function TransactionAttachmentsModal({
             <View
               style={{
                 flexDirection: 'row',
+                flexWrap: 'wrap',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: 10,
@@ -251,12 +256,38 @@ export function TransactionAttachmentsModal({
                 style={{ display: 'none' }}
                 onChange={onFilesPicked}
               />
-              <Button
-                variant="primary"
-                onPress={() => inputRef.current?.click()}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 8,
+                  marginLeft: 'auto',
+                }}
               >
-                <Trans>Attach files</Trans>
-              </Button>
+                {isNarrowWidth && (
+                  <>
+                    {/* Opens the camera straight away on phones; elsewhere
+                        it's an ordinary image picker */}
+                    <input
+                      ref={cameraInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      data-testid="attachment-camera-input"
+                      style={{ display: 'none' }}
+                      onChange={onFilesPicked}
+                    />
+                    <Button onPress={() => cameraInputRef.current?.click()}>
+                      <Trans>Take photo</Trans>
+                    </Button>
+                  </>
+                )}
+                <Button
+                  variant="primary"
+                  onPress={() => inputRef.current?.click()}
+                >
+                  <Trans>Attach files</Trans>
+                </Button>
+              </View>
             </View>
           </View>
         </>

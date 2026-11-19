@@ -90,6 +90,25 @@ describe('AttachmentViewerModal', () => {
     expect(blob.type).toBe('image/png');
   });
 
+  it('fits an image to the width of a phone, but not a wide screen', async () => {
+    const { unmount } = renderViewer(IMAGE);
+    expect(
+      (await screen.findByRole('img', { name: 'receipt.png' })).style.width,
+    ).toBe('');
+    unmount();
+
+    const originalWidth = window.innerWidth;
+    window.innerWidth = 350;
+    try {
+      renderViewer(IMAGE);
+      expect(
+        (await screen.findByRole('img', { name: 'receipt.png' })).style.width,
+      ).toBe('100%');
+    } finally {
+      window.innerWidth = originalWidth;
+    }
+  });
+
   it('releases the image when closed', async () => {
     const { unmount } = renderViewer(IMAGE);
     await screen.findByRole('img', { name: 'receipt.png' });

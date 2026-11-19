@@ -11,10 +11,12 @@ import {
   ATTACHMENT_MAX_SIZE,
   ATTACHMENT_MIME_TYPES,
   transactionAttachmentCountsQuery,
+  transactionAttachmentsQuery,
 } from '#shared/attachments';
 import type { TransactionAttachmentCount } from '#shared/attachments';
+import type { TransactionAttachmentEntity } from '#types/models';
 
-import { app } from './app';
+import { app, moveAttachments } from './app';
 import * as storage from './storage';
 
 vi.mock('#platform/server/connection', () => ({
@@ -33,6 +35,7 @@ const addAttachment = app.handlers['attachment-add'];
 const removeAttachment = app.handlers['attachment-remove'];
 const listAttachments = app.handlers['attachment-list'];
 const readAttachment = app.handlers['attachment-read'];
+const restoreAttachment = app.handlers['attachment-restore'];
 
 let documentDir: string;
 
@@ -41,12 +44,33 @@ function attachmentFiles(): string[] {
   return nativeFs.existsSync(dir) ? nativeFs.readdirSync(dir).sort() : [];
 }
 
+// Live rows only; see `removedRows` for removed ones
 function attachmentRows() {
   return db.runQuery<{ id: string; transaction_id: string }>(
-    'SELECT id, transaction_id FROM transaction_attachments ORDER BY id',
+    'SELECT id, transaction_id FROM transaction_attachments WHERE tombstone = 0 ORDER BY id',
     [],
     true,
   );
+}
+
+function removedRows() {
+  return db.runQuery<{ id: string; deleted_at: number | null }>(
+    'SELECT id, deleted_at FROM transaction_attachments WHERE tombstone = 1 ORDER BY id',
+    [],
+    true,
+  );
+}
+
+async function add(transactionId: string, data: Uint8Array = PDF) {
+  const result = await addAttachment({
+    transactionId,
+    fileName: 'receipt.pdf',
+    data,
+  });
+  if (!('attachment' in result)) {
+    throw new Error('setup failed');
+  }
+  return result.attachment;
 }
 
 function syncEvents() {
@@ -104,6 +128,7 @@ describe('attachment-add', () => {
         size: PDF.byteLength,
         storage: 'local',
         created_at: 1234,
+        deleted_at: null,
         tombstone: false,
       },
     });
@@ -285,10 +310,39 @@ describe('attachment-list', () => {
     expect(await listAttachments({ transactionId: 'plain' })).toEqual([]);
     expect(await listAttachments({ transactionId: 'missing' })).toEqual([]);
   });
+
+  it('leaves out removed attachments', async () => {
+    const removed = await add('plain');
+    const kept = await add('plain');
+    await removeAttachment({ id: removed.id });
+
+    expect(
+      (await listAttachments({ transactionId: 'plain' })).map(a => a.id),
+    ).toEqual([kept.id]);
+  });
+
+  it('lists nothing for a deleted transaction until the delete is undone', async () => {
+    await add('plain');
+    await add('parent');
+    db.runQuery(
+      "UPDATE transactions SET tombstone = 1 WHERE id IN ('plain', 'parent')",
+    );
+
+    expect(await listAttachments({ transactionId: 'plain' })).toEqual([]);
+    // A child of a deleted parent
+    expect(await listAttachments({ transactionId: 'child' })).toEqual([]);
+
+    db.runQuery(
+      "UPDATE transactions SET tombstone = 0 WHERE id IN ('plain', 'parent')",
+    );
+
+    expect(await listAttachments({ transactionId: 'plain' })).toHaveLength(1);
+    expect(await listAttachments({ transactionId: 'child' })).toHaveLength(1);
+  });
 });
 
 describe('attachment-remove', () => {
-  it('removes the row and the file, and tells the UI', async () => {
+  it('hides the row, keeps the file, and tells the UI', async () => {
     const added = await addAttachment({
       transactionId: 'plain',
       fileName: 'receipt.pdf',
@@ -303,12 +357,20 @@ describe('attachment-remove', () => {
       throw new Error('setup failed');
     }
     vi.mocked(connection.send).mockClear();
+    vi.spyOn(Date, 'now').mockReturnValue(5678);
 
     expect(await removeAttachment({ id: added.attachment.id })).toEqual({});
 
-    expect(attachmentFiles()).toEqual([kept.attachment.id]);
+    expect(attachmentFiles()).toEqual(
+      [added.attachment.id, kept.attachment.id].sort(),
+    );
     expect(attachmentRows().map(row => row.id)).toEqual([kept.attachment.id]);
+    expect(removedRows()).toEqual([
+      { id: added.attachment.id, deleted_at: 5678 },
+    ]);
     expect(syncEvents()).toHaveLength(1);
+
+    vi.mocked(Date.now).mockRestore();
   });
 
   it('succeeds when the attachment is already gone', async () => {
@@ -316,7 +378,22 @@ describe('attachment-remove', () => {
     expect(syncEvents()).toEqual([]);
   });
 
-  it('removes the row even when the file is already missing', async () => {
+  it('succeeds when removing twice, and keeps the first removal time', async () => {
+    const added = await add('plain');
+    const now = vi.spyOn(Date, 'now');
+    now.mockReturnValue(1000);
+    await removeAttachment({ id: added.id });
+    vi.mocked(connection.send).mockClear();
+    now.mockReturnValue(2000);
+
+    expect(await removeAttachment({ id: added.id })).toEqual({});
+
+    expect(removedRows()).toEqual([{ id: added.id, deleted_at: 1000 }]);
+    expect(syncEvents()).toEqual([]);
+    now.mockRestore();
+  });
+
+  it('hides the row even when the file is already missing', async () => {
     const added = await addAttachment({
       transactionId: 'plain',
       fileName: 'receipt.pdf',
@@ -331,6 +408,84 @@ describe('attachment-remove', () => {
 
     expect(await removeAttachment({ id: added.attachment.id })).toEqual({});
     expect(attachmentRows()).toEqual([]);
+  });
+});
+
+describe('attachment-restore', () => {
+  it('brings a removed attachment back, and tells the UI', async () => {
+    const added = await add('plain', PNG);
+    await removeAttachment({ id: added.id });
+    vi.mocked(connection.send).mockClear();
+
+    expect(await restoreAttachment({ id: added.id })).toEqual({});
+
+    expect(attachmentRows()).toEqual([
+      { id: added.id, transaction_id: 'plain' },
+    ]);
+    expect(removedRows()).toEqual([]);
+    expect(syncEvents()).toEqual([
+      ['sync-event', { type: 'applied', tables: ['transaction_attachments'] }],
+    ]);
+    expect(
+      (await listAttachments({ transactionId: 'plain' })).map(a => a.id),
+    ).toEqual([added.id]);
+
+    const read = await readAttachment({ id: added.id });
+    if (!('data' in read)) {
+      throw new Error('expected contents');
+    }
+    expect(read.attachment).toEqual(added);
+    expect(Array.from(read.data)).toEqual(Array.from(PNG));
+  });
+
+  it('succeeds without changes when the attachment is not removed', async () => {
+    const added = await add('plain');
+
+    expect(await restoreAttachment({ id: added.id })).toEqual({});
+    expect(syncEvents().length).toBe(1); // only the add
+  });
+
+  it('refuses an unknown attachment', async () => {
+    expect(await restoreAttachment({ id: 'unknown' })).toEqual({
+      error: { reason: 'not-found' },
+    });
+  });
+
+  it('refuses when the file is no longer on this device', async () => {
+    const added = await add('plain');
+    await removeAttachment({ id: added.id });
+    nativeFs.rmSync(path.join(documentDir, BUDGET_ID, 'attachments', added.id));
+
+    expect(await restoreAttachment({ id: added.id })).toEqual({
+      error: { reason: 'not-found' },
+    });
+    expect(attachmentRows()).toEqual([]);
+  });
+
+  it.each(['plain', 'child'])(
+    'refuses when the transaction was deleted since (%s)',
+    async transactionId => {
+      const added = await add(transactionId);
+      await removeAttachment({ id: added.id });
+      // A child's attachment is on its parent, so delete that
+      const ownerId = transactionId === 'child' ? 'parent' : transactionId;
+      db.runQuery('UPDATE transactions SET tombstone = 1 WHERE id = ?', [
+        ownerId,
+      ]);
+
+      expect(await restoreAttachment({ id: added.id })).toEqual({
+        error: { reason: 'transaction-not-found' },
+      });
+      expect(removedRows().map(row => row.id)).toEqual([added.id]);
+    },
+  );
+
+  it('needs an open budget', async () => {
+    prefs.unloadPrefs();
+
+    expect(await restoreAttachment({ id: 'unknown' })).toEqual({
+      error: { reason: 'no-budget' },
+    });
   });
 });
 
@@ -418,6 +573,57 @@ describe('attachment-read', () => {
       error: { reason: 'not-found' },
     });
   });
+
+  it('reports a removed attachment as not found', async () => {
+    const added = await add('plain');
+    await removeAttachment({ id: added.id });
+
+    expect(await readAttachment({ id: added.id })).toEqual({
+      error: { reason: 'not-found' },
+    });
+  });
+
+  it("hides a deleted transaction's attachment until the delete is undone", async () => {
+    const added = await add('plain');
+    db.runQuery("UPDATE transactions SET tombstone = 1 WHERE id = 'plain'");
+
+    expect(await readAttachment({ id: added.id })).toEqual({
+      error: { reason: 'not-found' },
+    });
+
+    db.runQuery("UPDATE transactions SET tombstone = 0 WHERE id = 'plain'");
+
+    expect('data' in (await readAttachment({ id: added.id }))).toBe(true);
+  });
+});
+
+describe('transactionAttachmentsQuery', () => {
+  // The modal's list, which filters on the `transaction_id` ref. AQL joins
+  // live transactions for refs, which is what hides a deleted transaction's
+  // attachments; this guards against a rewrite dropping that.
+  async function listed(transactionId: string) {
+    const { data } = await aqlQuery(transactionAttachmentsQuery(transactionId));
+    return (data as TransactionAttachmentEntity[]).map(row => row.id);
+  }
+
+  it('lists live attachments only', async () => {
+    const kept = await add('plain');
+    const removed = await add('plain');
+    await removeAttachment({ id: removed.id });
+
+    expect(await listed('plain')).toEqual([kept.id]);
+  });
+
+  it('returns nothing for a deleted transaction until the delete is undone', async () => {
+    const added = await add('plain');
+    db.runQuery("UPDATE transactions SET tombstone = 1 WHERE id = 'plain'");
+
+    expect(await listed('plain')).toEqual([]);
+
+    db.runQuery("UPDATE transactions SET tombstone = 0 WHERE id = 'plain'");
+
+    expect(await listed('plain')).toEqual([added.id]);
+  });
 });
 
 describe('transactionAttachmentCountsQuery', () => {
@@ -428,18 +634,6 @@ describe('transactionAttachmentCountsQuery', () => {
       .sort((a, b) =>
         (a.transaction_id ?? '').localeCompare(b.transaction_id ?? ''),
       );
-  }
-
-  async function add(transactionId: string) {
-    const result = await addAttachment({
-      transactionId,
-      fileName: 'receipt.pdf',
-      data: PDF,
-    });
-    if (!('attachment' in result)) {
-      throw new Error('setup failed');
-    }
-    return result.attachment;
   }
 
   it('counts the attachments on each transaction', async () => {
@@ -471,5 +665,35 @@ describe('transactionAttachmentCountsQuery', () => {
 
   it('returns nothing when there are no attachments', async () => {
     expect(await counts()).toEqual([]);
+  });
+});
+
+describe('moveAttachments', () => {
+  it('moves live attachments and tells the UI', async () => {
+    const added = await add('plain');
+    vi.mocked(connection.send).mockClear();
+
+    await moveAttachments('plain', 'parent');
+
+    expect(attachmentRows()).toEqual([
+      { id: added.id, transaction_id: 'parent' },
+    ]);
+    expect(syncEvents()).toHaveLength(1);
+  });
+
+  it("puts them on a split child's parent", async () => {
+    const added = await add('plain');
+
+    await moveAttachments('plain', 'child');
+
+    expect(attachmentRows()).toEqual([
+      { id: added.id, transaction_id: 'parent' },
+    ]);
+  });
+
+  it('sends no event when there is nothing to move', async () => {
+    await moveAttachments('plain', 'parent');
+
+    expect(syncEvents()).toEqual([]);
   });
 });

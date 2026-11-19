@@ -71,6 +71,16 @@ export class MobileAccountPage {
   }
 
   /**
+   * Open the nth transaction in the list for editing
+   */
+  async openNthTransaction(idx: number) {
+    await this.transactions.nth(idx).click();
+    const transactionPage = new MobileTransactionEntryPage(this.page);
+    await transactionPage.waitFor();
+    return transactionPage;
+  }
+
+  /**
    * Start reconciling the account
    */
   async startReconciliation(amount?: string) {
