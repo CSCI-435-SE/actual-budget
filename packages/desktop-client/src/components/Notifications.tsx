@@ -381,13 +381,18 @@ export function Notifications({ style }: { style?: CSSProperties }) {
 
   return (
     <View
+      // Above modals, so a notification's button (such as Undo after removing
+      // an attachment) can be pressed while a modal is open. react-aria's
+      // modals leave top-layer elements out of their inert background, let
+      // focus move into them, and don't close when they're clicked.
+      data-react-aria-top-layer
       style={{
         position: 'fixed',
         bottom: notificationInset?.bottom || 20,
         top: notificationInset?.top,
         right: notificationInset?.right || 13,
         left: notificationInset?.left || (isNarrowWidth ? 13 : undefined),
-        zIndex: MODAL_Z_INDEX - 1,
+        zIndex: MODAL_Z_INDEX + 1,
         width: isNarrowWidth ? undefined : 400,
         ...style,
       }}

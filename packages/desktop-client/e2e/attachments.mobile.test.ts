@@ -98,20 +98,17 @@ test.describe('Mobile transaction attachments', () => {
     await expect(openReceipt).toHaveCount(0);
     await expect(modal).toContainText('No files attached yet.');
 
-    // Notifications sit below modals, so Undo is reachable once the modal
-    // is closed
-    await modal.getByRole('button', { name: 'Close' }).click();
-    await expect(modal).toBeHidden();
-    await expect(field).toHaveText('None');
+    // Undo is reachable while the modal is still open, and pressing it
+    // doesn't close the modal
     const notification = page
       .getByRole('alert')
       .filter({ hasText: 'Removed "receipt.png".' });
     await notification.getByRole('button', { name: 'Undo' }).click();
-    await expect(field).toHaveText('1 file');
-
-    await field.click();
     await expect(openReceipt).toBeVisible();
+    await expect(modal).toBeVisible();
+
     await modal.getByRole('button', { name: 'Close' }).click();
+    await expect(field).toHaveText('1 file');
     await page.getByRole('button', { name: 'Back' }).click();
     await accountPage.waitFor();
     await expect(paperclips).toHaveCount(1);
