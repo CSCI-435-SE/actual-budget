@@ -35,7 +35,7 @@ export async function assertInSync(...devices: Device[]): Promise<void> {
   if (devices.length < 1) {
     throw new Error('assertInSync needs at least one device');
   }
-  const connection = sameConnection(devices);
+  const connection = await currentConnection(devices);
 
   const tableLists = await Promise.all(
     devices.map(device => device.request<string[]>({ type: 'syncedTables' })),
@@ -68,19 +68,55 @@ export async function assertInSync(...devices: Device[]): Promise<void> {
   }
 }
 
-function sameConnection(devices: Device[]): DeviceConnection {
+/** Where the devices sync now, and the key their messages are encrypted with. */
+type SyncTarget = DeviceConnection & { keyId?: string };
+
+/**
+ * The server and budget the devices sync with now. The group id comes from
+ * each device's prefs rather than `device.connection`, because a sync reset
+ * moves the budget to a new group after the device was created. The
+ * encryption key id comes from the prefs too: the server refuses a sync
+ * request for an encrypted file without it (`file-has-new-key`).
+ */
+async function currentConnection(devices: Device[]): Promise<SyncTarget> {
   const [first] = devices;
   const mismatched = devices.find(
     device =>
       device.connection.serverUrl !== first.connection.serverUrl ||
-      device.connection.groupId !== first.connection.groupId,
+      device.connection.fileId !== first.connection.fileId,
   );
   if (mismatched) {
     throw new Error(
       `assertInSync: ${mismatched.name} syncs a different server or budget than ${first.name}`,
     );
   }
-  return first.connection;
+
+  const prefs = await Promise.all(devices.map(device => device.getPrefs()));
+  const groupIds = prefs.map(p => p.groupId);
+  if (groupIds.some(groupId => groupId !== groupIds[0])) {
+    throw new OutOfSyncError(
+      [
+        'Devices are in different sync groups (one may need to download the budget again after a sync reset):',
+        ...devices.map((device, i) => `  ${device.name}: ${groupIds[i]}`),
+      ].join('\n'),
+    );
+  }
+  if (typeof groupIds[0] !== 'string') {
+    throw new Error(`assertInSync: ${first.name} has no sync group id`);
+  }
+
+  const keyIds = prefs.map(p => p.encryptKeyId ?? undefined);
+  if (keyIds.some(keyId => keyId !== keyIds[0])) {
+    throw new OutOfSyncError(
+      [
+        'Devices use different encryption keys:',
+        ...devices.map((device, i) => `  ${device.name}: ${keyIds[i]}`),
+      ].join('\n'),
+    );
+  }
+  const keyId = typeof keyIds[0] === 'string' ? keyIds[0] : undefined;
+
+  return { ...first.connection, groupId: groupIds[0], keyId };
 }
 
 /** Asks the server for its merkle via an empty sync request. */
@@ -89,10 +125,14 @@ async function fetchServerMerkleHash({
   token,
   fileId,
   groupId,
-}: DeviceConnection): Promise<number> {
+  keyId,
+}: SyncTarget): Promise<number> {
   const request = create(SyncRequestSchema, {
     fileId,
     groupId,
+    // Sent like a device does (loot-core's sync encoder), or the server
+    // rejects requests for an encrypted file
+    keyId,
     since: FAR_FUTURE_SINCE,
     messages: [],
   });

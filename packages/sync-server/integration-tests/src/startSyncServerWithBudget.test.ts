@@ -16,10 +16,17 @@ describe('startSyncServerWithBudget', () => {
         groupId,
       });
 
-      expect(token).toEqual(expect.any(String));
-      expect(token).not.toBe('');
-      expect(fileId).not.toBe('');
-      expect(groupId).not.toBe('');
+      for (const field of [
+        'password',
+        'token',
+        'fileId',
+        'groupId',
+        'budgetId',
+        'budgetName',
+      ] as const) {
+        expect(server[field], field).toEqual(expect.any(String));
+        expect(server[field], field).not.toBe('');
+      }
 
       // The server knows the file under that group, for that token
       const res = await fetch(`${url}/sync/get-user-file-info`, {

@@ -5,7 +5,7 @@
 //
 // This file is loaded by Node directly (type stripping), not by Vitest, so
 // it must only use erasable TypeScript syntax and type-only local imports.
-import { parentPort } from 'node:worker_threads';
+import { parentPort, workerData } from 'node:worker_threads';
 
 import type { ApiLib, ApiModule, ApiSyncMessage } from './apiBundle';
 import type {
@@ -41,6 +41,9 @@ const blockedRequests: string[] = [];
 let isOnline = true;
 let explicitSyncsRunning = 0;
 let blockedAutoSyncs = 0;
+// Sizes of the sync requests that went through, so tests can see how close
+// an upload gets to the server's `upload.fileSizeSyncLimitMB`
+const syncRequestBytes: number[] = [];
 
 globalThis.fetch = (input, init) => {
   const url = new URL(input instanceof Request ? input.url : String(input));
@@ -53,11 +56,19 @@ globalThis.fetch = (input, init) => {
   if (!isOnline) {
     return Promise.reject(new TypeError('fetch failed: device is offline'));
   }
-  if (isSyncRequest(input) && explicitSyncsRunning === 0) {
-    blockedAutoSyncs++;
-    return Promise.reject(
-      new TypeError('fetch failed: automatic sync is disabled on test devices'),
-    );
+  if (isSyncRequest(input)) {
+    if (explicitSyncsRunning === 0) {
+      blockedAutoSyncs++;
+      return Promise.reject(
+        new TypeError(
+          'fetch failed: automatic sync is disabled on test devices',
+        ),
+      );
+    }
+    const body = init?.body;
+    if (ArrayBuffer.isView(body) || body instanceof ArrayBuffer) {
+      syncRequestBytes.push(body.byteLength);
+    }
   }
   return realFetch(input, init);
 };
@@ -68,9 +79,13 @@ function isSyncRequest(input: Parameters<typeof fetch>[0]): boolean {
 }
 
 // The built API, loaded by path because sync-server doesn't depend on
-// `@actual-app/api` (see apiBundle.ts)
-const API_BUNDLE_URL = new URL('../../../api/dist/index.js', import.meta.url);
-const api: ApiModule = await import(API_BUNDLE_URL.href);
+// `@actual-app/api`. `createDevice` checks the bundle and passes its URL
+// (see apiBundle.ts).
+const apiBundleUrl: unknown = Reflect.get(Object(workerData), 'apiBundleUrl');
+if (typeof apiBundleUrl !== 'string') {
+  throw new Error('deviceWorker needs workerData.apiBundleUrl');
+}
+const api: ApiModule = await import(apiBundleUrl);
 
 // --- Message handling ---------------------------------------------------
 
@@ -80,6 +95,8 @@ if (!parentPort) {
 const port = parentPort;
 
 let lib: ApiLib | null = null;
+// Kept from `init` so a later `downloadBudget` op can decrypt the budget too
+let budgetPassword: string | undefined = undefined;
 
 port.on('message', async ({ id, op }: DeviceRequest) => {
   let response: DeviceResponse;
@@ -110,6 +127,12 @@ async function handle(op: DeviceOp): Promise<unknown> {
       return makeChange(op.change);
     case 'sync':
       return runSync();
+    case 'downloadBudget':
+      // Like `init`, the download ends with a sync, so let it through
+      await allowingSync(() =>
+        api.downloadBudget(op.groupId, { password: budgetPassword }),
+      );
+      return null;
     case 'setOnline':
       isOnline = op.online;
       return null;
@@ -117,6 +140,8 @@ async function handle(op: DeviceOp): Promise<unknown> {
       return [...blockedRequests];
     case 'blockedAutoSyncs':
       return blockedAutoSyncs;
+    case 'syncRequestBytes':
+      return [...syncRequestBytes];
     case 'syncedTables':
       return getSyncedTables();
     case 'snapshot':
@@ -136,12 +161,18 @@ async function init({
   fileId,
   groupId,
   dataDir,
+  encryptionPassword,
 }: DeviceInit) {
+  budgetPassword = encryptionPassword;
   lib = await api.init({ dataDir, serverURL: serverUrl, sessionToken: token });
   // The sync id the API asks for is the server's group id. Downloading
   // ends with a sync to catch up on changes made since the upload, so let
-  // that one through the gate.
-  await allowingSync(() => api.downloadBudget(groupId));
+  // that one through the gate. For an encrypted budget, the API first
+  // checks the password against the server's key (`key-test`) and fails
+  // with `decrypt-failure` if it's wrong.
+  await allowingSync(() =>
+    api.downloadBudget(groupId, { password: encryptionPassword }),
+  );
 
   const prefs = await lib.send('load-prefs');
   if (prefs.cloudFileId !== fileId || prefs.groupId !== groupId) {
@@ -168,9 +199,41 @@ async function makeChange(change: Change): Promise<ChangeResult> {
     case 'deleteAccount':
       await api.deleteAccount(change.id);
       return { id: change.id };
+    case 'createTransaction':
+      return createTransaction(change);
+    case 'updateTransaction':
+      await api.updateTransaction(change.id, change.fields);
+      return { id: change.id };
+    case 'deleteTransaction':
+      await api.deleteTransaction(change.id);
+      return { id: change.id };
     default:
       throw new Error(`Unknown change: ${JSON.stringify(change)}`);
   }
+}
+
+// `addTransactions` generates the id and doesn't return it, so compare the
+// account's transactions before and after to find the new one
+async function createTransaction({
+  accountId,
+  date,
+  amount,
+  notes,
+}: Extract<Change, { type: 'createTransaction' }>): Promise<ChangeResult> {
+  const listIds = async () =>
+    (await api.getTransactions(accountId, '1900-01-01', '9999-12-31')).map(
+      transaction => transaction.id,
+    );
+
+  const before = new Set(await listIds());
+  await api.addTransactions(accountId, [{ date, amount, notes }]);
+  const added = (await listIds()).filter(id => !before.has(id));
+  if (added.length !== 1) {
+    throw new Error(
+      `Expected one new transaction in account ${accountId}, found ${added.length}`,
+    );
+  }
+  return { id: added[0] };
 }
 
 async function allowingSync<T>(fn: () => Promise<T>): Promise<T> {

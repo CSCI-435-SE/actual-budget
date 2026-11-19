@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Worker } from 'node:worker_threads';
 
+import { API_BUNDLE_URL, assertApiBundleBuilt } from './apiBundle';
 import type { DeviceOp, DeviceResponse } from './deviceProtocol';
 
 export type DeviceConnection = {
@@ -15,7 +16,10 @@ export type DeviceConnection = {
 export type Device = {
   name: string;
   dataDir: string;
-  /** The server and budget this device was created for. */
+  /**
+   * The server and budget this device was created for. `groupId` is the
+   * group at creation; after a sync reset the current one is in its prefs.
+   */
   connection: DeviceConnection;
   /** Calls a public `@actual-app/api` method, e.g. `getAccounts`. */
   api<T = unknown>(method: string, ...args: unknown[]): Promise<T>;
@@ -42,7 +46,9 @@ let deviceCount = 0;
 /**
  * Creates a client with its own loot-core instance (clock, database,
  * prefs, sync state) in its own worker thread and data directory, signs it
- * in with `token`, and downloads the budget `fileId` in `groupId`.
+ * in with `token`, and downloads the budget `fileId` in `groupId`. For an
+ * end-to-end encrypted budget, pass its `encryptionPassword`; a wrong one
+ * rejects with `reason: 'decrypt-failure'`.
  *
  * Needs a current build of `@actual-app/api` (`yarn build:api`).
  */
@@ -51,8 +57,14 @@ export async function createDevice(
   token: string,
   fileId: string,
   groupId: string,
-  { name = `device-${++deviceCount}` }: { name?: string } = {},
+  {
+    name = `device-${++deviceCount}`,
+    encryptionPassword,
+  }: { name?: string; encryptionPassword?: string } = {},
 ): Promise<Device> {
+  // Fail with the fix, not a "Cannot find module" from inside the worker
+  await assertApiBundleBuilt();
+
   const dataDir = await mkdtemp(join(tmpdir(), `actual-${name}-`));
 
   // `execArgv: []` keeps the test runner's Node flags out of the worker.
@@ -62,6 +74,7 @@ export async function createDevice(
   const worker = new Worker(new URL('./deviceWorker.ts', import.meta.url), {
     execArgv: [],
     env: { ...process.env, NODE_ENV: 'production' },
+    workerData: { apiBundleUrl: API_BUNDLE_URL.href },
   });
 
   let nextId = 0;
@@ -132,7 +145,14 @@ export async function createDevice(
   try {
     await call({
       type: 'init',
-      config: { serverUrl, token, fileId, groupId, dataDir },
+      config: {
+        serverUrl,
+        token,
+        fileId,
+        groupId,
+        dataDir,
+        encryptionPassword,
+      },
     });
   } catch (error) {
     await worker.terminate();
