@@ -97,7 +97,9 @@ async function currentConnection(devices: Device[]): Promise<SyncTarget> {
     throw new OutOfSyncError(
       [
         'Devices are in different sync groups (one may need to download the budget again after a sync reset):',
-        ...devices.map((device, i) => `  ${device.name}: ${groupIds[i]}`),
+        ...devices.map(
+          (device, i) => `  ${device.name}: ${format(groupIds[i])}`,
+        ),
       ].join('\n'),
     );
   }
@@ -110,7 +112,7 @@ async function currentConnection(devices: Device[]): Promise<SyncTarget> {
     throw new OutOfSyncError(
       [
         'Devices use different encryption keys:',
-        ...devices.map((device, i) => `  ${device.name}: ${keyIds[i]}`),
+        ...devices.map((device, i) => `  ${device.name}: ${format(keyIds[i])}`),
       ].join('\n'),
     );
   }
