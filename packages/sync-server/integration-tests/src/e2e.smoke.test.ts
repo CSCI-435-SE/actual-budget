@@ -1,5 +1,4 @@
 import { existsSync } from 'node:fs';
-import { dirname } from 'node:path';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -24,7 +23,7 @@ describe('sync smoke test', () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
     const server = await startSyncServerWithBudget();
-    const createdPaths = [dirname(server.serverFiles)];
+    const createdPaths = [server.dataDir];
     let a: Device | undefined;
     let b: Device | undefined;
 
@@ -56,6 +55,9 @@ describe('sync smoke test', () => {
           new URL(input instanceof Request ? input.url : String(input))
             .hostname,
       );
+      // The spy did see this thread's requests (setup, assertInSync), so
+      // the check below isn't passing on an empty list
+      expect(hosts.length).toBeGreaterThan(0);
       expect(hosts.filter(host => !LOOPBACK_HOSTS.has(host))).toEqual([]);
     } finally {
       await Promise.all([a?.close(), b?.close()]);

@@ -104,4 +104,20 @@ describe('assertInSync', () => {
     expect(message).toContain('name: A="Everyday", B="Checking"');
     expect(message).not.toContain(`row ${id}: only on`);
   });
+
+  it('lists at most 10 rows per table and summarizes the rest', async () => {
+    for (let i = 1; i <= 12; i++) {
+      await makeChange(a, { type: 'createAccount', name: `Account ${i}` });
+    }
+    await sync(a); // B never syncs
+
+    const message = await outOfSyncMessage();
+
+    // Creating an account also adds rows to other tables (e.g. its
+    // transfer payee), so check the accounts section on its own
+    const accounts = message.match(/^Table "accounts".*\n(?:.+\n)*/m)?.[0];
+    expect(accounts).toMatch(/^Table "accounts": 12 row\(s\) differ/);
+    expect(accounts?.match(/only on A, missing on B/g)).toHaveLength(10);
+    expect(accounts).toContain('  ...and 2 more row(s)');
+  });
 });

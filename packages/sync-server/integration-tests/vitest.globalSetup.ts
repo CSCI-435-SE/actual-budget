@@ -1,41 +1,21 @@
-import { readFile, rm } from 'node:fs/promises';
+import { rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import type { TestProject } from 'vitest/node';
 
+import { assertApiBundleBuilt } from './src/apiBundle';
+
 export async function setup(project: TestProject) {
+  // `yarn test` rebuilds or restores the API bundle first; running these
+  // tests directly doesn't. Check once here so a stale bundle stops the run
+  // up front (createDevice checks again for each device).
   await assertApiBundleBuilt();
 
   const dirs = [project.tmpDir, Reflect.get(project.vitest, '_tmpDir')];
   return async function teardown() {
     await removeVitestTmpDirs(dirs);
   };
-}
-
-// Device workers load this file by path (see src/apiBundle.ts)
-const API_BUNDLE = fileURLToPath(
-  new URL('../../api/dist/index.js', import.meta.url),
-);
-
-/**
- * Devices run on the bundled `@actual-app/api` build, which inlines
- * loot-core. `yarn typecheck` overwrites that bundle with a plain compile
- * of `packages/api/index.ts` that imports loot-core's TypeScript source,
- * which a device can't load. `yarn test` rebuilds or restores the bundle
- * first; running these tests directly doesn't, so check here and
- * fail with the fix instead of a "Cannot find module" error in every test.
- */
-async function assertApiBundleBuilt() {
-  const code = await readFile(API_BUNDLE, 'utf8').catch(() => null);
-  if (code === null || code.includes('@actual-app/core/')) {
-    throw new Error(
-      `${API_BUNDLE} is ${code === null ? 'missing' : 'not the bundled build'}. ` +
-        'Run `yarn build:api` from the repo root, then run the tests again. ' +
-        '(`yarn typecheck` overwrites the bundle; `yarn test` rebuilds it automatically.)',
-    );
-  }
 }
 
 /**

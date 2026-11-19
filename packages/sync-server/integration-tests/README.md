@@ -40,6 +40,90 @@ missing or overwritten, the tests stop right away and tell you to run
 Requirements: Node 23.6 or newer (the device worker is a TypeScript file that
 Node loads directly; the repo's `.nvmrc` pins a version that works).
 
+The suite takes about 50–60 seconds. Most of that is startup: each test file
+starts its own server (about 3 seconds) and devices. It has been run on
+Windows and in a Linux container (Node 24.18.1, 4 CPUs, like CI's
+`ubuntu-latest`); not yet on GitHub CI itself.
+
+## Scenarios and status
+
+The sync scenarios live in [`src/scenarios/`](src/scenarios/). Each one ends
+with `assertInSync`.
+
+| #   | Scenario                                                                                               | File                                                                                 | Status                           |
+| --- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | -------------------------------- |
+| 1   | Basic sync both ways: a change on A reaches B, and a change on B reaches A                             | [`basicSync.test.ts`](src/scenarios/basicSync.test.ts)                               | 2 passing                        |
+| 2   | Edits at the same time: A and B rename the same account; the later CRDT timestamp wins on both         | [`conflictSameField.test.ts`](src/scenarios/conflictSameField.test.ts)               | 1 passing                        |
+| 3   | Different records at the same time: each device creates and deletes its own account, then transaction  | [`conflictDifferentRecords.test.ts`](src/scenarios/conflictDifferentRecords.test.ts) | 2 passing                        |
+| 4   | Offline catch-up: B creates 150 accounts (1,050 changes) offline, then syncs                           | [`offlineCatchUp.test.ts`](src/scenarios/offlineCatchUp.test.ts)                     | 1 passing, 1 skipped (see below) |
+| 5   | Sync reset: A resets; B's sync is refused with `file-has-reset` and applies nothing; B downloads again | [`syncReset.test.ts`](src/scenarios/syncReset.test.ts)                               | 2 passing                        |
+| 6   | Encryption: scenarios 1 and 2 with end-to-end encryption, plus a device with the wrong password        | [`encryption.test.ts`](src/scenarios/encryption.test.ts)                             | 4 passing                        |
+
+There are no known-failing tests. The one skipped test is a known sync
+limitation, not a test problem:
+
+- **Offline catch-up over the upload limit** (scenario 4). A device that
+  collected more than `upload.fileSizeSyncLimitMB` (20 MB by default) of
+  changes offline can never catch up: loot-core sends them all in one
+  `/sync` request, and the server refuses it. It needs upload batching,
+  tracked in
+  [#186](https://github.com/CSCI-435-SE/actual-budget/issues/186). It's skipped
+  rather than left failing because reaching 20 MB takes about 16 minutes.
+
+Supporting tests outside `scenarios/` cover the helpers themselves, including
+[`encryptedBudget.test.ts`](src/encryptedBudget.test.ts) (an encrypted server
+and a single device) and
+[`transactions.sync.test.ts`](src/transactions.sync.test.ts).
+
+## Open questions
+
+These came up while writing the scenarios and still need a decision.
+
+- **Upload size ceiling.** Measured with 500 accounts: about 891 bytes per
+  account (7 changes, about 127 bytes each), so the 20 MB default fits about
+  23,500 new accounts, or 165,000 changes, in one offline period. Larger
+  values (long notes, imported payee names) reach it sooner. Still open:
+  - what the client actually reports when the server answers 413 (not
+    checked);
+  - how to test past the limit quickly once batching exists: fewer, larger
+    changes, or a server started with a smaller limit;
+  - whether 150 accounts is enough. That is the smallest count that makes
+    loot-core apply the batch in more than one chunk of 100, but the issue
+    asked for "hundreds" of changes; 200 adds about 2 seconds.
+- **How encryption keys are derived.** The test server encrypts the starter
+  budget with its own copy of loot-core's scheme
+  ([`src/encryption.ts`](src/encryption.ts): PBKDF2-SHA512 with 10,000
+  iterations, AES-256-GCM), because the budget is uploaded before any device
+  exists. If loot-core changes its scheme, that copy has to change too, and
+  devices will fail with `decrypt-failure` until it does. The alternative is
+  to upload an unencrypted budget and have device A turn encryption on
+  through loot-core's own `key-make` handler, which tests the real
+  enable-encryption path but adds a sync reset to every encrypted setup.
+  Other devices get the key the way the app does: the password is passed to
+  `downloadBudget`.
+- **Documenting sync-reset behavior.** The tests pin down what happens to
+  another device after a reset (its sync is refused with `file-has-reset`,
+  nothing is applied, and it has to download the budget again), but this
+  isn't written up for users or contributors yet. Also untested:
+  - what happens to changes B made but never synced before A reset (a fresh
+    download replaces B's budget, so they're presumably lost);
+  - the client-side `groupId` guard in `_fullSync`
+    (`packages/loot-core/src/server/sync/index.ts`), which drops a server
+    response if the device's own group changed while the request was in
+    flight. No scenario reaches it; testing it needs a sync held open while
+    the same device resets. This isn't needed for scenario 5: another
+    device's stale sync is refused by the server (`file-has-reset`) before
+    the guard could matter, and the team accepted that as meeting the
+    issue's reset criterion. It would be a follow-up test, not a gap in
+    scenario 5.
+- **Two devices with the same CRDT node id.** If two devices ever shared a
+  node id (a copied clock), they could produce identical timestamps for
+  different values, and `compareMessages` would keep whichever arrived first,
+  so the devices could disagree. The duplicate-node check in
+  `Timestamp.recv` (`packages/crdt/src/crdt/timestamp.ts`) is commented out,
+  so nothing would catch it. Budgets are uploaded with `resetClock` to avoid
+  this; whether it can still happen hasn't been checked.
+
 ## Writing a scenario
 
 This is [`src/exampleScenario.test.ts`](src/exampleScenario.test.ts), which
@@ -118,21 +202,29 @@ The pattern:
 
 ## Helper reference
 
-| Helper                                                       | File                           | What it does                                                                                                                                                                 |
-| ------------------------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `setUpTwoDevices()`                                          | `setUpTwoDevices.ts`           | Server with an uploaded budget, plus devices `a` and `b`. Returns `{ server, a, b, tearDown }`.                                                                              |
-| `startSyncServerWithBudget()`                                | `startSyncServerWithBudget.ts` | Server, owner account, login token and uploaded starter budget. Returns `{ url, token, fileId, groupId, password, budgetId, budgetName, serverFiles, userFiles, shutdown }`. |
-| `startSyncServer()`                                          | `startSyncServer.ts`           | Just the server, with temporary `serverFiles`/`userFiles` and migrations run. Returns `{ url, port, serverFiles, userFiles, shutdown }`.                                     |
-| `createDevice(serverUrl, token, fileId, groupId, { name? })` | `createDevice.ts`              | A client in its own worker thread and data directory, signed in and with the budget downloaded. Use it for three or more devices.                                            |
-| `makeChange(device, change)`                                 | `deviceHelpers.ts`             | Applies a change to that device's database only. Returns `{ id }`.                                                                                                           |
-| `sync(device)`                                               | `deviceHelpers.ts`             | Runs one full sync (send, receive, repeat until device and server agree). Returns `{ received }`; throws on failure with loot-core's `reason`, e.g. `network-failure`.       |
-| `goOffline(device)` / `goOnline(device)`                     | `deviceHelpers.ts`             | While offline, every request from the device fails like a dropped connection. Changes still work locally.                                                                    |
-| `assertInSync(...devices)`                                   | `assertInSync.ts`              | Throws `OutOfSyncError` listing merkle hashes and the tables, rows and columns that differ.                                                                                  |
-| `countServerMessages(server, groupId)`                       | `serverMessages.ts`            | How many sync messages the server has stored. Useful to check whether a change reached it.                                                                                   |
+| Helper                                                                            | File                           | What it does                                                                                                                                                                                                                    |
+| --------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Helper                                                                            | File                           | What it does                                                                                                                                                                                                                    |
+| ---                                                                               | ---                            | ---                                                                                                                                                                                                                             |
+| `setUpTwoDevices({ encryptionPassword? })`                                        | `setUpTwoDevices.ts`           | Server with an uploaded budget, plus devices `a` and `b`. With a password, the budget is end-to-end encrypted and both devices use it. Returns `{ server, a, b, tearDown }`.                                                    |
+| `startSyncServerWithBudget({ encryptionPassword? })`                              | `startSyncServerWithBudget.ts` | Server, owner account, login token and uploaded starter budget, optionally encrypted. Returns the `startSyncServer` handle plus `{ token, fileId, groupId, password, budgetId, budgetName, encryptionPassword, encryptKeyId }`. |
+| `startSyncServer()`                                                               | `startSyncServer.ts`           | Just the server, with temporary `serverFiles`/`userFiles` and migrations run. Returns `{ url, port, dataDir, serverFiles, userFiles, shutdown }`.                                                                               |
+| `createDevice(serverUrl, token, fileId, groupId, { name?, encryptionPassword? })` | `createDevice.ts`              | A client in its own worker thread and data directory, signed in and with the budget downloaded. Use it for three or more devices. A wrong password rejects with `reason: 'decrypt-failure'`.                                    |
+| `makeChange(device, change)`                                                      | `deviceHelpers.ts`             | Applies a change to that device's database only. Returns `{ id }`.                                                                                                                                                              |
+| `sync(device)`                                                                    | `deviceHelpers.ts`             | Runs one full sync (send, receive, repeat until device and server agree). Returns `{ received }`; throws on failure with loot-core's `reason`, e.g. `network-failure`.                                                          |
+| `goOffline(device)` / `goOnline(device)`                                          | `deviceHelpers.ts`             | While offline, every request from the device fails like a dropped connection. Changes still work locally.                                                                                                                       |
+| `resetSync(device)`                                                               | `deviceHelpers.ts`             | Resets sync from that device, like "Reset sync" in the app. Returns the new group id.                                                                                                                                           |
+| `downloadBudget(device, groupId)`                                                 | `deviceHelpers.ts`             | Downloads the budget again (e.g. after another device reset sync) and opens it.                                                                                                                                                 |
+| `findReceived(result, { dataset, row, column, value })`                           | `deviceHelpers.ts`             | The message in a `sync` result that set that cell, e.g. to read its timestamp.                                                                                                                                                  |
+| `assertInSync(...devices)`                                                        | `assertInSync.ts`              | Throws `OutOfSyncError` listing merkle hashes and the tables, rows and columns that differ, or that the devices are in different sync groups or use different keys.                                                             |
+| `countServerMessages(server, groupId)` / `countEncryptedServerMessages(...)`      | `serverMessages.ts`            | How many sync messages (or encrypted ones) the server has stored. Useful to check whether a change reached it.                                                                                                                  |
 
 A `Device` also has `api(method, ...args)` and `send(handler, args)` (any
 API method or internal loot-core handler), `getPrefs()`/`savePrefs()`,
-`getClientId()` (its CRDT node id), `connection` and `close()`.
+`getClientId()` (its CRDT node id), `connection` and `close()`. Its
+`connection.groupId` is the group at creation; after a sync reset, the
+current one is in its prefs. `device.request({ type: 'syncRequestBytes' })`
+returns the size of each sync request it sent.
 
 ### What `assertInSync` compares
 
@@ -160,8 +252,9 @@ Table "accounts": 1 row(s) differ
 
 ## Adding a change type
 
-`makeChange` currently supports `createAccount`, `updateAccount` and
-`deleteAccount`. To add one (say, a transaction):
+`makeChange` currently supports `createAccount`, `updateAccount`,
+`deleteAccount`, `createTransaction`, `updateTransaction` and
+`deleteTransaction`. To add one (say, a category):
 
 1. Add a variant to `Change` in [`src/deviceProtocol.ts`](src/deviceProtocol.ts).
 2. Handle it in `makeChange` in [`src/deviceWorker.ts`](src/deviceWorker.ts),
@@ -187,8 +280,9 @@ These answer the open questions from the issue that introduced these tests.
 - **Why the API is loaded by path.** sync-server doesn't depend on
   `@actual-app/api`, and adding that dependency (or a separate workspace for
   these tests) would change `yarn.lock`. So the device worker imports
-  `packages/api/dist/index.js` by its repo path, and `src/apiBundle.ts` types
-  the methods it calls. lage still builds the API before sync-server's tests.
+  `packages/api/dist/index.js` by its repo path. `src/apiBundle.ts` holds that
+  path, checks that the bundle is there and bundled before any worker loads
+  it, and types the methods the worker calls. lage still builds the API before sync-server's tests.
   For the same reason, the starter budget is zipped by a small writer in
   `src/zip.ts` instead of a zip library.
 - **Starting the server without building it.** Vitest compiles sync-server from
@@ -209,6 +303,13 @@ These answer the open questions from the issue that introduced these tests.
 
 - **"…packages/api/dist/index.js is not the bundled build"**: run
   `yarn build:api`, then rerun. See [Running the tests](#running-the-tests).
+- **Every test file fails with "Cannot read properties of undefined (reading
+  'config')" (Windows)**: your shell's working directory has a lowercase
+  drive letter (`c:\…`), which VS Code terminals often start with. Vitest
+  (5.0 through at least 5.1.1) then loads two copies of its own runner and
+  every test file fails before it runs. It affects every Vitest suite in the
+  repo, not just these. `cd` to the repo with an upper-case drive letter
+  (`cd C:\path\to\actual`) and run again.
 - **A test times out while starting up**: startup is slow (several seconds per
   server, plus loot-core per device). Timeouts are 60s and at most two files
   run at once; see `integration-tests/vitest.config.ts`. A test that times out during startup
@@ -216,6 +317,6 @@ These answer the open questions from the issue that introduced these tests.
 - **`[cause]: TypeError: fetch failed: automatic sync is disabled on test devices`**
   in the output is expected: it's loot-core logging an automatic sync that
   the device blocked.
-- **`Cannot read properties of undefined (reading 'config')` from Vitest in
-  every file**: an intermittent Vitest failure seen in several packages in
-  this repo, not specific to these tests. Rerun.
+- **`Error: Unsupported state or unable to authenticate data`** in the output
+  is expected too: it's loot-core logging the failed decryption in the
+  wrong-password tests.

@@ -6,6 +6,8 @@ import { join } from 'node:path';
 export type SyncServerHandle = {
   url: string;
   port: number;
+  /** Temporary root holding `serverFiles`, `userFiles` and migration state */
+  dataDir: string;
   serverFiles: string;
   userFiles: string;
   shutdown: () => Promise<void>;
@@ -46,6 +48,7 @@ export async function startSyncServer(): Promise<SyncServerHandle> {
   });
 
   let server: Server | undefined;
+  let port: number;
   try {
     // Migrations must run before the app is imported: the app's modules
     // touch the account database as they load.
@@ -54,37 +57,48 @@ export async function startSyncServer(): Promise<SyncServerHandle> {
 
     const { app } = await import('#app');
     server = await listen(app.listen(0, '127.0.0.1'));
+
+    const address = server.address();
+    if (address === null || typeof address === 'string') {
+      throw new Error('Expected the sync server to listen on a TCP port');
+    }
+    port = address.port;
   } catch (error) {
-    await removeDir(rootDir);
+    await cleanUp(server, rootDir);
     throw error;
   } finally {
     restoreEnv();
   }
 
-  const address = server.address();
-  if (address === null || typeof address === 'string') {
-    throw new Error('Expected the sync server to listen on a TCP port');
-  }
-
-  const { closeAccountDb } = await import('#account-db');
   const listeningServer = server;
   let shutdownPromise: Promise<void> | null = null;
 
   return {
-    url: `http://127.0.0.1:${address.port}`,
-    port: address.port,
+    url: `http://127.0.0.1:${port}`,
+    port,
+    dataDir: rootDir,
     serverFiles,
     userFiles,
+    // Safe to call more than once: later calls wait on the first
     shutdown() {
-      shutdownPromise ??= (async () => {
-        await closeServer(listeningServer);
-        // Windows can't delete account.sqlite while it is still open
-        closeAccountDb();
-        await removeDir(rootDir);
-      })();
+      shutdownPromise ??= cleanUp(listeningServer, rootDir);
       return shutdownPromise;
     },
   };
+}
+
+async function cleanUp(server: Server | undefined, rootDir: string) {
+  try {
+    if (server?.listening) {
+      await closeServer(server);
+    }
+  } finally {
+    // Windows can't delete account.sqlite while it is still open, so close
+    // it first, even if closing the server failed
+    const { closeAccountDb } = await import('#account-db');
+    closeAccountDb();
+    await removeDir(rootDir);
+  }
 }
 
 function setEnv(values: Record<string, string>): () => void {

@@ -7,6 +7,8 @@ export type DeviceInit = {
   fileId: string;
   groupId: string;
   dataDir: string;
+  /** The budget's end-to-end encryption password, if it's encrypted. */
+  encryptionPassword?: string;
 };
 
 /** A change `makeChange` applies to a device's local database. */
@@ -17,7 +19,22 @@ export type Change =
       id: string;
       fields: { name?: string; offbudget?: boolean; closed?: boolean };
     }
-  | { type: 'deleteAccount'; id: string };
+  | { type: 'deleteAccount'; id: string }
+  | {
+      type: 'createTransaction';
+      accountId: string;
+      /** YYYY-MM-DD */
+      date: string;
+      /** In cents, e.g. -1250 for a $12.50 payment */
+      amount: number;
+      notes?: string;
+    }
+  | {
+      type: 'updateTransaction';
+      id: string;
+      fields: { date?: string; amount?: number; notes?: string };
+    }
+  | { type: 'deleteTransaction'; id: string };
 
 export type ChangeResult = { id: string };
 
@@ -56,11 +73,15 @@ export type DeviceOp =
   | { type: 'clientId' }
   | { type: 'makeChange'; change: Change }
   | { type: 'sync' }
+  // Downloads the budget in this group again and opens it (after a reset)
+  | { type: 'downloadBudget'; groupId: string }
   | { type: 'setOnline'; online: boolean }
   // URLs of non-loopback requests the device attempted (and was refused)
   | { type: 'blockedRequests' }
   // How many automatic syncs (not started by a `sync` op) were blocked
   | { type: 'blockedAutoSyncs' }
+  // Body size in bytes of each sync request sent to the server, oldest first
+  | { type: 'syncRequestBytes' }
   // Tables this device holds CRDT messages for
   | { type: 'syncedTables' }
   | { type: 'snapshot'; tables: string[] }
